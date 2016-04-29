@@ -28,7 +28,7 @@ namespace Lithnet.GoogleApps.MA
         {
             AttributeModificationType modificationType = csentry.ObjectModificationType == ObjectModificationType.Update ? AttributeModificationType.Replace : AttributeModificationType.Add;
             csentry.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", user.Id));
-
+            
             csentry.CreateAttributeChangeIfInSchema(type, "orgUnitPath", modificationType, user.OrgUnitPath);
             csentry.CreateAttributeChangeIfInSchema(type, "primaryEmail", modificationType, user.PrimaryEmail);
             csentry.CreateAttributeChangeIfInSchema(type, "suspended", modificationType, user.Suspended);

@@ -93,7 +93,10 @@ namespace Lithnet.GoogleApps.MA
             Action x = () => CSEntryChangeToUser.ApplyAliasChanges(csentry, user, deltaCSEntry);
             x.ExecuteWithRetryOnNotFound();
 
-            return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
+            List<AttributeChange> anchorChanges = new List<AttributeChange>();
+            anchorChanges.Add(AttributeChange.CreateAttributeAdd("id", user.Id));
+
+            return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, MAExportError.Success);
         }
 
         private static CSEntryChangeResult PutCSEntryChangeUserReplace(CSEntryChange csentry, CSEntryChange deltaCSEntry, IManagementAgentParameters config, SchemaType type)

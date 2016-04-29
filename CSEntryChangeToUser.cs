@@ -830,7 +830,7 @@ namespace Lithnet.GoogleApps.MA
                     }
                     else
                     {
-                        deltacsentry.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", valueChanges));
+                        deltacsentry.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList()));
                     }
                 }
             }
