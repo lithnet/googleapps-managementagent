@@ -8,8 +8,9 @@ namespace Lithnet.GoogleApps.MA
 {
     public enum GoogleArrayMode
     {
-        PrimaryValueOnly = 0,
-        Json = 1,
-        FlattenKnownTypes = 2
+        FlattenValues = 0,
+        PrimaryValueOnly = 1,
+        Json = 2,
+        FlattenKnownTypes = 3
     }
 }

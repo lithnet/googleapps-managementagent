@@ -67,6 +67,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ArrayType.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -87,6 +88,12 @@
     <Compile Include="IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
     <Compile Include="ManagementAgentSchema.cs" />
+    <Compile Include="MASchemaArray.cs" />
+    <Compile Include="MASchemaArrayField.cs" />
+    <Compile Include="MASchemaAttribute.cs" />
+    <Compile Include="MASchemaTypes.cs" />
+    <Compile Include="MASchemaType.cs" />
+    <Compile Include="SchemaConstants.cs" />
     <Compile Include="UserToCSEntryChangeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -130,8 +137,8 @@
       <HintPath>packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.5963.25535, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Lithnet.MetadirectoryServices.1.0.5963.25535\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
+    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.5973.31569, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lithnet.MetadirectoryServices.1.0.5973.31569\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -149,6 +156,7 @@
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />

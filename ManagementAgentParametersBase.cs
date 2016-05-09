@@ -96,7 +96,7 @@ namespace Lithnet.GoogleApps.MA
                 this.credentials = new ServiceAccountCredential(
                 new ServiceAccountCredential.Initializer(serviceAccountEmailAddress)
                 {
-                    Scopes = RequiredScopes,
+                    Scopes = ManagementAgentParametersBase.RequiredScopes,
                     User = userEmailAddress
                 }
                 .FromCertificate(cert));

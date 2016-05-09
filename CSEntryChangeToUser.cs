@@ -4,6 +4,7 @@ using System.Linq;
 using Lithnet.GoogleApps.ManagedObjects;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using Lithnet.Logging;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -11,7 +12,7 @@ namespace Lithnet.GoogleApps.MA
     {
         private static GoogleJsonSerializer serializer = new GoogleJsonSerializer();
 
-        public static bool CSEntryChangeToUserAll(this CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        public static bool ToUser(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             user.PrimaryEmail = csentry.DN;
 
@@ -27,42 +28,42 @@ namespace Lithnet.GoogleApps.MA
             csentry.UpdateTargetFromCSEntryChange(user.Name, x => x.FamilyName, "name_familyName", ref updateRequired);
 
 
-            if (CSEntryChangeToUserExternalIDs(csentry, user, config, type))
+            if (csentry.ToUserExternalIDs(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserPhones(csentry, user, config, type))
+            if (csentry.ToUserPhones(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserIMs(csentry, user, config, type))
+            if (csentry.ToUserIMs(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserOrganizations(csentry, user, config, type))
+            if (csentry.ToUserOrganizations(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserAddresses(csentry, user, config, type))
+            if (csentry.ToUserAddresses(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserRelations(csentry, user, config, type))
+            if (csentry.ToUserRelations(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToUserWebsites(csentry, user, config, type))
+            if (csentry.ToUserWebsites(user, config))
             {
                 updateRequired = true;
             }
 
-            if (CSEntryChangeToNotes(csentry, user, config, type))
+            if (csentry.ToUserNotes(user, config))
             {
                 updateRequired = true;
             }
@@ -70,7 +71,41 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToNotes(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        public static void MakeAdmin(this CSEntryChange csentry, CSEntryChange delta, User user, IManagementAgentParameters config)
+        {
+            AttributeChange attributeChange = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
+
+            if (attributeChange == null)
+            {
+                return;
+            }
+
+            bool makeAdmin = attributeChange.GetValueAdd<bool>();
+
+            if (attributeChange.ModificationType == AttributeModificationType.Add)
+            {
+                if (makeAdmin)
+                {
+                    UserRequestFactory.MakeAdmin(true, user.Id);
+                    delta.CreateAttributeAdd("isAdmin", true);
+                }
+            }
+            else if (attributeChange.ModificationType == AttributeModificationType.Replace ||
+                     attributeChange.ModificationType == AttributeModificationType.Update)
+            {
+                UserRequestFactory.MakeAdmin(makeAdmin, user.Id);
+                AttributeChange existingChange = delta.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
+
+                if (existingChange != null)
+                {
+                    delta.AttributeChanges.Remove("isAdmin");
+                }
+
+                delta.CreateAttributeReplace("isAdmin", makeAdmin);
+            }
+        }
+
+        private static bool ToUserNotes(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
             if (!csentry.AttributeChanges.Any(t => t.Name.StartsWith("notes_")))
@@ -95,15 +130,16 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserExternalIDs(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserExternalIDs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.ExternalIDsAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<ExternalID>>(user, x => x.ExternalIds, (t) => serializer.Deserialize<List<ExternalID>>(t), "externalIds", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<ExternalID>>(user, x => x.ExternalIds, (t) => CSEntryChangeToUser.serializer.Deserialize<List<ExternalID>>(t), "externalIds", ref updateRequired);
                 return updateRequired;
             }
+
 
             foreach (string itemType in config.ExternalIDsAttributeFixedTypes)
             {
@@ -127,6 +163,7 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Delete:
                         if (existing != null)
                         {
+                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
                             user.ExternalIds.Remove(existing);
                             updateRequired = true;
                         }
@@ -135,16 +172,30 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Add:
                     case AttributeModificationType.Update:
                     case AttributeModificationType.Replace:
+                        string existingValue = null;
+
                         if (existing == null)
                         {
                             existing = new ExternalID();
                             user.ExternalIds.Add(existing);
+                        }
+                        else
+                        {
+                            existingValue = existing.Value;
                         }
 
                         existing.Type = itemType;
                         existing.Value = change.GetValueAdd<string>();
                         updateRequired = true;
                         user.ExternalIds.AddOrRemoveIfEmpty(existing);
+                        if (existingValue == null)
+                        {
+                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+                        }
+                        else
+                        {
+                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+                        }
                         break;
 
                     case AttributeModificationType.Unconfigured:
@@ -161,13 +212,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserPhones(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserPhones(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.PhonesAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Phone>>(user, x => x.Phones, (t) => serializer.Deserialize<List<Phone>>(t), "phones", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<Phone>>(user, x => x.Phones, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Phone>>(t), "phones", ref updateRequired);
                 return updateRequired;
             }
 
@@ -200,22 +251,38 @@ namespace Lithnet.GoogleApps.MA
                         {
                             user.Phones.Remove(existing);
                             updateRequired = true;
+                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
                         }
                         break;
 
                     case AttributeModificationType.Add:
                     case AttributeModificationType.Update:
                     case AttributeModificationType.Replace:
+                        string existingValue = null;
+
                         if (existing == null)
                         {
                             existing = new Phone();
                             user.Phones.Add(existing);
+                        }
+                        else
+                        {
+                            existingValue = existing.Value;
                         }
 
                         existing.Type = itemType;
                         existing.Value = change.GetValueAdd<string>();
                         updateRequired = true;
                         user.Phones.AddOrRemoveIfEmpty(existing);
+
+                        if (existingValue == null)
+                        {
+                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+                        }
+                        else
+                        {
+                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+                        }
                         break;
 
                     case AttributeModificationType.Unconfigured:
@@ -232,13 +299,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserIMs(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserIMs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.IMsAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<IM>>(user, x => x.Ims, (t) => serializer.Deserialize<List<IM>>(t), "ims", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<IM>>(user, x => x.Ims, (t) => CSEntryChangeToUser.serializer.Deserialize<List<IM>>(t), "ims", ref updateRequired);
                 return updateRequired;
             }
 
@@ -255,9 +322,9 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (string itemType in config.IMsAttributeFixedTypes)
             {
-                IEnumerable<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith(string.Format("ims_{0}", itemType)));
+                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"ims_{itemType}")).ToList();
 
-                if (!typeChanges.Any())
+                if (typeChanges.Count == 0)
                 {
                     continue;
                 }
@@ -282,13 +349,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserOrganizations(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserOrganizations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.OrganizationsAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Organization>>(user, x => x.Organizations, (t) => serializer.Deserialize<List<Organization>>(t), "organizations", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<Organization>>(user, x => x.Organizations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Organization>>(t), "organizations", ref updateRequired);
                 return updateRequired;
             }
 
@@ -311,9 +378,9 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (string itemType in config.IMsAttributeFixedTypes)
             {
-                IEnumerable<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith(string.Format("organizations_{0}", itemType)));
+                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"organizations_{itemType}")).ToList();
 
-                if (!typeChanges.Any())
+                if (typeChanges.Count == 0)
                 {
                     continue;
                 }
@@ -338,13 +405,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserAddresses(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserAddresses(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.AddressesAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Address>>(user, x => x.Addresses, (t) => serializer.Deserialize<List<Address>>(t), "addresses", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<Address>>(user, x => x.Addresses, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Address>>(t), "addresses", ref updateRequired);
                 return updateRequired;
             }
 
@@ -369,9 +436,9 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (string itemType in config.AddressesAttributeFixedTypes)
             {
-                IEnumerable<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith(string.Format("addresses_{0}", itemType)));
+                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"addresses_{itemType}")).ToList();
 
-                if (!typeChanges.Any())
+                if (typeChanges.Count == 0)
                 {
                     continue;
                 }
@@ -396,13 +463,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserRelations(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserRelations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.RelationsAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Relation>>(user, x => x.Relations, (t) => serializer.Deserialize<List<Relation>>(t), "relations", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<Relation>>(user, x => x.Relations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Relation>>(t), "relations", ref updateRequired);
                 return updateRequired;
             }
 
@@ -430,16 +497,24 @@ namespace Lithnet.GoogleApps.MA
                         {
                             user.Relations.Remove(existing);
                             updateRequired = true;
+                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
                         }
                         break;
 
                     case AttributeModificationType.Add:
                     case AttributeModificationType.Update:
                     case AttributeModificationType.Replace:
+                        string existingValue = null;
+
                         if (existing == null)
                         {
                             existing = new Relation();
                             user.Relations.Add(existing);
+                        }
+                        else
+                        {
+                            existingValue = existing.Value;
+
                         }
 
                         existing.Type = itemType;
@@ -447,6 +522,14 @@ namespace Lithnet.GoogleApps.MA
                         updateRequired = true;
                         user.Relations.AddOrRemoveIfEmpty(existing);
 
+                        if (existingValue == null)
+                        {
+                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+                        }
+                        else
+                        {
+                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+                        }
                         break;
 
                     case AttributeModificationType.Unconfigured:
@@ -463,13 +546,13 @@ namespace Lithnet.GoogleApps.MA
             return updateRequired;
         }
 
-        private static bool CSEntryChangeToUserWebsites(CSEntryChange csentry, User user, IManagementAgentParameters config, SchemaType type)
+        private static bool ToUserWebsites(this CSEntryChange csentry, User user, IManagementAgentParameters config)
         {
             bool updateRequired = false;
 
             if (config.WebsitesAttributeFormat == GoogleArrayMode.Json)
             {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Website>>(user, x => x.Websites, (t) => serializer.Deserialize<List<Website>>(t), "websites", ref updateRequired);
+                csentry.UpdateTargetFromCSEntryChange<string, User, List<Website>>(user, x => x.Websites, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Website>>(t), "websites", ref updateRequired);
                 return updateRequired;
             }
 
@@ -503,21 +586,39 @@ namespace Lithnet.GoogleApps.MA
                             user.Websites.Remove(existing);
                             updateRequired = true;
                         }
+
+                        Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
                         break;
 
                     case AttributeModificationType.Add:
                     case AttributeModificationType.Update:
                     case AttributeModificationType.Replace:
+                        string existingValue = null;
+
                         if (existing == null)
                         {
                             existing = new Website();
                             user.Websites.Add(existing);
+                        }
+                        else
+                        {
+                            existingValue = existing.Value;
+
                         }
 
                         existing.Type = itemType;
                         existing.Value = change.GetValueAdd<string>();
                         updateRequired = true;
                         user.Websites.AddOrRemoveIfEmpty(existing);
+
+                        if (existingValue == null)
+                        {
+                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+                        }
+                        else
+                        {
+                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+                        }
                         break;
 
                     case AttributeModificationType.Unconfigured:
@@ -718,7 +819,7 @@ namespace Lithnet.GoogleApps.MA
             return updated;
         }
 
-        private static void CSEntryChangeToUserAliases(CSEntryChange csentry, User user, out IList<string> aliasAdds, out IList<string> aliasDeletes)
+        private static void GetUserAliasChanges(CSEntryChange csentry, User user, out IList<string> aliasAdds, out IList<string> aliasDeletes)
         {
             aliasAdds = new List<string>();
             aliasDeletes = new List<string>();
@@ -776,12 +877,12 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public static bool ApplyAliasChanges(CSEntryChange csentry, User user, CSEntryChange deltacsentry)
+        public static bool ApplyUserAliasChanges(CSEntryChange csentry, User user, CSEntryChange deltacsentry)
         {
             IList<string> aliasAdds;
             IList<string> aliasDeletes;
 
-            CSEntryChangeToUserAliases(csentry, user, out aliasAdds, out aliasDeletes);
+            CSEntryChangeToUser.GetUserAliasChanges(csentry, user, out aliasAdds, out aliasDeletes);
 
             if (aliasAdds.Count == 0 && aliasDeletes.Count == 0)
             {
@@ -811,13 +912,10 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
 
-                if (aliasAdds != null)
+                foreach (string alias in aliasAdds)
                 {
-                    foreach (string alias in aliasAdds)
-                    {
-                        UserRequestFactory.AddAlias(csentry.DN, alias);
-                        valueChanges.Add(ValueChange.CreateValueAdd(alias));
-                    }
+                    UserRequestFactory.AddAlias(csentry.DN, alias);
+                    valueChanges.Add(ValueChange.CreateValueAdd(alias));
                 }
             }
             finally

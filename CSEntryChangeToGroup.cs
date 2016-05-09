@@ -212,7 +212,7 @@ namespace Lithnet.GoogleApps.MA
             return true;
         }
 
-        public static void ApplyMembershipChanges(CSEntryChange csentry, CSEntryChange deltaCSEntry)
+        public static void ApplyMembershipChanges(SchemaType type, CSEntryChange csentry, CSEntryChange deltaCSEntry)
         {
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;
@@ -230,21 +230,26 @@ namespace Lithnet.GoogleApps.MA
                 {
                     GroupMemberRequestFactory.RemoveMembers(csentry.DN, allMembersToDelete.ToList(), false);
 
-                    deltaCSEntry.CreateAttributeChange("member", modificationType, membershipToDelete.Members.ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("manager", modificationType, membershipToDelete.Managers.ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalManager", modificationType, membershipToDelete.ExternalManagers.ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("owner", modificationType, membershipToDelete.Owners.ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalOwner", modificationType, membershipToDelete.ExternalOwners.ToValueChange(ValueModificationType.Delete));
+                    foreach (string member in allMembersToDelete)
+                    {
+                        Logger.WriteLine($"Deleted member {member}", LogLevel.Debug);
+                    }
+                    
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "member", modificationType, membershipToDelete.Members.ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalMember", modificationType, membershipToDelete.ExternalMembers.ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "manager", modificationType, membershipToDelete.Managers.ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalManager", modificationType, membershipToDelete.ExternalManagers.ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "owner", modificationType, membershipToDelete.Owners.ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalOwner", modificationType, membershipToDelete.ExternalOwners.ToValueChange(ValueModificationType.Delete));
                 }
                 catch (AggregateGroupUpdateException ex)
                 {
-                    deltaCSEntry.CreateAttributeChange("member", modificationType, membershipToDelete.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("manager", modificationType, membershipToDelete.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalManager", modificationType, membershipToDelete.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("owner", modificationType, membershipToDelete.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
-                    deltaCSEntry.CreateAttributeChange("externalOwner", modificationType, membershipToDelete.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "member", modificationType, membershipToDelete.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalMember", modificationType, membershipToDelete.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "manager", modificationType, membershipToDelete.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalManager", modificationType, membershipToDelete.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "owner", modificationType, membershipToDelete.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalOwner", modificationType, membershipToDelete.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete));
                     throw;
                 }
             }
@@ -255,21 +260,26 @@ namespace Lithnet.GoogleApps.MA
                 {
                     GroupMemberRequestFactory.AddMembers(csentry.DN, allMembersToAdd, true);
 
-                    deltaCSEntry.CreateAttributeChange("member", modificationType, membershipToAdd.Members.ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalMember", modificationType, membershipToAdd.ExternalMembers.ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("manager", modificationType, membershipToAdd.Managers.ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalManager", modificationType, membershipToAdd.ExternalManagers.ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("owner", modificationType, membershipToAdd.Owners.ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalOwner", modificationType, membershipToAdd.ExternalOwners.ToValueChange(ValueModificationType.Add));
+                    foreach (string member in allMembersToDelete)
+                    {
+                        Logger.WriteLine($"Added member {member}", LogLevel.Debug);
+                    }
+
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type,"member", modificationType, membershipToAdd.Members.ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalMember", modificationType, membershipToAdd.ExternalMembers.ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "manager", modificationType, membershipToAdd.Managers.ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalManager", modificationType, membershipToAdd.ExternalManagers.ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "owner", modificationType, membershipToAdd.Owners.ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalOwner", modificationType, membershipToAdd.ExternalOwners.ToValueChange(ValueModificationType.Add));
                 }
                 catch (AggregateGroupUpdateException ex)
                 {
-                    deltaCSEntry.CreateAttributeChange("member", modificationType, membershipToAdd.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalMember", modificationType, membershipToAdd.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("manager", modificationType, membershipToAdd.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalManager", modificationType, membershipToAdd.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("owner", modificationType, membershipToAdd.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
-                    deltaCSEntry.CreateAttributeChange("externalOwner", modificationType, membershipToAdd.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "member", modificationType, membershipToAdd.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalMember", modificationType, membershipToAdd.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "manager", modificationType, membershipToAdd.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalManager", modificationType, membershipToAdd.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "owner", modificationType, membershipToAdd.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
+                    deltaCSEntry.CreateAttributeChangeIfInSchema(type, "externalOwner", modificationType, membershipToAdd.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add));
                     throw;
                 }
             }
@@ -383,7 +393,6 @@ namespace Lithnet.GoogleApps.MA
                 csentry.AttributeChanges.Any(t => t.Name == "externalManager" && (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace)) ||
                 csentry.AttributeChanges.Any(t => t.Name == "owner" && (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace)) ||
                 csentry.AttributeChanges.Any(t => t.Name == "externalOwner" && (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace)));
-
         }
     }
 }

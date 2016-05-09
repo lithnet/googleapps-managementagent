@@ -22,7 +22,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 switch (csentry.ObjectType)
                 {
-                    case "user":
+                    case SchemaConstants.User:
                         return CSEntryChangeFactoryUser.PutCSEntryChangeUser(csentry, config, type);
 
                     case "group":
@@ -52,7 +52,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-  
+
         internal static void SetDeltaDNOnRename(CSEntryChange csentry, CSEntryChange deltaCSEntry)
         {
             switch (csentry.ObjectModificationType)
@@ -65,27 +65,8 @@ namespace Lithnet.GoogleApps.MA
                 case ObjectModificationType.Replace:
                 case ObjectModificationType.Update:
                     string newDN = csentry.GetNewDNOrDefault<string>();
-                    string newPrimaryEmail = csentry.GetNewPrimaryEmail();
 
-                    if (newDN != null)
-                    {
-                        if (newPrimaryEmail == null)
-                        {
-                            if (!csentry.AttributeChanges.Any(t => t.Name == "primaryEmail"))
-                            {
-                                if (csentry.ObjectModificationType == ObjectModificationType.Replace)
-                                {
-                                    csentry.CreateAttributeAdd("primaryEmail", newDN);
-                                }
-                                else
-                                {
-                                    csentry.CreateAttributeReplace("primaryEmail", newDN);
-                                }
-                            }
-                        }
-                    }
-
-                    deltaCSEntry.DN = newDN ?? newPrimaryEmail ?? csentry.DN;
+                    deltaCSEntry.DN = newDN ?? csentry.DN;
                     break;
 
                 case ObjectModificationType.Unconfigured:

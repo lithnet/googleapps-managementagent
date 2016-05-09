@@ -32,7 +32,7 @@ namespace Lithnet.GoogleApps.MA
 
         private OpenImportConnectionRunStep importRunStep;
 
-        private OpenExportConnectionRunStep exportRunStep;
+        private OpenExportConnectionRunStep ExportRunStep;
 
         private Stopwatch timer;
 
@@ -49,25 +49,13 @@ namespace Lithnet.GoogleApps.MA
             Logger.LogPath = @"D:\MAData\MonashGoogleApps\ma.log";
         }
         
-        public int ExportDefaultPageSize
-        {
-            get { return 100; }
-        }
+        public int ExportDefaultPageSize => 100;
 
-        public int ExportMaxPageSize
-        {
-            get { return 9999; }
-        }
+        public int ExportMaxPageSize => 9999;
 
-        public int ImportDefaultPageSize
-        {
-            get { return 100; }
-        }
+        public int ImportDefaultPageSize => 100;
 
-        public int ImportMaxPageSize
-        {
-            get { return 9999; }
-        }
+        public int ImportMaxPageSize => 9999;
 
         public string DeltaPath { get; set; }
 
@@ -75,19 +63,21 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                MACapabilities capabilities = new MACapabilities();
-                capabilities.ConcurrentOperation = false;
-                capabilities.DeleteAddAsReplace = true;
-                capabilities.DeltaImport = true;
-                capabilities.DistinguishedNameStyle = MADistinguishedNameStyle.Generic;
-                capabilities.ExportPasswordInFirstPass = false;
-                capabilities.ExportType = MAExportType.AttributeUpdate;
-                capabilities.FullExport = false;
-                capabilities.IsDNAsAnchor = false;
-                capabilities.NoReferenceValuesInFirstExport = false;
-                capabilities.Normalizations = MANormalizations.None;
-                capabilities.ObjectConfirmation = MAObjectConfirmation.Normal;
-                capabilities.ObjectRename = true;
+                MACapabilities capabilities = new MACapabilities
+                {
+                    ConcurrentOperation = false,
+                    DeleteAddAsReplace = true,
+                    DeltaImport = true,
+                    DistinguishedNameStyle = MADistinguishedNameStyle.Generic,
+                    ExportPasswordInFirstPass = false,
+                    ExportType = MAExportType.AttributeUpdate,
+                    FullExport = false,
+                    IsDNAsAnchor = false,
+                    NoReferenceValuesInFirstExport = false,
+                    Normalizations = MANormalizations.None,
+                    ObjectConfirmation = MAObjectConfirmation.Normal,
+                    ObjectRename = true
+                };
 
                 return capabilities;
             }
@@ -95,14 +85,14 @@ namespace Lithnet.GoogleApps.MA
 
         internal IManagementAgentParameters Configuration { get; private set; }
 
-        public void OpenExportConnection(System.Collections.ObjectModel.KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
+        public void OpenExportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
         {
             Logger.WriteLine("Opening export connection");
             this.timer = new Stopwatch();
             this.Configuration = new ManagementAgentParameters(configParameters);
-            this.exportRunStep = exportRunStep;
+            this.ExportRunStep = exportRunStep;
             this.operationSchemaTypes = types;
-            this.DeltaPath = Path.Combine(@"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\MaData\g2", deltafile);
+            this.DeltaPath = Path.Combine(@"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\MaData\g2", ManagementAgent.deltafile);
 
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
             ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.ExportThreadCount, this.Configuration.ExportThreadCount);
@@ -113,15 +103,14 @@ namespace Lithnet.GoogleApps.MA
 
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
-            ParallelOptions po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = this.Configuration.ExportThreadCount;
+            ParallelOptions po = new ParallelOptions {MaxDegreeOfParallelism = this.Configuration.ExportThreadCount};
             PutExportEntriesResults results = new PutExportEntriesResults();
 
             Parallel.ForEach(csentries, po, (csentry) =>
             {
                 try
                 {
-                    Interlocked.Increment(ref opCount);
+                    Interlocked.Increment(ref this.opCount);
                     Logger.StartThreadLog();
                     Logger.WriteSeparatorLine('-');
                     Logger.WriteLine("Starting export {0} for user {1}", csentry.ObjectModificationType, csentry.DN);
@@ -181,9 +170,9 @@ namespace Lithnet.GoogleApps.MA
 
             Logger.WriteSeparatorLine('*');
             Logger.WriteLine("Operation statistics");
-            Logger.WriteLine("Export objects: {0}", opCount);
-            Logger.WriteLine("Operation time: {0}", timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", opCount / timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Export objects: {0}", this.opCount);
+            Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount /this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
         }
@@ -194,7 +183,7 @@ namespace Lithnet.GoogleApps.MA
             this.operationSchemaTypes = types;
             this.timer = new Stopwatch();
             this.Configuration = new ManagementAgentParameters(configParameters);
-            this.DeltaPath = Path.Combine(@"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\MaData\g2", deltafile);
+            this.DeltaPath = Path.Combine(@"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\MaData\g2", ManagementAgent.deltafile);
 
             Logger.WriteLine("Opening import connection. Page size {0}", this.importRunStep.PageSize);
 
@@ -205,12 +194,12 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                OpenImportConnectionFull(types);
+                this.OpenImportConnectionFull(types);
 
                 Logger.WriteLine("Background full import from Google started");
             }
 
-            timer.Start();
+            this.timer.Start();
             return new OpenImportConnectionResults("<placeholder>");
         }
 
@@ -221,7 +210,7 @@ namespace Lithnet.GoogleApps.MA
             ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.GroupMembersImportThreadCount + 1, this.Configuration.GroupSettingsImportThreadCount);
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
 
-            if (this.operationSchemaTypes.Types.Contains("user") || this.operationSchemaTypes.Types.Contains("advancedUser"))
+            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User) || this.operationSchemaTypes.Types.Contains("advancedUser"))
             {
                 this.SetupUserImportTask(types);
                 Logger.WriteLine("User import task setup complete");
@@ -276,8 +265,8 @@ namespace Lithnet.GoogleApps.MA
             bool membersRequired = ManagementAgentSchema.IsGroupMembershipRequired(this.operationSchemaTypes.Types["group"]);
             bool settingsRequred = ManagementAgentSchema.IsGroupSettingsRequired(this.operationSchemaTypes.Types["group"]);
 
-            string groupFields = string.Format("groups({0}), nextPageToken", ManagementAgentSchema.ConvertTypesToFieldParameter("group", this.operationSchemaTypes.Types["group"]));
-            string groupSettingsFields = ManagementAgentSchema.ConvertTypesToFieldParameter("groupSettings", this.operationSchemaTypes.Types["group"]);
+            string groupFields = string.Format("groups({0}), nextPageToken", ManagementAgentSchema.GetFieldNamesFromType("group", this.operationSchemaTypes.Types["group"]));
+            string groupSettingsFields = ManagementAgentSchema.GetFieldNamesFromType("groupSettings", this.operationSchemaTypes.Types["group"]);
             GroupRequestFactory.MemberThreads = this.Configuration.GroupMembersImportThreadCount;
             GroupRequestFactory.SettingsThreads = this.Configuration.GroupSettingsImportThreadCount;
 
@@ -310,9 +299,9 @@ namespace Lithnet.GoogleApps.MA
         {
             HashSet<string> attributeNames = new HashSet<string>();
 
-            if (this.operationSchemaTypes.Types.Contains("user"))
+            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User))
             {
-                foreach (string name in types.Types["user"].Attributes.Select(t => t.Name))
+                foreach (string name in types.Types[SchemaConstants.User].Attributes.Select(t => t.Name))
                 {
                     attributeNames.Add(name);
                 }
@@ -326,7 +315,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            string fields = string.Format("users({0}),nextPageToken", ManagementAgentSchema.ConvertTypesToFieldParameter("user", attributeNames));
+            string fields = string.Format("users({0}),nextPageToken", ManagementAgentSchema.GetFieldNamesFromAttributeNames(SchemaConstants.User, attributeNames).ToCommaSeparatedString());
 
             this.importUsersTask = new Task(() =>
             {
@@ -363,7 +352,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else if (this.importRunStep.ImportType == OperationType.Delta)
             {
-                results = GetImportEntriesDelta();
+                results = this.GetImportEntriesDelta();
             }
             else
             {
@@ -382,7 +371,7 @@ namespace Lithnet.GoogleApps.MA
 
             while (CSEntryChangeQueue.Count > 0 && (count < this.importRunStep.PageSize))
             {
-                Interlocked.Increment(ref opCount);
+                Interlocked.Increment(ref this.opCount);
                 results.CSEntries.Add(CSEntryChangeQueue.Take());
                 count++;
             }
@@ -415,7 +404,7 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-                Interlocked.Increment(ref opCount);
+                Interlocked.Increment(ref this.opCount);
 
                 User user = item as User;
 
@@ -459,7 +448,7 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
 
-                results.CSEntries.Add(GetCSEntryForGroup(group));
+                results.CSEntries.Add(this.GetCSEntryForGroup(group));
                 continue;
             }
 
@@ -521,9 +510,9 @@ namespace Lithnet.GoogleApps.MA
             }
             Logger.WriteSeparatorLine('*');
             Logger.WriteLine("Operation statistics");
-            Logger.WriteLine("Import objects: {0}", opCount);
-            Logger.WriteLine("Operation time: {0}", timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", opCount / timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Import objects: {0}", this.opCount);
+            Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount /this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
             return new CloseImportConnectionResults(null);

@@ -232,7 +232,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else if (obj is DateTime)
             {
-                return ((DateTime)obj).ToString(FimServiceDateFormat);
+                return ((DateTime)obj).ToString(GenericExtensions.FimServiceDateFormat);
             }
             else if (obj == null)
             {

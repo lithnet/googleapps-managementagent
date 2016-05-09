@@ -18,10 +18,6 @@ namespace Lithnet.GoogleApps.MA
     {
         private KeyedCollection<string, ConfigParameter> configParameters;
 
-        private X509Certificate2 certificate;
-
-        private ServiceAccountCredential credentials;
-
         public ManagementAgentParameters(KeyedCollection<string, ConfigParameter> configParameters)
         {
             this.configParameters = configParameters;
@@ -31,9 +27,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.CustomerIDParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.CustomerIDParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.CustomerIDParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.CustomerIDParameter].Value;
                 }
                 else
                 {
@@ -46,9 +42,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.ServiceAccountEmailAddressParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ServiceAccountEmailAddressParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.ServiceAccountEmailAddressParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.ServiceAccountEmailAddressParameter].Value;
                 }
                 else
                 {
@@ -61,9 +57,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.GroupRegexFilterParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.GroupRegexFilterParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.GroupRegexFilterParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.GroupRegexFilterParameter].Value;
                 }
                 else
                 {
@@ -76,9 +72,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.UserRegexFilterParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.UserRegexFilterParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.UserRegexFilterParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.UserRegexFilterParameter].Value;
                 }
                 else
                 {
@@ -91,9 +87,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.UserEmailAddressParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.UserEmailAddressParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.UserEmailAddressParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.UserEmailAddressParameter].Value;
                 }
                 else
                 {
@@ -106,9 +102,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.KeyFilePathParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.KeyFilePathParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.KeyFilePathParameter].Value;
+                    return this.configParameters[ManagementAgentParametersBase.KeyFilePathParameter].Value;
                 }
                 else
                 {
@@ -121,9 +117,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.DoNotGenerateDeltaParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.DoNotGenerateDeltaParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.DoNotGenerateDeltaParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.DoNotGenerateDeltaParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -145,9 +141,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.PhonesFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.PhonesFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.PhonesFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.PhonesFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -169,9 +165,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.PhonesFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.PhonesFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.PhonesFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -194,9 +190,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.OrganizationsFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.OrganizationsFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.OrganizationsFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.OrganizationsFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -218,9 +214,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.OrganizationsFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.OrganizationsFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.OrganizationsFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.OrganizationsFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -244,9 +240,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.IMsFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.IMsFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.IMsFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.IMsFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -268,9 +264,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.IMsFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.IMsFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.IMsFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.IMsFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -293,9 +289,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.ExternalIDsFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ExternalIDsFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.ExternalIDsFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.ExternalIDsFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -317,9 +313,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.ExternalIDsFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.ExternalIDsFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -343,9 +339,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.RelationsFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.RelationsFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.RelationsFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.RelationsFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -367,9 +363,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.RelationsFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.RelationsFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.RelationsFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.RelationsFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -393,9 +389,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.AddressesFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.AddressesFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.AddressesFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.AddressesFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -417,9 +413,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.AddressesFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.AddressesFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.AddressesFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.AddressesFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -443,9 +439,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.WebsitesFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.WebsitesFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.WebsitesFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.WebsitesFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -467,9 +463,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.WebsitesFixedTypeFormatParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.WebsitesFixedTypeFormatParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -493,9 +489,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.ExcludeUserCreatedGroupsParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter))
                 {
-                    string value = this.configParameters[ManagementAgentParameters.ExcludeUserCreatedGroupsParameter].Value;
+                    string value = this.configParameters[ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter].Value;
 
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -517,9 +513,9 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                if (this.configParameters.Contains(ManagementAgentParameters.KeyFilePasswordParameter))
+                if (this.configParameters.Contains(ManagementAgentParametersBase.KeyFilePasswordParameter))
                 {
-                    return this.configParameters[ManagementAgentParameters.KeyFilePasswordParameter].SecureValue.ConvertToUnsecureString();
+                    return this.configParameters[ManagementAgentParametersBase.KeyFilePasswordParameter].SecureValue.ConvertToUnsecureString();
                 }
                 else
                 {
@@ -539,46 +535,46 @@ namespace Lithnet.GoogleApps.MA
 
                 case ConfigParameterPage.Connectivity:
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Credentials"));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.CustomerIDParameter, null, "my_customer"));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.ServiceAccountEmailAddressParameter, null, null));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.UserEmailAddressParameter, null, null));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.KeyFilePathParameter, null));
-                    parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParameters.KeyFilePasswordParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.CustomerIDParameter, null, "my_customer"));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ServiceAccountEmailAddressParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserEmailAddressParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.KeyFilePathParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
 
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The following attributes are represented by arrays in the Google API. You can choose to present array values as a raw JSON string, or the MA can flatten the attributes based on the object types you specify"));
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.PhonesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.PhonesFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.PhonesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.OrganizationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.OrganizationsFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.OrganizationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.OrganizationsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.IMsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.IMsFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.IMsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.IMsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.ExternalIDsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.ExternalIDsFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.ExternalIDsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.RelationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.RelationsFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.RelationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.RelationsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.AddressesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.AddressesFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.AddressesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.AddressesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParameters.WebsitesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
-                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParameters.WebsitesFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.WebsitesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParameters.ExcludeUserCreatedGroupsParameter, false));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.UserRegexFilterParameter, null, null));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParameters.GroupRegexFilterParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserRegexFilterParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.GroupRegexFilterParameter, null, null));
                     break;
 
                 case ConfigParameterPage.Global:
@@ -587,7 +583,7 @@ namespace Lithnet.GoogleApps.MA
                 case ConfigParameterPage.Partition:
                     break;
                 case ConfigParameterPage.RunStep:
-                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParameters.DoNotGenerateDeltaParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.DoNotGenerateDeltaParameter, false));
 
                     break;
                 case ConfigParameterPage.Schema:
@@ -614,7 +610,7 @@ namespace Lithnet.GoogleApps.MA
                     {
                         result.Code = ParameterValidationResultCode.Failure;
                         result.ErrorMessage = "A service account email address is required";
-                        result.ErrorParameter = ManagementAgentParameters.ServiceAccountEmailAddressParameter;
+                        result.ErrorParameter = ManagementAgentParametersBase.ServiceAccountEmailAddressParameter;
                         return result;
                     }
 
@@ -622,7 +618,7 @@ namespace Lithnet.GoogleApps.MA
                     {
                         result.Code = ParameterValidationResultCode.Failure;
                         result.ErrorMessage = "A user email address is required";
-                        result.ErrorParameter = ManagementAgentParameters.UserEmailAddressParameter;
+                        result.ErrorParameter = ManagementAgentParametersBase.UserEmailAddressParameter;
                         return result;
                     }
 
@@ -630,7 +626,7 @@ namespace Lithnet.GoogleApps.MA
                     {
                         result.Code = ParameterValidationResultCode.Failure;
                         result.ErrorMessage = "A key file is required";
-                        result.ErrorParameter = ManagementAgentParameters.KeyFilePathParameter;
+                        result.ErrorParameter = ManagementAgentParametersBase.KeyFilePathParameter;
                         return result;
                     }
                     else
@@ -639,7 +635,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The specified key file could not be found";
-                            result.ErrorParameter = ManagementAgentParameters.KeyFilePathParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.KeyFilePathParameter;
                             return result;
                         }
                         else
@@ -652,7 +648,7 @@ namespace Lithnet.GoogleApps.MA
                             {
                                 result.Code = ParameterValidationResultCode.Failure;
                                 result.ErrorMessage = "The specified key file could not be opened. " + ex.Message;
-                                result.ErrorParameter = ManagementAgentParameters.KeyFilePathParameter;
+                                result.ErrorParameter = ManagementAgentParametersBase.KeyFilePathParameter;
                                 return result;
                             }
                         }
@@ -668,7 +664,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The specified group regular expression was not valid. " + ex.Message;
-                            result.ErrorParameter = ManagementAgentParameters.GroupRegexFilterParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.GroupRegexFilterParameter;
                             return result;
                         }
                     }
@@ -683,7 +679,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The specified user regular expression was not valid. " + ex.Message;
-                            result.ErrorParameter = ManagementAgentParameters.UserRegexFilterParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.UserRegexFilterParameter;
                             return result;
                         }
                     }
@@ -694,7 +690,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The organization types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.OrganizationsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.OrganizationsFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -705,7 +701,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The IM types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.IMsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.IMsFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -716,7 +712,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The address types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.AddressesFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.AddressesFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -727,7 +723,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The website types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.WebsitesFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -738,7 +734,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The external IDs types field must not be empty";
-                            result.ErrorParameter = ManagementAgentParameters.ExternalIDsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter;
                             return result;
                         }
 
@@ -746,7 +742,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The external ID types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.ExternalIDsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -757,7 +753,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The relations types field must not be empty";
-                            result.ErrorParameter = ManagementAgentParameters.RelationsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.RelationsFixedTypeFormatParameter;
                             return result;
                         }
 
@@ -765,7 +761,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The relations types field cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.RelationsFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.RelationsFixedTypeFormatParameter;
                             return result;
                         }
                     }
@@ -776,7 +772,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             result.Code = ParameterValidationResultCode.Failure;
                             result.ErrorMessage = "The phone types cannot contain duplicates";
-                            result.ErrorParameter = ManagementAgentParameters.PhonesFixedTypeFormatParameter;
+                            result.ErrorParameter = ManagementAgentParametersBase.PhonesFixedTypeFormatParameter;
                             return result;
                         }
                     }

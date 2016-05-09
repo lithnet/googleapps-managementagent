@@ -11,20 +11,21 @@ namespace Lithnet.GoogleApps.MA
     {
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
 
+
         public static Schema GetSchema(IManagementAgentParameters config)
         {
             Schema schema = Schema.Create();
 
-            SchemaType type = GetUserType(config, false);
+            SchemaType type = ManagementAgentSchema.GetUserType(config, false);
             schema.Types.Add(type);
 
             if (SchemaRequestFactory.HasSchema(config.CustomerID, ManagementAgentSchema.CustomGoogleAppsSchemaName))
             {
-                type = GetUserType(config, true);
+                type = ManagementAgentSchema.GetUserType(config, true);
                 schema.Types.Add(type);
             }
 
-            type = GetGroupType(config);
+            type = ManagementAgentSchema.GetGroupType(config);
             schema.Types.Add(type);
 
             return schema;
@@ -32,40 +33,41 @@ namespace Lithnet.GoogleApps.MA
 
         private static SchemaType GetGroupType(IManagementAgentParameters config)
         {
-            SchemaType groupType = SchemaType.Create("group", true);
+            SchemaType groupType = SchemaType.Create(SchemaConstants.Group, true);
+
             // Group API
-            groupType.Attributes.Add(SchemaAttribute.CreateAnchorAttribute("id", AttributeType.String, AttributeOperation.ImportOnly));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("name", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("description", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("adminCreated", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute("aliases", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("primaryEmail", AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateAnchorAttribute(SchemaConstants.ID, AttributeType.String, AttributeOperation.ImportOnly));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Name, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Description, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.AdminCreated, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute(SchemaConstants.Aliases, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.PrimaryEmail, AttributeType.String, AttributeOperation.ImportOnly));
 
             // Group settings API
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("maxMessageBytes", AttributeType.Integer, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("includeInGlobalAddressList", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("allowExternalMembers", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("allowGoogleCommunication", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("allowWebPosting", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("archiveOnly", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("isArchived", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("membersCanPostAsTheGroup", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("sendMessageDenyNotification", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("showInGroupDirectory", AttributeType.Boolean, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("customReplyTo", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("defaultMessageDenyNotificationText", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("messageDisplayFont", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("messageModerationLevel", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("primaryLanguage", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("replyTo", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("spamModerationLevel", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanContactOwner", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanInvite", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanJoin", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanLeaveGroup", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanPostMessage", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanViewGroup", AttributeType.String, AttributeOperation.ImportExport));
-            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("whoCanViewMembership", AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.MaxMessageBytes, AttributeType.Integer, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IncludeInGlobalAddressList, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.AllowExternalMembers, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.AllowGoogleCommunication, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.AllowWebPosting, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ArchiveOnly, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IsArchived, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.MembersCanPostAsTheGroup, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.SendMessageDenyNotification, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ShowInGroupDirectory, AttributeType.Boolean, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.CustomReplyTo, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.DefaultMessageDenyNotificationText, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.MessageDisplayFont, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.MessageModerationLevel, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.PrimaryLanguage, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ReplyTo, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.SpamModerationLevel, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanContactOwner, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanInvite, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanJoin, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanLeaveGroup, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanPostMessage, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanViewGroup, AttributeType.String, AttributeOperation.ImportExport));
+            groupType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.WhoCanViewMembership, AttributeType.String, AttributeOperation.ImportExport));
 
             // Group member API
             foreach (string attribute in ManagementAgentSchema.GroupMemberAttributes)
@@ -78,40 +80,39 @@ namespace Lithnet.GoogleApps.MA
 
         private static SchemaType GetUserType(IManagementAgentParameters config, bool advanced)
         {
-            SchemaType userType = SchemaType.Create(advanced ? "advancedUser" : "user", true);
-            userType.Attributes.Add(SchemaAttribute.CreateAnchorAttribute("id", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("name_givenName", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("name_familyName", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("name_fullName", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("suspended", AttributeType.Boolean, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("includeInGlobalAddressList", AttributeType.Boolean, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("suspensionReason", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("orgUnitPath", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("notes_value", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("notes_contentType", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute("aliases", AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute("nonEditableAliases", AttributeType.String, AttributeOperation.ImportOnly));
+            SchemaType userType = SchemaType.Create(advanced ? SchemaConstants.AdvancedUser : SchemaConstants.User, true);
+            userType.Attributes.Add(SchemaAttribute.CreateAnchorAttribute(SchemaConstants.ID, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.NameGivenName, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.NameFamilyName, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.NameFullName, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Suspended, AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IncludeInGlobalAddressList, AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.SuspensionReason, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.OrgUnitPath, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.NotesValue, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.NotesContentType, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute(SchemaConstants.Aliases, AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute(SchemaConstants.NonEditableAliases, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IsAdmin, AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IsDelegatedAdmin, AttributeType.Boolean, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.AgreedToTerms, AttributeType.Boolean, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ChangePasswordAtNextLogin, AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IpWhitelisted, AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.IsMailboxSetup, AttributeType.Boolean, AttributeOperation.ImportOnly));
 
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("isAdmin", AttributeType.Boolean, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("isDelegatedAdmin", AttributeType.Boolean, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("agreedToTerms", AttributeType.Boolean, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("changePasswordAtNextLogin", AttributeType.Boolean, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("ipWhitelisted", AttributeType.Boolean, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("isMailboxSetup", AttributeType.Boolean, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.LastLoginTime, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.CreationTime, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ThumbnailPhotoUrl, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.DeletionTime, AttributeType.String, AttributeOperation.ImportOnly));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.PrimaryEmail, AttributeType.String, AttributeOperation.ImportOnly));
 
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("lastLoginTime", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("creationTime", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("thumbnailPhotoUrl", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("deletionTime", AttributeType.String, AttributeOperation.ImportOnly));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("primaryEmail", AttributeType.String, AttributeOperation.ImportExport));
-
-            CreateExternalIDsAttributes(config, userType);
-            CreatePhonesAttributes(config, userType);
-            CreateOrganizationAttributes(config, userType);
-            CreateIMAttributes(config, userType);
-            CreateRelationsAttributes(config, userType);
-            CreateAddressesAttributes(config, userType);
-            CreateWebsitesAttributes(config, userType);
+            ManagementAgentSchema.CreateExternalIDsAttributes(config, userType);
+            ManagementAgentSchema.CreatePhonesAttributes(config, userType);
+            ManagementAgentSchema.CreateOrganizationAttributes(config, userType);
+            ManagementAgentSchema.CreateIMAttributes(config, userType);
+            ManagementAgentSchema.CreateRelationsAttributes(config, userType);
+            ManagementAgentSchema.CreateAddressesAttributes(config, userType);
+            ManagementAgentSchema.CreateWebsitesAttributes(config, userType);
 
             return userType;
         }
@@ -120,13 +121,14 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.ExternalIDsAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("externalIds", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.ExternalIds, AttributeType.String, AttributeOperation.ImportExport));
             }
             else
             {
                 foreach (string type in config.ExternalIDsAttributeFixedTypes)
                 {
-                    userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("externalIds_" + type, AttributeType.String, AttributeOperation.ImportExport));
+                    userType.Attributes.Add(
+                        SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.ExternalIds}_{type}", AttributeType.String, AttributeOperation.ImportExport));
                 }
             }
         }
@@ -135,13 +137,14 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.RelationsAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("relations", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Relations, AttributeType.String, AttributeOperation.ImportExport));
             }
             else
             {
                 foreach (string type in config.RelationsAttributeFixedTypes)
                 {
-                    userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("relations_" + type, AttributeType.String, AttributeOperation.ImportExport));
+                    userType.Attributes.Add(
+                        SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Relations}_{type}", AttributeType.String, AttributeOperation.ImportExport));
                 }
             }
         }
@@ -150,21 +153,21 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.PhonesAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("phones", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Phones, AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.PhonesAttributeFormat == GoogleArrayMode.PrimaryValueOnly)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("phones_primary", AttributeType.String, AttributeOperation.ImportExport));
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("phones_primary_type", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Phones}_primary", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Phones}_primary_type", AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.PhonesAttributeFormat == GoogleArrayMode.FlattenKnownTypes)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("phones_primary", AttributeType.String, AttributeOperation.ImportExport));
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("phones_primary_type", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Phones}_primary", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Phones}_primary_type", AttributeType.String, AttributeOperation.ImportExport));
 
                 foreach (string type in config.PhonesAttributeFixedTypes)
                 {
-                    userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute("phones_" + type, AttributeType.String, AttributeOperation.ImportExport));
+                    userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute($"{SchemaConstants.Phones}_{type}", AttributeType.String, AttributeOperation.ImportExport));
                 }
             }
         }
@@ -173,21 +176,21 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.WebsitesAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("websites", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Websites, AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.WebsitesAttributeFormat == GoogleArrayMode.PrimaryValueOnly)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("websites_primary", AttributeType.String, AttributeOperation.ImportExport));
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("websites_primary_type", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Websites}_primary", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Websites}_primary_type", AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.WebsitesAttributeFormat == GoogleArrayMode.FlattenKnownTypes)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("websites_primary", AttributeType.String, AttributeOperation.ImportExport));
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("websites_primary_type", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Websites}_primary", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Websites}_primary_type", AttributeType.String, AttributeOperation.ImportExport));
 
                 foreach (string type in config.WebsitesAttributeFixedTypes)
                 {
-                    userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute("websites_" + type, AttributeType.String, AttributeOperation.ImportExport));
+                    userType.Attributes.Add(SchemaAttribute.CreateMultiValuedAttribute($"{SchemaConstants.Websites}_{type}", AttributeType.String, AttributeOperation.ImportExport));
                 }
             }
         }
@@ -196,19 +199,19 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.OrganizationsAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("organizations", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Organizations, AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.OrganizationsAttributeFormat == GoogleArrayMode.PrimaryValueOnly)
             {
-                CreateOrganizationAttributes(userType, "primary");
+                ManagementAgentSchema.CreateOrganizationAttributes(userType, "primary");
             }
             else if (config.OrganizationsAttributeFormat == GoogleArrayMode.FlattenKnownTypes)
             {
-                CreateOrganizationAttributes(userType, "primary");
+                ManagementAgentSchema.CreateOrganizationAttributes(userType, "primary");
 
                 foreach (string type in config.OrganizationsAttributeFixedTypes)
                 {
-                    CreateOrganizationAttributes(userType, type);
+                    ManagementAgentSchema.CreateOrganizationAttributes(userType, type);
                 }
             }
         }
@@ -217,31 +220,32 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.IMsAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("ims", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Ims, AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.IMsAttributeFormat == GoogleArrayMode.PrimaryValueOnly)
             {
-                CreateIMAttributes(userType, "primary");
+                ManagementAgentSchema.CreateIMAttributes(userType, "primary");
             }
             else if (config.IMsAttributeFormat == GoogleArrayMode.FlattenKnownTypes)
             {
-                CreateIMAttributes(userType, "primary");
+                ManagementAgentSchema.CreateIMAttributes(userType, "primary");
 
                 foreach (string type in config.IMsAttributeFixedTypes)
                 {
-                    CreateIMAttributes(userType, type);
+                    ManagementAgentSchema.CreateIMAttributes(userType, type);
                 }
             }
         }
 
         private static void CreateIMAttributes(SchemaType userType, string type)
         {
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("ims_{0}_protocol", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("ims_{0}_im", type), AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(
+                $"{SchemaConstants.Ims}_{type}_protocol", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Ims}_{type}_im", AttributeType.String, AttributeOperation.ImportExport));
 
             if (type == "primary")
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("ims_{0}_type", type), AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Ims}_{type}_type", AttributeType.String, AttributeOperation.ImportExport));
             }
         }
 
@@ -249,170 +253,210 @@ namespace Lithnet.GoogleApps.MA
         {
             if (config.AddressesAttributeFormat == GoogleArrayMode.Json)
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute("addresses", AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(SchemaConstants.Addresses, AttributeType.String, AttributeOperation.ImportExport));
             }
             else if (config.AddressesAttributeFormat == GoogleArrayMode.PrimaryValueOnly)
             {
-                CreateAddressesAttributes(userType, "primary");
+                ManagementAgentSchema.CreateAddressesAttributes(userType, "primary");
             }
             else if (config.AddressesAttributeFormat == GoogleArrayMode.FlattenKnownTypes)
             {
-                CreateAddressesAttributes(userType, "primary");
+                ManagementAgentSchema.CreateAddressesAttributes(userType, "primary");
 
                 foreach (string type in config.AddressesAttributeFixedTypes)
                 {
-                    CreateAddressesAttributes(userType, type);
+                    ManagementAgentSchema.CreateAddressesAttributes(userType, type);
                 }
             }
         }
 
         private static void CreateAddressesAttributes(SchemaType userType, string type)
         {
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_sourceIsStructured", type), AttributeType.Boolean, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_formatted", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_poBox", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_extendedAddress", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_streetAddress", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_locality", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_region", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_postalCode", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_country", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_countryCode", type), AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_sourceIsStructured", AttributeType.Boolean, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_formatted", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_poBox", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_extendedAddress", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_streetAddress", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_locality", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_region", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_postalCode", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_country", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_countryCode", AttributeType.String, AttributeOperation.ImportExport));
 
             if (type == "primary")
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("addresses_{0}_type", type), AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Addresses}_{type}_type", AttributeType.String, AttributeOperation.ImportExport));
             }
         }
 
         private static void CreateOrganizationAttributes(SchemaType userType, string type)
         {
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_title", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_location", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_name", type), AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_title", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_location", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_name", AttributeType.String, AttributeOperation.ImportExport));
 
             if (type == "primary")
             {
-                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_type", type), AttributeType.String, AttributeOperation.ImportExport));
+                userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_type", AttributeType.String, AttributeOperation.ImportExport));
             }
 
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_description", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_department", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_symbol", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_domain", type), AttributeType.String, AttributeOperation.ImportExport));
-            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute(string.Format("organizations_{0}_costCenter", type), AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_description", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_department", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_symbol", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_domain", AttributeType.String, AttributeOperation.ImportExport));
+            userType.Attributes.Add(SchemaAttribute.CreateSingleValuedAttribute($"{SchemaConstants.Organizations}_{type}_costCenter", AttributeType.String, AttributeOperation.ImportExport));
         }
 
-        public static string ConvertTypesToFieldParameter(string subType, SchemaType type)
+        public static string GetFieldNamesFromType(string subType, SchemaType type)
         {
-            return ConvertTypesToFieldParameter(subType, type.Attributes.Select(t => t.Name));
+            return string.Join(",", ManagementAgentSchema.GetFieldNamesFromAttributeNames(subType, type.Attributes.Select(t => t.Name)));
         }
 
-        public static string ConvertTypesToFieldParameter(string subType, IEnumerable<string> attributeNames)
+        private static IEnumerable<string> GetFieldNamesFromAttributeNamesUser(IEnumerable<string> attributeNames)
         {
             HashSet<string> names = new HashSet<string>();
 
-            if (subType == "user")
+            foreach (string name in attributeNames)
             {
-                foreach (string name in attributeNames)
+                if (name.StartsWith($"{SchemaConstants.Organizations}_"))
                 {
-                    if (name.StartsWith("organizations_"))
-                    {
-                        names.Add("organizations");
-                    }
-                    else if (name.StartsWith("externalIds_"))
-                    {
-                        names.Add("externalIds");
-                    }
-                    else if (name.StartsWith("ims_"))
-                    {
-                        names.Add("ims");
-                    }
-                    else if (name.StartsWith("phones_"))
-                    {
-                        names.Add("phones");
-                    }
-                    else if (name.StartsWith("relations_"))
-                    {
-                        names.Add("relations");
-                    }
-                    else if (name.StartsWith("notes_"))
-                    {
-                        names.Add("notes");
-                    }
-                    else if (name.StartsWith("name_"))
-                    {
-                        names.Add("name");
-                    }
-                    else if (name.StartsWith("addresses_"))
-                    {
-                        names.Add("addresses");
-                    }
-                    else if (name.StartsWith("websites_"))
-                    {
-                        names.Add("websites");
-                    }
-                    else
-                    {
-                        names.Add(name);
-                    }
+                    names.Add(SchemaConstants.Organizations);
                 }
-
-                names.Add("primaryEmail");
-                names.Add("id");
-                names.Add("kind");
-            }
-            else if (subType == "group")
-            {
-                foreach (string name in attributeNames)
+                else if (name.StartsWith("externalIds_"))
                 {
-                    if (name == "name")
-                    {
-                        names.Add(name);
-                    }
-                    else if (name == "description")
-                    {
-                        names.Add(name);
-                    }
-                    else if (name == "adminCreated")
-                    {
-                        names.Add(name);
-                    }
-                    else if (name == "aliases")
-                    {
-                        names.Add(name);
-                    }
-                    else if (name == "primaryEmail")
-                    {
-                        names.Add("email");
-                    }
+                    names.Add(SchemaConstants.ExternalIds);
                 }
-
-                names.Add("id");
-                names.Add("email");
-                names.Add("kind");
-            }
-            else if (subType == "groupSettings")
-            {
-                foreach (string name in attributeNames)
+                else if (name.StartsWith("ims_"))
                 {
-                    if (name == "name" || name == "description" || name == "adminCreated" || name == "aliases")
-                    {
-                        continue;
-                    }
-                    else if (name == "member" || name == "externalMember" || name == "manager" || name == "externalManager" || name == "owner" || name == "externalOwner")
-                    {
-                        continue;
-                    }
-
+                    names.Add(SchemaConstants.Ims);
+                }
+                else if (name.StartsWith("phones_"))
+                {
+                    names.Add(SchemaConstants.Phones);
+                }
+                else if (name.StartsWith("relations_"))
+                {
+                    names.Add(SchemaConstants.Relations);
+                }
+                else if (name.StartsWith("notes_"))
+                {
+                    names.Add(SchemaConstants.Notes);
+                }
+                else if (name.StartsWith("name_"))
+                {
+                    names.Add(SchemaConstants.Name);
+                }
+                else if (name.StartsWith("addresses_"))
+                {
+                    names.Add(SchemaConstants.Addresses);
+                }
+                else if (name.StartsWith("websites_"))
+                {
+                    names.Add(SchemaConstants.Websites);
+                }
+                else
+                {
                     names.Add(name);
                 }
-
-                names.Add("email");
-                names.Add("kind");
             }
 
-            return names.ToSeparatedString(",");
+            names.Add(SchemaConstants.PrimaryEmail);
+            names.Add(SchemaConstants.ID);
+            names.Add(SchemaConstants.Kind);
+
+            return names;
+        }
+
+        private static IEnumerable<string> GetFieldNamesFromAttributeNamesGroup(IEnumerable<string> attributeNames)
+        {
+            HashSet<string> names = new HashSet<string>();
+
+            foreach (string name in attributeNames)
+            {
+                switch (name)
+                {
+                    case SchemaConstants.Name:
+                        names.Add(name);
+                        break;
+
+                    case SchemaConstants.Description:
+                        names.Add(name);
+                        break;
+
+                    case SchemaConstants.AdminCreated:
+                        names.Add(name);
+                        break;
+
+                    case SchemaConstants.Aliases:
+                        names.Add(name);
+                        break;
+
+                    case SchemaConstants.PrimaryEmail:
+                        names.Add(SchemaConstants.Email);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            names.Add(SchemaConstants.ID);
+            names.Add(SchemaConstants.Email);
+            names.Add(SchemaConstants.Kind);
+
+            return names;
+        }
+
+        private static IEnumerable<string> GetFieldNamesFromAttributeNamesGroupSettings(IEnumerable<string> attributeNames)
+        {
+            HashSet<string> names = new HashSet<string>();
+
+            foreach (string name in attributeNames)
+            {
+                switch (name)
+                {
+                    case SchemaConstants.Name:
+                    case SchemaConstants.Description:
+                    case SchemaConstants.AdminCreated:
+                    case SchemaConstants.Aliases:
+                    case SchemaConstants.Member:
+                    case SchemaConstants.ExternalMember:
+                    case SchemaConstants.Manager:
+                    case SchemaConstants.ExternalManager:
+                    case SchemaConstants.Owner:
+                    case SchemaConstants.ExternalOwner:
+                        continue;
+
+                    default:
+                        break;
+                }
+
+                names.Add(name);
+            }
+
+            names.Add(SchemaConstants.Email);
+            names.Add(SchemaConstants.Kind);
+
+            return names;
+        }
+
+
+        public static IEnumerable<string> GetFieldNamesFromAttributeNames(string subType, IEnumerable<string> attributeNames)
+        {
+            switch (subType)
+            {
+                case SchemaConstants.User:
+                    return ManagementAgentSchema.GetFieldNamesFromAttributeNamesUser(attributeNames);
+
+                case SchemaConstants.Group:
+                    return ManagementAgentSchema.GetFieldNamesFromAttributeNamesGroup(attributeNames);
+
+                case SchemaConstants.GroupSettings:
+                    return ManagementAgentSchema.GetFieldNamesFromAttributeNamesGroupSettings(attributeNames);
+
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         public static bool IsGroupMembershipRequired(SchemaType type)
@@ -429,12 +473,12 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return "member";
-                yield return "externalMember";
-                yield return "manager";
-                yield return "externalManager";
-                yield return "owner";
-                yield return "externalOwner";
+                yield return SchemaConstants.Member;
+                yield return SchemaConstants.ExternalMember;
+                yield return SchemaConstants.Manager;
+                yield return SchemaConstants.ExternalManager;
+                yield return SchemaConstants.Owner;
+                yield return SchemaConstants.ExternalOwner;
             }
         }
 
@@ -442,30 +486,30 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return "whoCanViewMembership";
-                yield return "whoCanViewGroup";
-                yield return "whoCanPostMessage";
-                yield return "whoCanLeaveGroup";
-                yield return "whoCanInvite";
-                yield return "whoCanJoin";
-                yield return "whoCanContactOwner";
-                yield return "spamModerationLevel";
-                yield return "replyTo";
-                yield return "primaryLanguage";
-                yield return "messageModerationLevel";
-                yield return "messageDisplayFont";
-                yield return "defaultMessageDenyNotificationText";
-                yield return "customReplyTo";
-                yield return "showInGroupDirectory";
-                yield return "sendMessageDenyNotification";
-                yield return "membersCanPostAsTheGroup";
-                yield return "isArchived";
-                yield return "archiveOnly";
-                yield return "allowWebPosting";
-                yield return "allowGoogleCommunication";
-                yield return "allowExternalMembers";
-                yield return "includeInGlobalAddressList";
-                yield return "maxMessageBytes";
+                yield return SchemaConstants.WhoCanViewMembership;
+                yield return SchemaConstants.WhoCanViewGroup;
+                yield return SchemaConstants.WhoCanPostMessage;
+                yield return SchemaConstants.WhoCanLeaveGroup;
+                yield return SchemaConstants.WhoCanInvite;
+                yield return SchemaConstants.WhoCanJoin;
+                yield return SchemaConstants.WhoCanContactOwner;
+                yield return SchemaConstants.SpamModerationLevel;
+                yield return SchemaConstants.ReplyTo;
+                yield return SchemaConstants.PrimaryLanguage;
+                yield return SchemaConstants.MessageModerationLevel;
+                yield return SchemaConstants.MessageDisplayFont;
+                yield return SchemaConstants.DefaultMessageDenyNotificationText;
+                yield return SchemaConstants.CustomReplyTo;
+                yield return SchemaConstants.ShowInGroupDirectory;
+                yield return SchemaConstants.SendMessageDenyNotification;
+                yield return SchemaConstants.MembersCanPostAsTheGroup;
+                yield return SchemaConstants.IsArchived;
+                yield return SchemaConstants.ArchiveOnly;
+                yield return SchemaConstants.AllowWebPosting;
+                yield return SchemaConstants.AllowGoogleCommunication;
+                yield return SchemaConstants.AllowExternalMembers;
+                yield return SchemaConstants.IncludeInGlobalAddressList;
+                yield return SchemaConstants.MaxMessageBytes;
             }
         }
 
@@ -481,17 +525,17 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return "ims";
-                yield return "externalIds";
-                yield return "relations";
-                yield return "addresses";
-                yield return "organizations";
-                yield return "phones";
-                yield return "aliases";
-                yield return "websites";
-                yield return "name";
-                yield return "notes";
-                yield return "name";
+                yield return SchemaConstants.Ims;
+                yield return SchemaConstants.ExternalIds;
+                yield return SchemaConstants.Relations;
+                yield return SchemaConstants.Addresses;
+                yield return SchemaConstants.Organizations;
+                yield return SchemaConstants.Phones;
+                yield return SchemaConstants.Aliases;
+                yield return SchemaConstants.Websites;
+                yield return SchemaConstants.Name;
+                yield return SchemaConstants.Notes;
+                yield return SchemaConstants.Name;
             }
         }
     }

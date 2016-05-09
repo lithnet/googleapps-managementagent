@@ -13,26 +13,6 @@ namespace Lithnet.GoogleApps.MA
 {
     public static class CSEntryChangeExtensions
     {
-        public static string GetNewPrimaryEmail(this CSEntryChange csentry)
-        {
-            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(
-                t => t.Name == "primaryEmail" && (
-                    t.ModificationType == AttributeModificationType.Add ||
-                    t.ModificationType == AttributeModificationType.Update ||
-                    t.ModificationType == AttributeModificationType.Replace
-                    )
-                );
-
-            if (change != null)
-            {
-                return change.ValueChanges.First(t => t.ModificationType == ValueModificationType.Add).Value as string;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        
         public static string GetStringValueAddOrNullPlaceholder(this AttributeChange change)
         {
             if (change.ModificationType == AttributeModificationType.Delete)

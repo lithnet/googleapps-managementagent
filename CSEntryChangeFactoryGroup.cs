@@ -43,7 +43,9 @@ namespace Lithnet.GoogleApps.MA
         private static bool CanPatchGroup(CSEntryChange csentry)
         {
             return false;
+#pragma warning disable 162
             return !csentry.AttributeChanges.Any(t => ManagementAgentSchema.GroupAttributesRequiringFullUpdate.Any(u => u == t.Name));
+#pragma warning restore 162
         }
 
         public static CSEntryChangeResult PutCSEntryChangeGroup(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
@@ -63,21 +65,21 @@ namespace Lithnet.GoogleApps.MA
                 switch (csentry.ObjectModificationType)
                 {
                     case ObjectModificationType.Add:
-                        return PutCSEntryChangeGroupAdd(csentry, deltaCSEntry, type);
+                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroupAdd(csentry, deltaCSEntry, type);
 
                     case ObjectModificationType.Delete:
-                        return PutCSEntryChangeGroupDelete(csentry, deltaCSEntry, type);
+                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroupDelete(csentry, deltaCSEntry, type);
 
                     case ObjectModificationType.Replace:
-                        return PutCSEntryChangeGroupReplace(csentry, deltaCSEntry, type);
+                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroupReplace(csentry, deltaCSEntry, type);
 
                     case ObjectModificationType.Update:
-                        return PutCSEntryChangeGroupUpdate(csentry, deltaCSEntry, type);
+                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroupUpdate(csentry, deltaCSEntry, type);
 
                     default:
                     case ObjectModificationType.None:
                     case ObjectModificationType.Unconfigured:
-                        throw new InvalidOperationException(string.Format("Unknown modification type: {0} on object {1}", csentry.ObjectModificationType, csentry.DN));
+                        throw new InvalidOperationException($"Unknown modification type: {csentry.ObjectModificationType} on object {csentry.DN}");
                 }
             }
             finally
@@ -108,6 +110,7 @@ namespace Lithnet.GoogleApps.MA
 
             group.Group = GroupRequestFactory.Add(group.Group);
             deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create("id", group.Group.Id));
+            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
 
             Func<bool> x = () => CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
             x.ExecuteWithRetryOnNotFound();
@@ -116,13 +119,12 @@ namespace Lithnet.GoogleApps.MA
             {
                 Func<GroupSettings> y = () => GroupSettingsRequestFactory.Update(csentry.DN, group.Settings);
                 group.Settings = y.ExecuteWithRetryOnNotFound();
+                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
-            Action z = () => CSEntryChangeToGroup.ApplyMembershipChanges(csentry, deltaCSEntry);
+            Action z = () => CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);
             z.ExecuteWithRetryOnNotFound();
 
-            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
-            GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
@@ -132,21 +134,21 @@ namespace Lithnet.GoogleApps.MA
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             GoogleGroup group = new GoogleGroup();
 
-            CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group);
-
-            group.Group = GroupRequestFactory.Update(deltaCSEntry.DN, group.Group);
+            if (CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group))
+            {
+                group.Group = GroupRequestFactory.Update(csentry.DN, group.Group);
+                GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
+            }
 
             CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
 
             if (CSEntryChangeToGroup.CSEntryChangeToGroupSettings(csentry, group.Settings))
             {
                 group.Settings = GroupSettingsRequestFactory.Update(csentry.DN, group.Settings);
+                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
-            CSEntryChangeToGroup.ApplyMembershipChanges(csentry, deltaCSEntry);
-
-            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
-            GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
+            CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
@@ -156,21 +158,21 @@ namespace Lithnet.GoogleApps.MA
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             GoogleGroup group = new GoogleGroup();
 
-            CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group);
-
-            group.Group = GroupRequestFactory.Update(deltaCSEntry.DN, group.Group);
+            if (CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group))
+            {
+                group.Group = GroupRequestFactory.Update(csentry.DN, group.Group);
+                GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
+            }
 
             CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
 
             if (CSEntryChangeToGroup.CSEntryChangeToGroupSettings(csentry, group.Settings))
             {
                 group.Settings = GroupSettingsRequestFactory.Patch(csentry.DN, group.Settings);
+                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
-            CSEntryChangeToGroup.ApplyMembershipChanges(csentry, deltaCSEntry);
-
-            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
-            GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
+            CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }

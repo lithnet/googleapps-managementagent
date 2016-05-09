@@ -11,13 +11,6 @@ namespace Lithnet.GoogleApps.MA
 {
     public static class GroupToCSEntryChange
     {
-        //public static void GroupAllToCSEntryChange(this GoogleGroup group, SchemaType type, CSEntryChange csentry)
-        //{
-        //    GroupCoreToCSEntryChange(group.Group, type, csentry);
-        //    GroupSettingsToCSEntryChange(group.Settings, type, csentry);
-        //    GroupMembersToCSEntryChange(group.Membership, type, csentry);
-        //}
-
         public static void GroupCoreToCSEntryChange(G.Group group, SchemaType type, CSEntryChange csentry)
         {
             AttributeModificationType modificationType = csentry.GetSVAttributeModificationType();
@@ -32,13 +25,13 @@ namespace Lithnet.GoogleApps.MA
         {
             AttributeModificationType modificationType = csentry.GetMVAttributeModificationType();
 
-            csentry.CreateAttributeChangeIfInSchema(type, "aliases",modificationType, group.Aliases == null ? null : group.Aliases.ToList<object>());
+            csentry.CreateAttributeChangeIfInSchema(type, "aliases", modificationType, group.Aliases?.ToList<object>());
         }
 
         public static void GroupSettingsToCSEntryChange(GroupSettings settings, SchemaType type, CSEntryChange csentry)
         {
             AttributeModificationType modificationType = csentry.GetSVAttributeModificationType();
-            
+
             csentry.CreateAttributeChangeIfInSchema(type, "maxMessageBytes", modificationType, settings.MaxMessageBytes);
             csentry.CreateAttributeChangeIfInSchema(type, "messageDisplayFont", modificationType, settings.MessageDisplayFont);
             csentry.CreateAttributeChangeIfInSchema(type, "messageModerationLevel", modificationType, settings.MessageModerationLevel);

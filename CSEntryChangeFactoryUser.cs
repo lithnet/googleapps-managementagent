@@ -12,18 +12,18 @@ namespace Lithnet.GoogleApps.MA
     {
         public static CSEntryChange UserToCSEntryChange(User user, IManagementAgentParameters config, Schema types)
         {
-            if (!types.Types.Contains("user"))
+            if (!types.Types.Contains(SchemaConstants.User))
             {
                 throw new InvalidOperationException("The type user was not requested");
             }
 
-            SchemaType type = types.Types["user"];
+            SchemaType type = types.Types[SchemaConstants.User];
             CSEntryChange csentry = CSEntryChange.Create();
             csentry.ObjectModificationType = ObjectModificationType.Add;
-            csentry.ObjectType = "user";
+            csentry.ObjectType = SchemaConstants.User;
             csentry.DN = user.PrimaryEmail;
 
-            user.UserAllToCSEntryChange(config, type, csentry);
+            user.ToCSEntryChange(config, type, csentry);
 
             return csentry;
         }
@@ -45,26 +45,26 @@ namespace Lithnet.GoogleApps.MA
                 switch (csentry.ObjectModificationType)
                 {
                     case ObjectModificationType.Add:
-                        return PutCSEntryChangeUserAdd(csentry, deltaCSEntry, config, type);
+                        return CSEntryChangeFactoryUser.PutCSEntryChangeUserAdd(csentry, deltaCSEntry, config, type);
 
                     case ObjectModificationType.Delete:
-                        return PutCSEntryChangeUserDelete(csentry, deltaCSEntry, config, type);
+                        return CSEntryChangeFactoryUser.PutCSEntryChangeUserDelete(csentry, deltaCSEntry, config, type);
 
                     case ObjectModificationType.Replace:
-                        return PutCSEntryChangeUserReplace(csentry, deltaCSEntry, config, type);
+                        return CSEntryChangeFactoryUser.PutCSEntryChangeUserReplace(csentry, deltaCSEntry, config, type);
 
                     case ObjectModificationType.Update:
-                        return PutCSEntryChangeUserUpdate(csentry, deltaCSEntry, config, type);
+                        return CSEntryChangeFactoryUser.PutCSEntryChangeUserUpdate(csentry, deltaCSEntry, config, type);
 
                     default:
                     case ObjectModificationType.None:
                     case ObjectModificationType.Unconfigured:
-                        throw new InvalidOperationException(string.Format("Unknown modification type: {0} on object {1}", csentry.ObjectModificationType, csentry.DN));
+                        throw new InvalidOperationException($"Unknown modification type: {csentry.ObjectModificationType} on object {csentry.DN}");
                 }
             }
             finally
             {
-                if (deltaCSEntry.AttributeChanges.Count > 0 || deltaCSEntry.ObjectModificationType == ObjectModificationType.Delete)
+                if ((deltaCSEntry.AttributeChanges.Count > 0) || (deltaCSEntry.ObjectModificationType == ObjectModificationType.Delete))
                 {
                     CSEntryChangeQueue.Add(deltaCSEntry);
                 }
@@ -81,20 +81,26 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeUserAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, IManagementAgentParameters config, SchemaType type)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
-            User user = new User();
-            user.Name = new UserName();
-            user.Password = csentry.GetValueAdd<string>("export_password") ?? Guid.NewGuid().ToString("B");
-            csentry.CSEntryChangeToUserAll(user, config, type);
+            User user = new User
+            {
+                Password = csentry.GetValueAdd<string>("export_password") ?? Guid.NewGuid().ToString("B")
+            };
+
+            csentry.ToUser(user, config);
             user = UserRequestFactory.Add(user);
             deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create("id", user.Id));
 
-            user.UserAllToCSEntryChange(config, type, deltaCSEntry);
+            user.ToCSEntryChange(config, type, deltaCSEntry);
 
-            Action x = () => CSEntryChangeToUser.ApplyAliasChanges(csentry, user, deltaCSEntry);
+            Action x = () => CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
             x.ExecuteWithRetryOnNotFound();
 
-            List<AttributeChange> anchorChanges = new List<AttributeChange>();
-            anchorChanges.Add(AttributeChange.CreateAttributeAdd("id", user.Id));
+            csentry.MakeAdmin(deltaCSEntry, user, config);
+
+            List<AttributeChange> anchorChanges = new List<AttributeChange>
+            {
+                AttributeChange.CreateAttributeAdd("id", user.Id)
+            };
 
             return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, MAExportError.Success);
         }
@@ -102,42 +108,47 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeUserReplace(CSEntryChange csentry, CSEntryChange deltaCSEntry, IManagementAgentParameters config, SchemaType type)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
-            User user = new User();
-            user.Name = new UserName();
 
-            csentry.CSEntryChangeToUserAll(user, config, type);
+            User user = new User();
+
+            csentry.ToUser(user, config);
             user = UserRequestFactory.Update(user, csentry.DN);
 
-            user.UserAllToCSEntryChange(config, type, deltaCSEntry);
+            user.ToCSEntryChange(config, type, deltaCSEntry);
+            
+            csentry.MakeAdmin(deltaCSEntry, user, config);
+            CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
 
         private static CSEntryChangeResult PutCSEntryChangeUserUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, IManagementAgentParameters config, SchemaType type)
         {
-            User userToUpdate;
+            User user;
             deltaCSEntry.ObjectModificationType = ObjectModificationType.Replace;
 
-            if (CanPatchUser(csentry))
+            if (CSEntryChangeFactoryUser.CanPatchUser(csentry))
             {
-                userToUpdate = new User();
+                user = new User();
 
-                if (csentry.CSEntryChangeToUserAll(userToUpdate, config, type))
+                if (csentry.ToUser(user, config))
                 {
-                    userToUpdate = UserRequestFactory.Patch(userToUpdate, csentry.DN);
+                    user = UserRequestFactory.Patch(user, csentry.DN);
                 }
             }
             else
             {
-                userToUpdate = UserRequestFactory.Get(csentry.DN);
+                user = UserRequestFactory.Get(csentry.DN);
 
-                if (csentry.CSEntryChangeToUserAll(userToUpdate, config, type))
+                if (csentry.ToUser(user, config))
                 {
-                    userToUpdate = UserRequestFactory.Update(userToUpdate, csentry.DN);
+                    user = UserRequestFactory.Update(user, csentry.DN);
                 }
             }
 
-            userToUpdate.UserAllToCSEntryChange(config, type, deltaCSEntry);
+            user.ToCSEntryChange(config, type, deltaCSEntry);
+            csentry.MakeAdmin(deltaCSEntry, user, config);
+            CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
