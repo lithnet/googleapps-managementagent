@@ -17,6 +17,9 @@ namespace Lithnet.GoogleApps.MA
         [DataMember(Name = "field-name")]
         public string FieldName { get; set; }
 
+        [DataMember(Name = "property-name")]
+        public string PropertyName { get; set; }
+
         [DataMember(Name = "attribute-type")]
         public AttributeType AttributeType { get; set; }
 

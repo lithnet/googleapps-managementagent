@@ -890,15 +890,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             AttributeChange existingChange = deltacsentry.AttributeChanges.FirstOrDefault(t => t.Name == "aliases");
-            IList<ValueChange> valueChanges;
+            IList<ValueChange> valueChanges = new List<ValueChange>();
 
-            if (existingChange == null)
+            if (existingChange != null)
             {
-                valueChanges = new List<ValueChange>();
-            }
-            else
-            {
-                valueChanges = existingChange.ValueChanges;
+                deltacsentry.AttributeChanges.Remove(existingChange);
             }
 
             try

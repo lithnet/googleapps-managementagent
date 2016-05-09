@@ -8,15 +8,15 @@ using System.Runtime.Serialization;
 namespace Lithnet.GoogleApps.MA
 {
     [DataContract(Name = "schema-type")]
+    [KnownType(typeof(MASchemaAttribute))]
+    [KnownType(typeof(MASchemaArray))]
+    [KnownType(typeof(MASchemaNestedType))]
     public class MASchemaType
     {
         [DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "array-types")]
-        public List<MASchemaArray> ArrayTypes { get; set; }
-
         [DataMember(Name = "attributes")]
-        public List<MASchemaAttribute> Attributes { get; set; }
+        public List<IMASchemaAttribute> Attributes { get; set; }
     }
 }

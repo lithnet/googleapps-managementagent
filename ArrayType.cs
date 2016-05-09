@@ -11,7 +11,6 @@ namespace Lithnet.GoogleApps.MA
     {
         None = 0,
         HasTypes = 1,
-        HasPrimaryTypes = 2,
         HasComplexFields = 4
     }
 }

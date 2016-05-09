@@ -81,6 +81,7 @@
     <Compile Include="GoogleArrayModeConverters.cs" />
     <Compile Include="GoogleArrayMode.cs" />
     <Compile Include="GroupToCSEntryChange.cs" />
+    <Compile Include="IMASchemaAttribute.cs" />
     <Compile Include="ManagementAgent.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -88,6 +89,7 @@
     <Compile Include="IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
     <Compile Include="ManagementAgentSchema.cs" />
+    <Compile Include="MASchemaNestedType.cs" />
     <Compile Include="MASchemaArray.cs" />
     <Compile Include="MASchemaArrayField.cs" />
     <Compile Include="MASchemaAttribute.cs" />
