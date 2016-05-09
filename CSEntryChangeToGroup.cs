@@ -155,7 +155,7 @@ namespace Lithnet.GoogleApps.MA
             IList<string> aliasAdds;
             IList<string> aliasDeletes;
 
-            CSEntryChangeToGroupAliases(csentry, group, out aliasAdds, out aliasDeletes);
+            CSEntryChangeToGroup.CSEntryChangeToGroupAliases(csentry, group, out aliasAdds, out aliasDeletes);
 
             if (aliasAdds.Count == 0 && aliasDeletes.Count == 0)
             {
@@ -217,7 +217,7 @@ namespace Lithnet.GoogleApps.MA
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;
 
-            GetMemberChangesFromCSEntryChange(csentry, out membershipToAdd, out membershipToDelete, csentry.ObjectModificationType == ObjectModificationType.Replace);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, out membershipToAdd, out membershipToDelete, csentry.ObjectModificationType == ObjectModificationType.Replace);
 
             HashSet<string> allMembersToDelete = membershipToDelete.GetAllMembers();
             List<G.Member> allMembersToAdd = membershipToAdd.ToMemberList();
@@ -281,7 +281,7 @@ namespace Lithnet.GoogleApps.MA
             deletes = new GroupMembership();
             GroupMembership existingGroupMembership = null;
 
-            if (ExistingMembershipRequiredForUpdate(csentry) | replacing)
+            if (CSEntryChangeToGroup.ExistingMembershipRequiredForUpdate(csentry) | replacing)
             {
                 existingGroupMembership = GroupMemberRequestFactory.GetMembership(csentry.DN);
             }
@@ -290,12 +290,12 @@ namespace Lithnet.GoogleApps.MA
                 existingGroupMembership = new GroupMembership();
             }
 
-            GetMemberChangesFromCSEntryChange(csentry, adds.Members, deletes.Members, existingGroupMembership.Members, "member", replacing);
-            GetMemberChangesFromCSEntryChange(csentry, adds.ExternalMembers, deletes.ExternalMembers, existingGroupMembership.ExternalMembers, "externalMember", replacing);
-            GetMemberChangesFromCSEntryChange(csentry, adds.Managers, deletes.Managers, existingGroupMembership.Managers, "manager", replacing);
-            GetMemberChangesFromCSEntryChange(csentry, adds.ExternalManagers, deletes.ExternalManagers, existingGroupMembership.ExternalManagers, "externalManager", replacing);
-            GetMemberChangesFromCSEntryChange(csentry, adds.Owners, deletes.Owners, existingGroupMembership.Owners, "owner", replacing);
-            GetMemberChangesFromCSEntryChange(csentry, adds.ExternalOwners, deletes.ExternalOwners, existingGroupMembership.ExternalOwners, "externalOwner", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.Members, deletes.Members, existingGroupMembership.Members, "member", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.ExternalMembers, deletes.ExternalMembers, existingGroupMembership.ExternalMembers, "externalMember", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.Managers, deletes.Managers, existingGroupMembership.Managers, "manager", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.ExternalManagers, deletes.ExternalManagers, existingGroupMembership.ExternalManagers, "externalManager", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.Owners, deletes.Owners, existingGroupMembership.Owners, "owner", replacing);
+            CSEntryChangeToGroup.GetMemberChangesFromCSEntryChange(csentry, adds.ExternalOwners, deletes.ExternalOwners, existingGroupMembership.ExternalOwners, "externalOwner", replacing);
         }
 
         private static void GetMemberChangesFromCSEntryChange(CSEntryChange csentry, HashSet<string> adds, HashSet<string> deletes, HashSet<string> existingMembers, string attributeName, bool replacing)
