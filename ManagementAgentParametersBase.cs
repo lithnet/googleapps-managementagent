@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public abstract class ManagementAgentParametersBase
+    internal abstract class ManagementAgentParametersBase
     {
         protected const string CustomerIDParameter = "Customer ID";
 

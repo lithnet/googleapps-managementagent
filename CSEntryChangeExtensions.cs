@@ -11,7 +11,7 @@ using Lithnet.Logging;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class CSEntryChangeExtensions
+    internal static class CSEntryChangeExtensions
     {
         public static string GetStringValueAddOrNullPlaceholder(this AttributeChange change)
         {

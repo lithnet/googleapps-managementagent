@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class GoogleArrayModeConverters
+    internal static class GoogleArrayModeConverters
     {
         private const string PrimaryValueOnlyDescription = "Use the primary value only";
         private const string FlattenKnownTypesDescription = "Flatten known types";

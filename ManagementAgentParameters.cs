@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public class ManagementAgentParameters : ManagementAgentParametersBase, IManagementAgentParameters
+    internal class ManagementAgentParameters : ManagementAgentParametersBase, IManagementAgentParameters
     {
         private KeyedCollection<string, ConfigParameter> configParameters;
 

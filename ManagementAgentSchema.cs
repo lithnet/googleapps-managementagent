@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class ManagementAgentSchema
+    internal static class ManagementAgentSchema
     {
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
 

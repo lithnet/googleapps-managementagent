@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public interface IManagementAgentParameters
+    internal interface IManagementAgentParameters
     {
         int GroupSettingsImportThreadCount { get; }
 

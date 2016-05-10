@@ -10,33 +10,11 @@ namespace Lithnet.GoogleApps.MA
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    public class ApiInterfaceUserMakeAdmin : ApiInterface
+    internal class ApiInterfaceUserMakeAdmin : IApiInterface
     {
-        private static MASchemaType userType = SchemaBuilder.GetUserSchema();
+        public string Api => "usermakeadmin";
 
-        public ApiInterfaceUserMakeAdmin()
-        {
-            this.Api = "usermakeadmin";
-        }
-
-        public override bool IsPrimary => false;
-
-        public override object CreateInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object GetInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeleteInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -44,7 +22,7 @@ namespace Lithnet.GoogleApps.MA
             if (change != null)
             {
                 bool makeAdmin = change.GetValueAdd<bool>();
-                string id = csentry.GetAnchorValueOrDefault<string>(ApiInterfaceUserMakeAdmin.userType.AnchorAttributeName) ?? csentry.DN;
+                string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName) ?? csentry.DN;
 
                 if (change.ModificationType == AttributeModificationType.Add)
                 {
@@ -69,11 +47,11 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceUserMakeAdmin.userType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
@@ -82,16 +60,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return attributeChanges;
-        }
-
-        public override string GetAnchorValue(object target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetDNValue(object target)
-        {
-            throw new NotImplementedException();
         }
     }
 }

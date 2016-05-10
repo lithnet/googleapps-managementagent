@@ -8,7 +8,7 @@ using Lithnet.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class CSEntryChangeFactoryUser
+    internal static class CSEntryChangeFactoryUser
     {
         public static CSEntryChange UserToCSEntryChange(User user, IManagementAgentParameters config, Schema types)
         {

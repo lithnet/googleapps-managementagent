@@ -9,7 +9,7 @@ using Lithnet.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class GroupToCSEntryChange
+    internal static class GroupToCSEntryChange
     {
         public static void GroupCoreToCSEntryChange(G.Group group, SchemaType type, CSEntryChange csentry)
         {

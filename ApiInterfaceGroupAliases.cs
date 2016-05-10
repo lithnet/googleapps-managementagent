@@ -11,33 +11,11 @@ namespace Lithnet.GoogleApps.MA
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    public class ApiInterfaceGroupAliases : ApiInterface
+    internal class ApiInterfaceGroupAliases : IApiInterface
     {
-        private static MASchemaType maType = SchemaBuilder.GetGroupSchema();
+        public string Api => "groupaliases";
 
-        public ApiInterfaceGroupAliases()
-        {
-            this.Api = "groupaliases";
-        }
-
-        public override bool IsPrimary => false;
-
-        public override object CreateInstance(CSEntryChange csentry)
-        {
-            return new List<string>();
-        }
-
-        public override object GetInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeleteInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             Func<AttributeChange> x = () => ApiInterfaceGroupAliases.ApplyGroupAliasChanges(csentry, (Group)target);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
@@ -52,29 +30,26 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
+            GoogleGroup group = source as GoogleGroup;
+
+            if (group == null)
+            {
+                throw new InvalidOperationException();
+            }
+
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupAliases.maType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, source));
+                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, group.Group));
                 }
             }
 
             return attributeChanges;
-        }
-
-        public override string GetAnchorValue(object target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetDNValue(object target)
-        {
-            throw new NotImplementedException();
         }
 
         private static void GetGroupAliasChanges(CSEntryChange csentry, Group group, out IList<string> aliasAdds, out IList<string> aliasDeletes)

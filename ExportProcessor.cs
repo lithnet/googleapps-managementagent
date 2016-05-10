@@ -12,7 +12,7 @@ namespace Lithnet.GoogleApps.MA
     using Microsoft.MetadirectoryServices;
     using Microsoft.MetadirectoryServices.DetachedObjectModel;
 
-    public static class ExportProcessor
+    internal static class ExportProcessor
     {
         public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type)
         {
@@ -43,7 +43,7 @@ namespace Lithnet.GoogleApps.MA
 
         public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, SchemaType type)
         {
-            MASchemaType maType = SchemaBuilder.GetSchema(type.Name);
+            MASchemaType maType = ManagementAgent.Schema[type.Name];
 
             CSEntryChangeDetached deltaCSEntry = new CSEntryChangeDetached(Guid.NewGuid(), ObjectModificationType.Unconfigured, MAImportError.Success, null);
 
@@ -99,16 +99,13 @@ namespace Lithnet.GoogleApps.MA
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
 
-            ApiInterface primaryInterface = maType.ApiInterface;
+            IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
             object instance = primaryInterface.CreateInstance(csentry);
 
-            foreach (IGrouping<string, IMASchemaAttribute> group in maType.Attributes.GroupBy(t => t.Api))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, instance))
             {
-                foreach (AttributeChange item in SchemaBuilder.ApiInterfaces[group.Key].ApplyChanges(csentry, type, instance))
-                {
-                    deltaCSEntry.AttributeChanges.Add(item);
-                }
+                deltaCSEntry.AttributeChanges.Add(change);
             }
 
             deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(maType.AnchorAttributeName, primaryInterface.GetAnchorValue(instance)));
@@ -127,7 +124,7 @@ namespace Lithnet.GoogleApps.MA
 
             bool fullUpdate = !maType.CanPatch || csentry.AttributeChanges.Any(t => maType.Attributes.Any(u => u.AttributeName == t.Name && !u.CanPatch));
 
-            ApiInterface primaryInterface = maType.ApiInterface;
+            IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
             object instance;
 
@@ -140,14 +137,11 @@ namespace Lithnet.GoogleApps.MA
                 instance = primaryInterface.CreateInstance(csentry);
             }
 
-            foreach (IGrouping<string, IMASchemaAttribute> group in maType.Attributes.GroupBy(t => t.Api))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, instance, !fullUpdate))
             {
-                foreach (AttributeChange item in SchemaBuilder.ApiInterfaces[group.Key].ApplyChanges(csentry, type, instance, !fullUpdate))
-                {
-                    deltaCSEntry.AttributeChanges.Add(item);
-                }
+                deltaCSEntry.AttributeChanges.Add(change);
             }
-           
+
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
     }

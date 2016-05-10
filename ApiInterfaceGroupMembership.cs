@@ -13,33 +13,11 @@ namespace Lithnet.GoogleApps.MA
     using Microsoft.MetadirectoryServices;
     using User = ManagedObjects.User;
 
-    public class ApiInterfaceGroupMembership : ApiInterface
+    internal class ApiInterfaceGroupMembership : IApiInterface
     {
-        private static MASchemaType maType = SchemaBuilder.GetUserSchema();
+        public string Api => "groupmembership";
 
-        public ApiInterfaceGroupMembership()
-        {
-            this.Api = "groupmembership";
-        }
-
-        public override bool IsPrimary => false;
-
-        public override object CreateInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override object GetInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void DeleteInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;
@@ -150,7 +128,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -170,7 +148,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupMembership.maType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
@@ -179,16 +157,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return attributeChanges;
-        }
-
-        public override string GetAnchorValue(object target)
-        {
-            return ((Group)target).Id;
-        }
-
-        public override string GetDNValue(object target)
-        {
-            return ((Group)target).Email;
         }
 
         private static void GetMemberChangesFromCSEntryChange(CSEntryChange csentry, out GroupMembership adds, out GroupMembership deletes, bool replacing)
@@ -289,8 +257,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-
-
+        
         private static bool ExistingMembershipRequiredForUpdate(CSEntryChange csentry)
         {
             return (

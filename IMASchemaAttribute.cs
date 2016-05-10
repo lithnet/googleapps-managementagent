@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Microsoft.MetadirectoryServices;
 
-    public interface IMASchemaAttribute
+    internal interface IMASchemaAttribute
     {
         string AttributeName { get; set; }
 
@@ -17,8 +17,12 @@
 
         bool IsReadOnly { get; }
 
-        bool UpdateField<T>(CSEntryChange csentry, T obj);
+        bool CanProcessAttribute(string attribute);
 
-        IEnumerable<AttributeChange> CreateAttributeChanges<T>(ObjectModificationType modType, T obj);
+        bool UpdateField(CSEntryChange csentry, object obj);
+
+        IEnumerable<SchemaAttribute> GetSchemaAttributes();
+
+        IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj);
     }
 }

@@ -8,25 +8,31 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    [DataContract(Name = "schema-type")]
-    [KnownType(typeof(MASchemaAttribute))]
-    [KnownType(typeof(MASchemaCustomTypeArray))]
-    [KnownType(typeof(MASchemaNestedType))]
-    [KnownType(typeof(MASchemaSimpleList))]
-    public class MASchemaType
+    internal class MASchemaType
     {
-        [DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "attributes")]
         public List<IMASchemaAttribute> Attributes { get; set; }
 
-        [DataMember(Name = "anchor-name")]
         public string AnchorAttributeName { get; set; }
 
-        [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
 
-        public ApiInterface ApiInterface { get; set; }
+        public IApiInterfaceObject ApiInterface { get; set; }
+
+        public SchemaType GetSchemaType()
+        {
+            SchemaType type = SchemaType.Create(this.Name, true);
+
+            foreach (IMASchemaAttribute attribute in this.Attributes)
+            {
+                foreach (SchemaAttribute maAttribute in attribute.GetSchemaAttributes())
+                {
+                    type.Attributes.Add(maAttribute);
+                }
+            }
+
+            return type;
+        }
     }
 }

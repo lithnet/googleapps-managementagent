@@ -12,32 +12,24 @@ namespace Lithnet.GoogleApps.MA
     using Logging;
     using System.Reflection;
 
-    [DataContract(Name = "schema-nested-type")]
-    public class MASchemaNestedType : IMASchemaAttribute
+    internal class MASchemaNestedType : IMASchemaAttribute
     {
         private PropertyInfo propInfo;
 
         private IList<MASchemaAttribute> attributes;
 
-        [DataMember(Name = "attribute-name")]
         public string AttributeName { get; set; }
 
-        [DataMember(Name = "field-name")]
         public string FieldName { get; set; }
 
-        [DataMember(Name = "property-name")]
         public string PropertyName { get; set; }
 
-        [DataMember(Name = "api")]
         public string Api { get; set; }
 
-        [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
 
-        [DataMember(Name = "attributes")]
-        public IList<MASchemaArrayField> Fields { get; set; }
+        public IList<MASchemaField> Fields { get; set; }
 
-        [DataMember(Name = "is-read-only")]
         public bool IsReadOnly { get; set; }
 
         public IList<MASchemaAttribute> Attributes
@@ -60,7 +52,7 @@ namespace Lithnet.GoogleApps.MA
 
         private IEnumerable<MASchemaAttribute> GetAttributesWithoutType()
         {
-            foreach (MASchemaArrayField item in this.Fields)
+            foreach (MASchemaField item in this.Fields)
             {
                 yield return new MASchemaAttribute
                 {
@@ -70,27 +62,19 @@ namespace Lithnet.GoogleApps.MA
                     CanPatch = this.CanPatch,
                     IsMultivalued = item.IsMultivalued,
                     AttributeName = $"{this.AttributeName}_{item.AttributeNamePart}",
-                    PropertyName =  item.PropertyName,
+                    PropertyName = item.PropertyName,
                     Operation = item.Operation,
                     ParentFieldName = this.FieldName
                 };
             }
         }
 
-        private IEnumerable<string> AttributeNames
+        public bool CanProcessAttribute(string attribute)
         {
-            get
-            {
-                yield return this.AttributeName;
-
-                foreach (MASchemaAttribute attribute in this.Attributes)
-                {
-                    yield return attribute.AttributeName;
-                }
-            }
+            return this.AttributeName == attribute || this.Attributes.Any(t => t.AttributeName == attribute);
         }
 
-        public bool UpdateField<T>(CSEntryChange csentry, T obj)
+        public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)
             {
@@ -115,7 +99,7 @@ namespace Lithnet.GoogleApps.MA
             bool created = false;
             if (childObject == null)
             {
-                childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] {  });
+                childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] { });
                 created = true;
             }
 
@@ -135,6 +119,14 @@ namespace Lithnet.GoogleApps.MA
             return hasChanged;
         }
 
+        public IEnumerable<SchemaAttribute> GetSchemaAttributes()
+        {
+            foreach (MASchemaField field in this.Fields)
+            {
+                yield return field.GetSchemaAttribute(this.AttributeName);
+            }
+        }
+
         private IEnumerable<Tuple<AttributeChange, MASchemaAttribute>> GetAttributeChanges(CSEntryChange csentry)
         {
             foreach (MASchemaAttribute attribute in this.Attributes)
@@ -146,7 +138,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges<T>(ObjectModificationType modType, T obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -154,6 +146,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             object value = this.propInfo.GetValue(obj);
+
+            if (value == null)
+            {
+                yield break;
+            }
 
             foreach (MASchemaAttribute attribute in this.Attributes)
             {

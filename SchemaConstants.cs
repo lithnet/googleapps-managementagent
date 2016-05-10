@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class SchemaConstants
+    internal static class SchemaConstants
     {
         public const string Group = "group";
         public const string GroupSettings = "groupSettings";

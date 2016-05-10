@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using Microsoft.MetadirectoryServices;
 namespace Lithnet.GoogleApps.MA
 {
-    public static class GenericExtensions
+    internal static class GenericExtensions
     {
         public const string FimServiceDateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff";
 

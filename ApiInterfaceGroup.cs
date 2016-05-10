@@ -11,37 +11,48 @@ namespace Lithnet.GoogleApps.MA
     using Microsoft.MetadirectoryServices;
     using User = ManagedObjects.User;
 
-    public class ApiInterfaceGroup : ApiInterface
+    internal class ApiInterfaceGroup : IApiInterfaceObject
     {
-        private static MASchemaType maType = SchemaBuilder.GetUserSchema();
+        private static ApiInterfaceKeyedCollection internalInterfaces;
+
+        static ApiInterfaceGroup()
+        {
+            ApiInterfaceGroup.internalInterfaces = new ApiInterfaceKeyedCollection
+            {
+                new ApiInterfaceGroupAliases(),
+                new ApiInterfaceGroupMembership(),
+                new ApiInterfaceGroupSettings()
+            };
+        }
 
         public ApiInterfaceGroup()
         {
-            this.Api = "group";
         }
 
-        public override bool IsPrimary => true;
+        public string Api => "group";
 
-        public override object CreateInstance(CSEntryChange csentry)
+
+        public object CreateInstance(CSEntryChange csentry)
         {
             return new GoogleGroup();
         }
 
-        public override object GetInstance(CSEntryChange csentry)
+        public object GetInstance(CSEntryChange csentry)
         {
             return GroupRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public override void DeleteInstance(CSEntryChange csentry)
+        public void DeleteInstance(CSEntryChange csentry)
         {
             GroupRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             bool hasChanged = false;
+            List<AttributeChange> changes = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroup.maType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
                 {
@@ -49,59 +60,115 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            if (!hasChanged)
+            if (hasChanged)
             {
-                return new List<AttributeChange>();
-            }
+                Group result;
 
-            Group result;
-
-            if (csentry.ObjectModificationType == ObjectModificationType.Add)
-            {
-                result = GroupRequestFactory.Add((Group)target);
-            }
-            else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-            {
-                if (patch)
+                if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = GroupRequestFactory.Patch(this.GetAnchorValue(target), (Group)target);
+                    result = GroupRequestFactory.Add((Group)target);
+                }
+                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
+                {
+                    if (patch)
+                    {
+                        result = GroupRequestFactory.Patch(this.GetAnchorValue(target), (Group)target);
+                    }
+                    else
+                    {
+                        result = GroupRequestFactory.Update(this.GetAnchorValue(target), (Group)target);
+                    }
                 }
                 else
                 {
-                    result = GroupRequestFactory.Update(this.GetAnchorValue(target), (Group) target);
+                    throw new InvalidOperationException();
                 }
+
+                changes.AddRange(this.GetChanges(csentry.ObjectModificationType, type, result));
             }
-            else
+
+            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
+            {
+                changes.AddRange(i.ApplyChanges(csentry, type, target, patch));
+            }
+
+            return changes;
+        }
+
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        {
+            List<AttributeChange> attributeChanges = new List<AttributeChange>();
+
+            GoogleGroup googleGroup = source as GoogleGroup;
+
+            if (googleGroup == null)
             {
                 throw new InvalidOperationException();
             }
 
-            return this.GetChanges(csentry.ObjectModificationType, type, result);
-        }
-
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
-        {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroup.maType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
-                if (type.HasAttribute(typeDef.AttributeName))
+                foreach (AttributeChange change in typeDef.CreateAttributeChanges(modType, googleGroup.Group))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, source));
+                    if (type.HasAttribute(change.Name))
+                    {
+                        attributeChanges.Add(change);
+                    }
                 }
+            }
+
+            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(modType, type, source));
             }
 
             return attributeChanges;
         }
 
-        public override string GetAnchorValue(object target)
+        public string GetAnchorValue(object target)
         {
-            return ((Group)target).Id;
+            Group group;
+
+            GoogleGroup googleGroup = target as GoogleGroup;
+
+            if (googleGroup != null)
+            {
+                group = googleGroup.Group;
+            }
+            else
+            {
+                group = target as Group;
+            }
+
+            if (group == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return group.Id;
         }
 
-        public override string GetDNValue(object target)
+        public string GetDNValue(object target)
         {
-            return ((Group)target).Email;
+            Group group;
+
+            GoogleGroup googleGroup = target as GoogleGroup;
+
+            if (googleGroup != null)
+            {
+                group = googleGroup.Group;
+            }
+            else
+            {
+                group = target as Group;
+            }
+
+            if (group == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return group.Email;
         }
     }
 }

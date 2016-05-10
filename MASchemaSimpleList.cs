@@ -14,38 +14,34 @@ namespace Lithnet.GoogleApps.MA
     using System.Reflection;
     using ManagedObjects;
 
-    [DataContract(Name = "schema-list")]
-    public class MASchemaSimpleList : IMASchemaAttribute
+    internal class MASchemaSimpleList<TItem> : IMASchemaAttribute
     {
         private PropertyInfo propInfo;
 
-        [DataMember(Name = "attribute-name")]
         public string AttributeName { get; set; }
 
-        [DataMember(Name = "field-name")]
         public string FieldName { get; set; }
 
-        [DataMember(Name = "property-name")]
         public string PropertyName { get; set; }
 
-        [DataMember(Name = "api")]
         public string Api { get; set; }
 
-        [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
 
         public bool IsMultivalued => true;
 
-        [DataMember(Name = "attribute-type")]
         public AttributeType AttributeType { get; set; }
 
-        [DataMember(Name = "operation")]
         public AttributeOperation Operation { get; set; }
 
-        [DataMember(Name = "is-read-only")]
         public bool IsReadOnly { get; set; }
 
-        public bool UpdateField<T>(CSEntryChange csentry, T obj)
+        public bool CanProcessAttribute(string attribute)
+        {
+            return this.AttributeName == attribute;
+        }
+
+        public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)
             {
@@ -64,7 +60,7 @@ namespace Lithnet.GoogleApps.MA
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            IList list;
+            IList<TItem> list;
 
             switch (change.ModificationType)
             {
@@ -86,16 +82,16 @@ namespace Lithnet.GoogleApps.MA
                     throw new ArgumentOutOfRangeException();
             }
 
-            IList<object> valueAdds = csentry.GetValueAdds<object>(this.AttributeName);
-            IList<object> valueDeletes = csentry.GetValueDeletes<object>(this.AttributeName);
+            IList<TItem> valueAdds = csentry.GetValueAdds<TItem>(this.AttributeName);
+            IList<TItem> valueDeletes = csentry.GetValueDeletes<TItem>(this.AttributeName);
 
-            foreach (object value in valueAdds)
+            foreach (TItem value in valueAdds)
             {
                 list.Add(value);
                 Logger.WriteLine($"Adding value {this.AttributeName} -> {value}");
             }
 
-            foreach (object value in valueDeletes)
+            foreach (TItem value in valueDeletes)
             {
                 list.Remove(value);
                 Logger.WriteLine($"Removing value {this.AttributeName} -> {value}");
@@ -106,62 +102,47 @@ namespace Lithnet.GoogleApps.MA
             return true;
         }
 
-        private IList GetList<T>(T obj, out bool created)
+        public IEnumerable<SchemaAttribute> GetSchemaAttributes()
+        {
+            yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+        }
+
+        private IList<TItem> GetList(object obj, out bool created)
         {
             if (this.propInfo == null)
             {
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            object childObject = this.propInfo.GetValue(obj);
+            IList<TItem> childObject = this.propInfo.GetValue(obj) as IList<TItem>;
             created = false;
 
             if (childObject == null)
             {
-                childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] { });
+                childObject = new List<TItem>();
                 created = true;
             }
 
-            IList list = childObject as IList;
-
-            if (list == null)
-            {
-                throw new ArgumentException($"property {this.propInfo.Name} does not inherit from IList");
-            }
-
-            return list;
+            return childObject;
         }
 
-        private IList CreateList<T>(T obj)
+        private IList<TItem> CreateList(object obj)
         {
-            if (this.propInfo == null)
-            {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
-            }
-
-            object childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] { });
-
-            IList list = childObject as IList;
-
-            if (list == null)
-            {
-                throw new ArgumentException($"property {this.propInfo.Name} does not inherit from IList");
-            }
-
-            return list;
+            return new List<TItem>();
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges<T>(ObjectModificationType modType, T obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
             bool created;
 
-            IList list = this.GetList(obj, out created);
+            IList<TItem> list = this.GetList(obj, out created);
 
             if (list == null)
             {
                 if (modType == ObjectModificationType.Update)
                 {
                     yield return AttributeChange.CreateAttributeDelete(this.AttributeName);
+                    yield break;
                 }
                 else
                 {

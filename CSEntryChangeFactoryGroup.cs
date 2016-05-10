@@ -11,7 +11,7 @@ using Lithnet.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class CSEntryChangeFactoryGroup
+    internal static class CSEntryChangeFactoryGroup
     {
         public static CSEntryChange GroupToCSE(GoogleGroup group, IManagementAgentParameters config, Schema types)
         {

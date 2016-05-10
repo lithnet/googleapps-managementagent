@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
         static UserSchemaTests()
         {
-            UserSchemaTests.Type = SchemaBuilder.GetUserSchema();
+            //UserSchemaTests.Type = SchemaBuilder.GetUserSchema();
         }
         
         [TestMethod]

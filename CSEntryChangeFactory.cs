@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class CSEntryChangeFactory
+    internal static class CSEntryChangeFactory
     {
         public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
         {

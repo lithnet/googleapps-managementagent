@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public enum GoogleArrayMode
+    internal enum GoogleArrayMode
     {
         FlattenValues = 0,
         PrimaryValueOnly = 1,

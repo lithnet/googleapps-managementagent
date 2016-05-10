@@ -13,46 +13,42 @@ namespace Lithnet.GoogleApps.MA
     using Logging;
     using MetadirectoryServices;
 
-    [DataContract(Name = "schema-attribute")]
-    public class MASchemaAttribute : IMASchemaAttribute
+    internal class MASchemaAttribute : IMASchemaAttribute
     {
         private PropertyInfo propInfo;
 
-        [DataMember(Name = "attribute-name")]
         public string AttributeName { get; set; }
 
-        [DataMember(Name = "field-name")]
         public string FieldName { get; set; }
 
-        [DataMember(Name = "property-name")]
         public string PropertyName { get; set; }
 
-        //[DataMember(Name = "parent-field-name")]
         public string ParentFieldName { get; set; }
 
-        [DataMember(Name = "attribute-type")]
         public AttributeType AttributeType { get; set; }
 
-        [DataMember(Name = "operation")]
         public AttributeOperation Operation { get; set; }
 
-        [DataMember(Name = "api")]
         public string Api { get; set; }
 
-        [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
 
-        [DataMember(Name = "is-multivalued")]
         public bool IsMultivalued { get; set; }
 
-        [DataMember(Name = "is-array-attribute")]
         public bool IsArrayAttribute { get; set; }
 
         public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
         internal string AssignedType { get; set; }
 
-        public bool UpdateField<T>(CSEntryChange csentry, T obj)
+        public bool IsAnchor { get; set; }
+
+        public bool CanProcessAttribute(string attribute)
+        {
+            return this.AttributeName == attribute;
+        }
+
+        public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)
             {
@@ -86,12 +82,26 @@ namespace Lithnet.GoogleApps.MA
             return true;
         }
 
-        public AttributeChange GetAttributeChange(CSEntryChange csentry)
+        public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
-            return csentry.AttributeChanges.FirstOrDefault(t => t.Name == this.AttributeName);
+            if (this.IsAnchor)
+            {
+                yield return SchemaAttribute.CreateAnchorAttribute(this.AttributeName, this.AttributeType, this.Operation);
+            }
+            else
+            {
+                if (this.IsMultivalued)
+                {
+                    yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+                }
+                else
+                {
+                    yield return SchemaAttribute.CreateSingleValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+                }
+            }
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges<T>(ObjectModificationType modType, T obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -116,11 +126,11 @@ namespace Lithnet.GoogleApps.MA
             {
                 case ObjectModificationType.Add:
                 case ObjectModificationType.Replace:
-                    yield return AttributeChange.CreateAttributeAdd(this.AttributeName, value);
+                    yield return AttributeChange.CreateAttributeAdd(this.AttributeName, TypeConverter.ConvertData(value, this.AttributeType));
                     break;
 
                 case ObjectModificationType.Update:
-                    yield return AttributeChange.CreateAttributeReplace(this.AttributeName, value);
+                    yield return AttributeChange.CreateAttributeReplace(this.AttributeName, TypeConverter.ConvertData(value, this.AttributeType));
                     break;
 
                 default:

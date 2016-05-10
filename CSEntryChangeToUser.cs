@@ -8,7 +8,7 @@ using Lithnet.Logging;
 
 namespace Lithnet.GoogleApps.MA
 {
-    public static class CSEntryChangeToUser
+    internal static class CSEntryChangeToUser
     {
         private static GoogleJsonSerializer serializer = new GoogleJsonSerializer();
 

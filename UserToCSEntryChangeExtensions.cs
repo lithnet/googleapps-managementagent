@@ -9,7 +9,7 @@ namespace Lithnet.GoogleApps.MA
 {
     using System.Diagnostics.CodeAnalysis;
 
-    public static class UserToCSEntryChangeExtensions
+    internal static class UserToCSEntryChangeExtensions
     {
         private static GoogleJsonSerializer serializer = new GoogleJsonSerializer();
 

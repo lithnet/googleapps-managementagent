@@ -3,42 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Apis.Admin.Directory.directory_v1.Data;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Google.Apis.Admin.Directory.directory_v1.Data;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-    using User = ManagedObjects.User;
-
-    public class ApiInterfaceGroupSettings : ApiInterface
+    internal class ApiInterfaceGroupSettings : IApiInterface
     {
-        private static MASchemaType maType = SchemaBuilder.GetUserSchema();
+        public string Api => "groupsettings";
 
-        public ApiInterfaceGroupSettings()
-        {
-            this.Api = "groupsettings";
-        }
-
-        public override bool IsPrimary => false;
-
-        public override object CreateInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override object GetInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void DeleteInstance(CSEntryChange csentry)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             bool hasChanged = false;
 
@@ -53,7 +29,7 @@ namespace Lithnet.GoogleApps.MA
                 settings = GroupSettingsRequestFactory.Get(this.GetAnchorValue(target));
             }
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupSettings.maType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, settings))
                 {
@@ -80,7 +56,7 @@ namespace Lithnet.GoogleApps.MA
             return this.GetChanges(csentry.ObjectModificationType, type, result);
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -99,9 +75,9 @@ namespace Lithnet.GoogleApps.MA
                     settings = group.Settings;
                 }
             }
-        
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupSettings.maType.Attributes.Where(t => t.Api == this.Api))
+
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
@@ -112,12 +88,12 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public override string GetAnchorValue(object target)
+        private string GetAnchorValue(object target)
         {
             return ((Group)target).Id;
         }
 
-        public override string GetDNValue(object target)
+        private string GetDNValue(object target)
         {
             return ((Group)target).Email;
         }

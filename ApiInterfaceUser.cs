@@ -10,18 +10,19 @@ namespace Lithnet.GoogleApps.MA
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    public class ApiInterfaceUser : ApiInterface
+    internal class ApiInterfaceUser : IApiInterfaceObject
     {
-        private static MASchemaType userType = SchemaBuilder.GetUserSchema();
+      
+        private static ApiInterfaceKeyedCollection internalInterfaces;
 
-        public ApiInterfaceUser()
+        static ApiInterfaceUser()
         {
-            this.Api = "user";
+            ApiInterfaceUser.internalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
         }
 
-        public override bool IsPrimary => true;
+        public string Api => "user";
 
-        public override object CreateInstance(CSEntryChange csentry)
+        public object CreateInstance(CSEntryChange csentry)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
@@ -35,26 +36,28 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(ApiInterfaceUser.userType.AnchorAttributeName)
+                    Id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName)
                 };
             }
         }
 
-        public override object GetInstance(CSEntryChange csentry)
+        public object GetInstance(CSEntryChange csentry)
         {
             return UserRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public override void DeleteInstance(CSEntryChange csentry)
+        public void DeleteInstance(CSEntryChange csentry)
         {
             UserRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch=false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             bool hasChanged = false;
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceUser.userType.Attributes.Where(t => t.Api == this.Api))
+            List<AttributeChange> changes = new List<AttributeChange>();
+
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
                 {
@@ -62,57 +65,70 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            if (!hasChanged)
+            if (hasChanged)
             {
-                return new List<AttributeChange>();
-            }
+                User result;
 
-            User result;
-
-            if (csentry.ObjectModificationType == ObjectModificationType.Add)
-            {
-                result = UserRequestFactory.Add((User)target);
-            }
-            else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-            {
-                if (patch)
+                if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = UserRequestFactory.Patch((User) target, this.GetAnchorValue(target));
+                    result = UserRequestFactory.Add((User)target);
+                }
+                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
+                {
+                    if (patch)
+                    {
+                        result = UserRequestFactory.Patch((User)target, this.GetAnchorValue(target));
+                    }
+                    else
+                    {
+                        result = UserRequestFactory.Update((User)target, this.GetAnchorValue(target));
+                    }
                 }
                 else
                 {
-                    result = UserRequestFactory.Update((User) target, this.GetAnchorValue(target));
+                    throw new InvalidOperationException();
                 }
-            }
-            else
-            {
-                throw new InvalidOperationException();
+
+                changes.AddRange(this.GetChanges(csentry.ObjectModificationType, type, result));
             }
 
-            return this.GetChanges(csentry.ObjectModificationType, type, result);
+            foreach (IApiInterface i in ApiInterfaceUser.internalInterfaces)
+            {
+                changes.AddRange(i.ApplyChanges(csentry, type, target, patch));
+            }
+
+            return changes;
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceUser.userType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
             {
-                if (type.HasAttribute(typeDef.AttributeName))
+                foreach (AttributeChange change in typeDef.CreateAttributeChanges(modType, source))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, source));
+                    if (type.HasAttribute(change.Name))
+                    {
+                        attributeChanges.Add(change);
+                    }
                 }
+            }
+
+            foreach (IApiInterface i in ApiInterfaceUser.internalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(modType, type, source));
             }
 
             return attributeChanges;
         }
 
-        public override string GetAnchorValue(object target)
+        public string GetAnchorValue(object target)
         {
             return ((User)target).Id;
         }
 
-        public override string GetDNValue(object target)
+        public string GetDNValue(object target)
         {
             return ((User)target).PrimaryEmail;
         }

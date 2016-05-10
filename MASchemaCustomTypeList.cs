@@ -14,49 +14,25 @@ namespace Lithnet.GoogleApps.MA
     using System.Reflection;
     using ManagedObjects;
 
-    [DataContract(Name = "schema-array")]
-    public class MASchemaCustomTypeArray : IMASchemaAttribute
+    internal class MASchemaCustomTypeList<T> : IMASchemaAttribute where T : CustomTypeObject, new()
     {
         private PropertyInfo propInfo;
 
-        [DataMember(Name = "attribute-name")]
         public string AttributeName { get; set; }
 
-        [DataMember(Name = "field-name")]
         public string FieldName { get; set; }
 
-        [DataMember(Name = "property-name")]
         public string PropertyName { get; set; }
 
-        [DataMember(Name = "api")]
         public string Api { get; set; }
 
-        [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
-
-        [DataMember(Name = "type-name")]
-        public string TypeName { get; set; }
-
-        public Type Type
-        {
-            get
-            {
-                return Type.GetType(this.TypeName);
-
-            }
-
-            set
-            {
-                this.TypeName = value.AssemblyQualifiedName;
-
-            }
-        }
-
+        
         [DataMember(Name = "known-types")]
         public IList<string> KnownTypes { get; set; }
 
         [DataMember(Name = "attributes")]
-        public IList<MASchemaArrayField> Fields { get; set; }
+        public IList<MASchemaField> Fields { get; set; }
 
         [DataMember(Name = "is-read-only")]
         public bool IsReadOnly { get; set; }
@@ -94,7 +70,7 @@ namespace Lithnet.GoogleApps.MA
 
         private IEnumerable<MASchemaAttribute> GetAttributesOfType(string type)
         {
-            foreach (MASchemaArrayField item in this.Fields)
+            foreach (MASchemaField item in this.Fields)
             {
                 yield return new MASchemaAttribute
                 {
@@ -103,7 +79,7 @@ namespace Lithnet.GoogleApps.MA
                     IsArrayAttribute = true,
                     CanPatch = this.CanPatch,
                     IsMultivalued = item.IsMultivalued,
-                    AttributeName = $"{this.AttributeName}_{type}_{item.AttributeNamePart}",
+                    AttributeName = item.GetAttributeName($"{this.AttributeName}_{type}"),
                     Operation = item.Operation,
                     ParentFieldName = this.FieldName,
                     PropertyName = item.PropertyName,
@@ -125,7 +101,12 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public bool UpdateField<T>(CSEntryChange csentry, T obj)
+        public bool CanProcessAttribute(string attribute)
+        {
+            return this.AttributeName == attribute || this.Attributes.Any(t => t.AttributeName == attribute);
+        }
+
+        public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)
             {
@@ -147,11 +128,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             bool created;
-            IList list = this.GetList(obj, out created);
+            IList<T> list = this.GetList(obj, out created);
 
-            Dictionary<string, CustomTypeObject> typedObjects = new Dictionary<string, CustomTypeObject>();
+            Dictionary<string, T> typedObjects = new Dictionary<string, T>();
 
-            foreach (CustomTypeObject item in list.OfType<CustomTypeObject>())
+            foreach (T item in list)
             {
                 typedObjects.Add(item.Type, item);
             }
@@ -160,7 +141,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (!typedObjects.ContainsKey(group.Key))
                 {
-                    CustomTypeObject o = (CustomTypeObject)Activator.CreateInstance(this.Type, new object[] {});
+                    T o = (T)Activator.CreateInstance(typeof(T), new object[] {});
                     o.Type = group.Key;
                     typedObjects.Add(group.Key, o);
                     list.Add(o);
@@ -175,7 +156,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            if (this.RemoveEmptyItems(list))
+            if (this.RemoveEmptyItems((IList)list))
             {
                 hasChanged = true;
             }
@@ -186,6 +167,17 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return hasChanged;
+        }
+
+        public IEnumerable<SchemaAttribute> GetSchemaAttributes()
+        {
+            foreach (MASchemaField field in this.Fields)
+            {
+                foreach (string type in this.KnownTypes)
+                {
+                    yield return field.GetSchemaAttribute($"{this.AttributeName}_{type}");
+                }
+            }
         }
 
         private bool RemoveEmptyItems(IList items) 
@@ -209,28 +201,26 @@ namespace Lithnet.GoogleApps.MA
             return updated;
         }
 
-        private IList GetList<T>(T obj, out bool created)
+        private IList<T> GetList(object obj, out bool created)
         {
-            object childObject = this.propInfo.GetValue(obj);
-            created = false;
-
-            if (childObject == null)
+            if (this.propInfo == null)
             {
-                childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] { });
-                created = true;
+                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            IList list = childObject as IList;
+            IList<T> list = this.propInfo.GetValue(obj) as IList<T>;
+            created = false;
 
             if (list == null)
             {
-                throw new ArgumentException($"property {this.propInfo.Name} does not inherit from IList");
+                list = new List<T>();
+                created = true;
             }
 
             return list;
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges<T>(ObjectModificationType modType, T obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -238,9 +228,9 @@ namespace Lithnet.GoogleApps.MA
             }
 
             bool created;
-            IList list = this.GetList(obj, out created);
+            IList<T> list = this.GetList(obj, out created);
 
-            foreach (CustomTypeObject item in list.OfType<CustomTypeObject>())
+            foreach (T item in list)
             {
                 foreach (MASchemaAttribute attribute in this.Attributes)
                 {

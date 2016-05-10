@@ -10,33 +10,11 @@ namespace Lithnet.GoogleApps.MA
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    public class ApiInterfaceUserAliases : ApiInterface
+    internal class ApiInterfaceUserAliases : IApiInterface
     {
-        private static MASchemaType userType = SchemaBuilder.GetUserSchema();
+        public string Api => "useraliases";
 
-        public ApiInterfaceUserAliases()
-        {
-            this.Api = "useraliases";
-        }
-
-        public override bool IsPrimary => false;
-
-        public override object CreateInstance(CSEntryChange csentry)
-        {
-            return new List<string>();
-        }
-
-        public override object GetInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DeleteInstance(CSEntryChange csentry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             Func<AttributeChange> x = () => ApiInterfaceUserAliases.ApplyUserAliasChanges(csentry, (User) target);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
@@ -51,11 +29,11 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public override IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceUserAliases.userType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
@@ -64,16 +42,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return attributeChanges;
-        }
-
-        public override string GetAnchorValue(object target)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetDNValue(object target)
-        {
-            throw new NotImplementedException();
         }
 
         private static void GetUserAliasChanges(CSEntryChange csentry, User user, out IList<string> aliasAdds, out IList<string> aliasDeletes)

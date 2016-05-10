@@ -8,7 +8,7 @@ namespace Lithnet.GoogleApps.MA
 {
     using ManagedObjects;
 
-    public class UserUpdateTemplate
+    internal class UserUpdateTemplate
     {
         public User User { get; set; }
 
