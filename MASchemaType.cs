@@ -9,7 +9,7 @@ namespace Lithnet.GoogleApps.MA
 {
     [DataContract(Name = "schema-type")]
     [KnownType(typeof(MASchemaAttribute))]
-    [KnownType(typeof(MASchemaArray))]
+    [KnownType(typeof(MASchemaCustomTypeArray))]
     [KnownType(typeof(MASchemaNestedType))]
     public class MASchemaType
     {

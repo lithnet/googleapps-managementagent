@@ -48,10 +48,18 @@ namespace Lithnet.GoogleApps.MA
         [DataMember(Name = "is-array-attribute")]
         public bool IsArrayAttribute { get; set; }
 
+        [DataMember(Name = "is-read-only")]
+        public bool IsReadOnly { get; set; }
+
         internal string AssignedType { get; set; }
 
         public bool UpdateField<T>(CSEntryChange csentry, T obj)
         {
+            if (this.IsReadOnly)
+            {
+                return false;
+            }
+
             if (!csentry.HasAttributeChange(this.AttributeName))
             {
                 return false;

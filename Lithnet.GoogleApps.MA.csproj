@@ -89,14 +89,16 @@
     <Compile Include="IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
     <Compile Include="ManagementAgentSchema.cs" />
+    <Compile Include="MASchemaSimpleList.cs" />
     <Compile Include="MASchemaNestedType.cs" />
-    <Compile Include="MASchemaArray.cs" />
+    <Compile Include="MASchemaCustomTypeArray.cs" />
     <Compile Include="MASchemaArrayField.cs" />
     <Compile Include="MASchemaAttribute.cs" />
     <Compile Include="MASchemaTypes.cs" />
     <Compile Include="MASchemaType.cs" />
     <Compile Include="SchemaConstants.cs" />
     <Compile Include="UserToCSEntryChangeExtensions.cs" />
+    <Compile Include="UserUpdateTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

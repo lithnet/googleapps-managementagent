@@ -37,6 +37,9 @@ namespace Lithnet.GoogleApps.MA
         [DataMember(Name = "attributes")]
         public IList<MASchemaArrayField> Fields { get; set; }
 
+        [DataMember(Name = "is-read-only")]
+        public bool IsReadOnly { get; set; }
+
         public IList<MASchemaAttribute> Attributes
         {
             get
@@ -89,6 +92,11 @@ namespace Lithnet.GoogleApps.MA
 
         public bool UpdateField<T>(CSEntryChange csentry, T obj)
         {
+            if (this.IsReadOnly)
+            {
+                return false;
+            }
+
             bool hasChanged = false;
 
             IList<Tuple<AttributeChange, MASchemaAttribute>> changes = this.GetAttributeChanges(csentry).ToList();
@@ -103,19 +111,25 @@ namespace Lithnet.GoogleApps.MA
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            object parentObject = this.propInfo.GetValue(obj);
-
-            if (parentObject == null)
+            object childObject = this.propInfo.GetValue(obj);
+            bool created = false;
+            if (childObject == null)
             {
-                parentObject = default(T);
+                childObject = Activator.CreateInstance(this.propInfo.PropertyType, new object[] {  });
+                created = true;
             }
 
-            foreach (var change in changes)
+            foreach (Tuple<AttributeChange, MASchemaAttribute> change in changes)
             {
-                if (change.Item2.UpdateField(csentry, parentObject))
+                if (change.Item2.UpdateField(csentry, childObject))
                 {
                     hasChanged = true;
                 }
+            }
+
+            if (hasChanged && created)
+            {
+                this.propInfo.SetValue(obj, childObject, null);
             }
 
             return hasChanged;
