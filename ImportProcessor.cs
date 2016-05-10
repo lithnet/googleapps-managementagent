@@ -12,15 +12,15 @@ namespace Lithnet.GoogleApps.MA
 
     public static class ImportProcessor
     {
-        public static CSEntryChange GetCSEntryChange(object source, IManagementAgentParameters config, Schema types)
+        public static CSEntryChange GetCSEntryChange(object source, Schema types)
         {
             User user = source as User;
-
+            
             if (user != null)
             {
                 if (types.Types.Contains(SchemaConstants.User))
                 {
-                    return ImportProcessor.GetCSEntryChange(user, config, types.Types[SchemaConstants.User]);
+                    return ImportProcessor.GetCSEntryChange(user, types.Types[SchemaConstants.User]);
                 }
             }
 
@@ -30,14 +30,14 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (types.Types.Contains(SchemaConstants.Group))
                 {
-                    return ImportProcessor.GetCSEntryChange(group, config, types.Types[SchemaConstants.Group]);
+                    return ImportProcessor.GetCSEntryChange(group, types.Types[SchemaConstants.Group]);
                 }
             }
 
             throw new InvalidOperationException();
         }
 
-        public static CSEntryChange GetCSEntryChange(object source, IManagementAgentParameters config, SchemaType type)
+        public static CSEntryChange GetCSEntryChange(object source, SchemaType type)
         {
             MASchemaType maType = SchemaBuilder.GetSchema(type.Name);
 

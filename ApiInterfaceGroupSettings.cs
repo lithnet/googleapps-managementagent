@@ -7,43 +7,55 @@ using System.Threading.Tasks;
 namespace Lithnet.GoogleApps.MA
 {
     using Google.Apis.Admin.Directory.directory_v1.Data;
+    using ManagedObjects;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
     using User = ManagedObjects.User;
 
-    public class ApiInterfaceGroup : ApiInterface
+    public class ApiInterfaceGroupSettings : ApiInterface
     {
         private static MASchemaType maType = SchemaBuilder.GetUserSchema();
 
-        public ApiInterfaceGroup()
+        public ApiInterfaceGroupSettings()
         {
-            this.Api = "group";
+            this.Api = "groupsettings";
         }
 
-        public override bool IsPrimary => true;
+        public override bool IsPrimary => false;
 
         public override object CreateInstance(CSEntryChange csentry)
         {
-            return new GoogleGroup();
+            throw new NotSupportedException();
         }
 
         public override object GetInstance(CSEntryChange csentry)
         {
-            return GroupRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            throw new NotSupportedException();
         }
 
         public override void DeleteInstance(CSEntryChange csentry)
         {
-            GroupRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            throw new NotSupportedException();
         }
 
         public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             bool hasChanged = false;
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroup.maType.Attributes.Where(t => t.Api == this.Api))
+            GroupSettings settings;
+
+            if (csentry.ObjectModificationType == ObjectModificationType.Add || patch)
             {
-                if (typeDef.UpdateField(csentry, target))
+                settings = new GroupSettings();
+            }
+            else
+            {
+                settings = GroupSettingsRequestFactory.Get(this.GetAnchorValue(target));
+            }
+
+            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupSettings.maType.Attributes.Where(t => t.Api == this.Api))
+            {
+                if (typeDef.UpdateField(csentry, settings))
                 {
                     hasChanged = true;
                 }
@@ -54,26 +66,15 @@ namespace Lithnet.GoogleApps.MA
                 return new List<AttributeChange>();
             }
 
-            Group result;
+            GroupSettings result;
 
-            if (csentry.ObjectModificationType == ObjectModificationType.Add)
+            if (patch)
             {
-                result = GroupRequestFactory.Add((Group)target);
-            }
-            else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-            {
-                if (patch)
-                {
-                    result = GroupRequestFactory.Patch(this.GetAnchorValue(target), (Group)target);
-                }
-                else
-                {
-                    result = GroupRequestFactory.Update(this.GetAnchorValue(target), (Group) target);
-                }
+                result = GroupSettingsRequestFactory.Patch(this.GetAnchorValue(target), settings);
             }
             else
             {
-                throw new InvalidOperationException();
+                result = GroupSettingsRequestFactory.Update(this.GetAnchorValue(target), settings);
             }
 
             return this.GetChanges(csentry.ObjectModificationType, type, result);
@@ -83,11 +84,28 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroup.maType.Attributes.Where(t => t.Api == this.Api))
+            GroupSettings settings = source as GroupSettings;
+
+            if (settings == null)
+            {
+                GoogleGroup group = source as GoogleGroup;
+
+                if (group == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    settings = group.Settings;
+                }
+            }
+        
+
+            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupSettings.maType.Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, source));
+                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, settings));
                 }
             }
 

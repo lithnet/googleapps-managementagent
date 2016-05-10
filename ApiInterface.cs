@@ -20,7 +20,7 @@ namespace Lithnet.GoogleApps.MA
 
         public abstract void DeleteInstance(CSEntryChange csentry);
 
-        public abstract IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target);
+        public abstract IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false);
 
         public abstract IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source);
 

@@ -50,7 +50,7 @@ namespace Lithnet.GoogleApps.MA
             UserRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target)
+        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch=false)
         {
             bool hasChanged = false;
 
@@ -75,7 +75,14 @@ namespace Lithnet.GoogleApps.MA
             }
             else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
             {
-                result = UserRequestFactory.Update((User)target, this.GetAnchorValue(target));
+                if (patch)
+                {
+                    result = UserRequestFactory.Patch((User) target, this.GetAnchorValue(target));
+                }
+                else
+                {
+                    result = UserRequestFactory.Update((User) target, this.GetAnchorValue(target));
+                }
             }
             else
             {

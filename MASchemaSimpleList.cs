@@ -34,6 +34,14 @@ namespace Lithnet.GoogleApps.MA
         [DataMember(Name = "can-patch")]
         public bool CanPatch { get; set; }
 
+        public bool IsMultivalued => true;
+
+        [DataMember(Name = "attribute-type")]
+        public AttributeType AttributeType { get; set; }
+
+        [DataMember(Name = "operation")]
+        public AttributeOperation Operation { get; set; }
+
         [DataMember(Name = "is-read-only")]
         public bool IsReadOnly { get; set; }
 

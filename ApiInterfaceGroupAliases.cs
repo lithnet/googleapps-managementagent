@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using Google.Apis.Admin.Directory.directory_v1.Data;
     using ManagedObjects;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    public class ApiInterfaceUserAliases : ApiInterface
+    public class ApiInterfaceGroupAliases : ApiInterface
     {
-        private static MASchemaType userType = SchemaBuilder.GetUserSchema();
+        private static MASchemaType maType = SchemaBuilder.GetGroupSchema();
 
-        public ApiInterfaceUserAliases()
+        public ApiInterfaceGroupAliases()
         {
-            this.Api = "useraliases";
+            this.Api = "groupaliases";
         }
 
         public override bool IsPrimary => false;
@@ -38,7 +39,7 @@ namespace Lithnet.GoogleApps.MA
 
         public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
-            Func<AttributeChange> x = () => ApiInterfaceUserAliases.ApplyUserAliasChanges(csentry, (User) target);
+            Func<AttributeChange> x = () => ApiInterfaceGroupAliases.ApplyGroupAliasChanges(csentry, (Group)target);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
 
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -55,7 +56,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ApiInterfaceUserAliases.userType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ApiInterfaceGroupAliases.maType.Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
@@ -76,7 +77,7 @@ namespace Lithnet.GoogleApps.MA
             throw new NotImplementedException();
         }
 
-        private static void GetUserAliasChanges(CSEntryChange csentry, User user, out IList<string> aliasAdds, out IList<string> aliasDeletes)
+        private static void GetGroupAliasChanges(CSEntryChange csentry, Group group, out IList<string> aliasAdds, out IList<string> aliasDeletes)
         {
             aliasAdds = new List<string>();
             aliasDeletes = new List<string>();
@@ -89,7 +90,7 @@ namespace Lithnet.GoogleApps.MA
                     aliasAdds = change.GetValueAdds<string>();
                 }
 
-                foreach (string alias in UserRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
+                foreach (string alias in GroupRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
                 {
                     aliasDeletes.Add(alias);
                 }
@@ -108,7 +109,7 @@ namespace Lithnet.GoogleApps.MA
                         break;
 
                     case AttributeModificationType.Delete:
-                        foreach (string alias in user.Aliases)
+                        foreach (string alias in group.Aliases)
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -116,7 +117,7 @@ namespace Lithnet.GoogleApps.MA
 
                     case AttributeModificationType.Replace:
                         aliasAdds = change.GetValueAdds<string>();
-                        foreach (string alias in user.Aliases.Except(aliasAdds))
+                        foreach (string alias in group.Aliases.Except(aliasAdds))
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -134,12 +135,12 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private static AttributeChange ApplyUserAliasChanges(CSEntryChange csentry, User user)
+        private static AttributeChange ApplyGroupAliasChanges(CSEntryChange csentry, Group group)
         {
             IList<string> aliasAdds;
             IList<string> aliasDeletes;
 
-            ApiInterfaceUserAliases.GetUserAliasChanges(csentry, user, out aliasAdds, out aliasDeletes);
+            ApiInterfaceGroupAliases.GetGroupAliasChanges(csentry, group, out aliasAdds, out aliasDeletes);
 
             if (aliasAdds.Count == 0 && aliasDeletes.Count == 0)
             {
@@ -155,14 +156,14 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string alias in aliasDeletes)
                     {
-                        UserRequestFactory.RemoveAlias(csentry.DN, alias);
+                        GroupRequestFactory.RemoveAlias(csentry.DN, alias);
                         valueChanges.Add(ValueChange.CreateValueDelete(alias));
                     }
                 }
 
                 foreach (string alias in aliasAdds)
                 {
-                    UserRequestFactory.AddAlias(csentry.DN, alias);
+                    GroupRequestFactory.AddAlias(csentry.DN, alias);
                     valueChanges.Add(ValueChange.CreateValueAdd(alias));
                 }
             }

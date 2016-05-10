@@ -68,8 +68,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApiInterface.cs" />
+    <Compile Include="ApiInterfaceGroupMembership.cs" />
+    <Compile Include="ApiInterfaceGroupSettings.cs" />
     <Compile Include="ApiInterfaceKeyedCollection.cs" />
     <Compile Include="ApiInterfaceGroup.cs" />
+    <Compile Include="ApiInterfaceGroupAliases.cs" />
     <Compile Include="ApiInterfaceUserMakeAdmin.cs" />
     <Compile Include="ApiInterfaceUserAliases.cs" />
     <Compile Include="ApiInterfaceUser.cs" />

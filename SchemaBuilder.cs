@@ -19,6 +19,12 @@ namespace Lithnet.GoogleApps.MA
         static SchemaBuilder()
         {
             SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceUser());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceGroup());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceGroupAliases());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceGroupSettings());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceGroupMembership());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceUserAliases());
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceUserMakeAdmin());
         }
 
         public static MASchemaType GetSchema(string type)
@@ -418,7 +424,89 @@ namespace Lithnet.GoogleApps.MA
             
             SchemaBuilder.AddGroupAliases(type);
             SchemaBuilder.AddGroupSettings(type);
+            SchemaBuilder.AddGroupMembers(type);
             return type;
+        }
+
+        private static void AddGroupMembers(MASchemaType type)
+        {
+            MASchemaSimpleList members = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "member",
+                PropertyName = "Members",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(members);
+
+            MASchemaSimpleList managers = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "manager",
+                PropertyName = "Managers",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(managers);
+
+            MASchemaSimpleList owners = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "owner",
+                PropertyName = "Owners",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(owners);
+
+            MASchemaSimpleList externalMembers = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "externalMember",
+                PropertyName = "ExternalMembers",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(externalMembers);
+
+            MASchemaSimpleList externalManagers = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "externalManager",
+                PropertyName = "ExternalManagers",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(externalManagers);
+
+            MASchemaSimpleList externalOwners = new MASchemaSimpleList
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "externalOwner",
+                PropertyName = "ExternalOwners",
+                Api = "groupmembership",
+                CanPatch = true,
+            };
+
+            type.Attributes.Add(externalOwners);
         }
 
         private static void AddGroupSettings(MASchemaType type)

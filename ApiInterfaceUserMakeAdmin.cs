@@ -36,7 +36,7 @@ namespace Lithnet.GoogleApps.MA
             throw new NotImplementedException();
         }
 
-        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target)
+        public override IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
         {
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
             List<AttributeChange> changes = new List<AttributeChange>();

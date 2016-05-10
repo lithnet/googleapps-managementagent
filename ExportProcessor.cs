@@ -14,21 +14,11 @@ namespace Lithnet.GoogleApps.MA
 
     public static class ExportProcessor
     {
-        public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
+        public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type)
         {
             try
             {
-                switch (csentry.ObjectType)
-                {
-                    case SchemaConstants.User:
-                        return CSEntryChangeFactoryUser.PutCSEntryChangeUser(csentry, config, type);
-
-                    case SchemaConstants.Group:
-                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroup(csentry, config, type);
-
-                    default:
-                        throw new InvalidOperationException();
-                }
+                return ExportProcessor.PutCSEntryChangeObject(csentry, type);
             }
             catch (Google.GoogleApiException ex)
             {
@@ -51,7 +41,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
+        public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, SchemaType type)
         {
             MASchemaType maType = SchemaBuilder.GetSchema(type.Name);
 
@@ -152,7 +142,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IGrouping<string, IMASchemaAttribute> group in maType.Attributes.GroupBy(t => t.Api))
             {
-                foreach (AttributeChange item in SchemaBuilder.ApiInterfaces[group.Key].ApplyChanges(csentry, type, instance))
+                foreach (AttributeChange item in SchemaBuilder.ApiInterfaces[group.Key].ApplyChanges(csentry, type, instance, !fullUpdate))
                 {
                     deltaCSEntry.AttributeChanges.Add(item);
                 }
