@@ -48,8 +48,7 @@ namespace Lithnet.GoogleApps.MA
         [DataMember(Name = "is-array-attribute")]
         public bool IsArrayAttribute { get; set; }
 
-        [DataMember(Name = "is-read-only")]
-        public bool IsReadOnly { get; set; }
+        public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
         internal string AssignedType { get; set; }
 

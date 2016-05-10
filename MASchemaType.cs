@@ -11,6 +11,7 @@ namespace Lithnet.GoogleApps.MA
     [KnownType(typeof(MASchemaAttribute))]
     [KnownType(typeof(MASchemaCustomTypeArray))]
     [KnownType(typeof(MASchemaNestedType))]
+    [KnownType(typeof(MASchemaSimpleList))]
     public class MASchemaType
     {
         [DataMember(Name = "name")]

@@ -15,7 +15,7 @@
 
         bool CanPatch { get; set; }
 
-        bool IsReadOnly { get; set; }
+        bool IsReadOnly { get; }
 
         bool UpdateField<T>(CSEntryChange csentry, T obj);
 

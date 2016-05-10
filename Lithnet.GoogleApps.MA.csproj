@@ -96,6 +96,7 @@
     <Compile Include="MASchemaAttribute.cs" />
     <Compile Include="MASchemaTypes.cs" />
     <Compile Include="MASchemaType.cs" />
+    <Compile Include="SchemaBuilder.cs" />
     <Compile Include="SchemaConstants.cs" />
     <Compile Include="UserToCSEntryChangeExtensions.cs" />
     <Compile Include="UserUpdateTemplate.cs" />
