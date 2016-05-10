@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -19,5 +20,13 @@ namespace Lithnet.GoogleApps.MA
 
         [DataMember(Name = "attributes")]
         public List<IMASchemaAttribute> Attributes { get; set; }
+
+        [DataMember(Name = "anchor-name")]
+        public string AnchorAttributeName { get; set; }
+
+        [DataMember(Name = "can-patch")]
+        public bool CanPatch { get; set; }
+
+        public ApiInterface ApiInterface { get; set; }
     }
 }

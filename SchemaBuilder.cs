@@ -14,12 +14,36 @@ namespace Lithnet.GoogleApps.MA
 
     public static class SchemaBuilder
     {
+        public static ApiInterfaceKeyedCollection ApiInterfaces = new ApiInterfaceKeyedCollection();
+
+        static SchemaBuilder()
+        {
+            SchemaBuilder.ApiInterfaces.Add(new ApiInterfaceUser());
+        }
+
+        public static MASchemaType GetSchema(string type)
+        {
+            switch (type)
+            {
+                case "user":
+                    return SchemaBuilder.GetUserSchema();
+
+                case "group":
+                    return SchemaBuilder.GetGroupSchema();
+            }
+
+            throw new InvalidOperationException();
+        }
+
         public static MASchemaType GetUserSchema()
         {
             MASchemaType type = new MASchemaType
             {
                 Attributes = new List<IMASchemaAttribute>(),
-                Name = "user"
+                Name = "user",
+                AnchorAttributeName = "id",
+                CanPatch = true,
+                ApiInterface = new ApiInterfaceUser()
             };
 
             MASchemaAttribute orgUnitPath = new MASchemaAttribute
@@ -135,7 +159,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "isAdmin",
                 PropertyName = "IsAdmin",
-                Api = "user",
+                Api = "usermakeadmin",
                 CanPatch = true,
                 IsArrayAttribute = false
             };
@@ -295,7 +319,7 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilder.AddNames(type);
             SchemaBuilder.AddNotes(type);
             SchemaBuilder.AddWebSites(type);
-            SchemaBuilder.AddAliases(type);
+            SchemaBuilder.AddUserAliases(type);
             SchemaBuilder.AddPhonesAttributes(type);
             SchemaBuilder.AddOrganizationsAttributes(type);
             SchemaBuilder.AddAddresses(type);
@@ -304,6 +328,480 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilder.AddIms(type);
 
             return type;
+        }
+
+        public static MASchemaType GetGroupSchema()
+        {
+            MASchemaType type = new MASchemaType
+            {
+                Attributes = new List<IMASchemaAttribute>(),
+                Name = "group",
+                AnchorAttributeName = "id",
+                CanPatch = true,
+                ApiInterface = new ApiInterfaceGroup()
+            };
+
+            MASchemaAttribute adminCreated = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "adminCreated",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "adminCreated",
+                PropertyName = "AdminCreated",
+                Api = "group",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(adminCreated);
+
+            MASchemaAttribute description = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "description",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "description",
+                PropertyName = "Description",
+                Api = "group",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(description);
+
+            MASchemaAttribute email = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "email",
+                PropertyName = "Email",
+                Api = "group",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(email);
+
+            MASchemaAttribute id = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "id",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "id",
+                PropertyName = "id",
+                Api = "group",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(id);
+
+            MASchemaAttribute name = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "name",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "name",
+                PropertyName = "name",
+                Api = "group",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(name);
+            
+            SchemaBuilder.AddGroupAliases(type);
+            SchemaBuilder.AddGroupSettings(type);
+            return type;
+        }
+
+        private static void AddGroupSettings(MASchemaType type)
+        {
+            MASchemaAttribute whoCanJoin = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanJoin",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanJoin",
+                PropertyName = "WhoCanJoin",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanJoin);
+
+            MASchemaAttribute whoCanViewMembership = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanViewMembership",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanViewMembership",
+                PropertyName = "WhoCanViewMembership",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanViewMembership);
+
+            MASchemaAttribute whoCanViewGroup = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanViewGroup",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanViewGroup",
+                PropertyName = "WhoCanViewGroup",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanViewGroup);
+
+            MASchemaAttribute whoCanInvite = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanInvite",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanInvite",
+                PropertyName = "WhoCanInvite",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanInvite);
+
+            MASchemaAttribute whoCanAdd = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanAdd",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanAdd",
+                PropertyName = "WhoCanAdd",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanAdd);
+
+            MASchemaAttribute allowExternalMembers = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "allowExternalMembers",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "allowExternalMembers",
+                PropertyName = "AllowExternalMembers",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(allowExternalMembers);
+
+            MASchemaAttribute whoCanPostMessage = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanPostMessage",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanPostMessage",
+                PropertyName = "WhoCanPostMessage",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanPostMessage);
+            
+            MASchemaAttribute allowWebPosting = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "allowWebPosting",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "allowWebPosting",
+                PropertyName = "AllowWebPosting",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(allowWebPosting);
+
+            MASchemaAttribute primaryLanguage = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "primaryLanguage",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "primaryLanguage",
+                PropertyName = "PrimaryLanguage",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(primaryLanguage);
+
+            MASchemaAttribute maxMessageBytes = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Integer,
+                FieldName = "maxMessageBytes",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "maxMessageBytes",
+                PropertyName = "MaxMessageBytes",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(maxMessageBytes);
+
+            MASchemaAttribute isArchived = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "isArchived",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "isArchived",
+                PropertyName = "IsArchived",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(isArchived);
+
+
+            MASchemaAttribute archiveOnly = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "archiveOnly",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "archiveOnly",
+                PropertyName = "ArchiveOnly",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(archiveOnly);
+
+            MASchemaAttribute messageModerationLevel = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "messageModerationLevel",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "messageModerationLevel",
+                PropertyName = "MessageModerationLevel",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(messageModerationLevel);
+
+
+            MASchemaAttribute spamModerationLevel = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "spamModerationLevel",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "spamModerationLevel",
+                PropertyName = "SpamModerationLevel",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(spamModerationLevel);
+
+            MASchemaAttribute replyTo = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "replyTo",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "replyTo",
+                PropertyName = "ReplyTo",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(replyTo);
+
+            MASchemaAttribute customReplyTo = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "customReplyTo",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "customReplyTo",
+                PropertyName = "CustomReplyTo",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(customReplyTo);
+
+            MASchemaAttribute sendMessageDenyNotification = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "sendMessageDenyNotification",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "sendMessageDenyNotification",
+                PropertyName = "SendMessageDenyNotification",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(sendMessageDenyNotification);
+
+
+            MASchemaAttribute defaultMessageDenyNotificationText = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "defaultMessageDenyNotificationText",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "defaultMessageDenyNotificationText",
+                PropertyName = "DefaultMessageDenyNotificationText",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(defaultMessageDenyNotificationText);
+
+            MASchemaAttribute showInGroupDirectory = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "showInGroupDirectory",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "showInGroupDirectory",
+                PropertyName = "ShowInGroupDirectory",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(showInGroupDirectory);
+
+
+            MASchemaAttribute allowGoogleCommunication = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "allowGoogleCommunication",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "allowGoogleCommunication",
+                PropertyName = "AllowGoogleCommunication",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(allowGoogleCommunication);
+
+            MASchemaAttribute membersCanPostAsTheGroup = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "membersCanPostAsTheGroup",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "membersCanPostAsTheGroup",
+                PropertyName = "MembersCanPostAsTheGroup",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(membersCanPostAsTheGroup);
+
+            MASchemaAttribute messageDisplayFont = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "messageDisplayFont",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "messageDisplayFont",
+                PropertyName = "MessageDisplayFont",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(messageDisplayFont);
+
+            MASchemaAttribute includeInGlobalAddressList = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "includeInGlobalAddressList",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "includeInGlobalAddressList",
+                PropertyName = "IncludeInGlobalAddressList",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(includeInGlobalAddressList);
+
+            MASchemaAttribute whoCanLeaveGroup = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanLeaveGroup",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanLeaveGroup",
+                PropertyName = "WhoCanLeaveGroup",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanLeaveGroup);
+
+
+            MASchemaAttribute whoCanContactOwner = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanContactOwner",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanContactOwner",
+                PropertyName = "WhoCanContactOwner",
+                Api = "groupsettings",
+                CanPatch = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanContactOwner);
         }
 
         private static void AddNames(MASchemaType type)
@@ -413,7 +911,34 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(webSiteType);
         }
 
-        private static void AddAliases(MASchemaType type)
+        private static void AddGroupAliases(MASchemaType type)
+        {
+            MASchemaSimpleList aliasesList = new MASchemaSimpleList
+            {
+                Api = "groupaliases",
+                AttributeName = "aliases",
+                FieldName = "aliases",
+                PropertyName = "Aliases",
+                CanPatch = true,
+                IsReadOnly = false
+            };
+
+            type.Attributes.Add(aliasesList);
+
+            MASchemaSimpleList nonEditableAliasesList = new MASchemaSimpleList
+            {
+                Api = "group",
+                AttributeName = "nonEditableAliases",
+                FieldName = "nonEditableAliases",
+                PropertyName = "NonEditableAliases",
+                CanPatch = false,
+                IsReadOnly = true
+            };
+
+            type.Attributes.Add(nonEditableAliasesList);
+        }
+
+        private static void AddUserAliases(MASchemaType type)
         {
             MASchemaSimpleList aliasesList = new MASchemaSimpleList
             {

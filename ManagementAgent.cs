@@ -66,7 +66,7 @@ namespace Lithnet.GoogleApps.MA
                 MACapabilities capabilities = new MACapabilities
                 {
                     ConcurrentOperation = false,
-                    DeleteAddAsReplace = true,
+                    DeleteAddAsReplace = false,
                     DeltaImport = true,
                     DistinguishedNameStyle = MADistinguishedNameStyle.Generic,
                     ExportPasswordInFirstPass = false,
