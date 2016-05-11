@@ -190,7 +190,6 @@ namespace Lithnet.GoogleApps.MA
             this.operationSchemaTypes = types;
             this.timer = new Stopwatch();
             this.Configuration = new ManagementAgentParameters(configParameters);
-            ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
 
             this.DeltaPath = Path.Combine(ManagementAgent.MADataPath, ManagementAgent.DeltaFile);
 
@@ -218,6 +217,7 @@ namespace Lithnet.GoogleApps.MA
 
             ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.GroupMembersImportThreadCount + 1, this.Configuration.GroupSettingsImportThreadCount);
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
+            ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
 
             if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User) || this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
             {
@@ -306,25 +306,25 @@ namespace Lithnet.GoogleApps.MA
 
         private void SetupUserImportTask(Schema types)
         {
-            HashSet<string> attributeNames = new HashSet<string>();
+            HashSet<string> fieldNames = new HashSet<string>();
 
-            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User))
+            fieldNames.Add(SchemaConstants.PrimaryEmail);
+            fieldNames.Add(SchemaConstants.ID);
+
+            if (types.Types.Contains(SchemaConstants.User) || types.Types.Contains(SchemaConstants.AdvancedUser))
             {
-                foreach (string name in types.Types[SchemaConstants.User].Attributes.Select(t => t.Name))
+                foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(types.Types[SchemaConstants.User]))
                 {
-                    attributeNames.Add(name);
+                    fieldNames.Add(field);
                 }
             }
-
-            if (this.operationSchemaTypes.Types.Contains("advancedUser"))
+            
+            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
             {
-                foreach (string name in this.operationSchemaTypes.Types["advancedUser"].Attributes.Select(t => t.Name))
-                {
-                    attributeNames.Add(name);
-                }
+                fieldNames.Add($"customSchemas/{SchemaConstants.CustomGoogleAppsSchemaName}");
             }
 
-            string fields = string.Format("users({0}),nextPageToken", ManagementAgentSchema.GetFieldNamesFromAttributeNames(SchemaConstants.User, attributeNames).ToCommaSeparatedString());
+            string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
 
             this.importUsersTask = new Task(() =>
             {
@@ -424,14 +424,17 @@ namespace Lithnet.GoogleApps.MA
 
                     SchemaType type = this.operationSchemaTypes.Types[SchemaConstants.User];
 
-                    if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
+                    if (user.CustomSchemas != null)
                     {
-                        if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
+                        if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
                         {
-                            string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
-                            if (this.operationSchemaTypes.Types.Contains(objectType))
+                            if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
                             {
-                                type = this.operationSchemaTypes.Types[objectType];
+                                string objectType = (string) user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                                if (this.operationSchemaTypes.Types.Contains(objectType))
+                                {
+                                    type = this.operationSchemaTypes.Types[objectType];
+                                }
                             }
                         }
                     }

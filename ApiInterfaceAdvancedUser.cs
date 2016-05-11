@@ -16,16 +16,23 @@ namespace Lithnet.GoogleApps.MA
         {
             this.InternalInterfaces.Add(new ApiInterfaceUserDelegates());
         }
-        
+
         public override object CreateInstance(CSEntryChange csentry)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                User u = new User();
-                u.Password = Guid.NewGuid().ToString("B");
-                u.PrimaryEmail = csentry.DN;
-                u.CustomSchemas = new Dictionary<string, IDictionary<string, object>>();
-                u.CustomSchemas.Add(SchemaConstants.CustomGoogleAppsSchemaName, new Dictionary<string, object>());
+                User u = new User
+                {
+                    Password = ApiInterfaceUser.GenerateSecureString(60),
+                    PrimaryEmail = csentry.DN,
+                    CustomSchemas = new Dictionary<string, IDictionary<string, object>>
+                    {
+                        {
+                            SchemaConstants.CustomGoogleAppsSchemaName, new Dictionary<string, object>()
+                        }
+                    }
+                };
+
                 u.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].Add(SchemaConstants.CustomSchemaObjectType, SchemaConstants.AdvancedUser);
                 return u;
             }

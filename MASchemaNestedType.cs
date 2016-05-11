@@ -127,6 +127,21 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public IEnumerable<string> GetFieldNames(SchemaType type)
+        {
+            if (this.FieldName == null)
+            {
+                yield break;
+            }
+
+            string childFields = string.Join(",", this.Attributes.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName));
+
+            if (!string.IsNullOrWhiteSpace(childFields))
+            {
+                yield return $"{this.FieldName}({childFields})";
+            }
+        }
+
         private IEnumerable<Tuple<AttributeChange, MASchemaAttribute>> GetAttributeChanges(CSEntryChange csentry)
         {
             foreach (MASchemaAttribute attribute in this.Attributes)

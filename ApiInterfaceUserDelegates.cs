@@ -33,12 +33,16 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.AdvancedUser].Attributes.Where(t => t.Api == this.Api))
+            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.AdvancedUser].Attributes.Where(t => t.Api == this.Api && t.AttributeName == SchemaConstants.Delegate))
             {
-                if (type.HasAttribute(typeDef.AttributeName))
+                if (!type.HasAttribute(typeDef.AttributeName))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, source));
+                    continue;
                 }
+
+                List<string> delegates = UserSettingsRequestFactory.GetDelegates(((User)source).PrimaryEmail).ToList();
+                attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, new { Delegates = delegates }));
+                break;
             }
 
             return attributeChanges;
@@ -49,7 +53,7 @@ namespace Lithnet.GoogleApps.MA
             adds = new List<string>();
             deletes = new List<string>();
 
-            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == "delegates");
+            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == SchemaConstants.Delegate);
 
             if (csentry.ObjectModificationType == ObjectModificationType.Replace)
             {

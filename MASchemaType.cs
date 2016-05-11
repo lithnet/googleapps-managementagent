@@ -34,5 +34,16 @@ namespace Lithnet.GoogleApps.MA
 
             return type;
         }
+
+        public IEnumerable<string> GetFieldNames(SchemaType type)
+        {
+            foreach (IMASchemaAttribute attribute in this.Attributes)
+            {
+                foreach (string field in attribute.GetFieldNames(type))
+                {
+                    yield return field;
+                }
+            }
+        }
     }
 }

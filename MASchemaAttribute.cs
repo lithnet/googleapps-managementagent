@@ -101,6 +101,17 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public IEnumerable<string> GetFieldNames(SchemaType type)
+        {
+            if (this.FieldName != null)
+            {
+                if (type.HasAttribute(this.AttributeName))
+                {
+                    yield return this.FieldName;
+                }
+            }
+        }
+
         public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)

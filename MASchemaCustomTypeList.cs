@@ -28,14 +28,13 @@ namespace Lithnet.GoogleApps.MA
 
         public bool CanPatch { get; set; }
 
-        [DataMember(Name = "known-types")]
         public IList<string> KnownTypes { get; set; }
 
-        [DataMember(Name = "attributes")]
         public IList<MASchemaField> Fields { get; set; }
 
-        [DataMember(Name = "is-read-only")]
         public bool IsReadOnly { get; set; }
+
+        public bool IsPrimaryCandidateType { get; set; }
 
         private IList<MASchemaAttribute> attributes;
 
@@ -141,14 +140,17 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (T item in list)
             {
-                if (this.SetPrimaryCandidate(item, item.Type))
+                if (this.IsPrimaryCandidateType)
                 {
-                    hasChanged = true;
-                }
+                    if (this.SetPrimaryCandidate(item, item.Type))
+                    {
+                        hasChanged = true;
+                    }
 
-                if (this.SetPrimaryOnMissingType(item))
-                {
-                    hasChanged = true;
+                    if (this.SetPrimaryOnMissingType(item))
+                    {
+                        hasChanged = true;
+                    }
                 }
 
                 typedObjects.Add(item.Type, item);
@@ -188,6 +190,11 @@ namespace Lithnet.GoogleApps.MA
 
         private bool SetPrimaryOnMissingType(T item)
         {
+            if (!this.IsPrimaryCandidateType)
+            {
+                return false;
+            }
+
             if (item.Type == null)
             {
                 if (this.IsPrimary(item))
@@ -203,8 +210,44 @@ namespace Lithnet.GoogleApps.MA
             return false;
         }
 
+        public IEnumerable<string> GetFieldNames(SchemaType type)
+        {
+            if (this.FieldName == null)
+            {
+                yield break;
+            }
+            HashSet<string> fields = new HashSet<string>();
+
+            foreach (string field in this.Attributes.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName))
+            {
+                fields.Add(field);
+            }
+
+            if (fields.Count == 0)
+            {
+                yield break;
+            }
+
+            if (this.IsPrimaryCandidateType)
+            {
+                fields.Add("primary");
+            }
+
+            fields.Add("type");
+            fields.Add("customType");
+
+            string childFields = string.Join(",", fields);
+
+            yield return $"{this.FieldName}({childFields})";
+        }
+
         private bool SetPrimaryCandidate(T o, string type)
         {
+            if (!this.IsPrimaryCandidateType)
+            {
+                return false;
+            }
+
             IPrimaryCandidateObject primaryObject = o as IPrimaryCandidateObject;
 
             if (primaryObject != null)
@@ -220,6 +263,11 @@ namespace Lithnet.GoogleApps.MA
         }
         private bool IsPrimary(T o)
         {
+            if (!this.IsPrimaryCandidateType)
+            {
+                return false;
+            }
+
             IPrimaryCandidateObject primaryObject = o as IPrimaryCandidateObject;
             return primaryObject?.IsPrimary ?? false;
         }

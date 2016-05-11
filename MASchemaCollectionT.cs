@@ -107,6 +107,17 @@ namespace Lithnet.GoogleApps.MA
             yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
         }
 
+        public IEnumerable<string> GetFieldNames(SchemaType type)
+        {
+            if (this.FieldName != null)
+            {
+                if (type.HasAttribute(this.AttributeName))
+                {
+                    yield return this.FieldName;
+                }
+            }
+        }
+
         private ICollection<T> GetOrCreateList(object obj, out bool created)
         {
             if (this.propInfo == null)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using System.Security.Cryptography;
     using ManagedObjects;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
@@ -13,6 +14,8 @@ namespace Lithnet.GoogleApps.MA
     internal class ApiInterfaceUser : IApiInterfaceObject
     {
         protected ApiInterfaceKeyedCollection InternalInterfaces { get; private set; }
+
+        private static RNGCryptoServiceProvider cryptoProvider = new RNGCryptoServiceProvider();
 
         public ApiInterfaceUser()
         {
@@ -27,7 +30,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Password = Guid.NewGuid().ToString("B"),
+                    Password = ApiInterfaceUser.GenerateSecureString(60),
                     PrimaryEmail = csentry.DN
                 };
             }
@@ -35,7 +38,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName)
+                    Id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName),
+                    PrimaryEmail = csentry.DN
                 };
             }
         }
@@ -130,6 +134,27 @@ namespace Lithnet.GoogleApps.MA
         public string GetDNValue(object target)
         {
             return ((User)target).PrimaryEmail;
+        }
+
+        protected static string GenerateSecureString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}:'/?-")
+        {
+            int outOfRange = byte.MaxValue + 1 - (byte.MaxValue + 1) % alphabet.Length;
+
+            return string.Concat(
+                Enumerable
+                    .Repeat(0, int.MaxValue)
+                    .Select(e => ApiInterfaceUser.RandomByte())
+                    .Where(randomByte => randomByte < outOfRange)
+                    .Take(length)
+                    .Select(randomByte => alphabet[randomByte % alphabet.Length])
+            );
+        }
+
+        private static byte RandomByte()
+        {
+            byte[] randomBytes = new byte[1];
+            ApiInterfaceUser.cryptoProvider.GetBytes(randomBytes);
+            return randomBytes.Single();
         }
     }
 }

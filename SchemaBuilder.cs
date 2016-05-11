@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using G = Google.Apis.Admin.Directory.directory_v1.Data;
 
 namespace Lithnet.GoogleApps.MA
 {
     using System.IO;
     using System.Runtime.Serialization;
     using System.Xml;
+    using Google.Apis.Admin.Directory.directory_v1.Data;
     using ManagedObjects;
     using Microsoft.MetadirectoryServices;
 
@@ -271,7 +273,7 @@ namespace Lithnet.GoogleApps.MA
 
             MASchemaAttribute isMailboxSetup = new MASchemaAttribute
             {
-                AttributeType = AttributeType.String,
+                AttributeType = AttributeType.Boolean,
                 FieldName = "isMailboxSetup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
@@ -1021,6 +1023,7 @@ namespace Lithnet.GoogleApps.MA
                 Fields = new List<MASchemaField>() { webSitePrimary, webSiteValue },
                 FieldName = "websites",
                 PropertyName = "Websites",
+                IsPrimaryCandidateType = true,
                 KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
@@ -1101,6 +1104,7 @@ namespace Lithnet.GoogleApps.MA
                 Fields = new List<MASchemaField>() { phonesValue },
                 FieldName = "phones",
                 PropertyName = "Phones",
+                IsPrimaryCandidateType = true,
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
@@ -1197,6 +1201,7 @@ namespace Lithnet.GoogleApps.MA
                 Fields = new List<MASchemaField>() { name, title, department, symbol, location, description, domain, costCenter },
                 FieldName = "organizations",
                 PropertyName = "Organizations",
+                IsPrimaryCandidateType = true,
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
@@ -1314,6 +1319,7 @@ namespace Lithnet.GoogleApps.MA
                 Fields = new List<MASchemaField>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
                 FieldName = "addresses",
                 PropertyName = "Addresses",
+                IsPrimaryCandidateType = true,
                 KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
@@ -1402,11 +1408,29 @@ namespace Lithnet.GoogleApps.MA
                 Fields = new List<MASchemaField>() { im, protocol },
                 FieldName = "ims",
                 PropertyName = "Ims",
+                IsPrimaryCandidateType = true,
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
 
             type.Attributes.Add(customType);
+        }
+
+        public static void CreateGoogleAppsCustomSchema()
+        {
+            G.Schema schema = new G.Schema();
+
+            schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
+            schema.Fields = new List<SchemaFieldSpec>();
+            schema.Fields.Add(new SchemaFieldSpec()
+            {
+                FieldName = SchemaConstants.CustomSchemaObjectType,
+                FieldType = "STRING", MultiValued = false,
+                ReadAccessType = "ADMINS_AND_SELF"
+            });
+
+            SchemaRequestFactory.CreateSchema("my_customer", schema);
+
         }
     }
 }

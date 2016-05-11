@@ -23,6 +23,8 @@
 
         IEnumerable<SchemaAttribute> GetSchemaAttributes();
 
+        IEnumerable<string> GetFieldNames(SchemaType type);
+
         IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj);
     }
 }
