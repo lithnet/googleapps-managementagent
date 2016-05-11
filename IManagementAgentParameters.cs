@@ -38,31 +38,17 @@ namespace Lithnet.GoogleApps.MA
 
         bool DoNotGenerateDelta { get; }
 
-        GoogleArrayMode PhonesAttributeFormat { get; }
-
         IEnumerable<string> PhonesAttributeFixedTypes { get; }
-
-        GoogleArrayMode OrganizationsAttributeFormat { get; }
 
         IEnumerable<string> OrganizationsAttributeFixedTypes { get; }
 
-        GoogleArrayMode IMsAttributeFormat { get; }
-
         IEnumerable<string> IMsAttributeFixedTypes { get; }
-
-        GoogleArrayMode ExternalIDsAttributeFormat { get; }
 
         IEnumerable<string> ExternalIDsAttributeFixedTypes { get; }
 
-        GoogleArrayMode RelationsAttributeFormat { get; }
-
         IEnumerable<string> RelationsAttributeFixedTypes { get; }
 
-        GoogleArrayMode AddressesAttributeFormat { get; }
-
         IEnumerable<string> AddressesAttributeFixedTypes { get; }
-
-        GoogleArrayMode WebsitesAttributeFormat { get; }
 
         IEnumerable<string> WebsitesAttributeFixedTypes { get; }
 

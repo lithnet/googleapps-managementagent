@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
     using System.Reflection;
     using ManagedObjects;
 
-    internal class MASchemaSimpleList<TItem> : IMASchemaAttribute
+    internal class MASchemaCollection<T> : IMASchemaAttribute
     {
         private PropertyInfo propInfo;
 
@@ -60,7 +60,7 @@ namespace Lithnet.GoogleApps.MA
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            IList<TItem> list;
+            ICollection<T> list;
 
             switch (change.ModificationType)
             {
@@ -71,7 +71,7 @@ namespace Lithnet.GoogleApps.MA
 
                 case AttributeModificationType.Update:
                     bool created;
-                    list = this.GetList(obj, out created);
+                    list = this.GetOrCreateList(obj, out created);
                     break;
 
                 case AttributeModificationType.Delete:
@@ -82,16 +82,16 @@ namespace Lithnet.GoogleApps.MA
                     throw new ArgumentOutOfRangeException();
             }
 
-            IList<TItem> valueAdds = csentry.GetValueAdds<TItem>(this.AttributeName);
-            IList<TItem> valueDeletes = csentry.GetValueDeletes<TItem>(this.AttributeName);
+            ICollection<T> valueAdds = csentry.GetValueAdds<T>(this.AttributeName);
+            ICollection<T> valueDeletes = csentry.GetValueDeletes<T>(this.AttributeName);
 
-            foreach (TItem value in valueAdds)
+            foreach (T value in valueAdds)
             {
                 list.Add(value);
                 Logger.WriteLine($"Adding value {this.AttributeName} -> {value}");
             }
 
-            foreach (TItem value in valueDeletes)
+            foreach (T value in valueDeletes)
             {
                 list.Remove(value);
                 Logger.WriteLine($"Removing value {this.AttributeName} -> {value}");
@@ -107,35 +107,52 @@ namespace Lithnet.GoogleApps.MA
             yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
         }
 
-        private IList<TItem> GetList(object obj, out bool created)
+        private ICollection<T> GetOrCreateList(object obj, out bool created)
+        {
+            if (this.propInfo == null)
+            {
+                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+            }
+            
+
+            ICollection<T> list = this.propInfo.GetValue(obj) as ICollection<T>;
+            created = false;
+
+            if (list == null)
+            {
+                list = this.CreateList(obj);
+                created = true;
+            }
+
+            return list;
+        }
+
+        private ICollection<T> GetList(object obj)
         {
             if (this.propInfo == null)
             {
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            IList<TItem> childObject = this.propInfo.GetValue(obj) as IList<TItem>;
-            created = false;
-
-            if (childObject == null)
-            {
-                childObject = new List<TItem>();
-                created = true;
-            }
+            ICollection<T> childObject = this.propInfo.GetValue(obj) as ICollection<T>;
+            
 
             return childObject;
         }
 
-        private IList<TItem> CreateList(object obj)
+        private ICollection<T> CreateList(object obj)
         {
-            return new List<TItem>();
+            if (this.propInfo == null)
+            {
+                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+            }
+
+            return (ICollection<T>)Activator.CreateInstance(this.propInfo.PropertyType, null, new object[] {});
         }
 
         public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
         {
-            bool created;
-
-            IList<TItem> list = this.GetList(obj, out created);
+            ICollection<T> list = this.GetList(obj);
 
             if (list == null)
             {

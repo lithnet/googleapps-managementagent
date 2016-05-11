@@ -28,45 +28,45 @@ namespace Lithnet.GoogleApps.MA
             csentry.UpdateTargetFromCSEntryChange(user.Name, x => x.FamilyName, "name_familyName", ref updateRequired);
 
 
-            if (csentry.ToUserExternalIDs(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserExternalIDs(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserPhones(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserPhones(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserIMs(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserIMs(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserOrganizations(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserOrganizations(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserAddresses(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserAddresses(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserRelations(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserRelations(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserWebsites(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserWebsites(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
-            if (csentry.ToUserNotes(user, config))
-            {
-                updateRequired = true;
-            }
+            //if (csentry.ToUserNotes(user, config))
+            //{
+            //    updateRequired = true;
+            //}
 
             return updateRequired;
         }
@@ -105,535 +105,535 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private static bool ToUserNotes(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-            if (!csentry.AttributeChanges.Any(t => t.Name.StartsWith("notes_")))
-            {
-                return false;
-            }
-
-
-            if (user.Notes == null)
-            {
-                user.Notes = new Notes();
-            }
-
-            csentry.UpdateTargetFromCSEntryChange(user.Notes, x => x.ContentType, "notes_contentType", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(user.Notes, x => x.Value, "notes_value", ref updateRequired);
-
-            if (user.Notes.IsEmpty())
-            {
-                user.Notes = null;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserExternalIDs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.ExternalIDsAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<ExternalID>>(user, x => x.ExternalIds, (t) => CSEntryChangeToUser.serializer.Deserialize<List<ExternalID>>(t), "externalIds", ref updateRequired);
-                return updateRequired;
-            }
-
-
-            foreach (string itemType in config.ExternalIDsAttributeFixedTypes)
-            {
-                string attribute = "externalIds_" + itemType;
-                AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
-
-                if (change == null)
-                {
-                    continue;
-                }
-
-                if (user.ExternalIds == null)
-                {
-                    user.ExternalIds = new List<ExternalID>();
-                }
-
-                ExternalID existing = user.ExternalIds.GetObjectOfTypeOrDefault(itemType);
-
-                switch (change.ModificationType)
-                {
-                    case AttributeModificationType.Delete:
-                        if (existing != null)
-                        {
-                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
-                            user.ExternalIds.Remove(existing);
-                            updateRequired = true;
-                        }
-                        break;
-
-                    case AttributeModificationType.Add:
-                    case AttributeModificationType.Update:
-                    case AttributeModificationType.Replace:
-                        string existingValue = null;
-
-                        if (existing == null)
-                        {
-                            existing = new ExternalID();
-                            user.ExternalIds.Add(existing);
-                        }
-                        else
-                        {
-                            existingValue = existing.Value;
-                        }
-
-                        existing.Type = itemType;
-                        existing.Value = change.GetValueAdd<string>();
-                        updateRequired = true;
-                        user.ExternalIds.AddOrRemoveIfEmpty(existing);
-                        if (existingValue == null)
-                        {
-                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
-                        }
-                        else
-                        {
-                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Unconfigured:
-                    default:
-                        throw new InvalidOperationException("The modification type is unknown or not supported");
-                }
-            }
-
-            if (user.ExternalIds.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserPhones(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.PhonesAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Phone>>(user, x => x.Phones, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Phone>>(t), "phones", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Phones == null)
-            {
-                user.Phones = new List<Phone>();
-            }
-
-            Phone primary = user.Phones.GetOrCreatePrimary();
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Value, "phones_primary", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "phones_primary_type", ref updateRequired);
-            user.Phones.AddOrRemoveIfEmpty(primary);
-
-            foreach (string itemType in config.PhonesAttributeFixedTypes)
-            {
-                string attribute = "phones_" + itemType;
-                AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
-
-                if (change == null)
-                {
-                    continue;
-                }
-
-                Phone existing = user.Phones.GetObjectOfTypeOrDefault(itemType, false);
-
-                switch (change.ModificationType)
-                {
-                    case AttributeModificationType.Delete:
-                        if (existing != null)
-                        {
-                            user.Phones.Remove(existing);
-                            updateRequired = true;
-                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Add:
-                    case AttributeModificationType.Update:
-                    case AttributeModificationType.Replace:
-                        string existingValue = null;
-
-                        if (existing == null)
-                        {
-                            existing = new Phone();
-                            user.Phones.Add(existing);
-                        }
-                        else
-                        {
-                            existingValue = existing.Value;
-                        }
-
-                        existing.Type = itemType;
-                        existing.Value = change.GetValueAdd<string>();
-                        updateRequired = true;
-                        user.Phones.AddOrRemoveIfEmpty(existing);
-
-                        if (existingValue == null)
-                        {
-                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
-                        }
-                        else
-                        {
-                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Unconfigured:
-                    default:
-                        throw new InvalidOperationException("The modification type is unknown or not supported");
-                }
-            }
-
-            if (user.Phones.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserIMs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.IMsAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<IM>>(user, x => x.Ims, (t) => CSEntryChangeToUser.serializer.Deserialize<List<IM>>(t), "ims", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Ims == null)
-            {
-                user.Ims = new List<IM>();
-            }
-
-            IM primary = user.Ims.GetOrCreatePrimary();
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.IMAddress, "ims_primary_im", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "ims_primary_type", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Protocol, "ims_primary_protocol", ref updateRequired);
-            user.Ims.AddOrRemoveIfEmpty(primary);
-
-            foreach (string itemType in config.IMsAttributeFixedTypes)
-            {
-                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"ims_{itemType}")).ToList();
-
-                if (typeChanges.Count == 0)
-                {
-                    continue;
-                }
-
-                IM existing = user.Ims.GetOrCreateObjectOfType(itemType, false);
-                foreach (AttributeChange typeChange in typeChanges)
-                {
-                    if (existing.ApplyAttributeChange(typeChange))
-                    {
-                        updateRequired = true;
-                    }
-                }
-
-                user.Ims.AddOrRemoveIfEmpty(existing);
-            }
-
-            if (user.Ims.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserOrganizations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.OrganizationsAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Organization>>(user, x => x.Organizations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Organization>>(t), "organizations", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Organizations == null)
-            {
-                user.Organizations = new List<Organization>();
-            }
-
-            Organization primary = user.Organizations.GetOrCreatePrimary();
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.CostCenter, "organizations_primary_costCenter", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Department, "organizations_primary_department", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Description, "organizations_primary_description", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Domain, "organizations_primary_domain", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Location, "organizations_primary_location", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Name, "organizations_primary_name", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Symbol, "organizations_primary_symbol", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Title, "organizations_primary_title", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "organizations_primary_type", ref updateRequired);
-            user.Organizations.AddOrRemoveIfEmpty(primary);
-
-            foreach (string itemType in config.IMsAttributeFixedTypes)
-            {
-                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"organizations_{itemType}")).ToList();
-
-                if (typeChanges.Count == 0)
-                {
-                    continue;
-                }
-
-                Organization existing = user.Organizations.GetOrCreateObjectOfType(itemType, false);
-                foreach (AttributeChange typeChange in typeChanges)
-                {
-                    if (existing.ApplyAttributeChange(typeChange))
-                    {
-                        updateRequired = true;
-                    }
-                }
-
-                user.Organizations.AddOrRemoveIfEmpty(existing);
-            }
-
-            if (user.Organizations.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserAddresses(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.AddressesAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Address>>(user, x => x.Addresses, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Address>>(t), "addresses", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Addresses == null)
-            {
-                user.Addresses = new List<Address>();
-            }
-
-            Address primary = user.Addresses.GetOrCreatePrimary();
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Country, "addresses_primary_country", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.CountryCode, "addresses_primary_countryCode", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.ExtendedAddress, "addresses_primary_extendedAddress", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Formatted, "addresses_primary_formatted", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Locality, "addresses_primary_locality", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.POBox, "addresses_primary_poBox", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.PostalCode, "addresses_primary_postalCode", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Region, "addresses_primary_region", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.SourceIsStructured, "addresses_primary_sourceIsStructured", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.StreetAddress, "addresses_primary_streetAddress", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "addresses_primary_type", ref updateRequired);
-            user.Addresses.AddOrRemoveIfEmpty(primary);
-
-            foreach (string itemType in config.AddressesAttributeFixedTypes)
-            {
-                IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"addresses_{itemType}")).ToList();
-
-                if (typeChanges.Count == 0)
-                {
-                    continue;
-                }
-
-                Address existing = user.Addresses.GetOrCreateObjectOfType(itemType, false);
-                foreach (AttributeChange typeChange in typeChanges)
-                {
-                    if (existing.ApplyAttributeChange(typeChange))
-                    {
-                        updateRequired = true;
-                    }
-                }
-
-                user.Addresses.AddOrRemoveIfEmpty(existing);
-            }
-
-            if (user.Addresses.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserRelations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.RelationsAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Relation>>(user, x => x.Relations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Relation>>(t), "relations", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Relations == null)
-            {
-                user.Relations = new List<Relation>();
-            }
-
-            foreach (string itemType in config.RelationsAttributeFixedTypes)
-            {
-                string attribute = "relations_" + itemType;
-                AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
-
-                if (change == null)
-                {
-                    continue;
-                }
-
-                Relation existing = user.Relations.GetObjectOfTypeOrDefault(itemType);
-
-                switch (change.ModificationType)
-                {
-                    case AttributeModificationType.Delete:
-                        if (existing != null)
-                        {
-                            user.Relations.Remove(existing);
-                            updateRequired = true;
-                            Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Add:
-                    case AttributeModificationType.Update:
-                    case AttributeModificationType.Replace:
-                        string existingValue = null;
-
-                        if (existing == null)
-                        {
-                            existing = new Relation();
-                            user.Relations.Add(existing);
-                        }
-                        else
-                        {
-                            existingValue = existing.Value;
-
-                        }
-
-                        existing.Type = itemType;
-                        existing.Value = change.GetValueAdd<string>();
-                        updateRequired = true;
-                        user.Relations.AddOrRemoveIfEmpty(existing);
-
-                        if (existingValue == null)
-                        {
-                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
-                        }
-                        else
-                        {
-                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Unconfigured:
-                    default:
-                        throw new InvalidOperationException("The modification type is unknown or not supported");
-                }
-            }
-
-            if (user.Relations.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
-
-        private static bool ToUserWebsites(this CSEntryChange csentry, User user, IManagementAgentParameters config)
-        {
-            bool updateRequired = false;
-
-            if (config.WebsitesAttributeFormat == GoogleArrayMode.Json)
-            {
-                csentry.UpdateTargetFromCSEntryChange<string, User, List<Website>>(user, x => x.Websites, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Website>>(t), "websites", ref updateRequired);
-                return updateRequired;
-            }
-
-            if (user.Websites == null)
-            {
-                user.Websites = new List<Website>();
-            }
-
-            Website primary = user.Websites.GetOrCreatePrimary();
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Value, "websites_primary", ref updateRequired);
-            csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "websites_primary_type", ref updateRequired);
-            user.Websites.AddOrRemoveIfEmpty(primary);
-
-            foreach (string itemType in config.WebsitesAttributeFixedTypes)
-            {
-                string attribute = "websites_" + itemType;
-                AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
-
-                if (change == null)
-                {
-                    continue;
-                }
-
-                Website existing = user.Websites.GetObjectOfTypeOrDefault(itemType, false);
-
-                switch (change.ModificationType)
-                {
-                    case AttributeModificationType.Delete:
-                        if (existing != null)
-                        {
-                            user.Websites.Remove(existing);
-                            updateRequired = true;
-                        }
-
-                        Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
-                        break;
-
-                    case AttributeModificationType.Add:
-                    case AttributeModificationType.Update:
-                    case AttributeModificationType.Replace:
-                        string existingValue = null;
-
-                        if (existing == null)
-                        {
-                            existing = new Website();
-                            user.Websites.Add(existing);
-                        }
-                        else
-                        {
-                            existingValue = existing.Value;
-
-                        }
-
-                        existing.Type = itemType;
-                        existing.Value = change.GetValueAdd<string>();
-                        updateRequired = true;
-                        user.Websites.AddOrRemoveIfEmpty(existing);
-
-                        if (existingValue == null)
-                        {
-                            Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
-                        }
-                        else
-                        {
-                            Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
-                        }
-                        break;
-
-                    case AttributeModificationType.Unconfigured:
-                    default:
-                        throw new InvalidOperationException("The modification type is unknown or not supported");
-                }
-            }
-
-            if (user.Websites.RemoveEmptyItems())
-            {
-                updateRequired = true;
-            }
-
-            return updateRequired;
-        }
+        //private static bool ToUserNotes(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+        //    if (!csentry.AttributeChanges.Any(t => t.Name.StartsWith("notes_")))
+        //    {
+        //        return false;
+        //    }
+
+
+        //    if (user.Notes == null)
+        //    {
+        //        user.Notes = new Notes();
+        //    }
+
+        //    csentry.UpdateTargetFromCSEntryChange(user.Notes, x => x.ContentType, "notes_contentType", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(user.Notes, x => x.Value, "notes_value", ref updateRequired);
+
+        //    if (user.Notes.IsEmpty())
+        //    {
+        //        user.Notes = null;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserExternalIDs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.ExternalIDsAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<ExternalID>>(user, x => x.ExternalIds, (t) => CSEntryChangeToUser.serializer.Deserialize<List<ExternalID>>(t), "externalIds", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+
+        //    foreach (string itemType in config.ExternalIDsAttributeFixedTypes)
+        //    {
+        //        string attribute = "externalIds_" + itemType;
+        //        AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
+
+        //        if (change == null)
+        //        {
+        //            continue;
+        //        }
+
+        //        if (user.ExternalIds == null)
+        //        {
+        //            user.ExternalIds = new List<ExternalID>();
+        //        }
+
+        //        ExternalID existing = user.ExternalIds.GetObjectOfTypeOrDefault(itemType);
+
+        //        switch (change.ModificationType)
+        //        {
+        //            case AttributeModificationType.Delete:
+        //                if (existing != null)
+        //                {
+        //                    Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
+        //                    user.ExternalIds.Remove(existing);
+        //                    updateRequired = true;
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Add:
+        //            case AttributeModificationType.Update:
+        //            case AttributeModificationType.Replace:
+        //                string existingValue = null;
+
+        //                if (existing == null)
+        //                {
+        //                    existing = new ExternalID();
+        //                    user.ExternalIds.Add(existing);
+        //                }
+        //                else
+        //                {
+        //                    existingValue = existing.Value;
+        //                }
+
+        //                existing.Type = itemType;
+        //                existing.Value = change.GetValueAdd<string>();
+        //                updateRequired = true;
+        //                user.ExternalIds.AddOrRemoveIfEmpty(existing);
+        //                if (existingValue == null)
+        //                {
+        //                    Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+        //                }
+        //                else
+        //                {
+        //                    Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Unconfigured:
+        //            default:
+        //                throw new InvalidOperationException("The modification type is unknown or not supported");
+        //        }
+        //    }
+
+        //    if (user.ExternalIds.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserPhones(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.PhonesAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<Phone>>(user, x => x.Phones, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Phone>>(t), "phones", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Phones == null)
+        //    {
+        //        user.Phones = new List<Phone>();
+        //    }
+
+        //    Phone primary = user.Phones.GetOrCreatePrimary();
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Value, "phones_primary", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "phones_primary_type", ref updateRequired);
+        //    user.Phones.AddOrRemoveIfEmpty(primary);
+
+        //    foreach (string itemType in config.PhonesAttributeFixedTypes)
+        //    {
+        //        string attribute = "phones_" + itemType;
+        //        AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
+
+        //        if (change == null)
+        //        {
+        //            continue;
+        //        }
+
+        //        Phone existing = user.Phones.GetObjectOfTypeOrDefault(itemType, false);
+
+        //        switch (change.ModificationType)
+        //        {
+        //            case AttributeModificationType.Delete:
+        //                if (existing != null)
+        //                {
+        //                    user.Phones.Remove(existing);
+        //                    updateRequired = true;
+        //                    Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Add:
+        //            case AttributeModificationType.Update:
+        //            case AttributeModificationType.Replace:
+        //                string existingValue = null;
+
+        //                if (existing == null)
+        //                {
+        //                    existing = new Phone();
+        //                    user.Phones.Add(existing);
+        //                }
+        //                else
+        //                {
+        //                    existingValue = existing.Value;
+        //                }
+
+        //                existing.Type = itemType;
+        //                existing.Value = change.GetValueAdd<string>();
+        //                updateRequired = true;
+        //                user.Phones.AddOrRemoveIfEmpty(existing);
+
+        //                if (existingValue == null)
+        //                {
+        //                    Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+        //                }
+        //                else
+        //                {
+        //                    Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Unconfigured:
+        //            default:
+        //                throw new InvalidOperationException("The modification type is unknown or not supported");
+        //        }
+        //    }
+
+        //    if (user.Phones.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserIMs(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.IMsAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<IM>>(user, x => x.Ims, (t) => CSEntryChangeToUser.serializer.Deserialize<List<IM>>(t), "ims", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Ims == null)
+        //    {
+        //        user.Ims = new List<IM>();
+        //    }
+
+        //    IM primary = user.Ims.GetOrCreatePrimary();
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.IMAddress, "ims_primary_im", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "ims_primary_type", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Protocol, "ims_primary_protocol", ref updateRequired);
+        //    user.Ims.AddOrRemoveIfEmpty(primary);
+
+        //    foreach (string itemType in config.IMsAttributeFixedTypes)
+        //    {
+        //        IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"ims_{itemType}")).ToList();
+
+        //        if (typeChanges.Count == 0)
+        //        {
+        //            continue;
+        //        }
+
+        //        IM existing = user.Ims.GetOrCreateObjectOfType(itemType, false);
+        //        foreach (AttributeChange typeChange in typeChanges)
+        //        {
+        //            if (existing.ApplyAttributeChange(typeChange))
+        //            {
+        //                updateRequired = true;
+        //            }
+        //        }
+
+        //        user.Ims.AddOrRemoveIfEmpty(existing);
+        //    }
+
+        //    if (user.Ims.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserOrganizations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.OrganizationsAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<Organization>>(user, x => x.Organizations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Organization>>(t), "organizations", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Organizations == null)
+        //    {
+        //        user.Organizations = new List<Organization>();
+        //    }
+
+        //    Organization primary = user.Organizations.GetOrCreatePrimary();
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.CostCenter, "organizations_primary_costCenter", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Department, "organizations_primary_department", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Description, "organizations_primary_description", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Domain, "organizations_primary_domain", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Location, "organizations_primary_location", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Name, "organizations_primary_name", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Symbol, "organizations_primary_symbol", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Title, "organizations_primary_title", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "organizations_primary_type", ref updateRequired);
+        //    user.Organizations.AddOrRemoveIfEmpty(primary);
+
+        //    foreach (string itemType in config.IMsAttributeFixedTypes)
+        //    {
+        //        IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"organizations_{itemType}")).ToList();
+
+        //        if (typeChanges.Count == 0)
+        //        {
+        //            continue;
+        //        }
+
+        //        Organization existing = user.Organizations.GetOrCreateObjectOfType(itemType, false);
+        //        foreach (AttributeChange typeChange in typeChanges)
+        //        {
+        //            if (existing.ApplyAttributeChange(typeChange))
+        //            {
+        //                updateRequired = true;
+        //            }
+        //        }
+
+        //        user.Organizations.AddOrRemoveIfEmpty(existing);
+        //    }
+
+        //    if (user.Organizations.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserAddresses(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.AddressesAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<Address>>(user, x => x.Addresses, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Address>>(t), "addresses", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Addresses == null)
+        //    {
+        //        user.Addresses = new List<Address>();
+        //    }
+
+        //    Address primary = user.Addresses.GetOrCreatePrimary();
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Country, "addresses_primary_country", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.CountryCode, "addresses_primary_countryCode", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.ExtendedAddress, "addresses_primary_extendedAddress", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Formatted, "addresses_primary_formatted", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Locality, "addresses_primary_locality", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.POBox, "addresses_primary_poBox", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.PostalCode, "addresses_primary_postalCode", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Region, "addresses_primary_region", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.SourceIsStructured, "addresses_primary_sourceIsStructured", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.StreetAddress, "addresses_primary_streetAddress", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "addresses_primary_type", ref updateRequired);
+        //    user.Addresses.AddOrRemoveIfEmpty(primary);
+
+        //    foreach (string itemType in config.AddressesAttributeFixedTypes)
+        //    {
+        //        IList<AttributeChange> typeChanges = csentry.AttributeChanges.Where(t => t.Name.StartsWith($"addresses_{itemType}")).ToList();
+
+        //        if (typeChanges.Count == 0)
+        //        {
+        //            continue;
+        //        }
+
+        //        Address existing = user.Addresses.GetOrCreateObjectOfType(itemType, false);
+        //        foreach (AttributeChange typeChange in typeChanges)
+        //        {
+        //            if (existing.ApplyAttributeChange(typeChange))
+        //            {
+        //                updateRequired = true;
+        //            }
+        //        }
+
+        //        user.Addresses.AddOrRemoveIfEmpty(existing);
+        //    }
+
+        //    if (user.Addresses.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserRelations(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.RelationsAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<Relation>>(user, x => x.Relations, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Relation>>(t), "relations", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Relations == null)
+        //    {
+        //        user.Relations = new List<Relation>();
+        //    }
+
+        //    foreach (string itemType in config.RelationsAttributeFixedTypes)
+        //    {
+        //        string attribute = "relations_" + itemType;
+        //        AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
+
+        //        if (change == null)
+        //        {
+        //            continue;
+        //        }
+
+        //        Relation existing = user.Relations.GetObjectOfTypeOrDefault(itemType);
+
+        //        switch (change.ModificationType)
+        //        {
+        //            case AttributeModificationType.Delete:
+        //                if (existing != null)
+        //                {
+        //                    user.Relations.Remove(existing);
+        //                    updateRequired = true;
+        //                    Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Add:
+        //            case AttributeModificationType.Update:
+        //            case AttributeModificationType.Replace:
+        //                string existingValue = null;
+
+        //                if (existing == null)
+        //                {
+        //                    existing = new Relation();
+        //                    user.Relations.Add(existing);
+        //                }
+        //                else
+        //                {
+        //                    existingValue = existing.Value;
+
+        //                }
+
+        //                existing.Type = itemType;
+        //                existing.Value = change.GetValueAdd<string>();
+        //                updateRequired = true;
+        //                user.Relations.AddOrRemoveIfEmpty(existing);
+
+        //                if (existingValue == null)
+        //                {
+        //                    Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+        //                }
+        //                else
+        //                {
+        //                    Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Unconfigured:
+        //            default:
+        //                throw new InvalidOperationException("The modification type is unknown or not supported");
+        //        }
+        //    }
+
+        //    if (user.Relations.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
+
+        //private static bool ToUserWebsites(this CSEntryChange csentry, User user, IManagementAgentParameters config)
+        //{
+        //    bool updateRequired = false;
+
+        //    if (config.WebsitesAttributeFormat == GoogleArrayMode.Json)
+        //    {
+        //        csentry.UpdateTargetFromCSEntryChange<string, User, List<Website>>(user, x => x.Websites, (t) => CSEntryChangeToUser.serializer.Deserialize<List<Website>>(t), "websites", ref updateRequired);
+        //        return updateRequired;
+        //    }
+
+        //    if (user.Websites == null)
+        //    {
+        //        user.Websites = new List<Website>();
+        //    }
+
+        //    Website primary = user.Websites.GetOrCreatePrimary();
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Value, "websites_primary", ref updateRequired);
+        //    csentry.UpdateTargetFromCSEntryChange(primary, x => x.Type, "websites_primary_type", ref updateRequired);
+        //    user.Websites.AddOrRemoveIfEmpty(primary);
+
+        //    foreach (string itemType in config.WebsitesAttributeFixedTypes)
+        //    {
+        //        string attribute = "websites_" + itemType;
+        //        AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attribute);
+
+        //        if (change == null)
+        //        {
+        //            continue;
+        //        }
+
+        //        Website existing = user.Websites.GetObjectOfTypeOrDefault(itemType, false);
+
+        //        switch (change.ModificationType)
+        //        {
+        //            case AttributeModificationType.Delete:
+        //                if (existing != null)
+        //                {
+        //                    user.Websites.Remove(existing);
+        //                    updateRequired = true;
+        //                }
+
+        //                Logger.WriteLine("Removing {0}: {1}", attribute, existing.Value);
+        //                break;
+
+        //            case AttributeModificationType.Add:
+        //            case AttributeModificationType.Update:
+        //            case AttributeModificationType.Replace:
+        //                string existingValue = null;
+
+        //                if (existing == null)
+        //                {
+        //                    existing = new Website();
+        //                    user.Websites.Add(existing);
+        //                }
+        //                else
+        //                {
+        //                    existingValue = existing.Value;
+
+        //                }
+
+        //                existing.Type = itemType;
+        //                existing.Value = change.GetValueAdd<string>();
+        //                updateRequired = true;
+        //                user.Websites.AddOrRemoveIfEmpty(existing);
+
+        //                if (existingValue == null)
+        //                {
+        //                    Logger.WriteLine("Adding {0}: {1}", attribute, existing.Value);
+        //                }
+        //                else
+        //                {
+        //                    Logger.WriteLine("Replacing {0}: {1}", attribute, existing.Value);
+        //                }
+        //                break;
+
+        //            case AttributeModificationType.Unconfigured:
+        //            default:
+        //                throw new InvalidOperationException("The modification type is unknown or not supported");
+        //        }
+        //    }
+
+        //    if (user.Websites.RemoveEmptyItems())
+        //    {
+        //        updateRequired = true;
+        //    }
+
+        //    return updateRequired;
+        //}
 
         private static bool ApplyAttributeChange(this IM im, AttributeChange change)
         {

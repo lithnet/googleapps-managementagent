@@ -147,7 +147,7 @@ namespace Lithnet.GoogleApps.MA
                     membership = group.Membership;
                 }
             }
-
+            
             foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))

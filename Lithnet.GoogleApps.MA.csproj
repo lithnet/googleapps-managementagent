@@ -88,8 +88,6 @@
     <Compile Include="CSEntryChangeToUser.cs" />
     <Compile Include="ExportProcessor.cs" />
     <Compile Include="GenericExtensions.cs" />
-    <Compile Include="GoogleArrayModeConverters.cs" />
-    <Compile Include="GoogleArrayMode.cs" />
     <Compile Include="GroupToCSEntryChange.cs" />
     <Compile Include="IMASchemaAttribute.cs" />
     <Compile Include="ImportProcessor.cs" />
@@ -100,7 +98,7 @@
     <Compile Include="IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
     <Compile Include="ManagementAgentSchema.cs" />
-    <Compile Include="MASchemaSimpleList.cs" />
+    <Compile Include="MASchemaCollectionT.cs" />
     <Compile Include="MASchemaNestedType.cs" />
     <Compile Include="MASchemaCustomTypeList.cs" />
     <Compile Include="MASchemaField.cs" />
@@ -125,8 +123,8 @@
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Admin.Directory.directory_v1, Version=1.11.1.341, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Admin.Directory.directory_v1.1.11.1.341\lib\portable-net45+sl50+netcore45+wpa81+wp8\Google.Apis.Admin.Directory.directory_v1.dll</HintPath>
+    <Reference Include="Google.Apis.Admin.Directory.directory_v1, Version=1.12.0.447, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Admin.Directory.directory_v1.1.12.0.447\lib\portable-net45+netcore45+wpa81+wp8\Google.Apis.Admin.Directory.directory_v1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -141,8 +139,8 @@
       <HintPath>packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Groupssettings.v1, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Groupssettings.v1.1.11.1.0\lib\portable-net45+sl50+netcore45+wpa81+wp8\Google.Apis.Groupssettings.v1.dll</HintPath>
+    <Reference Include="Google.Apis.Groupssettings.v1, Version=1.12.0.447, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Groupssettings.v1.1.12.0.447\lib\portable-net45+netcore45+wpa81+wp8\Google.Apis.Groupssettings.v1.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">

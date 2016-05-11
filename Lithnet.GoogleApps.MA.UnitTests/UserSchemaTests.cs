@@ -13,17 +13,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     public class UserSchemaTests
     {
-        internal static MASchemaType Type;
-
         static UserSchemaTests()
         {
-            //UserSchemaTests.Type = SchemaBuilder.GetUserSchema();
         }
         
         [TestMethod]
         public void TestWebSites()
         {
-            IMASchemaAttribute schemaItem =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -98,7 +95,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNames()
         {
-            IMASchemaAttribute schemaItem =  UserSchemaTests.Type.Attributes.First(t => t.PropertyName == "Name");
+            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             User u = new User
             {
@@ -133,7 +130,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNotes()
         {
-            IMASchemaAttribute schemaItem =  UserSchemaTests.Type.Attributes.First(t => t.PropertyName == "Notes");
+            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Notes");
 
             User u = new User
             {
@@ -168,7 +165,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestAliases()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "aliases");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "aliases");
 
             UserUpdateTemplate u = new UserUpdateTemplate
             {
@@ -204,14 +201,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestStandaloneAttributes()
         {
-            IMASchemaAttribute orgUnitPath =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "orgUnitPath");
-            IMASchemaAttribute includeInGlobalAddressList =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "includeInGlobalAddressList");
-            IMASchemaAttribute suspended =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "suspended");
-            IMASchemaAttribute changePasswordAtNextLogin =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "changePasswordAtNextLogin");
-            IMASchemaAttribute ipWhitelisted =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "ipWhitelisted");
-            IMASchemaAttribute customerId =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "customerId");
-            IMASchemaAttribute primaryEmail =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "primaryEmail");
-            IMASchemaAttribute id =  UserSchemaTests.Type.Attributes.First(t => t.FieldName == "id");
+            IMASchemaAttribute orgUnitPath =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "orgUnitPath");
+            IMASchemaAttribute includeInGlobalAddressList =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "includeInGlobalAddressList");
+            IMASchemaAttribute suspended =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "suspended");
+            IMASchemaAttribute changePasswordAtNextLogin =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "changePasswordAtNextLogin");
+            IMASchemaAttribute ipWhitelisted =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "ipWhitelisted");
+            IMASchemaAttribute customerId =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "customerId");
+            IMASchemaAttribute primaryEmail =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "primaryEmail");
+            IMASchemaAttribute id =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "id");
 
             User u = new User
             {

@@ -430,7 +430,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupMembers(MASchemaType type)
         {
-            MASchemaSimpleList<string> members = new MASchemaSimpleList<string>
+            MASchemaCollection<string> members = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -443,7 +443,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(members);
 
-            MASchemaSimpleList<string> managers = new MASchemaSimpleList<string>
+            MASchemaCollection<string> managers = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -456,7 +456,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(managers);
 
-            MASchemaSimpleList<string> owners = new MASchemaSimpleList<string>
+            MASchemaCollection<string> owners = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -469,7 +469,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(owners);
 
-            MASchemaSimpleList<string> externalMembers = new MASchemaSimpleList<string>
+            MASchemaCollection<string> externalMembers = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -482,7 +482,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(externalMembers);
 
-            MASchemaSimpleList<string> externalManagers = new MASchemaSimpleList<string>
+            MASchemaCollection<string> externalManagers = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -495,7 +495,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(externalManagers);
 
-            MASchemaSimpleList<string> externalOwners = new MASchemaSimpleList<string>
+            MASchemaCollection<string> externalOwners = new MASchemaCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -1000,7 +1000,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupAliases(MASchemaType type)
         {
-            MASchemaSimpleList<string> aliasesList = new MASchemaSimpleList<string>
+            MASchemaCollection<string> aliasesList = new MASchemaCollection<string>
             {
                 Api = "groupaliases",
                 AttributeName = "aliases",
@@ -1012,7 +1012,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(aliasesList);
 
-            MASchemaSimpleList<string> nonEditableAliasesList = new MASchemaSimpleList<string>
+            MASchemaCollection<string> nonEditableAliasesList = new MASchemaCollection<string>
             {
                 Api = "group",
                 AttributeName = "nonEditableAliases",
@@ -1027,7 +1027,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserAliases(MASchemaType type)
         {
-            MASchemaSimpleList<string> aliasesList = new MASchemaSimpleList<string>
+            MASchemaCollection<string> aliasesList = new MASchemaCollection<string>
             {
                 Api = "useraliases",
                 AttributeName = "aliases",
@@ -1039,7 +1039,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(aliasesList);
 
-            MASchemaSimpleList<string> nonEditableAliasesList = new MASchemaSimpleList<string>
+            MASchemaCollection<string> nonEditableAliasesList = new MASchemaCollection<string>
             {
                 Api = "user",
                 AttributeName = "nonEditableAliases",
@@ -1064,21 +1064,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaField phonesPrimary = new MASchemaField
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
-                IsMultivalued = false,
-                PropertyName = "Primary",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
-            };
-
             MASchemaCustomTypeList<Phone> phonesType = new MASchemaCustomTypeList<Phone>
             {
                 Api = "user",
                 AttributeName = "phones",
-                Fields = new List<MASchemaField>() {phonesPrimary, phonesValue},
+                Fields = new List<MASchemaField>() { phonesValue},
                 FieldName = "phones",
                 PropertyName = "Phones",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
@@ -1108,16 +1098,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Title",
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "title"
-            };
-
-            MASchemaField primary = new MASchemaField
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
-                IsMultivalued = false,
-                PropertyName = "Primary",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
             };
 
             MASchemaField department = new MASchemaField
@@ -1184,7 +1164,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "organizations",
-                Fields = new List<MASchemaField>() {name, title, primary, department, symbol, location, description, domain, costCenter},
+                Fields = new List<MASchemaField>() {name, title, department, symbol, location, description, domain, costCenter},
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
@@ -1214,16 +1194,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Formatted",
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "formatted"
-            };
-
-            MASchemaField primary = new MASchemaField
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
-                IsMultivalued = false,
-                PropertyName = "Primary",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
             };
 
             MASchemaField poBox = new MASchemaField
@@ -1311,7 +1281,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "addresses",
-                Fields = new List<MASchemaField>() {sourceIsStructured, formatted, poBox, extendedAddress, primary, streetAddress, locality, region, postalCode, country, countryCode},
+                Fields = new List<MASchemaField>() {sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode},
                 FieldName = "addresses",
                 PropertyName = "Addresses",
                 KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
@@ -1395,24 +1365,14 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "protocol"
             };
 
-            MASchemaField primary = new MASchemaField
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
-                IsMultivalued = false,
-                PropertyName = "Primary",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
-            };
-
             MASchemaCustomTypeList<IM> customType = new MASchemaCustomTypeList<IM>
             {
                 Api = "user",
                 AttributeName = "ims",
-                Fields = new List<MASchemaField>() {im, protocol, primary},
+                Fields = new List<MASchemaField>() {im, protocol},
                 FieldName = "ims",
                 PropertyName = "Ims",
-                KnownTypes = new List<string>() {"work"},
+                KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
 

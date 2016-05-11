@@ -137,30 +137,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public GoogleArrayMode PhonesAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.PhonesFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.PhonesFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.PrimaryValueOnly;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.PrimaryValueOnly;
-                }
-            }
-        }
-
         public IEnumerable<string> PhonesAttributeFixedTypes
         {
             get
@@ -182,30 +158,6 @@ namespace Lithnet.GoogleApps.MA
                 else
                 {
                     yield break;
-                }
-            }
-        }
-
-        public GoogleArrayMode OrganizationsAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.OrganizationsFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.OrganizationsFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.PrimaryValueOnly;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.PrimaryValueOnly;
                 }
             }
         }
@@ -235,31 +187,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-
-        public GoogleArrayMode IMsAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.IMsFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.IMsFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.PrimaryValueOnly;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.PrimaryValueOnly;
-                }
-            }
-        }
-
         public IEnumerable<string> IMsAttributeFixedTypes
         {
             get
@@ -281,30 +208,6 @@ namespace Lithnet.GoogleApps.MA
                 else
                 {
                     yield break;
-                }
-            }
-        }
-
-        public GoogleArrayMode ExternalIDsAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.ExternalIDsFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.ExternalIDsFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.Json;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.Json;
                 }
             }
         }
@@ -334,31 +237,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-
-        public GoogleArrayMode RelationsAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.RelationsFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.RelationsFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.Json;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.Json;
-                }
-            }
-        }
-
         public IEnumerable<string> RelationsAttributeFixedTypes
         {
             get
@@ -380,31 +258,6 @@ namespace Lithnet.GoogleApps.MA
                 else
                 {
                     yield break;
-                }
-            }
-        }
-
-
-        public GoogleArrayMode AddressesAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.AddressesFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.AddressesFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.PrimaryValueOnly;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.PrimaryValueOnly;
                 }
             }
         }
@@ -434,31 +287,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-
-        public GoogleArrayMode WebsitesAttributeFormat
-        {
-            get
-            {
-                if (this.configParameters.Contains(ManagementAgentParametersBase.WebsitesFormatParameter))
-                {
-                    string value = this.configParameters[ManagementAgentParametersBase.WebsitesFormatParameter].Value;
-
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return GoogleArrayMode.PrimaryValueOnly;
-                    }
-                    else
-                    {
-                        return GoogleArrayModeConverters.FromDescription(value);
-                    }
-                }
-                else
-                {
-                    return GoogleArrayMode.PrimaryValueOnly;
-                }
-            }
-        }
-
         public IEnumerable<string> WebsitesAttributeFixedTypes
         {
             get
@@ -483,7 +311,6 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-
 
         public bool ExcludeUserCreated
         {
@@ -542,33 +369,26 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
 
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
-                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The following attributes are represented by arrays in the Google API. You can choose to present array values as a raw JSON string, or the MA can flatten the attributes based on the object types you specify"));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line. For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home"));
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.PhonesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.OrganizationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.OrganizationsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.IMsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.IMsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.ExternalIDsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.RelationsFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported, false, GoogleArrayModeConverters.ParameterNamesPrimaryNotSupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.RelationsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.AddressesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.AddressesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.WebsitesFormatParameter, GoogleArrayModeConverters.ParameterNamesPrimarySupported, false, GoogleArrayModeConverters.ParameterNamesPrimarySupported[0]));
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
@@ -597,8 +417,7 @@ namespace Lithnet.GoogleApps.MA
 
         public ParameterValidationResult ValidateParameters(ConfigParameterPage page)
         {
-            ParameterValidationResult result = new ParameterValidationResult();
-            result.Code = ParameterValidationResultCode.Success;
+            ParameterValidationResult result = new ParameterValidationResult { Code = ParameterValidationResultCode.Success };
 
             switch (page)
             {
@@ -684,7 +503,8 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.OrganizationsAttributeFormat != GoogleArrayMode.Json)
+
+                    if (this.OrganizationsAttributeFixedTypes.Any())
                     {
                         if (!this.OrganizationsAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
@@ -695,7 +515,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.IMsAttributeFormat != GoogleArrayMode.Json)
+                    if (this.IMsAttributeFixedTypes.Any())
                     {
                         if (!this.IMsAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
@@ -706,7 +526,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.AddressesAttributeFormat != GoogleArrayMode.Json)
+                    if (this.AddressesAttributeFixedTypes.Any())
                     {
                         if (!this.AddressesAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
@@ -717,7 +537,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.WebsitesAttributeFormat != GoogleArrayMode.Json)
+                    if (this.WebsitesAttributeFixedTypes.Any())
                     {
                         if (!this.WebsitesAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
@@ -728,16 +548,8 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.ExternalIDsAttributeFormat != GoogleArrayMode.Json)
+                    if (this.ExternalIDsAttributeFixedTypes.Any())
                     {
-                        if (!this.ExternalIDsAttributeFixedTypes.Any())
-                        {
-                            result.Code = ParameterValidationResultCode.Failure;
-                            result.ErrorMessage = "The external IDs types field must not be empty";
-                            result.ErrorParameter = ManagementAgentParametersBase.ExternalIDsFixedTypeFormatParameter;
-                            return result;
-                        }
-
                         if (!this.ExternalIDsAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
                             result.Code = ParameterValidationResultCode.Failure;
@@ -747,16 +559,8 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.RelationsAttributeFormat != GoogleArrayMode.Json)
+                    if (this.RelationsAttributeFixedTypes.Any())
                     {
-                        if (!this.RelationsAttributeFixedTypes.Any())
-                        {
-                            result.Code = ParameterValidationResultCode.Failure;
-                            result.ErrorMessage = "The relations types field must not be empty";
-                            result.ErrorParameter = ManagementAgentParametersBase.RelationsFixedTypeFormatParameter;
-                            return result;
-                        }
-
                         if (!this.RelationsAttributeFixedTypes.All(new HashSet<string>().Add))
                         {
                             result.Code = ParameterValidationResultCode.Failure;
@@ -766,7 +570,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (this.PhonesAttributeFormat != GoogleArrayMode.Json)
+                    if (this.PhonesAttributeFixedTypes.Any())
                     {
                         if (!this.PhonesAttributeFixedTypes.All(new HashSet<string>().Add))
                         {

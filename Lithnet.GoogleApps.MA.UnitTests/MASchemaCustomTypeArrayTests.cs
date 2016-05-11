@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -64,7 +64,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -118,7 +118,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -172,7 +172,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
 
@@ -193,7 +193,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
@@ -215,7 +215,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UserSchemaTests.Type.Attributes.First(t => t.FieldName == "websites");
+            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 

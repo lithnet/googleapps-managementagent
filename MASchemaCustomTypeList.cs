@@ -27,7 +27,7 @@ namespace Lithnet.GoogleApps.MA
         public string Api { get; set; }
 
         public bool CanPatch { get; set; }
-        
+
         [DataMember(Name = "known-types")]
         public IList<string> KnownTypes { get; set; }
 
@@ -66,6 +66,13 @@ namespace Lithnet.GoogleApps.MA
                     yield return maSchemaAttribute;
                 }
             }
+        }
+
+        private string PrimaryType => this.KnownTypes.FirstOrDefault();
+
+        private bool IsPrimaryType(string type)
+        {
+            return this.PrimaryType == type;
         }
 
         private IEnumerable<MASchemaAttribute> GetAttributesOfType(string type)
@@ -108,7 +115,7 @@ namespace Lithnet.GoogleApps.MA
 
         public bool UpdateField(CSEntryChange csentry, object obj)
         {
-            if (this.IsReadOnly)
+            if (this.IsReadOnly || this.KnownTypes.Count == 0)
             {
                 return false;
             }
@@ -128,12 +135,22 @@ namespace Lithnet.GoogleApps.MA
             }
 
             bool created;
-            IList<T> list = this.GetList(obj, out created);
+            IList<T> list = this.GetOrCreateList(obj, out created);
 
             Dictionary<string, T> typedObjects = new Dictionary<string, T>();
 
             foreach (T item in list)
             {
+                if (this.SetPrimaryCandidate(item, item.Type))
+                {
+                    hasChanged = true;
+                }
+
+                if (this.SetPrimaryOnMissingType(item))
+                {
+                    hasChanged = true;
+                }
+
                 typedObjects.Add(item.Type, item);
             }
 
@@ -141,8 +158,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (!typedObjects.ContainsKey(group.Key))
                 {
-                    T o = (T)Activator.CreateInstance(typeof(T), new object[] {});
-                    o.Type = group.Key;
+                    T o = new T { Type = group.Key };
+                    this.SetPrimaryCandidate(o, group.Key);
                     typedObjects.Add(group.Key, o);
                     list.Add(o);
                 }
@@ -169,6 +186,44 @@ namespace Lithnet.GoogleApps.MA
             return hasChanged;
         }
 
+        private bool SetPrimaryOnMissingType(T item)
+        {
+            if (item.Type == null)
+            {
+                if (this.IsPrimary(item))
+                {
+                    item.Type = this.PrimaryType;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool SetPrimaryCandidate(T o, string type)
+        {
+            IPrimaryCandidateObject primaryObject = o as IPrimaryCandidateObject;
+
+            if (primaryObject != null)
+            {
+                if (primaryObject.Primary != this.IsPrimaryType(type))
+                {
+                    primaryObject.Primary = this.IsPrimaryType(type);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private bool IsPrimary(T o)
+        {
+            IPrimaryCandidateObject primaryObject = o as IPrimaryCandidateObject;
+            return primaryObject?.IsPrimary ?? false;
+        }
+
         public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
             foreach (MASchemaField field in this.Fields)
@@ -180,7 +235,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private bool RemoveEmptyItems(IList items) 
+        private bool RemoveEmptyItems(IList items)
         {
             bool updated = false;
 
@@ -201,7 +256,19 @@ namespace Lithnet.GoogleApps.MA
             return updated;
         }
 
-        private IList<T> GetList(object obj, out bool created)
+        private IList<T> GetList(object obj)
+        {
+            if (this.propInfo == null)
+            {
+                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+            }
+
+            IList<T> list = this.propInfo.GetValue(obj) as IList<T>;
+
+            return list;
+        }
+
+        private IList<T> GetOrCreateList(object obj, out bool created)
         {
             if (this.propInfo == null)
             {
@@ -213,11 +280,16 @@ namespace Lithnet.GoogleApps.MA
 
             if (list == null)
             {
-                list = new List<T>();
+                list = this.CreateList();
                 created = true;
             }
 
             return list;
+        }
+
+        private IList<T> CreateList()
+        {
+            return new List<T>();
         }
 
         public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
@@ -227,11 +299,20 @@ namespace Lithnet.GoogleApps.MA
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
-            bool created;
-            IList<T> list = this.GetList(obj, out created);
+            IList<T> list = this.GetList(obj);
+
+            if (list == null)
+            {
+                yield break;
+            }
 
             foreach (T item in list)
             {
+                if (item.Type == null)
+                {
+                    this.SetPrimaryOnMissingType(item);
+                }
+
                 foreach (MASchemaAttribute attribute in this.Attributes)
                 {
                     if (attribute.AssignedType == item.Type)
