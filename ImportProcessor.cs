@@ -12,31 +12,6 @@ namespace Lithnet.GoogleApps.MA
 
     internal static class ImportProcessor
     {
-        public static CSEntryChange GetCSEntryChange(object source, Schema types)
-        {
-            User user = source as User;
-
-            if (user != null)
-            {
-                if (types.Types.Contains(SchemaConstants.User))
-                {
-                    return ImportProcessor.GetCSEntryChange(user, types.Types[SchemaConstants.User]);
-                }
-            }
-
-            GoogleGroup group = source as GoogleGroup;
-
-            if (group != null)
-            {
-                if (types.Types.Contains(SchemaConstants.Group))
-                {
-                    return ImportProcessor.GetCSEntryChange(group, types.Types[SchemaConstants.Group]);
-                }
-            }
-
-            throw new InvalidOperationException();
-        }
-
         public static CSEntryChange GetCSEntryChange(object source, SchemaType type)
         {
             MASchemaType maType = ManagementAgent.Schema[type.Name];

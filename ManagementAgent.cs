@@ -219,7 +219,7 @@ namespace Lithnet.GoogleApps.MA
             ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.GroupMembersImportThreadCount + 1, this.Configuration.GroupSettingsImportThreadCount);
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
 
-            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User) || this.operationSchemaTypes.Types.Contains("advancedUser"))
+            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User) || this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
             {
                 this.SetupUserImportTask(types);
                 Logger.WriteLine("User import task setup complete");
@@ -422,7 +422,21 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    results.CSEntries.Add(ImportProcessor.GetCSEntryChange(user, this.operationSchemaTypes));
+                    SchemaType type = this.operationSchemaTypes.Types[SchemaConstants.User];
+
+                    if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
+                    {
+                        if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
+                        {
+                            string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                            if (this.operationSchemaTypes.Types.Contains(objectType))
+                            {
+                                type = this.operationSchemaTypes.Types[objectType];
+                            }
+                        }
+                    }
+
+                    results.CSEntries.Add(ImportProcessor.GetCSEntryChange(user, type));
                     continue;
                 }
 
@@ -482,8 +496,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                csentry = ImportProcessor.GetCSEntryChange(group, this.operationSchemaTypes);
-                //csentry = CSEntryChangeFactoryGroup.GroupToCSE(group, this.Configuration, this.operationSchemaTypes);
+                csentry = ImportProcessor.GetCSEntryChange(group, this.operationSchemaTypes.Types[SchemaConstants.Group]);
             }
             return csentry;
         }

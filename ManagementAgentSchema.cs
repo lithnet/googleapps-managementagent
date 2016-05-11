@@ -9,9 +9,6 @@ namespace Lithnet.GoogleApps.MA
 {
     internal static class ManagementAgentSchema
     {
-        public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
-
-
         public static Schema GetSchema(IManagementAgentParameters config)
         {
             Schema schema = Schema.Create();
@@ -19,7 +16,7 @@ namespace Lithnet.GoogleApps.MA
             SchemaType type = ManagementAgentSchema.GetUserType(config, false);
             schema.Types.Add(type);
 
-            if (SchemaRequestFactory.HasSchema(config.CustomerID, ManagementAgentSchema.CustomGoogleAppsSchemaName))
+            if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
             {
                 type = ManagementAgentSchema.GetUserType(config, true);
                 schema.Types.Add(type);
@@ -108,7 +105,6 @@ namespace Lithnet.GoogleApps.MA
 
             return userType;
         }
-
 
         public static string GetFieldNamesFromType(string subType, SchemaType type)
         {
@@ -242,7 +238,6 @@ namespace Lithnet.GoogleApps.MA
 
             return names;
         }
-
 
         public static IEnumerable<string> GetFieldNamesFromAttributeNames(string subType, IEnumerable<string> attributeNames)
         {

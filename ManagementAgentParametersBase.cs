@@ -69,7 +69,8 @@ namespace Lithnet.GoogleApps.MA
                         DirectoryService.Scope.AdminDirectoryGroupMember, 
                         GroupssettingsService.Scope.AppsGroupsSettings,
                         DirectoryService.Scope.AdminDirectoryUserschema,
-                        "https://www.googleapis.com/auth/admin.directory.domain"
+                        "https://www.googleapis.com/auth/admin.directory.domain",
+                        "https://apps-apis.google.com/a/feeds/emailsettings/2.0/"
                     };
 
         private X509Certificate2 certificate;

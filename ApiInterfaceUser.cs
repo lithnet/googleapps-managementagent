@@ -12,17 +12,16 @@ namespace Lithnet.GoogleApps.MA
 
     internal class ApiInterfaceUser : IApiInterfaceObject
     {
-      
-        private static ApiInterfaceKeyedCollection internalInterfaces;
+        protected ApiInterfaceKeyedCollection InternalInterfaces { get; private set; }
 
-        static ApiInterfaceUser()
+        public ApiInterfaceUser()
         {
-            ApiInterfaceUser.internalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
+            this.InternalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
         }
 
-        public string Api => "user";
+        public virtual string Api => "user";
 
-        public object CreateInstance(CSEntryChange csentry)
+        public virtual object CreateInstance(CSEntryChange csentry)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
@@ -92,7 +91,7 @@ namespace Lithnet.GoogleApps.MA
                 changes.AddRange(this.GetChanges(csentry.ObjectModificationType, type, result));
             }
 
-            foreach (IApiInterface i in ApiInterfaceUser.internalInterfaces)
+            foreach (IApiInterface i in this.InternalInterfaces)
             {
                 changes.AddRange(i.ApplyChanges(csentry, type, target, patch));
             }
@@ -115,7 +114,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            foreach (IApiInterface i in ApiInterfaceUser.internalInterfaces)
+            foreach (IApiInterface i in this.InternalInterfaces)
             {
                 attributeChanges.AddRange(i.GetChanges(modType, type, source));
             }

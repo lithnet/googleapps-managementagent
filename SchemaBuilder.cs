@@ -22,6 +22,11 @@ namespace Lithnet.GoogleApps.MA
                 SchemaBuilder.GetSchema(SchemaConstants.Group, config)
             };
 
+            if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
+            {
+                types.Add(SchemaBuilder.GetSchema(SchemaConstants.AdvancedUser, config));
+            }
+
             return types;
         }
 
@@ -31,6 +36,9 @@ namespace Lithnet.GoogleApps.MA
             {
                 case SchemaConstants.User:
                     return SchemaBuilder.GetUserSchema(config);
+
+                case SchemaConstants.AdvancedUser:
+                    return SchemaBuilder.GetAdvancedUserSchema(config);
 
                 case SchemaConstants.Group:
                     return SchemaBuilder.GetGroupSchema();
@@ -335,6 +343,28 @@ namespace Lithnet.GoogleApps.MA
             return type;
         }
 
+        public static MASchemaType GetAdvancedUserSchema(IManagementAgentParameters config)
+        {
+            MASchemaType userType = SchemaBuilder.GetUserSchema(config);
+            userType.Name = SchemaConstants.AdvancedUser;
+            userType.ApiInterface = new ApiInterfaceAdvancedUser();
+
+            MASchemaCollection<string> delegates = new MASchemaCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = null,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "delegate",
+                PropertyName = "Delegates",
+                Api = "userdelegates",
+                CanPatch = true,
+            };
+
+            userType.Attributes.Add(delegates);
+
+            return userType;
+        }
+
         public static MASchemaType GetGroupSchema()
         {
             MASchemaType type = new MASchemaType
@@ -401,7 +431,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Id",
                 Api = "group",
                 CanPatch = true,
-                IsAnchor =  true,
+                IsAnchor = true,
                 IsArrayAttribute = false
             };
 
@@ -570,7 +600,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.Attributes.Add(whoCanInvite);
-            
+
             //MASchemaAttribute whoCanAdd = new MASchemaAttribute
             //{
             //    AttributeType = AttributeType.String,
@@ -918,7 +948,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "name",
-                Fields = new List<MASchemaField>() {givenName, familyName},
+                Fields = new List<MASchemaField>() { givenName, familyName },
                 FieldName = "name",
                 PropertyName = "Name",
                 CanPatch = false
@@ -953,7 +983,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "notes",
-                Fields = new List<MASchemaField>() {notesContentType, notesValue},
+                Fields = new List<MASchemaField>() { notesContentType, notesValue },
                 FieldName = "notes",
                 PropertyName = "Notes",
                 CanPatch = false
@@ -988,13 +1018,13 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "websites",
-                Fields = new List<MASchemaField>() {webSitePrimary, webSiteValue},
+                Fields = new List<MASchemaField>() { webSitePrimary, webSiteValue },
                 FieldName = "websites",
                 PropertyName = "Websites",
                 KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
                 CanPatch = false
             };
-            
+
             type.Attributes.Add(webSiteType);
         }
 
@@ -1068,7 +1098,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "phones",
-                Fields = new List<MASchemaField>() { phonesValue},
+                Fields = new List<MASchemaField>() { phonesValue },
                 FieldName = "phones",
                 PropertyName = "Phones",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
@@ -1119,7 +1149,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "symbol"
             };
-            
+
             MASchemaField location = new MASchemaField
             {
                 AttributeType = AttributeType.String,
@@ -1164,7 +1194,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "organizations",
-                Fields = new List<MASchemaField>() {name, title, department, symbol, location, description, domain, costCenter},
+                Fields = new List<MASchemaField>() { name, title, department, symbol, location, description, domain, costCenter },
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
@@ -1281,7 +1311,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "addresses",
-                Fields = new List<MASchemaField>() {sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode},
+                Fields = new List<MASchemaField>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
                 FieldName = "addresses",
                 PropertyName = "Addresses",
                 KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
@@ -1307,7 +1337,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "relations",
-                Fields = new List<MASchemaField>() {value},
+                Fields = new List<MASchemaField>() { value },
                 FieldName = "relations",
                 PropertyName = "Relations",
                 KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
@@ -1333,7 +1363,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "externalIds",
-                Fields = new List<MASchemaField>() {value},
+                Fields = new List<MASchemaField>() { value },
                 FieldName = "externalIds",
                 PropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
@@ -1369,7 +1399,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "user",
                 AttributeName = "ims",
-                Fields = new List<MASchemaField>() {im, protocol},
+                Fields = new List<MASchemaField>() { im, protocol },
                 FieldName = "ims",
                 PropertyName = "Ims",
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
