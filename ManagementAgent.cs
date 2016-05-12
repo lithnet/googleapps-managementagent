@@ -15,13 +15,16 @@ using Lithnet.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using Google.GData.Contacts;
+    using GroupMembership = ManagedObjects.GroupMembership;
+
     public class ManagementAgent :
         IMAExtensible2CallExport,
         IMAExtensible2CallImport,
         IMAExtensible2GetSchema,
-        IMAExtensible2GetCapabilities,
-        IMAExtensible2GetParameters,
-        IMAExtensible2Password
+        IMAExtensible2GetCapabilities, IMAExtensible2GetParameters,
+        IMAExtensible2GetParametersEx
+
     {
         private const string DeltaFile = "lithnet.googleapps.ma.delta.xml";
 
@@ -30,12 +33,14 @@ namespace Lithnet.GoogleApps.MA
         private OpenExportConnectionRunStep exportRunStep;
 
         private Stopwatch timer;
-        
+
         private int opCount;
 
         private Task importUsersTask;
 
         private Task importGroupsTask;
+
+        private Task importContactsTask;
 
         private Schema operationSchemaTypes;
 
@@ -43,8 +48,9 @@ namespace Lithnet.GoogleApps.MA
 
         private bool GroupImportTaskComplete;
 
-        private BlockingCollection<object> importCollection;
+        private bool ContactsImportTaskComplete;
 
+        private BlockingCollection<object> importCollection;
 
         internal static MASchemaTypes Schema { get; set; }
 
@@ -179,7 +185,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation statistics");
             Logger.WriteLine("Export objects: {0}", this.opCount);
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount /this.timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount/this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
         }
@@ -239,6 +245,16 @@ namespace Lithnet.GoogleApps.MA
                 this.GroupImportTaskComplete = true;
             }
 
+            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.Contact))
+            {
+                this.SetupContactsImportTask();
+                Logger.WriteLine("Contacts import task setup complete");
+            }
+            else
+            {
+                this.ContactsImportTaskComplete = true;
+            }
+
             if (this.importUsersTask != null)
             {
                 this.importUsersTask.Start();
@@ -247,6 +263,11 @@ namespace Lithnet.GoogleApps.MA
             if (this.importGroupsTask != null)
             {
                 this.importGroupsTask.Start();
+            }
+
+            if (this.importContactsTask != null)
+            {
+                this.importContactsTask.Start();
             }
         }
 
@@ -267,6 +288,15 @@ namespace Lithnet.GoogleApps.MA
                     throw this.importUsersTask.Exception;
                 }
             }
+
+
+            if (this.importContactsTask != null)
+            {
+                if (this.importContactsTask.IsFaulted)
+                {
+                    throw this.importContactsTask.Exception;
+                }
+            }
         }
 
         private void SetupGroupsImportTask()
@@ -280,28 +310,50 @@ namespace Lithnet.GoogleApps.MA
             GroupRequestFactory.SettingsThreads = this.Configuration.GroupSettingsImportThreadCount;
 
             this.importGroupsTask = new Task(() =>
+            {
+                Logger.WriteLine("Starting group import task");
+                Logger.WriteLine("Requesting group fields: " + groupFields);
+                Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
+
+                Logger.WriteLine("Requesting settings: " + settingsRequred.ToString());
+                Logger.WriteLine("Requesting members: " + membersRequired.ToString());
+
+                GroupRequestFactory.ImportGroups(this.Configuration.CustomerID, membersRequired, settingsRequred, groupFields, groupSettingsFields, this.importCollection);
+
+                Logger.WriteLine("Groups import task complete");
+
+                this.GroupImportTaskComplete = true;
+
+                lock (this.importCollection)
                 {
-                    Logger.WriteLine("Starting group import task");
-                    Logger.WriteLine("Requesting group fields: " + groupFields);
-                    Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
-
-                    Logger.WriteLine("Requesting settings: " + settingsRequred.ToString());
-                    Logger.WriteLine("Requesting members: " + membersRequired.ToString());
-
-                    GroupRequestFactory.ImportGroups(this.Configuration.CustomerID, membersRequired, settingsRequred, groupFields, groupSettingsFields, this.importCollection);
-
-                    Logger.WriteLine("Groups import task complete");
-
-                    this.GroupImportTaskComplete = true;
-
-                    lock (this.importCollection)
+                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
                     {
-                        if (this.UserImportTaskComplete && this.GroupImportTaskComplete)
-                        {
-                            this.importCollection.CompleteAdding();
-                        }
+                        this.importCollection.CompleteAdding();
                     }
-                });
+                }
+            });
+        }
+
+        private void SetupContactsImportTask()
+        {
+            this.importContactsTask = new Task(() =>
+            {
+                Logger.WriteLine("Starting contacts import task");
+
+                ContactRequestFactory.GetContacts(this.Configuration.Domain, this.importCollection);
+
+                Logger.WriteLine("Contacts import task complete");
+
+                this.ContactsImportTaskComplete = true;
+
+                lock (this.importCollection)
+                {
+                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
+                    {
+                        this.importCollection.CompleteAdding();
+                    }
+                }
+            });
         }
 
         private void SetupUserImportTask(Schema types)
@@ -318,7 +370,7 @@ namespace Lithnet.GoogleApps.MA
                     fieldNames.Add(field);
                 }
             }
-            
+
             if (this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
             {
                 fieldNames.Add($"customSchemas/{SchemaConstants.CustomGoogleAppsSchemaName}");
@@ -337,7 +389,7 @@ namespace Lithnet.GoogleApps.MA
 
                 lock (this.importCollection)
                 {
-                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete)
+                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
                     {
                         this.importCollection.CompleteAdding();
                     }
@@ -445,31 +497,49 @@ namespace Lithnet.GoogleApps.MA
 
                 GoogleGroup group = item as GoogleGroup;
 
-                if (group == null)
+                if (group != null)
                 {
-                    throw new NotSupportedException("The object enumeration returned an unsupported type: " + group.GetType().Name);
-                }
-
-                if (!string.IsNullOrWhiteSpace(this.Configuration.GroupRegexFilter))
-                {
-                    if (!Regex.IsMatch(group.Group.Email, this.Configuration.GroupRegexFilter, RegexOptions.IgnoreCase))
+                    if (!string.IsNullOrWhiteSpace(this.Configuration.GroupRegexFilter))
                     {
-                        i--;
-                        continue;
+                        if (!Regex.IsMatch(group.Group.Email, this.Configuration.GroupRegexFilter, RegexOptions.IgnoreCase))
+                        {
+                            i--;
+                            continue;
+                        }
                     }
-                }
 
-                if (this.Configuration.ExcludeUserCreated)
-                {
-                    if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
+                    if (this.Configuration.ExcludeUserCreated)
                     {
-                        i--;
-                        continue;
+                        if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
+                        {
+                            i--;
+                            continue;
+                        }
                     }
+
+                    results.CSEntries.Add(this.GetCSEntryForGroup(group));
+                    continue;
                 }
 
-                results.CSEntries.Add(this.GetCSEntryForGroup(group));
-                continue;
+                ContactEntry contact = item as ContactEntry;
+
+                if (contact != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(this.Configuration.ContactRegexFilter))
+                    {
+                        if (!Regex.IsMatch(contact.PrimaryEmail.Address, this.Configuration.ContactRegexFilter, RegexOptions.IgnoreCase))
+                        {
+                            i--;
+                            continue;
+                        }
+                    }
+
+                    results.CSEntries.Add(ImportProcessor.GetCSEntryChange(contact, this.operationSchemaTypes.Types[SchemaConstants.Contact]));
+                    continue;
+
+                }
+
+                throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
             }
 
             results.MoreToImport = !this.importCollection.IsCompleted;
@@ -494,8 +564,8 @@ namespace Lithnet.GoogleApps.MA
                 csentry.ObjectModificationType = ObjectModificationType.Add;
                 csentry.DN = group.Group.Email;
                 csentry.ErrorCodeImport = MAImportError.ImportErrorCustomContinueRun;
-                csentry.ErrorDetail = group.Errors.First().StackTrace;
-                csentry.ErrorName = group.Errors.First().Message;
+                csentry.ErrorDetail = group.Errors.FirstOrDefault()?.StackTrace;
+                csentry.ErrorName = group.Errors.FirstOrDefault()?.Message;
             }
             else
             {
@@ -532,7 +602,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation statistics");
             Logger.WriteLine("Import objects: {0}", this.opCount);
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount /this.timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount/this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
             return new CloseImportConnectionResults(null);
@@ -547,13 +617,48 @@ namespace Lithnet.GoogleApps.MA
             return SchemaBuilder.GetSchema(this.Configuration).GetSchema();
         }
 
+        public IList<ConfigParameterDefinition> GetConfigParametersEx(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page, int pageNumber)
+        {
+            if (pageNumber == 1)
+            {
+                return ManagementAgentParameters.GetParameters(configParameters, page);
+            }
+            else
+            {
+                return new List<ConfigParameterDefinition>();
+            }
+        }
+
+        public ParameterValidationResult ValidateConfigParametersEx(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page, int pageNumber)
+        {
+            if (pageNumber == 1)
+            {
+                ManagementAgentParameters parameters = new ManagementAgentParameters(configParameters);
+                return parameters.ValidateParameters(page);
+            }
+            else
+            {
+                return new ParameterValidationResult(ParameterValidationResultCode.Success, null, null);
+            }
+        }
+
         public IList<ConfigParameterDefinition> GetConfigParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
+            //if (pageNumber > 1)
+            //{
+            //    return null;
+            //}
+
             return ManagementAgentParameters.GetParameters(configParameters, page);
         }
 
         public ParameterValidationResult ValidateConfigParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
+            //if (pageNumber > 1)
+            //{
+            //    return new ParameterValidationResult(ParameterValidationResultCode.Success, null, null);
+            //}
+
             ManagementAgentParameters parameters = new ManagementAgentParameters(configParameters);
             return parameters.ValidateParameters(page);
         }

@@ -36,9 +36,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             public string GroupRegexFilter { get; set; }
 
             public string UserRegexFilter { get; set; }
+            public string ContactRegexFilter { get; set;  }
 
             public string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
-
+            public string Domain => ConfigurationManager.AppSettings["domain"];
+            
             public string KeyFilePath => ConfigurationManager.AppSettings["keyFilePath"];
 
             public string KeyFilePassword => ConfigurationManager.AppSettings["keyFilePassword"];

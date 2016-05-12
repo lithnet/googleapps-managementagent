@@ -12,6 +12,7 @@ namespace Lithnet.GoogleApps.MA
         public const string GroupSettings = "groupSettings";
         public const string User = "user";
         public const string AdvancedUser = "advancedUser";
+        public const string Contact = "contact";
 
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
         public const string CustomSchemaObjectType = "objectType";

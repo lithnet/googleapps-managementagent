@@ -11,8 +11,13 @@ namespace Lithnet.GoogleApps.MA
     using System.Runtime.Serialization;
     using System.Xml;
     using Google.Apis.Admin.Directory.directory_v1.Data;
+    using Google.GData.Client;
+    using Google.GData.Contacts;
     using ManagedObjects;
     using Microsoft.MetadirectoryServices;
+    using Relation = ManagedObjects.Relation;
+    using Website = ManagedObjects.Website;
+    using GDataOrganization = Google.GData.Extensions.Organization;
 
     internal static class SchemaBuilder
     {
@@ -21,7 +26,8 @@ namespace Lithnet.GoogleApps.MA
             MASchemaTypes types = new MASchemaTypes
             {
                 SchemaBuilder.GetSchema(SchemaConstants.User, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Group, config)
+                SchemaBuilder.GetSchema(SchemaConstants.Group, config),
+                SchemaBuilder.GetSchema(SchemaConstants.Contact, config)
             };
 
             if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
@@ -44,10 +50,160 @@ namespace Lithnet.GoogleApps.MA
 
                 case SchemaConstants.Group:
                     return SchemaBuilder.GetGroupSchema();
+
+                case SchemaConstants.Contact:
+                    return SchemaBuilder.GetContactSchema(config);
             }
 
             throw new InvalidOperationException();
         }
+
+        public static MASchemaType GetContactSchema(IManagementAgentParameters config)
+        {
+            MASchemaType type = new MASchemaType
+            {
+                Attributes = new List<IMASchemaAttribute>(),
+                Name = "contact",
+                AnchorAttributeName = "id",
+                CanPatch = false,
+                ApiInterface = new ApiInterfaceContact(config.Domain)
+            };
+            
+            MASchemaAttribute occupation = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "occupation",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "occupation",
+                PropertyName = "Occupation",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(occupation);
+            
+            MASchemaAttribute id = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "id",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "id",
+                PropertyName = "Id",
+                Api = "contact",
+                CanPatch = true,
+                IsAnchor = true,
+                IsArrayAttribute = false,
+                CastForImport = (value) => ((AtomId)value).AbsoluteUri,
+            };
+
+            type.Attributes.Add(id);
+
+            SchemaBuilder.AddContactNames(type);
+            SchemaBuilder.AddContactOrganizationsAttributes(type, config);
+            SchemaBuilder.AddContactExternalIds(type, config);
+
+            return type;
+        }
+
+
+        private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
+        {
+            
+            MASchemaField name = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "orgName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Name",
+                AttributeNamePart = "name"
+            };
+
+            MASchemaField title = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "orgTitle",
+                IsMultivalued = false,
+                PropertyName = "Title",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "title"
+            };
+
+            MASchemaField department = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "orgDepartment",
+                IsMultivalued = false,
+                PropertyName = "Department",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "department"
+            };
+
+            MASchemaField symbol = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "orgSymbol",
+                IsMultivalued = false,
+                PropertyName = "Symbol",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "symbol"
+            };
+
+            MASchemaField location = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "where",
+                IsMultivalued = false,
+                PropertyName = "Location",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "location"
+            };
+
+            MASchemaGDataCommonAttributesList<GDataOrganization> customType = new MASchemaGDataCommonAttributesList<GDataOrganization>
+            {
+                Api = "contact",
+                AttributeName = "organizations",
+                Fields = new List<MASchemaField>() { name, title, department, symbol, location },
+                FieldName = "organizations",
+                PropertyName = "Organizations",
+                KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
+                CanPatch = false,
+                KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" } }
+            };
+
+            type.Attributes.Add(customType);
+        }
+        
+        private static void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
+        {
+            MASchemaField value = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "value",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Value",
+                AttributeNamePart = null
+            };
+
+            MASchemaGDataSimpleAttributesList<ExternalId> customType = new MASchemaGDataSimpleAttributesList<ExternalId>
+            {
+                Api = "contact",
+                AttributeName = "externalIds",
+                Fields = new List<MASchemaField>() { value },
+                FieldName = "externalIds",
+                PropertyName = "ExternalIds",
+                KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
+                CanPatch = false,
+                KnownRels = new HashSet<string>() { "account", "customer","network","organization" }
+            };
+
+            type.Attributes.Add(customType);
+        }
+
 
         public static MASchemaType GetUserSchema(IManagementAgentParameters config)
         {
@@ -331,16 +487,16 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(customerId);
 
-            SchemaBuilder.AddNames(type);
-            SchemaBuilder.AddNotes(type);
-            SchemaBuilder.AddWebSites(type, config);
+            SchemaBuilder.AddUserNames(type);
+            SchemaBuilder.AddUserNotes(type);
+            SchemaBuilder.AddUserWebSites(type, config);
             SchemaBuilder.AddUserAliases(type);
-            SchemaBuilder.AddPhonesAttributes(type, config);
-            SchemaBuilder.AddOrganizationsAttributes(type, config);
-            SchemaBuilder.AddAddresses(type, config);
-            SchemaBuilder.AddRelations(type, config);
-            SchemaBuilder.AddExternalIds(type, config);
-            SchemaBuilder.AddIms(type, config);
+            SchemaBuilder.AddUserPhonesAttributes(type, config);
+            SchemaBuilder.AddUserOrganizationsAttributes(type, config);
+            SchemaBuilder.AddUserAddresses(type, config);
+            SchemaBuilder.AddUserRelations(type, config);
+            SchemaBuilder.AddUserExternalIds(type, config);
+            SchemaBuilder.AddUserIms(type, config);
 
             return type;
         }
@@ -924,7 +1080,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(whoCanContactOwner);
         }
 
-        private static void AddNames(MASchemaType type)
+        private static void AddUserNames(MASchemaType type)
         {
             MASchemaField givenName = new MASchemaField
             {
@@ -959,7 +1115,52 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(schemaItem);
         }
 
-        private static void AddNotes(MASchemaType type)
+        private static void AddContactNames(MASchemaType type)
+        {
+            MASchemaField givenName = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "givenName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "GivenName",
+                AttributeNamePart = "givenName"
+            };
+
+            MASchemaField familyName = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "familyName",
+                IsMultivalued = false,
+                PropertyName = "FamilyName",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "familyName"
+            };
+            
+            MASchemaField fullName = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "fullName",
+                IsMultivalued = false,
+                PropertyName = "FullName",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "fullName"
+            };
+
+            MASchemaNestedType schemaItem = new MASchemaNestedType
+            {
+                Api = "contact",
+                AttributeName = "name",
+                Fields = new List<MASchemaField>() { givenName, familyName, fullName },
+                FieldName = "name",
+                PropertyName = "Name",
+                CanPatch = false
+            };
+
+            type.Attributes.Add(schemaItem);
+        }
+        
+        private static void AddUserNotes(MASchemaType type)
         {
             MASchemaField notesValue = new MASchemaField
             {
@@ -994,7 +1195,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(notesType);
         }
 
-        private static void AddWebSites(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserWebSites(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField webSiteValue = new MASchemaField
             {
@@ -1085,7 +1286,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(nonEditableAliasesList);
         }
 
-        private static void AddPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField phonesValue = new MASchemaField
             {
@@ -1112,7 +1313,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(phonesType);
         }
 
-        private static void AddOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField name = new MASchemaField
             {
@@ -1209,7 +1410,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(customType);
         }
 
-        private static void AddAddresses(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserAddresses(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField sourceIsStructured = new MASchemaField
             {
@@ -1327,7 +1528,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(customType);
         }
 
-        private static void AddRelations(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserRelations(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField value = new MASchemaField
             {
@@ -1353,7 +1554,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(customType);
         }
 
-        private static void AddExternalIds(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserExternalIds(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField value = new MASchemaField
             {
@@ -1379,7 +1580,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(customType);
         }
 
-        private static void AddIms(MASchemaType type, IManagementAgentParameters config)
+        private static void AddUserIms(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField im = new MASchemaField
             {
@@ -1425,7 +1626,8 @@ namespace Lithnet.GoogleApps.MA
             schema.Fields.Add(new SchemaFieldSpec()
             {
                 FieldName = SchemaConstants.CustomSchemaObjectType,
-                FieldType = "STRING", MultiValued = false,
+                FieldType = "STRING",
+                MultiValued = false,
                 ReadAccessType = "ADMINS_AND_SELF"
             });
 

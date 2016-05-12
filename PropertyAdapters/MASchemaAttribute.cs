@@ -10,6 +10,7 @@ namespace Lithnet.GoogleApps.MA
 {
     using System.Linq.Expressions;
     using System.Reflection;
+    using Google.GData.Client;
     using Logging;
     using MetadirectoryServices;
 
@@ -38,6 +39,8 @@ namespace Lithnet.GoogleApps.MA
         public bool IsArrayAttribute { get; set; }
 
         public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
+
+        public Func<object, object> CastForImport { get; set; }
 
         internal string AssignedType { get; set; }
 
@@ -120,7 +123,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             object value = this.propInfo.GetValue(obj);
-
+            if (this.CastForImport != null)
+            {
+                value = this.CastForImport(value);
+            }
+            
             if (value == null)
             {
                 if (modType == ObjectModificationType.Update)

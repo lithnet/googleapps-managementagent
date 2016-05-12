@@ -23,7 +23,7 @@ namespace Lithnet.GoogleApps.MA
             csentry.ObjectType = SchemaConstants.User;
             csentry.DN = user.PrimaryEmail;
 
-            user.ToCSEntryChange(config, type, csentry);
+            //user.ToCSEntryChange(config, type, csentry);
 
             return csentry;
         }
@@ -90,7 +90,7 @@ namespace Lithnet.GoogleApps.MA
             user = UserRequestFactory.Add(user);
             deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create("id", user.Id));
 
-            user.ToCSEntryChange(config, type, deltaCSEntry);
+           // user.ToCSEntryChange(config, type, deltaCSEntry);
 
             Action x = () => CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
             x.ExecuteWithRetryOnNotFound();
@@ -114,7 +114,7 @@ namespace Lithnet.GoogleApps.MA
             csentry.ToUser(user, config);
             user = UserRequestFactory.Update(user, csentry.DN);
 
-            user.ToCSEntryChange(config, type, deltaCSEntry);
+           // user.ToCSEntryChange(config, type, deltaCSEntry);
             
             csentry.MakeAdmin(deltaCSEntry, user, config);
             CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
@@ -146,7 +146,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            user.ToCSEntryChange(config, type, deltaCSEntry);
+           // user.ToCSEntryChange(config, type, deltaCSEntry);
             csentry.MakeAdmin(deltaCSEntry, user, config);
             CSEntryChangeToUser.ApplyUserAliasChanges(csentry, user, deltaCSEntry);
 

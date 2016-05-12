@@ -32,11 +32,15 @@ namespace Lithnet.GoogleApps.MA
 
         string UserRegexFilter { get; }
 
+        string ContactRegexFilter { get; }
+        
         string UserEmailAddress { get; }
 
         string KeyFilePath { get; }
 
         bool DoNotGenerateDelta { get; }
+
+        string Domain { get; }
 
         IEnumerable<string> PhonesAttributeFixedTypes { get; }
 

@@ -67,18 +67,19 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ApiInterfaceAdvancedUser.cs" />
-    <Compile Include="ApiInterfaceUserDelegates.cs" />
-    <Compile Include="IApiInterfaceObject.cs" />
-    <Compile Include="IApiInterface.cs" />
-    <Compile Include="ApiInterfaceGroupMembership.cs" />
-    <Compile Include="ApiInterfaceGroupSettings.cs" />
-    <Compile Include="ApiInterfaceKeyedCollection.cs" />
-    <Compile Include="ApiInterfaceGroup.cs" />
-    <Compile Include="ApiInterfaceGroupAliases.cs" />
-    <Compile Include="ApiInterfaceUserMakeAdmin.cs" />
-    <Compile Include="ApiInterfaceUserAliases.cs" />
-    <Compile Include="ApiInterfaceUser.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceAdvancedUser.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceContact.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceUserDelegates.cs" />
+    <Compile Include="Interfaces\IApiInterfaceObject.cs" />
+    <Compile Include="Interfaces\IApiInterface.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceGroupMembership.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceGroupSettings.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceKeyedCollection.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceGroup.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceGroupAliases.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceUserMakeAdmin.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceUserAliases.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceUser.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -90,27 +91,26 @@
     <Compile Include="CSEntryChangeToUser.cs" />
     <Compile Include="ExportProcessor.cs" />
     <Compile Include="GenericExtensions.cs" />
-    <Compile Include="GroupToCSEntryChange.cs" />
-    <Compile Include="IMASchemaAttribute.cs" />
+    <Compile Include="Interfaces\IMASchemaAttribute.cs" />
     <Compile Include="ImportProcessor.cs" />
     <Compile Include="ManagementAgent.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ManagementAgentParameters.cs" />
-    <Compile Include="IManagementAgentParameters.cs" />
+    <Compile Include="Interfaces\IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
     <Compile Include="ManagementAgentSchema.cs" />
-    <Compile Include="MASchemaCollectionT.cs" />
-    <Compile Include="MASchemaNestedType.cs" />
-    <Compile Include="MASchemaCustomTypeList.cs" />
-    <Compile Include="MASchemaField.cs" />
-    <Compile Include="MASchemaAttribute.cs" />
+    <Compile Include="PropertyAdapters\MASchemaCollectionT.cs" />
+    <Compile Include="PropertyAdapters\MASchemaGDataCommonAttributesList.cs" />
+    <Compile Include="PropertyAdapters\MASchemaGDataSimpleAttributesList.cs" />
+    <Compile Include="PropertyAdapters\MASchemaNestedType.cs" />
+    <Compile Include="PropertyAdapters\MASchemaCustomTypeList.cs" />
+    <Compile Include="PropertyAdapters\MASchemaField.cs" />
+    <Compile Include="PropertyAdapters\MASchemaAttribute.cs" />
     <Compile Include="MASchemaTypes.cs" />
     <Compile Include="MASchemaType.cs" />
     <Compile Include="SchemaBuilder.cs" />
     <Compile Include="SchemaConstants.cs" />
-    <Compile Include="UserToCSEntryChangeExtensions.cs" />
-    <Compile Include="UserUpdateTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -147,6 +147,18 @@
     </Reference>
     <Reference Include="Google.Apis.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Client.2.2.0.0\lib\Google.GData.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Contacts, Version=2.2.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Contacts.2.2.0.0\lib\Google.GData.Contacts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
+      <HintPath>packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">

@@ -82,6 +82,35 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
+        public string ContactRegexFilter
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ContactRegexFilterParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.ContactRegexFilterParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string Domain
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.DomainParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.DomainParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         public string UserEmailAddress
         {
@@ -363,12 +392,29 @@ namespace Lithnet.GoogleApps.MA
                 case ConfigParameterPage.Connectivity:
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Credentials"));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.CustomerIDParameter, null, "my_customer"));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.DomainParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ServiceAccountEmailAddressParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserEmailAddressParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.KeyFilePathParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
 
-                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    break;
+
+                case ConfigParameterPage.Global:
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserRegexFilterParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.GroupRegexFilterParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactRegexFilterParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter, false));
+                    break;
+
+                case ConfigParameterPage.Partition:
+                    break;
+
+                case ConfigParameterPage.RunStep:
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.DoNotGenerateDeltaParameter, false));
+
+                    break;
+                case ConfigParameterPage.Schema:
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line. For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home"));
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter, null));
@@ -391,22 +437,6 @@ namespace Lithnet.GoogleApps.MA
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
-
-                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter, false));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserRegexFilterParameter, null, null));
-                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.GroupRegexFilterParameter, null, null));
-                    break;
-
-                case ConfigParameterPage.Global:
-
-                    break;
-                case ConfigParameterPage.Partition:
-                    break;
-                case ConfigParameterPage.RunStep:
-                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.DoNotGenerateDeltaParameter, false));
-
-                    break;
-                case ConfigParameterPage.Schema:
                     break;
                 default:
                     break;
@@ -438,6 +468,14 @@ namespace Lithnet.GoogleApps.MA
                         result.Code = ParameterValidationResultCode.Failure;
                         result.ErrorMessage = "A user email address is required";
                         result.ErrorParameter = ManagementAgentParametersBase.UserEmailAddressParameter;
+                        return result;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(this.Domain))
+                    {
+                        result.Code = ParameterValidationResultCode.Failure;
+                        result.ErrorMessage = "The primary domain is required";
+                        result.ErrorParameter = ManagementAgentParametersBase.DomainParameter;
                         return result;
                     }
 
@@ -488,6 +526,21 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
+                    if (!string.IsNullOrWhiteSpace(this.ContactRegexFilter))
+                    {
+                        try
+                        {
+                            Regex r = new Regex(this.ContactRegexFilter);
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Code = ParameterValidationResultCode.Failure;
+                            result.ErrorMessage = "The specified contact regular expression was not valid. " + ex.Message;
+                            result.ErrorParameter = ManagementAgentParametersBase.ContactRegexFilterParameter;
+                            return result;
+                        }
+                    }
+
                     if (!string.IsNullOrWhiteSpace(this.UserRegexFilter))
                     {
                         try
@@ -502,6 +555,16 @@ namespace Lithnet.GoogleApps.MA
                             return result;
                         }
                     }
+
+                    break;
+
+                case ConfigParameterPage.Global:
+                    break;
+                case ConfigParameterPage.Partition:
+                    break;
+                case ConfigParameterPage.RunStep:
+                    break;
+                case ConfigParameterPage.Schema:
 
 
                     if (this.OrganizationsAttributeFixedTypes.Any())
@@ -580,15 +643,6 @@ namespace Lithnet.GoogleApps.MA
                             return result;
                         }
                     }
-                    break;
-
-                case ConfigParameterPage.Global:
-                    break;
-                case ConfigParameterPage.Partition:
-                    break;
-                case ConfigParameterPage.RunStep:
-                    break;
-                case ConfigParameterPage.Schema:
                     break;
                 default:
                     break;

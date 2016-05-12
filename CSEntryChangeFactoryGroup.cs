@@ -28,14 +28,14 @@ namespace Lithnet.GoogleApps.MA
             csentry.DN = group.Group.Email;
             csentry.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", group.Group.Id));
 
-            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, csentry);
+           // GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, csentry);
 
             if (group.Settings != null)
             {
-                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, csentry);
+            //    GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, csentry);
             }
 
-            GroupToCSEntryChange.GroupMembersToCSEntryChange(group.Membership, type, csentry);
+           // GroupToCSEntryChange.GroupMembersToCSEntryChange(group.Membership, type, csentry);
 
             return csentry;
         }
@@ -110,7 +110,7 @@ namespace Lithnet.GoogleApps.MA
 
             group.Group = GroupRequestFactory.Add(group.Group);
             deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create("id", group.Group.Id));
-            GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
+           // GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
 
             Func<bool> x = () => CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
             x.ExecuteWithRetryOnNotFound();
@@ -119,7 +119,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Func<GroupSettings> y = () => GroupSettingsRequestFactory.Update(csentry.DN, group.Settings);
                 group.Settings = y.ExecuteWithRetryOnNotFound();
-                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
+             //   GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
             Action z = () => CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);
@@ -137,7 +137,7 @@ namespace Lithnet.GoogleApps.MA
             if (CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group))
             {
                 group.Group = GroupRequestFactory.Update(csentry.DN, group.Group);
-                GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
+             //   GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
             }
 
             CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
@@ -145,7 +145,7 @@ namespace Lithnet.GoogleApps.MA
             if (CSEntryChangeToGroup.CSEntryChangeToGroupSettings(csentry, group.Settings))
             {
                 group.Settings = GroupSettingsRequestFactory.Update(csentry.DN, group.Settings);
-                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
+             //   GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
             CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);
@@ -161,7 +161,7 @@ namespace Lithnet.GoogleApps.MA
             if (CSEntryChangeToGroup.CSEntryChangeToGroupCore(csentry, group.Group))
             {
                 group.Group = GroupRequestFactory.Update(csentry.DN, group.Group);
-                GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
+              //  GroupToCSEntryChange.GroupCoreToCSEntryChange(group.Group, type, deltaCSEntry);
             }
 
             CSEntryChangeToGroup.ApplyAliasChanges(csentry, deltaCSEntry, group.Group);
@@ -169,7 +169,7 @@ namespace Lithnet.GoogleApps.MA
             if (CSEntryChangeToGroup.CSEntryChangeToGroupSettings(csentry, group.Settings))
             {
                 group.Settings = GroupSettingsRequestFactory.Patch(csentry.DN, group.Settings);
-                GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
+               // GroupToCSEntryChange.GroupSettingsToCSEntryChange(group.Settings, type, deltaCSEntry);
             }
 
             CSEntryChangeToGroup.ApplyMembershipChanges(type, csentry, deltaCSEntry);

@@ -18,6 +18,8 @@ namespace Lithnet.GoogleApps.MA
     {
         protected const string CustomerIDParameter = "Customer ID";
 
+        protected const string DomainParameter = "Primary domain";
+        
         protected const string ServiceAccountEmailAddressParameter = "Service account email address";
 
         protected const string UserEmailAddressParameter = "User email address";
@@ -32,6 +34,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string GroupRegexFilterParameter = "Group regex email address filter";
 
+        protected const string ContactRegexFilterParameter = "Contact regex email address filter";
+        
         protected const string DoNotGenerateDeltaParameter = "Do not save delta data on export";
 
         protected const string ExternalIDsFormatParameter = "External IDs format";
