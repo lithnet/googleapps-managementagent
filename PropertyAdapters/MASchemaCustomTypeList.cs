@@ -340,7 +340,7 @@ namespace Lithnet.GoogleApps.MA
             return new List<T>();
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -365,7 +365,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (attribute.AssignedType == item.Type)
                     {
-                        foreach (AttributeChange change in attribute.CreateAttributeChanges(modType, item))
+                        foreach (AttributeChange change in attribute.CreateAttributeChanges(dn, modType, item))
                         {
                             yield return change;
                         }

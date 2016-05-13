@@ -13,11 +13,15 @@ namespace Lithnet.GoogleApps.MA
     using Google.Apis.Admin.Directory.directory_v1.Data;
     using Google.GData.Client;
     using Google.GData.Contacts;
+    using Google.GData.Extensions;
     using ManagedObjects;
     using Microsoft.MetadirectoryServices;
     using Relation = ManagedObjects.Relation;
     using Website = ManagedObjects.Website;
     using GDataOrganization = Google.GData.Extensions.Organization;
+    using GDataEmail = Google.GData.Extensions.EMail;
+    using GDataIM = Google.GData.Extensions.IMAddress;
+    using Organization = ManagedObjects.Organization;
 
     internal static class SchemaBuilder
     {
@@ -68,7 +72,7 @@ namespace Lithnet.GoogleApps.MA
                 CanPatch = false,
                 ApiInterface = new ApiInterfaceContact(config.Domain)
             };
-            
+
             MASchemaAttribute occupation = new MASchemaAttribute
             {
                 AttributeType = AttributeType.String,
@@ -84,6 +88,172 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(occupation);
             
+            MASchemaAttribute billingInformation = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "billingInformation",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "billingInformation",
+                PropertyName = "BillingInformation",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(billingInformation);
+            
+            MASchemaAttribute birthday = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "birthday",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "birthday",
+                PropertyName = "Birthday",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(birthday);
+            
+            MASchemaAttribute directoryServer = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "directoryServer",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "directoryServer",
+                PropertyName = "DirectoryServer",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(directoryServer);
+
+
+            MASchemaAttribute initials = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "initials",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "initials",
+                PropertyName = "Initials",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(initials);
+
+            MASchemaAttribute maidenName = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "maidenName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "maidenName",
+                PropertyName = "MaidenName",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(maidenName);
+
+            MASchemaAttribute mileage = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "mileage",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "mileage",
+                PropertyName = "Mileage",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(mileage);
+
+            MASchemaAttribute nickname = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "nickname",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "nickname",
+                PropertyName = "Nickname",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(nickname);
+
+            MASchemaAttribute priority = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "priority",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "priority",
+                PropertyName = "Priority",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(priority);
+
+            MASchemaAttribute sensitivity = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "sensitivity",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "sensitivity",
+                PropertyName = "Sensitivity",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(sensitivity);
+
+            MASchemaAttribute shortName = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "shortName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "shortName",
+                PropertyName = "ShortName",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(shortName);
+
+            MASchemaAttribute subject = new MASchemaAttribute
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "subject",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "subject",
+                PropertyName = "Subject",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(subject);
+
             MASchemaAttribute id = new MASchemaAttribute
             {
                 AttributeType = AttributeType.String,
@@ -104,14 +274,44 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilder.AddContactNames(type);
             SchemaBuilder.AddContactOrganizationsAttributes(type, config);
             SchemaBuilder.AddContactExternalIds(type, config);
+            SchemaBuilder.AddContactEmailAttributes(type, config);
+            SchemaBuilder.AddContactIms(type, config);
+            SchemaBuilder.AddContactPhones(type, config);
 
             return type;
+        }
+
+        private static void AddContactEmailAttributes(MASchemaType type, IManagementAgentParameters config)
+        {
+            MASchemaField address = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "address",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Address",
+                AttributeNamePart = null
+            };
+            
+            MASchemaGDataCommonAttributesList<GDataEmail> customType = new MASchemaGDataCommonAttributesList<GDataEmail>
+            {
+                Api = "contact",
+                AttributeName = "email",
+                Fields = new List<MASchemaField>() { address },
+                FieldName = "email",
+                PropertyName = "Emails",
+                KnownTypes = config.EmailsAttributeFixedTypes?.ToList(),
+                CanPatch = false,
+                KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" }, { "http://schemas.google.com/g/2005#home", "home" }, { "http://schemas.google.com/g/2005#other", "other" } }
+            };
+
+            type.Attributes.Add(customType);
         }
 
 
         private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-            
+
             MASchemaField name = new MASchemaField
             {
                 AttributeType = AttributeType.String,
@@ -176,7 +376,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(customType);
         }
-        
+
         private static void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
         {
             MASchemaField value = new MASchemaField
@@ -198,12 +398,101 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
                 CanPatch = false,
-                KnownRels = new HashSet<string>() { "account", "customer","network","organization" }
+                KnownRels = new HashSet<string>() { "account", "customer", "network", "organization" }
             };
 
             type.Attributes.Add(customType);
         }
 
+        private static void AddContactPhones(MASchemaType type, IManagementAgentParameters config)
+        {
+            MASchemaField phonesValue = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "value",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Value",
+                AttributeNamePart = null
+            };
+            
+            MASchemaGDataCommonAttributesList<PhoneNumber> phonesType = new MASchemaGDataCommonAttributesList<PhoneNumber>
+            {
+                Api = "contact",
+                AttributeName = "phones",
+                Fields = new List<MASchemaField>() {phonesValue},
+                FieldName = "phones",
+                PropertyName = "Phonenumbers",
+                KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
+                CanPatch = false,
+                KnownRels = new Dictionary<string, string>()
+                {
+                    { "http://schemas.google.com/g/2005#work_pager", "work_pager" } ,
+                    { "http://schemas.google.com/g/2005#work_mobile", "work_mobile" },
+                    { "http://schemas.google.com/g/2005#work", "work" },
+                    { "http://schemas.google.com/g/2005#tty_tdd", "tty_tdd" },
+                    { "http://schemas.google.com/g/2005#telex", "telex" },
+                    { "http://schemas.google.com/g/2005#radio", "radio" },
+                    { "http://schemas.google.com/g/2005#pager", "pager" },
+                    { "http://schemas.google.com/g/2005#other_fax", "other_fax" },
+                    { "http://schemas.google.com/g/2005#mobile", "mobile" },
+                    { "http://schemas.google.com/g/2005#main", "main" },
+                    { "http://schemas.google.com/g/2005#isdn", "isdn" },
+                    { "http://schemas.google.com/g/2005#home_fax", "home_fax" },
+                    { "http://schemas.google.com/g/2005#home", "home" },
+                    { "http://schemas.google.com/g/2005#fax", "fax" },
+                    { "http://schemas.google.com/g/2005#company_main", "company_main" },
+                    { "http://schemas.google.com/g/2005#car", "car" },
+                    { "http://schemas.google.com/g/2005#callback", "callback" },
+                    { "http://schemas.google.com/g/2005#assistant", "assistant" },
+                }
+            };
+
+            type.Attributes.Add(phonesType);
+        }
+
+        private static void AddContactIms(MASchemaType type, IManagementAgentParameters config)
+        {
+            MASchemaField im = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "address",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Address",
+                AttributeNamePart = "address"
+            };
+            
+            MASchemaField protocol = new MASchemaField
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "protocol",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Protocol",
+                AttributeNamePart = "protocol"
+            };
+            
+            MASchemaGDataCommonAttributesList<GDataIM> customType = new MASchemaGDataCommonAttributesList<GDataIM>
+            {
+                Api = "contact",
+                AttributeName = "ims",
+                Fields = new List<MASchemaField>() { im, protocol },
+                FieldName = "ims",
+                PropertyName = "IMs",
+                KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
+                CanPatch = false,
+                KnownRels = new Dictionary<string, string>()
+                {
+                    { "http://schemas.google.com/g/2005#work", "work" } ,
+                    { "http://schemas.google.com/g/2005#netmeeting", "netmeeting" },
+                    { "http://schemas.google.com/g/2005#home", "home" }
+                }
+
+            };
+
+            type.Attributes.Add(customType);
+        }
 
         public static MASchemaType GetUserSchema(IManagementAgentParameters config)
         {
@@ -1136,7 +1425,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "familyName"
             };
-            
+
             MASchemaField fullName = new MASchemaField
             {
                 AttributeType = AttributeType.String,
@@ -1159,7 +1448,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(schemaItem);
         }
-        
+
         private static void AddUserNotes(MASchemaType type)
         {
             MASchemaField notesValue = new MASchemaField
@@ -1589,7 +1878,7 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
                 PropertyName = "IMAddress",
-                AttributeNamePart = "im"
+                AttributeNamePart = "address"
             };
 
             MASchemaField protocol = new MASchemaField

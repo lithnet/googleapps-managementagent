@@ -24,7 +24,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.ObjectModificationType, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
             AttributeChange change = result.FirstOrDefault(t => t.Name == "orgUnitPath");
             Assert.IsNotNull(change);
@@ -50,7 +50,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Replace;
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.ObjectModificationType, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
             AttributeChange change = result.FirstOrDefault(t => t.Name == "orgUnitPath");
             Assert.IsNotNull(change);
@@ -76,7 +76,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.ObjectModificationType, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
             AttributeChange change = result.FirstOrDefault(t => t.Name == "orgUnitPath");
             Assert.IsNotNull(change);

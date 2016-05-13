@@ -62,6 +62,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string AddressesFixedTypeFormatParameter = "Addresses fixed types";
 
+        protected const string EmailsFixedTypeFormatParameter = "Email fixed types";
+        
         protected const string WebsitesFormatParameter = "Websites attribute format";
 
         protected const string WebsitesFixedTypeFormatParameter = "Websites fixed types";
@@ -86,12 +88,18 @@ namespace Lithnet.GoogleApps.MA
         {
             this.GroupMembersImportThreadCount = 10;
             this.GroupSettingsImportThreadCount = 30;
+            this.ContactsServicePoolSize = 30;
+            this.EmailSettingsServicePoolSize = 30;
             this.ExportThreadCount = 30;
         }
 
         public int GroupSettingsImportThreadCount { get; protected set; }
 
         public int GroupMembersImportThreadCount { get; protected set; }
+
+        public int ContactsServicePoolSize { get; protected set; }
+        
+        public int EmailSettingsServicePoolSize { get; protected set; }
 
         public int ExportThreadCount { get; protected set; }
 

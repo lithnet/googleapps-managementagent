@@ -29,7 +29,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -41,7 +41,7 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 List<string> delegates = UserSettingsRequestFactory.GetDelegates(((User)source).PrimaryEmail).ToList();
-                attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, new { Delegates = delegates }));
+                attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }));
                 break;
             }
 

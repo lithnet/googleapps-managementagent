@@ -67,6 +67,16 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
 
+            public IEnumerable<string> EmailsAttributeFixedTypes
+            {
+                get
+                {
+                    yield return "work";
+                    yield return "home";
+                    yield return "other";
+                }
+            }
+            
             public IEnumerable<string> IMsAttributeFixedTypes
             {
                 get
@@ -118,10 +128,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             public bool ExcludeUserCreated { get; set; }
            
           
-            public int GroupSettingsImportThreadCount => 1;
-            public int GroupMembersImportThreadCount => 1;
+            public new int GroupSettingsImportThreadCount => 1;
+            public new int GroupMembersImportThreadCount => 1;
 
-            public int ExportThreadCount = 1;
+            public new int ExportThreadCount = 1;
 
             public ServiceAccountCredential Credentials => this.GetCredentials(
                 this.ServiceAccountEmailAddress,

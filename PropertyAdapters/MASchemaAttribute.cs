@@ -115,7 +115,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {

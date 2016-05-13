@@ -19,6 +19,9 @@ namespace Lithnet.GoogleApps.MA
         int GroupSettingsImportThreadCount { get; }
 
         int GroupMembersImportThreadCount { get; }
+        int ContactsServicePoolSize { get; }
+
+        int EmailSettingsServicePoolSize { get;  }
 
         int ExportThreadCount { get; }
 
@@ -46,6 +49,8 @@ namespace Lithnet.GoogleApps.MA
 
         IEnumerable<string> OrganizationsAttributeFixedTypes { get; }
 
+        IEnumerable<string> EmailsAttributeFixedTypes { get; }
+        
         IEnumerable<string> IMsAttributeFixedTypes { get; }
 
         IEnumerable<string> ExternalIDsAttributeFixedTypes { get; }

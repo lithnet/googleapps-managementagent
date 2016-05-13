@@ -128,7 +128,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -152,7 +152,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, membership));
+                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
                 }
             }
 

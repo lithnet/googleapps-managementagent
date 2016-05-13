@@ -28,7 +28,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             TestParameters r = new TestParameters();
 
-            ConnectionPools.InitializePools(r.Credentials, 1, 1);
+            ConnectionPools.InitializePools(r.Credentials, 1, 1, 1, 1);
             // SchemaBuilder.CreateGoogleAppsCustomSchema();
 
             foreach (var t in ContactRequestFactory.GetContacts("ga-staff-dev.monash.edu"))
@@ -36,7 +36,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 if (t.PrimaryEmail.Address.Contains("d1@"))
                 {
                     bool update = false;
-                    Contact x  = ContactRequestFactory.GetContact(t.SelfUri.Content);
+                    Contact x = ContactRequestFactory.GetContact(t.SelfUri.Content);
 
                     if (x.Organizations.Count > 0 && x.Organizations[0].Rel != "http://schemas.google.com/g/2005#work")
                     {

@@ -53,10 +53,10 @@ namespace Lithnet.GoogleApps.MA
                 result = GroupSettingsRequestFactory.Update(this.GetAnchorValue(target), settings);
             }
 
-            return this.GetChanges(csentry.ObjectModificationType, type, result);
+            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result);
         }
 
-        public IList<AttributeChange> GetChanges(ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -81,7 +81,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (type.HasAttribute(typeDef.AttributeName))
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(modType, settings));
+                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, settings));
                 }
             }
 

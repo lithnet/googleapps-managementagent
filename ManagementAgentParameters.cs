@@ -266,6 +266,32 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public IEnumerable<string> EmailsAttributeFixedTypes
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.EmailsFixedTypeFormatParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.EmailsFixedTypeFormatParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        yield break;
+                    }
+
+                    foreach (string name in value.Split('\n'))
+                    {
+                        yield return name;
+                    }
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+        }
+
+
         public IEnumerable<string> RelationsAttributeFixedTypes
         {
             get
@@ -433,6 +459,9 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.AddressesFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.EmailsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));

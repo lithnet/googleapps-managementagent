@@ -161,7 +161,7 @@ namespace Lithnet.GoogleApps.MA
             return (ICollection<T>)Activator.CreateInstance(this.propInfo.PropertyType, null, new object[] {});
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             ICollection<T> list = this.GetList(obj);
 

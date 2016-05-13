@@ -25,6 +25,6 @@
 
         IEnumerable<string> GetFieldNames(SchemaType type);
 
-        IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj);
+        IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
     }
 }

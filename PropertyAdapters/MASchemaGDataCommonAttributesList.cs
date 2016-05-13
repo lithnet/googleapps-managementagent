@@ -204,7 +204,7 @@ namespace Lithnet.GoogleApps.MA
         }
 
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -218,15 +218,23 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
+            HashSet<string> processedTypes = new HashSet<string>();
+
             foreach (T item in list)
             {
                 string type = this.GetTypeName(item);
 
+                if (!processedTypes.Add(type))
+                {
+                    Logger.WriteLine($"Ignoring duplicate type {type} for attribute {this.AttributeName} on object {dn}", LogLevel.Debug);
+                    continue;
+                }
+                
                 foreach (MASchemaAttribute attribute in this.Attributes)
                 {
                     if (attribute.AssignedType == type)
                     {
-                        foreach (AttributeChange change in attribute.CreateAttributeChanges(modType, item))
+                        foreach (AttributeChange change in attribute.CreateAttributeChanges(dn, modType, item))
                         {
                             yield return change;
                         }

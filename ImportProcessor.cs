@@ -19,11 +19,21 @@ namespace Lithnet.GoogleApps.MA
             CSEntryChange csentry = CSEntryChange.Create();
             csentry.ObjectModificationType = ObjectModificationType.Add;
             csentry.ObjectType = type.Name;
-            csentry.DN = maType.ApiInterface.GetDNValue(source);
 
-            foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.ObjectModificationType, type, source))
+            try
             {
-                csentry.AttributeChanges.Add(change);
+                csentry.DN = maType.ApiInterface.GetDNValue(source);
+
+                foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.DN, csentry.ObjectModificationType, type, source))
+                {
+                    csentry.AttributeChanges.Add(change);
+                }
+            }
+            catch (Exception ex)
+            {
+                csentry.ErrorCodeImport = MAImportError.ImportErrorCustomContinueRun;
+                csentry.ErrorDetail = ex.StackTrace;
+                csentry.ErrorName = ex.Message;
             }
 
             return csentry;

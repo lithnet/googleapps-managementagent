@@ -108,7 +108,12 @@ namespace Lithnet.GoogleApps.MA
             this.DeltaPath = Path.Combine(ManagementAgent.MADataPath, ManagementAgent.DeltaFile);
 
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
-            ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.ExportThreadCount, this.Configuration.ExportThreadCount);
+            ConnectionPools.InitializePools(this.Configuration.Credentials,
+               this.Configuration.ExportThreadCount,
+               this.Configuration.ExportThreadCount,
+               this.Configuration.EmailSettingsServicePoolSize,
+               this.Configuration.ContactsServicePoolSize);
+
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             this.timer.Start();
 
@@ -116,7 +121,7 @@ namespace Lithnet.GoogleApps.MA
 
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
-            ParallelOptions po = new ParallelOptions {MaxDegreeOfParallelism = this.Configuration.ExportThreadCount};
+            ParallelOptions po = new ParallelOptions { MaxDegreeOfParallelism = this.Configuration.ExportThreadCount };
             PutExportEntriesResults results = new PutExportEntriesResults();
 
             Parallel.ForEach(csentries, po, (csentry) =>
@@ -185,7 +190,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation statistics");
             Logger.WriteLine("Export objects: {0}", this.opCount);
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount/this.timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount / this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
         }
@@ -221,7 +226,12 @@ namespace Lithnet.GoogleApps.MA
         {
             this.importCollection = new BlockingCollection<object>();
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.GroupMembersImportThreadCount + 1, this.Configuration.GroupSettingsImportThreadCount);
+            ConnectionPools.InitializePools(this.Configuration.Credentials,
+                this.Configuration.GroupMembersImportThreadCount + 1,
+                this.Configuration.GroupSettingsImportThreadCount,
+                this.Configuration.EmailSettingsServicePoolSize,
+                this.Configuration.ContactsServicePoolSize);
+
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
 
@@ -482,7 +492,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
                             {
-                                string objectType = (string) user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                                string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
                                 if (this.operationSchemaTypes.Types.Contains(objectType))
                                 {
                                     type = this.operationSchemaTypes.Types[objectType];
@@ -602,7 +612,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation statistics");
             Logger.WriteLine("Import objects: {0}", this.opCount);
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
-            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount/this.timer.Elapsed.TotalSeconds);
+            Logger.WriteLine("Ops/sec: {0:N3}", this.opCount / this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
 
             return new CloseImportConnectionResults(null);
@@ -612,7 +622,7 @@ namespace Lithnet.GoogleApps.MA
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials, this.Configuration.GroupMembersImportThreadCount + 1, this.Configuration.GroupSettingsImportThreadCount);
+            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
 
             return SchemaBuilder.GetSchema(this.Configuration).GetSchema();
         }
@@ -671,7 +681,7 @@ namespace Lithnet.GoogleApps.MA
         public void OpenPasswordConnection(KeyedCollection<string, ConfigParameter> configParameters, Partition partition)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
-            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1);
+            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
         }
 
         public void SetPassword(CSEntry csentry, System.Security.SecureString newPassword, PasswordOptions options)

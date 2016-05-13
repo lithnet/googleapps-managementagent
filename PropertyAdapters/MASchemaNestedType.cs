@@ -153,7 +153,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<AttributeChange> CreateAttributeChanges(ObjectModificationType modType, object obj)
+        public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             if (this.propInfo == null)
             {
@@ -169,7 +169,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (MASchemaAttribute attribute in this.Attributes)
             {
-                foreach (AttributeChange change in attribute.CreateAttributeChanges(modType, value))
+                foreach (AttributeChange change in attribute.CreateAttributeChanges(dn, modType, value))
                 {
                     yield return change;
                 }

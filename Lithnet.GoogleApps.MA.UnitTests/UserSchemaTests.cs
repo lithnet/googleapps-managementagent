@@ -44,7 +44,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
 
             AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work_primary");
             Assert.IsNotNull(change);
@@ -106,7 +106,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges("test", ObjectModificationType.Add, u).ToList();
 
             AttributeChange firstNameChange = result.FirstOrDefault(t => t.Name == "name_givenName");
             Assert.IsNotNull(firstNameChange);
@@ -141,7 +141,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(null, ObjectModificationType.Add, u).ToList();
 
             AttributeChange notesValue = result.FirstOrDefault(t => t.Name == "notes_value");
             Assert.IsNotNull(notesValue);
@@ -176,7 +176,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            IList<AttributeChange> result = schemaItem.CreateAttributeChanges(null, ObjectModificationType.Add, u).ToList();
 
             AttributeChange change = result.FirstOrDefault(t => t.Name == "aliases");
             Assert.IsNotNull(change);
@@ -225,49 +225,49 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
 
-            IList<AttributeChange> result = orgUnitPath.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            IList<AttributeChange> result = orgUnitPath.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             AttributeChange change = result.FirstOrDefault(t => t.Name == "orgUnitPath");
             Assert.IsNotNull(change);
             Assert.AreEqual("/Test", change.GetValueAdd<string>());
             x.AttributeChanges.Add(result.First());
 
-            result = includeInGlobalAddressList.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = includeInGlobalAddressList.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "includeInGlobalAddressList");
             Assert.IsNotNull(change);
             Assert.AreEqual(true, change.GetValueAdd<bool>());
             x.AttributeChanges.Add(result.First());
 
-            result = suspended.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = suspended.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "suspended");
             Assert.IsNotNull(change);
             Assert.AreEqual(true, change.GetValueAdd<bool>());
             x.AttributeChanges.Add(result.First());
 
-            result = changePasswordAtNextLogin.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = changePasswordAtNextLogin.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "changePasswordAtNextLogin");
             Assert.IsNotNull(change);
             Assert.AreEqual(true, change.GetValueAdd<bool>());
             x.AttributeChanges.Add(result.First());
 
-            result = ipWhitelisted.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = ipWhitelisted.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "ipWhitelisted");
             Assert.IsNotNull(change);
             Assert.AreEqual(true, change.GetValueAdd<bool>());
             x.AttributeChanges.Add(result.First());
 
-            result = customerId.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = customerId.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "customerId");
             Assert.IsNotNull(change);
             Assert.AreEqual("mytest", change.GetValueAdd<string>());
             x.AttributeChanges.Add(result.First());
 
-            result = primaryEmail.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = primaryEmail.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "primaryEmail");
             Assert.IsNotNull(change);
             Assert.AreEqual("test@test.com", change.GetValueAdd<string>());
             x.AttributeChanges.Add(result.First());
 
-            result = id.CreateAttributeChanges(ObjectModificationType.Add, u).ToList();
+            result = id.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "id");
             Assert.IsNotNull(change);
             Assert.AreEqual("testid", change.GetValueAdd<string>());
