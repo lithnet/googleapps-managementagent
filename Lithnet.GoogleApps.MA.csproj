@@ -83,12 +83,12 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CSEntryChangeExtensions.cs" />
-    <Compile Include="CSEntryChangeFactory.cs" />
-    <Compile Include="CSEntryChangeFactoryGroup.cs" />
-    <Compile Include="CSEntryChangeFactoryUser.cs" />
-    <Compile Include="CSEntryChangeToGroup.cs" />
-    <Compile Include="CSEntryChangeToUser.cs" />
+    <Compile Include="Legacy\CSEntryChangeExtensions.cs" />
+    <Compile Include="Legacy\CSEntryChangeFactory.cs" />
+    <Compile Include="Legacy\CSEntryChangeFactoryGroup.cs" />
+    <Compile Include="Legacy\CSEntryChangeFactoryUser.cs" />
+    <Compile Include="Legacy\CSEntryChangeToGroup.cs" />
+    <Compile Include="Legacy\CSEntryChangeToUser.cs" />
     <Compile Include="ExportProcessor.cs" />
     <Compile Include="GenericExtensions.cs" />
     <Compile Include="Interfaces\IAttributeAdapter.cs" />

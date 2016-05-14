@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "groupmembership";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;

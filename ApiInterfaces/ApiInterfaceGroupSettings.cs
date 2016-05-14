@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "groupsettings";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type,  ref object target, bool patch = false)
         {
             bool hasChanged = false;
 

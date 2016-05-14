@@ -42,6 +42,8 @@ namespace Lithnet.GoogleApps.MA
 
         public Func<object, object> CastForImport { get; set; }
 
+        public bool UseNullPlaceHolder { get; set; }
+
         internal string AssignedType { get; set; }
 
         public bool IsAnchor { get; set; }
@@ -72,7 +74,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (value == null)
             {
-                if (this.propInfo.PropertyType == typeof(string))
+                if (this.propInfo.PropertyType == typeof(string) && this.UseNullPlaceHolder)
                 {
                     value = Constants.NullValuePlaceholder;
                 }
@@ -80,7 +82,7 @@ namespace Lithnet.GoogleApps.MA
 
             this.propInfo.SetValue(obj, value, null);
 
-            Logger.WriteLine($"Updating {this.AttributeName} -> {value}");
+            Logger.WriteLine($"Updating {this.AttributeName} -> {value ?? "<null>"}");
 
             return true;
         }

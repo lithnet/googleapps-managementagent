@@ -167,11 +167,6 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            if (hasChanged)
-            {
-                this.propInfo.SetValue(obj, list);
-            }
-
             return hasChanged;
         }
 
@@ -265,13 +260,16 @@ namespace Lithnet.GoogleApps.MA
 
             if (rel == null)
             {
-                o.Rel = AdapterGDataCommonAttributeList<T>.OtherRel;
                 o.Label = type;
             }
             else
             {
+                if (o.Label != null)
+                {
+                    o.Label = null;
+                }
+
                 o.Rel = rel.Value.Key;
-                o.Label = null;
             }
 
             o.Primary = this.IsPrimaryType(type);

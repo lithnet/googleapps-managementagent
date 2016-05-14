@@ -47,7 +47,7 @@ namespace Lithnet.GoogleApps.MA
             GroupRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -101,7 +101,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
             {
-                changes.AddRange(i.ApplyChanges(csentry, type, target, patch));
+                changes.AddRange(i.ApplyChanges(csentry, type, ref target, patch));
             }
 
             return changes;

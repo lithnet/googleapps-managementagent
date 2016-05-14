@@ -64,7 +64,8 @@ namespace Lithnet.GoogleApps.MA
                     AttributeName = $"{this.AttributeName}_{item.AttributeNamePart}",
                     PropertyName = item.PropertyName,
                     Operation = item.Operation,
-                    ParentFieldName = this.FieldName
+                    ParentFieldName = this.FieldName,
+                    UseNullPlaceHolder = true
                 };
             }
         }

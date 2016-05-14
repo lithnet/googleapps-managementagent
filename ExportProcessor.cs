@@ -104,7 +104,7 @@ namespace Lithnet.GoogleApps.MA
 
             object instance = primaryInterface.CreateInstance(csentry);
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, instance))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }
@@ -139,7 +139,7 @@ namespace Lithnet.GoogleApps.MA
                 instance = primaryInterface.CreateInstance(csentry);
             }
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, instance, !fullUpdate))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance, !fullUpdate))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }

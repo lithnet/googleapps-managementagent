@@ -194,20 +194,23 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(nickname);
 
-            AdapterPropertyValue priority = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "priority",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "priority",
-                PropertyName = "Priority",
-                Api = "contact",
-                CanPatch = false,
-                IsArrayAttribute = false
-            };
+            // There is a bug in the contact implementation where priority thinks its occupation, causing an error when saving contacts
+            // So no support for priority!
 
-            type.Attributes.Add(priority);
+            //AdapterPropertyValue priority = new AdapterPropertyValue
+            //{
+            //    AttributeType = AttributeType.String,
+            //    FieldName = "priority",
+            //    IsMultivalued = false,
+            //    Operation = AttributeOperation.ImportExport,
+            //    AttributeName = "priority",
+            //    PropertyName = "Priority",
+            //    Api = "contact",
+            //    CanPatch = false,
+            //    IsArrayAttribute = false
+            //};
+            //
+            //type.Attributes.Add(priority);
 
             AdapterPropertyValue sensitivity = new AdapterPropertyValue
             {
@@ -253,6 +256,21 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.Attributes.Add(subject);
+
+            AdapterPropertyValue location = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "where",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "location",
+                PropertyName = "Location",
+                Api = "contact",
+                CanPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(location);
 
             AdapterPropertyValue id = new AdapterPropertyValue
             {
@@ -352,6 +370,17 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "symbol"
             };
 
+            AdapterSubfield jobDescription = new AdapterSubfield
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "orgJobDescription",
+                IsMultivalued = false,
+                PropertyName = "JobDescription",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "jobDescription"
+            };
+
+            
             AdapterSubfield location = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
@@ -366,7 +395,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 Api = "contact",
                 AttributeName = "organizations",
-                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location },
+                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location, jobDescription },
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
@@ -515,6 +544,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "OrgUnitPath",
                 Api = "user",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -530,6 +560,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IncludeInGlobalAddressList",
                 Api = "user",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -545,6 +576,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Suspended",
                 Api = "user",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -560,6 +592,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ChangePasswordAtNextLogin",
                 Api = "user",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -621,6 +654,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsAdmin",
                 Api = "usermakeadmin",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -833,6 +867,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AdminCreated",
                 Api = "group",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -848,6 +883,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Description",
                 Api = "group",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -998,6 +1034,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanJoin",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1013,6 +1050,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanViewMembership",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1028,6 +1066,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanViewGroup",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1043,6 +1082,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanInvite",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1073,6 +1113,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AllowExternalMembers",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1088,6 +1129,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanPostMessage",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1103,6 +1145,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AllowWebPosting",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1118,6 +1161,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "PrimaryLanguage",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1133,6 +1177,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "MaxMessageBytes",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1148,6 +1193,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsArchived",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1164,6 +1210,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ArchiveOnly",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1179,6 +1226,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "MessageModerationLevel",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1195,6 +1243,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "SpamModerationLevel",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1210,6 +1259,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ReplyTo",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1225,6 +1275,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "CustomReplyTo",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1240,6 +1291,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "SendMessageDenyNotification",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1256,6 +1308,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "DefaultMessageDenyNotificationText",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1271,6 +1324,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ShowInGroupDirectory",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1287,6 +1341,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AllowGoogleCommunication",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1302,6 +1357,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "MembersCanPostAsTheGroup",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1317,6 +1373,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "MessageDisplayFont",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1332,6 +1389,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IncludeInGlobalAddressList",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1347,6 +1405,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanLeaveGroup",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 
@@ -1363,6 +1422,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "WhoCanContactOwner",
                 Api = "groupsettings",
                 CanPatch = true,
+                UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
 

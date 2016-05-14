@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
 
     internal class ApiInterfaceContact : IApiInterfaceObject
     {
-        private const string DNAttributeName = "lithnet-google-ma-dn";
+        internal const string DNAttributeName = "lithnet-google-ma-dn";
         private static ApiInterfaceKeyedCollection internalInterfaces;
 
         private string domain;
@@ -47,7 +47,7 @@ namespace Lithnet.GoogleApps.MA
             ContactRequestFactory.DeleteContact(csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -73,6 +73,7 @@ namespace Lithnet.GoogleApps.MA
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
                     result = ContactRequestFactory.CreateContact(obj, this.domain);
+                    target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -83,6 +84,7 @@ namespace Lithnet.GoogleApps.MA
                     else
                     {
                         result = ContactRequestFactory.UpdateContact(obj);
+                        target = result;
                     }
                 }
                 else
@@ -95,7 +97,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
             {
-                changes.AddRange(i.ApplyChanges(csentry, type, target, patch));
+                changes.AddRange(i.ApplyChanges(csentry, type, ref target, patch));
             }
 
             return changes;
@@ -137,14 +139,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (contactEntry != null)
             {
-                return contactEntry.Id.ToString();
-            }
-
-            Contact contact = target as Contact;
-
-            if (contact != null)
-            {
-                return contact.Id;
+                return contactEntry.SelfUri.Content;
             }
 
             throw new InvalidOperationException();
@@ -169,33 +164,50 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            return "contact:" + contactEntry.PrimaryEmail.Address;
+            return contactEntry.PrimaryEmail == null ? null : "contact:" + contactEntry.PrimaryEmail.Address;
         }
 
         public bool SetDNValue(CSEntryChange csentry, ContactEntry e)
         {
-            if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                return false;
+                ExtendedProperty dn = e.ExtendedProperties.FirstOrDefault(t => t.Name == ApiInterfaceContact.DNAttributeName);
+
+                if (dn == null)
+                {
+                    dn = new ExtendedProperty { Name = ApiInterfaceContact.DNAttributeName };
+                    e.ExtendedProperties.Add(dn);
+                }
+
+                dn.Value = csentry.DN;
+                return true;
             }
-
-            string newDN = csentry.GetNewDNOrDefault<string>();
-
-            if (newDN == null)
+            else
             {
-                return false;
+
+                if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
+                {
+                    return false;
+                }
+
+                string newDN = csentry.GetNewDNOrDefault<string>();
+
+                if (newDN == null)
+                {
+                    return false;
+                }
+
+                ExtendedProperty dn = e.ExtendedProperties.FirstOrDefault(t => t.Name == ApiInterfaceContact.DNAttributeName);
+
+                if (dn == null)
+                {
+                    dn = new ExtendedProperty {Name = ApiInterfaceContact.DNAttributeName};
+                    e.ExtendedProperties.Add(dn);
+                }
+
+                dn.Value = newDN;
+                return true;
             }
-
-            ExtendedProperty dn = e.ExtendedProperties.FirstOrDefault(t => t.Name == ApiInterfaceContact.DNAttributeName);
-
-            if (dn == null)
-            {
-                dn = new ExtendedProperty {Name = ApiInterfaceContact.DNAttributeName};
-                e.ExtendedProperties.Add(dn);
-            }
-
-            dn.Value = newDN;
-            return true;
         }
     }
 }

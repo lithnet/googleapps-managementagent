@@ -158,11 +158,6 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            if (hasChanged)
-            {
-                this.propInfo.SetValue(obj, list);
-            }
-
             return hasChanged;
         }
 

@@ -24,8 +24,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public void TestMethod1()
         {
             return;
-            ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
-            ConnectionPools.DisableGzip = true;
+            
 
             TestParameters r = new TestParameters();
 
@@ -83,5 +82,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             User zx = UserRequestFactory.Update(u, u.PrimaryEmail);
 
         }
+
     }
 }

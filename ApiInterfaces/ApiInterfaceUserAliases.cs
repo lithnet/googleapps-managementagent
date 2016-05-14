@@ -14,9 +14,10 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "useraliases";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
-            Func<AttributeChange> x = () => ApiInterfaceUserAliases.ApplyUserAliasChanges(csentry, (User) target);
+            User user = (User) target;
+            Func<AttributeChange> x = () => ApiInterfaceUserAliases.ApplyUserAliasChanges(csentry, user);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
 
             List<AttributeChange> changes = new List<AttributeChange>();

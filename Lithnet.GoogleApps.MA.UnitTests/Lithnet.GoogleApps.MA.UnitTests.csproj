@@ -113,12 +113,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AdapterTests\AdapterGDataSimpleAttributeListTTests.cs" />
+    <Compile Include="AdapterTests\AdapterGDataCommonAttributeListTTests.cs" />
     <Compile Include="GroupTests.cs" />
     <Compile Include="AdapterTests\AdapterCollectionTTests.cs" />
     <Compile Include="AdapterTests\AdapterValueTests.cs" />
     <Compile Include="AdapterTests\AdapterNestedTypeTests.cs" />
     <Compile Include="AdapterTests\AdapterCustomTypeListTTests.cs" />
     <Compile Include="TestParameters.cs" />
+    <Compile Include="ContactTests.cs" />
     <Compile Include="UnitTestControl.cs" />
     <Compile Include="UserSchemaTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

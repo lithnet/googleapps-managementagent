@@ -320,7 +320,7 @@ namespace Lithnet.GoogleApps.MA
                 SchemaConstants.Email,
                 SchemaConstants.ID
             };
-            
+
             foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "group"))
             {
                 groupFieldList.Add(fieldName);
@@ -562,14 +562,23 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (!string.IsNullOrWhiteSpace(this.Configuration.ContactRegexFilter))
                     {
-                        if (!Regex.IsMatch(contact.PrimaryEmail.Address, this.Configuration.ContactRegexFilter, RegexOptions.IgnoreCase))
+                        if (contact.PrimaryEmail != null)
                         {
-                            i--;
-                            continue;
+                            if (!Regex.IsMatch(contact.PrimaryEmail.Address, this.Configuration.ContactRegexFilter, RegexOptions.IgnoreCase))
+                            {
+                                i--;
+                                continue;
+                            }
                         }
                     }
 
                     string dn = Schema[SchemaConstants.Contact].ApiInterface.GetDNValue(contact);
+
+                    if (dn == null)
+                    {
+                        Logger.WriteLine($"Contact {contact.SelfUri.Content} had no DN or primary email attribute, ignoring");
+                        continue;
+                    }
 
                     if (!this.seenDNs.Add(dn))
                     {

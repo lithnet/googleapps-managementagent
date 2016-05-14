@@ -7,46 +7,33 @@ using Lithnet.GoogleApps.MA;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
+    using System.Net;
+    using System.Net.Security;
+    using System.Security.Cryptography.X509Certificates;
     using Lithnet.GoogleApps.MA;
 
     internal static class UnitTestControl
     {
-        private static MASchemaTypes schema;
-
-        private static TestParameters parameters;
-
-        public static MASchemaTypes Schema
+        static UnitTestControl()
         {
-            get
-            {
-                if (UnitTestControl.schema == null)
-                {
-                    UnitTestControl.BuildSchema();
-                }
-
-                return UnitTestControl.schema;
-
-            }
+            UnitTestControl.BuildSchema();
         }
 
-        public static TestParameters TestParameters
-        {
-            get
-            {
-                if (UnitTestControl.parameters == null)
-                {
-                    UnitTestControl.parameters = new TestParameters();
-                }
+        public static MASchemaTypes Schema { get; private set; }
+       
 
-                return UnitTestControl.parameters;
-            }
-        }
-
+        public static TestParameters TestParameters { get; private set; }
+      
 
         private static void BuildSchema()
         {
+            ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+            ConnectionPools.DisableGzip = true;
+
+            UnitTestControl.TestParameters = new TestParameters();
             ConnectionPools.InitializePools(TestParameters.Credentials, 1, 1, 1, 1);
-            UnitTestControl.schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
+            UnitTestControl.Schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
+            ManagementAgent.Schema = UnitTestControl.Schema;
         }
     }
 }
