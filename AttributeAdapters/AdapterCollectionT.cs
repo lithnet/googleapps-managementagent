@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
     using System.Reflection;
     using ManagedObjects;
 
-    internal class MASchemaCollection<T> : IMASchemaAttribute
+    internal class AdapterCollection<T> : IAttributeAdapter
     {
         private PropertyInfo propInfo;
 
@@ -107,8 +107,13 @@ namespace Lithnet.GoogleApps.MA
             yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type)
+        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
+            if (api != null && this.Api != api)
+            {
+                yield break;
+            }
+
             if (this.FieldName != null)
             {
                 if (type.HasAttribute(this.AttributeName))

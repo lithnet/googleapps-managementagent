@@ -8,7 +8,7 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class MASchemaField
+    internal class AdapterSubfield
     {
         public string AttributeNamePart { get; set; }
 

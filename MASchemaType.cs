@@ -12,7 +12,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Name { get; set; }
 
-        public List<IMASchemaAttribute> Attributes { get; set; }
+        public List<IAttributeAdapter> Attributes { get; set; }
 
         public string AnchorAttributeName { get; set; }
 
@@ -24,7 +24,7 @@ namespace Lithnet.GoogleApps.MA
         {
             SchemaType type = SchemaType.Create(this.Name, true);
 
-            foreach (IMASchemaAttribute attribute in this.Attributes)
+            foreach (IAttributeAdapter attribute in this.Attributes)
             {
                 foreach (SchemaAttribute maAttribute in attribute.GetSchemaAttributes())
                 {
@@ -35,11 +35,11 @@ namespace Lithnet.GoogleApps.MA
             return type;
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type)
+        public IEnumerable<string> GetFieldNames(SchemaType type, string api = null)
         {
-            foreach (IMASchemaAttribute attribute in this.Attributes)
+            foreach (IAttributeAdapter attribute in this.Attributes)
             {
-                foreach (string field in attribute.GetFieldNames(type))
+                foreach (string field in attribute.GetFieldNames(type, api))
                 {
                     yield return field;
                 }

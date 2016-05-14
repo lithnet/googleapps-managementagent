@@ -12,11 +12,11 @@ namespace Lithnet.GoogleApps.MA
     using Logging;
     using System.Reflection;
 
-    internal class MASchemaNestedType : IMASchemaAttribute
+    internal class AdapterNestedType : IAttributeAdapter
     {
         private PropertyInfo propInfo;
 
-        private IList<MASchemaAttribute> attributes;
+        private IList<AdapterPropertyValue> attributes;
 
         public string AttributeName { get; set; }
 
@@ -28,11 +28,11 @@ namespace Lithnet.GoogleApps.MA
 
         public bool CanPatch { get; set; }
 
-        public IList<MASchemaField> Fields { get; set; }
+        public IList<AdapterSubfield> Fields { get; set; }
 
         public bool IsReadOnly { get; set; }
 
-        public IList<MASchemaAttribute> Attributes
+        public IList<AdapterPropertyValue> Attributes
         {
             get
             {
@@ -45,16 +45,16 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private IList<MASchemaAttribute> GetConstructedAttributes()
+        private IList<AdapterPropertyValue> GetConstructedAttributes()
         {
             return this.GetAttributesWithoutType().ToList();
         }
 
-        private IEnumerable<MASchemaAttribute> GetAttributesWithoutType()
+        private IEnumerable<AdapterPropertyValue> GetAttributesWithoutType()
         {
-            foreach (MASchemaField item in this.Fields)
+            foreach (AdapterSubfield item in this.Fields)
             {
-                yield return new MASchemaAttribute
+                yield return new AdapterPropertyValue
                 {
                     AttributeType = item.AttributeType,
                     FieldName = item.FieldName,
@@ -83,7 +83,7 @@ namespace Lithnet.GoogleApps.MA
 
             bool hasChanged = false;
 
-            IList<Tuple<AttributeChange, MASchemaAttribute>> changes = this.GetAttributeChanges(csentry).ToList();
+            IList<Tuple<AttributeChange, AdapterPropertyValue>> changes = this.GetAttributeChanges(csentry).ToList();
 
             if (changes.Count == 0)
             {
@@ -103,7 +103,7 @@ namespace Lithnet.GoogleApps.MA
                 created = true;
             }
 
-            foreach (Tuple<AttributeChange, MASchemaAttribute> change in changes)
+            foreach (Tuple<AttributeChange, AdapterPropertyValue> change in changes)
             {
                 if (change.Item2.UpdateField(csentry, childObject))
                 {
@@ -121,14 +121,19 @@ namespace Lithnet.GoogleApps.MA
 
         public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
-            foreach (MASchemaField field in this.Fields)
+            foreach (AdapterSubfield field in this.Fields)
             {
                 yield return field.GetSchemaAttribute(this.AttributeName);
             }
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type)
+        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
+            if (api != null && this.Api != api)
+            {
+                yield break;
+            }
+
             if (this.FieldName == null)
             {
                 yield break;
@@ -142,13 +147,13 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private IEnumerable<Tuple<AttributeChange, MASchemaAttribute>> GetAttributeChanges(CSEntryChange csentry)
+        private IEnumerable<Tuple<AttributeChange, AdapterPropertyValue>> GetAttributeChanges(CSEntryChange csentry)
         {
-            foreach (MASchemaAttribute attribute in this.Attributes)
+            foreach (AdapterPropertyValue attribute in this.Attributes)
             {
                 if (csentry.HasAttributeChange(attribute.AttributeName))
                 {
-                    yield return new Tuple<AttributeChange, MASchemaAttribute>(csentry.AttributeChanges[attribute.AttributeName], attribute);
+                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.AttributeName], attribute);
                 }
             }
         }
@@ -167,7 +172,7 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            foreach (MASchemaAttribute attribute in this.Attributes)
+            foreach (AdapterPropertyValue attribute in this.Attributes)
             {
                 foreach (AttributeChange change in attribute.CreateAttributeChanges(dn, modType, value))
                 {

@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Microsoft.MetadirectoryServices;
 
-    internal interface IMASchemaAttribute
+    internal interface IAttributeAdapter
     {
         string AttributeName { get; set; }
 
@@ -23,8 +23,8 @@
 
         IEnumerable<SchemaAttribute> GetSchemaAttributes();
 
-        IEnumerable<string> GetFieldNames(SchemaType type);
-
+        IEnumerable<string> GetFieldNames(SchemaType type, string api = null);
+        
         IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
     }
 }

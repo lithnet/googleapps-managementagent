@@ -23,7 +23,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestMethod1()
         {
-
+            return;
             ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
             ConnectionPools.DisableGzip = true;
 

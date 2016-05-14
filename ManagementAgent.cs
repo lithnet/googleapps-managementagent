@@ -314,11 +314,33 @@ namespace Lithnet.GoogleApps.MA
 
         private void SetupGroupsImportTask()
         {
-            bool membersRequired = ManagementAgentSchema.IsGroupMembershipRequired(this.operationSchemaTypes.Types["group"]);
-            bool settingsRequred = ManagementAgentSchema.IsGroupSettingsRequired(this.operationSchemaTypes.Types["group"]);
 
-            string groupFields = string.Format("groups({0}), nextPageToken", ManagementAgentSchema.GetFieldNamesFromType("group", this.operationSchemaTypes.Types["group"]));
-            string groupSettingsFields = ManagementAgentSchema.GetFieldNamesFromType("groupSettings", this.operationSchemaTypes.Types["group"]);
+            HashSet<string> groupFieldList = new HashSet<string>
+            {
+                SchemaConstants.Email,
+                SchemaConstants.ID
+            };
+            
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "group"))
+            {
+                groupFieldList.Add(fieldName);
+            }
+
+            string groupFields = string.Format("groups({0}), nextPageToken", string.Join(",", groupFieldList));
+
+            HashSet<string> groupSettingList = new HashSet<string>();
+
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "groupsettings"))
+            {
+                groupSettingList.Add(fieldName);
+            }
+
+            bool settingsRequired = groupSettingList.Count > 0;
+
+            string groupSettingsFields = string.Join(",", groupSettingList);
+
+            bool membersRequired = ManagementAgent.Schema[SchemaConstants.Group].Attributes.Any(t => t.Api == "groupmembership" && this.operationSchemaTypes.Types[SchemaConstants.Group].Attributes.Contains(t.AttributeName));
+
             GroupRequestFactory.MemberThreads = this.Configuration.GroupMembersImportThreadCount;
             GroupRequestFactory.SettingsThreads = this.Configuration.GroupSettingsImportThreadCount;
 
@@ -328,10 +350,10 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Requesting group fields: " + groupFields);
                 Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
 
-                Logger.WriteLine("Requesting settings: " + settingsRequred.ToString());
+                Logger.WriteLine("Requesting settings: " + settingsRequired.ToString());
                 Logger.WriteLine("Requesting members: " + membersRequired.ToString());
 
-                GroupRequestFactory.ImportGroups(this.Configuration.CustomerID, membersRequired, settingsRequred, groupFields, groupSettingsFields, this.importCollection);
+                GroupRequestFactory.ImportGroups(this.Configuration.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields, this.importCollection);
 
                 Logger.WriteLine("Groups import task complete");
 

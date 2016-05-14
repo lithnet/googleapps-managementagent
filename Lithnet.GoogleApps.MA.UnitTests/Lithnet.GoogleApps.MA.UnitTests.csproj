@@ -114,10 +114,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="GroupTests.cs" />
-    <Compile Include="MASchemaSimpleListTests.cs" />
-    <Compile Include="MASchemaAttributeTests.cs" />
-    <Compile Include="MASchemaNestedTypeTests.cs" />
-    <Compile Include="MASchemaCustomTypeArrayTests.cs" />
+    <Compile Include="AdapterTests\AdapterCollectionTTests.cs" />
+    <Compile Include="AdapterTests\AdapterValueTests.cs" />
+    <Compile Include="AdapterTests\AdapterNestedTypeTests.cs" />
+    <Compile Include="AdapterTests\AdapterCustomTypeListTTests.cs" />
     <Compile Include="TestParameters.cs" />
     <Compile Include="UnitTestControl.cs" />
     <Compile Include="UserSchemaTests.cs" />

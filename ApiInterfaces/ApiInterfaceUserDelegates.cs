@@ -33,7 +33,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.AdvancedUser].Attributes.Where(t => t.Api == this.Api && t.AttributeName == SchemaConstants.Delegate))
+            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.AdvancedUser].Attributes.Where(t => t.Api == this.Api && t.AttributeName == SchemaConstants.Delegate))
             {
                 if (!type.HasAttribute(typeDef.AttributeName))
                 {

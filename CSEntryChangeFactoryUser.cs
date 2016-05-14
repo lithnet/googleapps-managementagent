@@ -155,7 +155,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static bool CanPatchUser(CSEntryChange csentry)
         {
-            return !csentry.AttributeChanges.Any(t => ManagementAgentSchema.UserAttributesRequiringFullUpdate.Any(u => t.Name.StartsWith(u)));
+            return false;  // return !csentry.AttributeChanges.Any(t => ManagementAgentSchema.UserAttributesRequiringFullUpdate.Any(u => t.Name.StartsWith(u)));
         }
     }
 }

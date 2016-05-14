@@ -9,12 +9,12 @@ using Microsoft.MetadirectoryServices;
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
     [TestClass]
-    public class MASchemaNestedTypeTests
+    public class AdapterNestedTypeTests
     {
         [TestMethod]
         public void TestToCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             User u = new User
             {
@@ -49,7 +49,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             User u = new User
             {
@@ -84,7 +84,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             User u = new User
             {
@@ -121,7 +121,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
@@ -139,7 +139,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Replace;
@@ -160,7 +160,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
@@ -181,7 +181,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeDelete()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;

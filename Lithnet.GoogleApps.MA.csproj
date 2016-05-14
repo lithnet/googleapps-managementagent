@@ -91,7 +91,7 @@
     <Compile Include="CSEntryChangeToUser.cs" />
     <Compile Include="ExportProcessor.cs" />
     <Compile Include="GenericExtensions.cs" />
-    <Compile Include="Interfaces\IMASchemaAttribute.cs" />
+    <Compile Include="Interfaces\IAttributeAdapter.cs" />
     <Compile Include="ImportProcessor.cs" />
     <Compile Include="ManagementAgent.cs">
       <SubType>Code</SubType>
@@ -99,14 +99,13 @@
     <Compile Include="ManagementAgentParameters.cs" />
     <Compile Include="Interfaces\IManagementAgentParameters.cs" />
     <Compile Include="ManagementAgentParametersBase.cs" />
-    <Compile Include="ManagementAgentSchema.cs" />
-    <Compile Include="PropertyAdapters\MASchemaCollectionT.cs" />
-    <Compile Include="PropertyAdapters\MASchemaGDataCommonAttributesList.cs" />
-    <Compile Include="PropertyAdapters\MASchemaGDataSimpleAttributesList.cs" />
-    <Compile Include="PropertyAdapters\MASchemaNestedType.cs" />
-    <Compile Include="PropertyAdapters\MASchemaCustomTypeList.cs" />
-    <Compile Include="PropertyAdapters\MASchemaField.cs" />
-    <Compile Include="PropertyAdapters\MASchemaAttribute.cs" />
+    <Compile Include="AttributeAdapters\AdapterCollectionT.cs" />
+    <Compile Include="AttributeAdapters\AdapterGDataCommonAttributeListT.cs" />
+    <Compile Include="AttributeAdapters\AdapterGDataSimpleAttributeListT.cs" />
+    <Compile Include="AttributeAdapters\AdapterNestedType.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomTypeListT.cs" />
+    <Compile Include="AttributeAdapters\AdapterSubfield.cs" />
+    <Compile Include="AttributeAdapters\AdapterPropertyValue.cs" />
     <Compile Include="MASchemaTypes.cs" />
     <Compile Include="MASchemaType.cs" />
     <Compile Include="SchemaBuilder.cs" />

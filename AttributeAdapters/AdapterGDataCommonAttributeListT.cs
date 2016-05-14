@@ -15,7 +15,7 @@ namespace Lithnet.GoogleApps.MA
     using Google.GData.Extensions;
     using ManagedObjects;
 
-    internal class MASchemaGDataCommonAttributesList<T> : IMASchemaAttribute where T : ICommonAttributes, new()
+    internal class AdapterGDataCommonAttributeList<T> : IAttributeAdapter where T : ICommonAttributes, new()
     {
         private const string OtherRel = "http://schemas.google.com/g/2005#other";
 
@@ -33,15 +33,15 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<string> KnownTypes { get; set; }
 
-        public IList<MASchemaField> Fields { get; set; }
+        public IList<AdapterSubfield> Fields { get; set; }
 
         public IDictionary<string, string> KnownRels { get; set; }
 
         public bool IsReadOnly { get; set; }
 
-        private IList<MASchemaAttribute> attributes;
+        private IList<AdapterPropertyValue> attributes;
 
-        public IList<MASchemaAttribute> Attributes
+        public IList<AdapterPropertyValue> Attributes
         {
             get
             {
@@ -54,16 +54,16 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private IList<MASchemaAttribute> GetConstructedAttributes()
+        private IList<AdapterPropertyValue> GetConstructedAttributes()
         {
             return this.GetFlattenedKnownTypes().ToList();
         }
 
-        private IEnumerable<MASchemaAttribute> GetFlattenedKnownTypes()
+        private IEnumerable<AdapterPropertyValue> GetFlattenedKnownTypes()
         {
             foreach (string type in this.KnownTypes)
             {
-                foreach (MASchemaAttribute maSchemaAttribute in this.GetAttributesOfType(type))
+                foreach (AdapterPropertyValue maSchemaAttribute in this.GetAttributesOfType(type))
                 {
                     yield return maSchemaAttribute;
                 }
@@ -77,11 +77,11 @@ namespace Lithnet.GoogleApps.MA
             return this.PrimaryType == type;
         }
 
-        private IEnumerable<MASchemaAttribute> GetAttributesOfType(string type)
+        private IEnumerable<AdapterPropertyValue> GetAttributesOfType(string type)
         {
-            foreach (MASchemaField item in this.Fields)
+            foreach (AdapterSubfield item in this.Fields)
             {
-                yield return new MASchemaAttribute
+                yield return new AdapterPropertyValue
                 {
                     AttributeType = item.AttributeType,
                     FieldName = item.FieldName,
@@ -103,7 +103,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 yield return this.AttributeName;
 
-                foreach (MASchemaAttribute attribute in this.Attributes)
+                foreach (AdapterPropertyValue attribute in this.Attributes)
                 {
                     yield return attribute.AttributeName;
                 }
@@ -124,7 +124,7 @@ namespace Lithnet.GoogleApps.MA
 
             bool hasChanged = false;
 
-            IList<IGrouping<string, Tuple<AttributeChange, MASchemaAttribute>>> changes = this.GetAttributeChangesByType(csentry).ToList();
+            IList<IGrouping<string, Tuple<AttributeChange, AdapterPropertyValue>>> changes = this.GetAttributeChangesByType(csentry).ToList();
 
             if (changes.Count == 0)
             {
@@ -147,7 +147,7 @@ namespace Lithnet.GoogleApps.MA
                 typedObjects.Add(type, item);
             }
 
-            foreach (IGrouping<string, Tuple<AttributeChange, MASchemaAttribute>> group in changes)
+            foreach (IGrouping<string, Tuple<AttributeChange, AdapterPropertyValue>> group in changes)
             {
                 if (!typedObjects.ContainsKey(group.Key))
                 {
@@ -158,7 +158,7 @@ namespace Lithnet.GoogleApps.MA
                     list.Add(o);
                 }
 
-                foreach (Tuple<AttributeChange, MASchemaAttribute> item in group)
+                foreach (Tuple<AttributeChange, AdapterPropertyValue> item in group)
                 {
                     if (item.Item2.UpdateField(csentry, typedObjects[group.Key]))
                     {
@@ -175,14 +175,14 @@ namespace Lithnet.GoogleApps.MA
             return hasChanged;
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type)
+        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
             yield break;
         }
 
         public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
-            foreach (MASchemaField field in this.Fields)
+            foreach (AdapterSubfield field in this.Fields)
             {
                 foreach (string type in this.KnownTypes)
                 {
@@ -230,7 +230,7 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
                 
-                foreach (MASchemaAttribute attribute in this.Attributes)
+                foreach (AdapterPropertyValue attribute in this.Attributes)
                 {
                     if (attribute.AssignedType == type)
                     {
@@ -243,18 +243,18 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private IEnumerable<Tuple<AttributeChange, MASchemaAttribute>> GetAttributeChanges(CSEntryChange csentry)
+        private IEnumerable<Tuple<AttributeChange, AdapterPropertyValue>> GetAttributeChanges(CSEntryChange csentry)
         {
-            foreach (MASchemaAttribute attribute in this.Attributes)
+            foreach (AdapterPropertyValue attribute in this.Attributes)
             {
                 if (csentry.HasAttributeChange(attribute.AttributeName))
                 {
-                    yield return new Tuple<AttributeChange, MASchemaAttribute>(csentry.AttributeChanges[attribute.AttributeName], attribute);
+                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.AttributeName], attribute);
                 }
             }
         }
 
-        private IEnumerable<IGrouping<string, Tuple<AttributeChange, MASchemaAttribute>>> GetAttributeChangesByType(CSEntryChange csentry)
+        private IEnumerable<IGrouping<string, Tuple<AttributeChange, AdapterPropertyValue>>> GetAttributeChangesByType(CSEntryChange csentry)
         {
             return this.GetAttributeChanges(csentry).GroupBy(t => t.Item2.AssignedType);
         }
@@ -265,7 +265,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (rel == null)
             {
-                o.Rel = MASchemaGDataCommonAttributesList<T>.OtherRel;
+                o.Rel = AdapterGDataCommonAttributeList<T>.OtherRel;
                 o.Label = type;
             }
             else
@@ -279,7 +279,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetTypeName(T o)
         {
-            if (string.IsNullOrWhiteSpace(o.Rel) || o.Rel == MASchemaGDataCommonAttributesList<T>.OtherRel)
+            if (string.IsNullOrWhiteSpace(o.Rel) || o.Rel == AdapterGDataCommonAttributeList<T>.OtherRel)
             {
                 return o.Label ?? this.PrimaryType;
             }

@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
     using Logging;
     using MetadirectoryServices;
 
-    internal class MASchemaAttribute : IMASchemaAttribute
+    internal class AdapterPropertyValue : IAttributeAdapter
     {
         private PropertyInfo propInfo;
 
@@ -104,8 +104,13 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type)
+        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
+            if (api != null && this.Api != api)
+            {
+                yield break;
+            }
+
             if (this.FieldName != null)
             {
                 if (type.HasAttribute(this.AttributeName))

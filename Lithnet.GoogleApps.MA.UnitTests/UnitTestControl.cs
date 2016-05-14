@@ -13,6 +13,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     {
         private static MASchemaTypes schema;
 
+        private static TestParameters parameters;
+
         public static MASchemaTypes Schema
         {
             get
@@ -27,9 +29,24 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
+        public static TestParameters TestParameters
+        {
+            get
+            {
+                if (UnitTestControl.parameters == null)
+                {
+                    UnitTestControl.parameters = new TestParameters();
+                }
+
+                return UnitTestControl.parameters;
+            }
+        }
+
+
         private static void BuildSchema()
         {
-            UnitTestControl.schema = SchemaBuilder.GetSchema(new TestParameters());
+            ConnectionPools.InitializePools(TestParameters.Credentials, 1, 1, 1, 1);
+            UnitTestControl.schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestWebSites()
         {
-            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -46,22 +46,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x.ObjectModificationType = ObjectModificationType.Add;
             IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
 
-            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(true, change.GetValueAdd<bool>());
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_work_value");
+            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://work.com", change.GetValueAdd<string>());
             x.AttributeChanges.Add(change);
 
-            change = result.FirstOrDefault(t => t.Name == "websites_home_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(false, change.GetValueAdd<bool>());
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_home_value");
+            change = result.FirstOrDefault(t => t.Name == "websites_home");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://home.com", change.GetValueAdd<string>());
             x.AttributeChanges.Add(change);
@@ -77,17 +67,17 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
-            change = result.FirstOrDefault(t => t.Name == "websites_home_value");
+            change = result.FirstOrDefault(t => t.Name == "websites_home");
             x.AttributeChanges.Remove(change);
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("websites_home_value"));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("websites_home"));
             schemaItem.UpdateField(x, ux);
 
             x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
-            change = result.FirstOrDefault(t => t.Name == "websites_other_value");
+            change = result.FirstOrDefault(t => t.Name == "websites_other");
             x.AttributeChanges.Remove(change);
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_other_value", "http://other.com"));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_other", "http://other.com"));
             schemaItem.UpdateField(x, ux);
 
         }
@@ -95,7 +85,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNames()
         {
-            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Name");
 
             User u = new User
             {
@@ -130,7 +120,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNotes()
         {
-            IMASchemaAttribute schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Notes");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].Attributes.First(t => t.PropertyName == "Notes");
 
             User u = new User
             {
@@ -165,7 +155,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestAliases()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "aliases");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "aliases");
 
             UserUpdateTemplate u = new UserUpdateTemplate
             {
@@ -201,14 +191,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestStandaloneAttributes()
         {
-            IMASchemaAttribute orgUnitPath =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "orgUnitPath");
-            IMASchemaAttribute includeInGlobalAddressList =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "includeInGlobalAddressList");
-            IMASchemaAttribute suspended =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "suspended");
-            IMASchemaAttribute changePasswordAtNextLogin =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "changePasswordAtNextLogin");
-            IMASchemaAttribute ipWhitelisted =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "ipWhitelisted");
-            IMASchemaAttribute customerId =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "customerId");
-            IMASchemaAttribute primaryEmail =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "primaryEmail");
-            IMASchemaAttribute id =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "id");
+            IAttributeAdapter orgUnitPath =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "orgUnitPath");
+            IAttributeAdapter includeInGlobalAddressList =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "includeInGlobalAddressList");
+            IAttributeAdapter suspended =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "suspended");
+            IAttributeAdapter changePasswordAtNextLogin =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "changePasswordAtNextLogin");
+            IAttributeAdapter ipWhitelisted =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "ipWhitelisted");
+            IAttributeAdapter customerId =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "customerId");
+            IAttributeAdapter primaryEmail =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "primaryEmail");
+            IAttributeAdapter id =  UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "id");
 
             User u = new User
             {

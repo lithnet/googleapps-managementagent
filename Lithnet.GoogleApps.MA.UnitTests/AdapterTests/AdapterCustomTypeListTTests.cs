@@ -9,12 +9,12 @@ using Microsoft.MetadirectoryServices;
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
     [TestClass]
-    public class MASchemaCustomTypeArrayTests
+    public class AdapterCustomTypeListTTests
     {
         [TestMethod]
         public void TestToCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -40,22 +40,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x.ObjectModificationType = ObjectModificationType.Add;
             IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
-            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(true, change.GetValueAdd<bool>());
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_work_value");
+            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://work.com", change.GetValueAdd<string>());
             x.AttributeChanges.Add(change);
 
-            change = result.FirstOrDefault(t => t.Name == "websites_home_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(false, change.GetValueAdd<bool>());
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_home_value");
+            change = result.FirstOrDefault(t => t.Name == "websites_home");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://home.com", change.GetValueAdd<string>());
             x.AttributeChanges.Add(change);
@@ -64,7 +54,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -90,25 +80,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x.ObjectModificationType = ObjectModificationType.Replace;
             IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
-            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(true, change.GetValueAdd<bool>());
-            Assert.AreEqual(AttributeModificationType.Add, change.ModificationType);
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_work_value");
+            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://work.com", change.GetValueAdd<string>());
             Assert.AreEqual(AttributeModificationType.Add, change.ModificationType);
             x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_home_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(false, change.GetValueAdd<bool>());
-            Assert.AreEqual(AttributeModificationType.Add, change.ModificationType);
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_home_value");
+       
+            change = result.FirstOrDefault(t => t.Name == "websites_home");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://home.com", change.GetValueAdd<string>());
             Assert.AreEqual(AttributeModificationType.Add, change.ModificationType);
@@ -118,7 +96,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -144,25 +122,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x.ObjectModificationType = ObjectModificationType.Update;
             IList<AttributeChange> result = schemaItem.CreateAttributeChanges(x.DN, x.ObjectModificationType, u).ToList();
 
-            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(true, change.GetValueAdd<bool>());
-            Assert.AreEqual(AttributeModificationType.Replace, change.ModificationType);
-            x.AttributeChanges.Add(change);
-
-            change = result.FirstOrDefault(t => t.Name == "websites_work_value");
-            Assert.IsNotNull(change);
+            AttributeChange change = result.FirstOrDefault(t => t.Name == "websites_work");
+           Assert.IsNotNull(change);
             Assert.AreEqual("http://work.com", change.GetValueAdd<string>());
             Assert.AreEqual(AttributeModificationType.Replace, change.ModificationType);
             x.AttributeChanges.Add(change);
 
-            change = result.FirstOrDefault(t => t.Name == "websites_home_primary");
-            Assert.IsNotNull(change);
-            Assert.AreEqual(false, change.GetValueAdd<bool>());
-            Assert.AreEqual(AttributeModificationType.Replace, change.ModificationType);
-            x.AttributeChanges.Add(change);
 
-            change = result.FirstOrDefault(t => t.Name == "websites_home_value");
+            change = result.FirstOrDefault(t => t.Name == "websites_home");
             Assert.IsNotNull(change);
             Assert.AreEqual("http://home.com", change.GetValueAdd<string>());
             Assert.AreEqual(AttributeModificationType.Replace, change.ModificationType);
@@ -172,13 +139,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeAdd()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
 
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home_value", "http://home.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_work_value", "http://work.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_work_primary", true));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home", "http://home.com"));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_work", "http://work.com"));
             
             User ux = new User();
             schemaItem.UpdateField(x, ux);
@@ -193,13 +159,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeReplace()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home_value", "http://home.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("websites_work_value", "http://work.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("websites_work_primary", true));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home", "http://home.com"));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("websites_work", "http://work.com"));
 
             User ux = new User();
             ux.Websites = new List<Website>() {new Website() {Primary = false, Type = "work", Value = "http://notwork.com"}};
@@ -215,13 +180,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdate()
         {
-            IMASchemaAttribute schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home_value", "http://home.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("websites_work_value", "http://work.com"));
-            x.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("websites_work_primary", true));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_home", "http://home.com"));
+            x.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("websites_work", "http://work.com"));
 
             User ux = new User();
             ux.Websites = new List<Website>() { new Website() { Primary = false, Type = "work", Value = "http://notwork.com" } };

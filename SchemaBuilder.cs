@@ -66,14 +66,14 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IMASchemaAttribute>(),
+                Attributes = new List<IAttributeAdapter>(),
                 Name = "contact",
                 AnchorAttributeName = "id",
                 CanPatch = false,
                 ApiInterface = new ApiInterfaceContact(config.Domain)
             };
 
-            MASchemaAttribute occupation = new MASchemaAttribute
+            AdapterPropertyValue occupation = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "occupation",
@@ -88,7 +88,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(occupation);
             
-            MASchemaAttribute billingInformation = new MASchemaAttribute
+            AdapterPropertyValue billingInformation = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "billingInformation",
@@ -103,7 +103,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(billingInformation);
             
-            MASchemaAttribute birthday = new MASchemaAttribute
+            AdapterPropertyValue birthday = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "birthday",
@@ -118,7 +118,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(birthday);
             
-            MASchemaAttribute directoryServer = new MASchemaAttribute
+            AdapterPropertyValue directoryServer = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "directoryServer",
@@ -134,7 +134,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(directoryServer);
 
 
-            MASchemaAttribute initials = new MASchemaAttribute
+            AdapterPropertyValue initials = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "initials",
@@ -149,7 +149,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(initials);
 
-            MASchemaAttribute maidenName = new MASchemaAttribute
+            AdapterPropertyValue maidenName = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "maidenName",
@@ -164,7 +164,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(maidenName);
 
-            MASchemaAttribute mileage = new MASchemaAttribute
+            AdapterPropertyValue mileage = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "mileage",
@@ -179,7 +179,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(mileage);
 
-            MASchemaAttribute nickname = new MASchemaAttribute
+            AdapterPropertyValue nickname = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "nickname",
@@ -194,7 +194,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(nickname);
 
-            MASchemaAttribute priority = new MASchemaAttribute
+            AdapterPropertyValue priority = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "priority",
@@ -209,7 +209,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(priority);
 
-            MASchemaAttribute sensitivity = new MASchemaAttribute
+            AdapterPropertyValue sensitivity = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "sensitivity",
@@ -224,7 +224,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(sensitivity);
 
-            MASchemaAttribute shortName = new MASchemaAttribute
+            AdapterPropertyValue shortName = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "shortName",
@@ -239,7 +239,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(shortName);
 
-            MASchemaAttribute subject = new MASchemaAttribute
+            AdapterPropertyValue subject = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "subject",
@@ -254,7 +254,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(subject);
 
-            MASchemaAttribute id = new MASchemaAttribute
+            AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "id",
@@ -283,7 +283,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddContactEmailAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField address = new MASchemaField
+            AdapterSubfield address = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "address",
@@ -293,11 +293,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
             
-            MASchemaGDataCommonAttributesList<GDataEmail> customType = new MASchemaGDataCommonAttributesList<GDataEmail>
+            AdapterGDataCommonAttributeList<GDataEmail> customType = new AdapterGDataCommonAttributeList<GDataEmail>
             {
                 Api = "contact",
                 AttributeName = "email",
-                Fields = new List<MASchemaField>() { address },
+                Fields = new List<AdapterSubfield>() { address },
                 FieldName = "email",
                 PropertyName = "Emails",
                 KnownTypes = config.EmailsAttributeFixedTypes?.ToList(),
@@ -312,7 +312,7 @@ namespace Lithnet.GoogleApps.MA
         private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
 
-            MASchemaField name = new MASchemaField
+            AdapterSubfield name = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "orgName",
@@ -322,7 +322,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "name"
             };
 
-            MASchemaField title = new MASchemaField
+            AdapterSubfield title = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "orgTitle",
@@ -332,7 +332,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "title"
             };
 
-            MASchemaField department = new MASchemaField
+            AdapterSubfield department = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "orgDepartment",
@@ -342,7 +342,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "department"
             };
 
-            MASchemaField symbol = new MASchemaField
+            AdapterSubfield symbol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "orgSymbol",
@@ -352,7 +352,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "symbol"
             };
 
-            MASchemaField location = new MASchemaField
+            AdapterSubfield location = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "where",
@@ -362,11 +362,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "location"
             };
 
-            MASchemaGDataCommonAttributesList<GDataOrganization> customType = new MASchemaGDataCommonAttributesList<GDataOrganization>
+            AdapterGDataCommonAttributeList<GDataOrganization> customType = new AdapterGDataCommonAttributeList<GDataOrganization>
             {
                 Api = "contact",
                 AttributeName = "organizations",
-                Fields = new List<MASchemaField>() { name, title, department, symbol, location },
+                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location },
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
@@ -379,7 +379,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField value = new MASchemaField
+            AdapterSubfield value = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -389,11 +389,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaGDataSimpleAttributesList<ExternalId> customType = new MASchemaGDataSimpleAttributesList<ExternalId>
+            AdapterGDataSimpleAttributeList<ExternalId> customType = new AdapterGDataSimpleAttributeList<ExternalId>
             {
                 Api = "contact",
                 AttributeName = "externalIds",
-                Fields = new List<MASchemaField>() { value },
+                Fields = new List<AdapterSubfield>() { value },
                 FieldName = "externalIds",
                 PropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
@@ -406,7 +406,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddContactPhones(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField phonesValue = new MASchemaField
+            AdapterSubfield phonesValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -416,11 +416,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
             
-            MASchemaGDataCommonAttributesList<PhoneNumber> phonesType = new MASchemaGDataCommonAttributesList<PhoneNumber>
+            AdapterGDataCommonAttributeList<PhoneNumber> phonesType = new AdapterGDataCommonAttributeList<PhoneNumber>
             {
                 Api = "contact",
                 AttributeName = "phones",
-                Fields = new List<MASchemaField>() {phonesValue},
+                Fields = new List<AdapterSubfield>() {phonesValue},
                 FieldName = "phones",
                 PropertyName = "Phonenumbers",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
@@ -453,7 +453,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddContactIms(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField im = new MASchemaField
+            AdapterSubfield im = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "address",
@@ -463,7 +463,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "address"
             };
             
-            MASchemaField protocol = new MASchemaField
+            AdapterSubfield protocol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "protocol",
@@ -473,11 +473,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "protocol"
             };
             
-            MASchemaGDataCommonAttributesList<GDataIM> customType = new MASchemaGDataCommonAttributesList<GDataIM>
+            AdapterGDataCommonAttributeList<GDataIM> customType = new AdapterGDataCommonAttributeList<GDataIM>
             {
                 Api = "contact",
                 AttributeName = "ims",
-                Fields = new List<MASchemaField>() { im, protocol },
+                Fields = new List<AdapterSubfield>() { im, protocol },
                 FieldName = "ims",
                 PropertyName = "IMs",
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
@@ -498,14 +498,14 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IMASchemaAttribute>(),
+                Attributes = new List<IAttributeAdapter>(),
                 Name = "user",
                 AnchorAttributeName = "id",
                 CanPatch = true,
                 ApiInterface = new ApiInterfaceUser()
             };
 
-            MASchemaAttribute orgUnitPath = new MASchemaAttribute
+            AdapterPropertyValue orgUnitPath = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "orgUnitPath",
@@ -520,7 +520,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(orgUnitPath);
 
-            MASchemaAttribute includeInGal = new MASchemaAttribute
+            AdapterPropertyValue includeInGal = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "includeInGlobalAddressList",
@@ -535,7 +535,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(includeInGal);
 
-            MASchemaAttribute suspended = new MASchemaAttribute
+            AdapterPropertyValue suspended = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "suspended",
@@ -550,7 +550,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(suspended);
 
-            MASchemaAttribute changePasswordAtNextLogin = new MASchemaAttribute
+            AdapterPropertyValue changePasswordAtNextLogin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "changePasswordAtNextLogin",
@@ -565,7 +565,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(changePasswordAtNextLogin);
 
-            MASchemaAttribute ipWhitelisted = new MASchemaAttribute
+            AdapterPropertyValue ipWhitelisted = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "ipWhitelisted",
@@ -580,7 +580,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(ipWhitelisted);
 
-            MASchemaAttribute id = new MASchemaAttribute
+            AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "id",
@@ -596,7 +596,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(id);
 
-            MASchemaAttribute primaryEmail = new MASchemaAttribute
+            AdapterPropertyValue primaryEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "primaryEmail",
@@ -611,7 +611,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(primaryEmail);
 
-            MASchemaAttribute isAdmin = new MASchemaAttribute
+            AdapterPropertyValue isAdmin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "isAdmin",
@@ -626,7 +626,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(isAdmin);
 
-            MASchemaAttribute isDelegatedAdmin = new MASchemaAttribute
+            AdapterPropertyValue isDelegatedAdmin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "isDelegatedAdmin",
@@ -641,7 +641,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(isDelegatedAdmin);
 
-            MASchemaAttribute lastLoginTime = new MASchemaAttribute
+            AdapterPropertyValue lastLoginTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "lastLoginTime",
@@ -656,7 +656,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(lastLoginTime);
 
-            MASchemaAttribute creationTime = new MASchemaAttribute
+            AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "creationTime",
@@ -671,7 +671,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(creationTime);
 
-            MASchemaAttribute deletionTime = new MASchemaAttribute
+            AdapterPropertyValue deletionTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "deletionTime",
@@ -686,7 +686,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(deletionTime);
 
-            MASchemaAttribute agreedToTerms = new MASchemaAttribute
+            AdapterPropertyValue agreedToTerms = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "agreedToTerms",
@@ -701,7 +701,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(agreedToTerms);
 
-            MASchemaAttribute suspensionReason = new MASchemaAttribute
+            AdapterPropertyValue suspensionReason = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "suspensionReason",
@@ -716,7 +716,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(suspensionReason);
 
-            MASchemaAttribute isMailboxSetup = new MASchemaAttribute
+            AdapterPropertyValue isMailboxSetup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "isMailboxSetup",
@@ -731,7 +731,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(isMailboxSetup);
 
-            MASchemaAttribute thumbnailPhotoUrl = new MASchemaAttribute
+            AdapterPropertyValue thumbnailPhotoUrl = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "thumbnailPhotoUrl",
@@ -746,7 +746,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(thumbnailPhotoUrl);
 
-            MASchemaAttribute thumbnailPhotoEtag = new MASchemaAttribute
+            AdapterPropertyValue thumbnailPhotoEtag = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "thumbnailPhotoEtag",
@@ -761,7 +761,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(thumbnailPhotoEtag);
 
-            MASchemaAttribute customerId = new MASchemaAttribute
+            AdapterPropertyValue customerId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "customerId",
@@ -796,7 +796,7 @@ namespace Lithnet.GoogleApps.MA
             userType.Name = SchemaConstants.AdvancedUser;
             userType.ApiInterface = new ApiInterfaceAdvancedUser();
 
-            MASchemaCollection<string> delegates = new MASchemaCollection<string>
+            AdapterCollection<string> delegates = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = null,
@@ -816,14 +816,14 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IMASchemaAttribute>(),
+                Attributes = new List<IAttributeAdapter>(),
                 Name = "group",
                 AnchorAttributeName = "id",
                 CanPatch = true,
                 ApiInterface = new ApiInterfaceGroup()
             };
 
-            MASchemaAttribute adminCreated = new MASchemaAttribute
+            AdapterPropertyValue adminCreated = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "adminCreated",
@@ -838,7 +838,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(adminCreated);
 
-            MASchemaAttribute description = new MASchemaAttribute
+            AdapterPropertyValue description = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "description",
@@ -853,7 +853,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(description);
 
-            MASchemaAttribute email = new MASchemaAttribute
+            AdapterPropertyValue email = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -868,7 +868,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(email);
 
-            MASchemaAttribute id = new MASchemaAttribute
+            AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "id",
@@ -884,7 +884,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(id);
 
-            MASchemaAttribute name = new MASchemaAttribute
+            AdapterPropertyValue name = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "name",
@@ -907,7 +907,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupMembers(MASchemaType type)
         {
-            MASchemaCollection<string> members = new MASchemaCollection<string>
+            AdapterCollection<string> members = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -920,7 +920,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(members);
 
-            MASchemaCollection<string> managers = new MASchemaCollection<string>
+            AdapterCollection<string> managers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -933,7 +933,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(managers);
 
-            MASchemaCollection<string> owners = new MASchemaCollection<string>
+            AdapterCollection<string> owners = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "email",
@@ -946,7 +946,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(owners);
 
-            MASchemaCollection<string> externalMembers = new MASchemaCollection<string>
+            AdapterCollection<string> externalMembers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -959,7 +959,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(externalMembers);
 
-            MASchemaCollection<string> externalManagers = new MASchemaCollection<string>
+            AdapterCollection<string> externalManagers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -972,7 +972,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(externalManagers);
 
-            MASchemaCollection<string> externalOwners = new MASchemaCollection<string>
+            AdapterCollection<string> externalOwners = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
                 FieldName = "email",
@@ -988,7 +988,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupSettings(MASchemaType type)
         {
-            MASchemaAttribute whoCanJoin = new MASchemaAttribute
+            AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanJoin",
@@ -1003,7 +1003,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(whoCanJoin);
 
-            MASchemaAttribute whoCanViewMembership = new MASchemaAttribute
+            AdapterPropertyValue whoCanViewMembership = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanViewMembership",
@@ -1018,7 +1018,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(whoCanViewMembership);
 
-            MASchemaAttribute whoCanViewGroup = new MASchemaAttribute
+            AdapterPropertyValue whoCanViewGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanViewGroup",
@@ -1033,7 +1033,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(whoCanViewGroup);
 
-            MASchemaAttribute whoCanInvite = new MASchemaAttribute
+            AdapterPropertyValue whoCanInvite = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanInvite",
@@ -1063,7 +1063,7 @@ namespace Lithnet.GoogleApps.MA
             //
             //type.Attributes.Add(whoCanAdd);
 
-            MASchemaAttribute allowExternalMembers = new MASchemaAttribute
+            AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "allowExternalMembers",
@@ -1078,7 +1078,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(allowExternalMembers);
 
-            MASchemaAttribute whoCanPostMessage = new MASchemaAttribute
+            AdapterPropertyValue whoCanPostMessage = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanPostMessage",
@@ -1093,7 +1093,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(whoCanPostMessage);
 
-            MASchemaAttribute allowWebPosting = new MASchemaAttribute
+            AdapterPropertyValue allowWebPosting = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "allowWebPosting",
@@ -1108,7 +1108,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(allowWebPosting);
 
-            MASchemaAttribute primaryLanguage = new MASchemaAttribute
+            AdapterPropertyValue primaryLanguage = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "primaryLanguage",
@@ -1123,7 +1123,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(primaryLanguage);
 
-            MASchemaAttribute maxMessageBytes = new MASchemaAttribute
+            AdapterPropertyValue maxMessageBytes = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Integer,
                 FieldName = "maxMessageBytes",
@@ -1138,7 +1138,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(maxMessageBytes);
 
-            MASchemaAttribute isArchived = new MASchemaAttribute
+            AdapterPropertyValue isArchived = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "isArchived",
@@ -1154,7 +1154,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(isArchived);
 
 
-            MASchemaAttribute archiveOnly = new MASchemaAttribute
+            AdapterPropertyValue archiveOnly = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "archiveOnly",
@@ -1169,7 +1169,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(archiveOnly);
 
-            MASchemaAttribute messageModerationLevel = new MASchemaAttribute
+            AdapterPropertyValue messageModerationLevel = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "messageModerationLevel",
@@ -1185,7 +1185,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(messageModerationLevel);
 
 
-            MASchemaAttribute spamModerationLevel = new MASchemaAttribute
+            AdapterPropertyValue spamModerationLevel = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "spamModerationLevel",
@@ -1200,7 +1200,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(spamModerationLevel);
 
-            MASchemaAttribute replyTo = new MASchemaAttribute
+            AdapterPropertyValue replyTo = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "replyTo",
@@ -1215,7 +1215,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(replyTo);
 
-            MASchemaAttribute customReplyTo = new MASchemaAttribute
+            AdapterPropertyValue customReplyTo = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "customReplyTo",
@@ -1230,7 +1230,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(customReplyTo);
 
-            MASchemaAttribute sendMessageDenyNotification = new MASchemaAttribute
+            AdapterPropertyValue sendMessageDenyNotification = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "sendMessageDenyNotification",
@@ -1246,7 +1246,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(sendMessageDenyNotification);
 
 
-            MASchemaAttribute defaultMessageDenyNotificationText = new MASchemaAttribute
+            AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "defaultMessageDenyNotificationText",
@@ -1261,7 +1261,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(defaultMessageDenyNotificationText);
 
-            MASchemaAttribute showInGroupDirectory = new MASchemaAttribute
+            AdapterPropertyValue showInGroupDirectory = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "showInGroupDirectory",
@@ -1277,7 +1277,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(showInGroupDirectory);
 
 
-            MASchemaAttribute allowGoogleCommunication = new MASchemaAttribute
+            AdapterPropertyValue allowGoogleCommunication = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "allowGoogleCommunication",
@@ -1292,7 +1292,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(allowGoogleCommunication);
 
-            MASchemaAttribute membersCanPostAsTheGroup = new MASchemaAttribute
+            AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "membersCanPostAsTheGroup",
@@ -1307,7 +1307,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(membersCanPostAsTheGroup);
 
-            MASchemaAttribute messageDisplayFont = new MASchemaAttribute
+            AdapterPropertyValue messageDisplayFont = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "messageDisplayFont",
@@ -1322,7 +1322,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(messageDisplayFont);
 
-            MASchemaAttribute includeInGlobalAddressList = new MASchemaAttribute
+            AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "includeInGlobalAddressList",
@@ -1337,7 +1337,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(includeInGlobalAddressList);
 
-            MASchemaAttribute whoCanLeaveGroup = new MASchemaAttribute
+            AdapterPropertyValue whoCanLeaveGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanLeaveGroup",
@@ -1353,7 +1353,7 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(whoCanLeaveGroup);
 
 
-            MASchemaAttribute whoCanContactOwner = new MASchemaAttribute
+            AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "whoCanContactOwner",
@@ -1371,7 +1371,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserNames(MASchemaType type)
         {
-            MASchemaField givenName = new MASchemaField
+            AdapterSubfield givenName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "givenName",
@@ -1381,7 +1381,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "givenName"
             };
 
-            MASchemaField familyName = new MASchemaField
+            AdapterSubfield familyName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "familyName",
@@ -1391,11 +1391,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "familyName"
             };
 
-            MASchemaNestedType schemaItem = new MASchemaNestedType
+            AdapterNestedType schemaItem = new AdapterNestedType
             {
                 Api = "user",
                 AttributeName = "name",
-                Fields = new List<MASchemaField>() { givenName, familyName },
+                Fields = new List<AdapterSubfield>() { givenName, familyName },
                 FieldName = "name",
                 PropertyName = "Name",
                 CanPatch = false
@@ -1406,7 +1406,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddContactNames(MASchemaType type)
         {
-            MASchemaField givenName = new MASchemaField
+            AdapterSubfield givenName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "givenName",
@@ -1416,7 +1416,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "givenName"
             };
 
-            MASchemaField familyName = new MASchemaField
+            AdapterSubfield familyName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "familyName",
@@ -1426,7 +1426,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "familyName"
             };
 
-            MASchemaField fullName = new MASchemaField
+            AdapterSubfield fullName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "fullName",
@@ -1436,11 +1436,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "fullName"
             };
 
-            MASchemaNestedType schemaItem = new MASchemaNestedType
+            AdapterNestedType schemaItem = new AdapterNestedType
             {
                 Api = "contact",
                 AttributeName = "name",
-                Fields = new List<MASchemaField>() { givenName, familyName, fullName },
+                Fields = new List<AdapterSubfield>() { givenName, familyName, fullName },
                 FieldName = "name",
                 PropertyName = "Name",
                 CanPatch = false
@@ -1451,7 +1451,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserNotes(MASchemaType type)
         {
-            MASchemaField notesValue = new MASchemaField
+            AdapterSubfield notesValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -1461,7 +1461,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "value"
             };
 
-            MASchemaField notesContentType = new MASchemaField
+            AdapterSubfield notesContentType = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "contentType",
@@ -1471,11 +1471,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "contentType"
             };
 
-            MASchemaNestedType notesType = new MASchemaNestedType
+            AdapterNestedType notesType = new AdapterNestedType
             {
                 Api = "user",
                 AttributeName = "notes",
-                Fields = new List<MASchemaField>() { notesContentType, notesValue },
+                Fields = new List<AdapterSubfield>() { notesContentType, notesValue },
                 FieldName = "notes",
                 PropertyName = "Notes",
                 CanPatch = false
@@ -1486,7 +1486,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserWebSites(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField webSiteValue = new MASchemaField
+            AdapterSubfield webSiteValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -1496,7 +1496,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaField webSitePrimary = new MASchemaField
+            AdapterSubfield webSitePrimary = new AdapterSubfield
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "primary",
@@ -1506,11 +1506,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "primary"
             };
 
-            MASchemaCustomTypeList<Website> webSiteType = new MASchemaCustomTypeList<Website>
+            AdapterCustomTypeList<Website> webSiteType = new AdapterCustomTypeList<Website>
             {
                 Api = "user",
                 AttributeName = "websites",
-                Fields = new List<MASchemaField>() { webSitePrimary, webSiteValue },
+                Fields = new List<AdapterSubfield>() { webSitePrimary, webSiteValue },
                 FieldName = "websites",
                 PropertyName = "Websites",
                 IsPrimaryCandidateType = true,
@@ -1523,7 +1523,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupAliases(MASchemaType type)
         {
-            MASchemaCollection<string> aliasesList = new MASchemaCollection<string>
+            AdapterCollection<string> aliasesList = new AdapterCollection<string>
             {
                 Api = "groupaliases",
                 AttributeName = "aliases",
@@ -1535,7 +1535,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(aliasesList);
 
-            MASchemaCollection<string> nonEditableAliasesList = new MASchemaCollection<string>
+            AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
                 Api = "group",
                 AttributeName = "nonEditableAliases",
@@ -1550,7 +1550,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserAliases(MASchemaType type)
         {
-            MASchemaCollection<string> aliasesList = new MASchemaCollection<string>
+            AdapterCollection<string> aliasesList = new AdapterCollection<string>
             {
                 Api = "useraliases",
                 AttributeName = "aliases",
@@ -1562,7 +1562,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(aliasesList);
 
-            MASchemaCollection<string> nonEditableAliasesList = new MASchemaCollection<string>
+            AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
                 Api = "user",
                 AttributeName = "nonEditableAliases",
@@ -1577,7 +1577,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField phonesValue = new MASchemaField
+            AdapterSubfield phonesValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -1587,11 +1587,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaCustomTypeList<Phone> phonesType = new MASchemaCustomTypeList<Phone>
+            AdapterCustomTypeList<Phone> phonesType = new AdapterCustomTypeList<Phone>
             {
                 Api = "user",
                 AttributeName = "phones",
-                Fields = new List<MASchemaField>() { phonesValue },
+                Fields = new List<AdapterSubfield>() { phonesValue },
                 FieldName = "phones",
                 PropertyName = "Phones",
                 IsPrimaryCandidateType = true,
@@ -1604,7 +1604,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField name = new MASchemaField
+            AdapterSubfield name = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "name",
@@ -1614,7 +1614,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "name"
             };
 
-            MASchemaField title = new MASchemaField
+            AdapterSubfield title = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "title",
@@ -1624,7 +1624,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "title"
             };
 
-            MASchemaField department = new MASchemaField
+            AdapterSubfield department = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "department",
@@ -1634,7 +1634,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "department"
             };
 
-            MASchemaField symbol = new MASchemaField
+            AdapterSubfield symbol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "symbol",
@@ -1644,7 +1644,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "symbol"
             };
 
-            MASchemaField location = new MASchemaField
+            AdapterSubfield location = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "location",
@@ -1654,7 +1654,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "location"
             };
 
-            MASchemaField description = new MASchemaField
+            AdapterSubfield description = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "description",
@@ -1664,7 +1664,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "description"
             };
 
-            MASchemaField domain = new MASchemaField
+            AdapterSubfield domain = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "domain",
@@ -1674,7 +1674,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "domain"
             };
 
-            MASchemaField costCenter = new MASchemaField
+            AdapterSubfield costCenter = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "costCenter",
@@ -1684,11 +1684,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "costCenter"
             };
 
-            MASchemaCustomTypeList<Organization> customType = new MASchemaCustomTypeList<Organization>
+            AdapterCustomTypeList<Organization> customType = new AdapterCustomTypeList<Organization>
             {
                 Api = "user",
                 AttributeName = "organizations",
-                Fields = new List<MASchemaField>() { name, title, department, symbol, location, description, domain, costCenter },
+                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location, description, domain, costCenter },
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 IsPrimaryCandidateType = true,
@@ -1701,7 +1701,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserAddresses(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField sourceIsStructured = new MASchemaField
+            AdapterSubfield sourceIsStructured = new AdapterSubfield
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "sourceIsStructured",
@@ -1711,7 +1711,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "sourceIsStructured"
             };
 
-            MASchemaField formatted = new MASchemaField
+            AdapterSubfield formatted = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "formatted",
@@ -1721,7 +1721,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "formatted"
             };
 
-            MASchemaField poBox = new MASchemaField
+            AdapterSubfield poBox = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "poBox",
@@ -1731,7 +1731,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "poBox"
             };
 
-            MASchemaField extendedAddress = new MASchemaField
+            AdapterSubfield extendedAddress = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "extendedAddress",
@@ -1742,7 +1742,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
 
-            MASchemaField streetAddress = new MASchemaField
+            AdapterSubfield streetAddress = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "streetAddress",
@@ -1752,7 +1752,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "streetAddress"
             };
 
-            MASchemaField locality = new MASchemaField
+            AdapterSubfield locality = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "locality",
@@ -1762,7 +1762,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "locality"
             };
 
-            MASchemaField region = new MASchemaField
+            AdapterSubfield region = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "region",
@@ -1772,7 +1772,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "region"
             };
 
-            MASchemaField postalCode = new MASchemaField
+            AdapterSubfield postalCode = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "postalCode",
@@ -1782,7 +1782,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "postalCode"
             };
 
-            MASchemaField country = new MASchemaField
+            AdapterSubfield country = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "country",
@@ -1792,7 +1792,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "country"
             };
 
-            MASchemaField countryCode = new MASchemaField
+            AdapterSubfield countryCode = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "countryCode",
@@ -1802,11 +1802,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "countryCode"
             };
 
-            MASchemaCustomTypeList<Address> customType = new MASchemaCustomTypeList<Address>
+            AdapterCustomTypeList<Address> customType = new AdapterCustomTypeList<Address>
             {
                 Api = "user",
                 AttributeName = "addresses",
-                Fields = new List<MASchemaField>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
+                Fields = new List<AdapterSubfield>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
                 FieldName = "addresses",
                 PropertyName = "Addresses",
                 IsPrimaryCandidateType = true,
@@ -1819,7 +1819,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserRelations(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField value = new MASchemaField
+            AdapterSubfield value = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -1829,11 +1829,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaCustomTypeList<Relation> customType = new MASchemaCustomTypeList<Relation>
+            AdapterCustomTypeList<Relation> customType = new AdapterCustomTypeList<Relation>
             {
                 Api = "user",
                 AttributeName = "relations",
-                Fields = new List<MASchemaField>() { value },
+                Fields = new List<AdapterSubfield>() { value },
                 FieldName = "relations",
                 PropertyName = "Relations",
                 KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
@@ -1845,7 +1845,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserExternalIds(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField value = new MASchemaField
+            AdapterSubfield value = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "value",
@@ -1855,11 +1855,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = null
             };
 
-            MASchemaCustomTypeList<ExternalID> customType = new MASchemaCustomTypeList<ExternalID>
+            AdapterCustomTypeList<ExternalID> customType = new AdapterCustomTypeList<ExternalID>
             {
                 Api = "user",
                 AttributeName = "externalIds",
-                Fields = new List<MASchemaField>() { value },
+                Fields = new List<AdapterSubfield>() { value },
                 FieldName = "externalIds",
                 PropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
@@ -1871,7 +1871,7 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddUserIms(MASchemaType type, IManagementAgentParameters config)
         {
-            MASchemaField im = new MASchemaField
+            AdapterSubfield im = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "im",
@@ -1881,7 +1881,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "address"
             };
 
-            MASchemaField protocol = new MASchemaField
+            AdapterSubfield protocol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
                 FieldName = "protocol",
@@ -1891,11 +1891,11 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "protocol"
             };
 
-            MASchemaCustomTypeList<IM> customType = new MASchemaCustomTypeList<IM>
+            AdapterCustomTypeList<IM> customType = new AdapterCustomTypeList<IM>
             {
                 Api = "user",
                 AttributeName = "ims",
-                Fields = new List<MASchemaField>() { im, protocol },
+                Fields = new List<AdapterSubfield>() { im, protocol },
                 FieldName = "ims",
                 PropertyName = "Ims",
                 IsPrimaryCandidateType = true,

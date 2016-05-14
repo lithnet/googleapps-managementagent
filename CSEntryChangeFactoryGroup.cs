@@ -43,9 +43,7 @@ namespace Lithnet.GoogleApps.MA
         private static bool CanPatchGroup(CSEntryChange csentry)
         {
             return false;
-#pragma warning disable 162
-            return !csentry.AttributeChanges.Any(t => ManagementAgentSchema.GroupAttributesRequiringFullUpdate.Any(u => u == t.Name));
-#pragma warning restore 162
+            //return !csentry.AttributeChanges.Any(t => ManagementAgentSchema.GroupAttributesRequiringFullUpdate.Any(u => u == t.Name));
         }
 
         public static CSEntryChangeResult PutCSEntryChangeGroup(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
