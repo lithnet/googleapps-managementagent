@@ -87,6 +87,7 @@ namespace Lithnet.GoogleApps.MA
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
                     result = UserRequestFactory.Add(user);
+                    target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -98,6 +99,8 @@ namespace Lithnet.GoogleApps.MA
                     {
                         result = UserRequestFactory.Update(user, this.GetAnchorValue(target));
                     }
+
+                    target = result;
                 }
                 else
                 {
@@ -109,7 +112,11 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
-                changes.AddRange(i.ApplyChanges(csentry, type, ref target, patch));
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
+                {
+                    changes.RemoveAll(t => t.Name == c.Name);
+                    changes.Add(c);
+                }
             }
 
             return changes;

@@ -140,6 +140,7 @@ namespace Lithnet.GoogleApps.MA
                 if (modType == ObjectModificationType.Update)
                 {
                     yield return AttributeChange.CreateAttributeDelete(this.AttributeName);
+                    yield break;
                 }
                 else
                 {

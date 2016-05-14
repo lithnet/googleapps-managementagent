@@ -62,7 +62,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     
                     if (update)
                     {
-                        ContactRequestFactory.UpdateContact(x);
+                        ContactRequestFactory.Update(x);
                         var updated = ContactRequestFactory.GetContact(x.SelfUri.Content);
                     }
                 }

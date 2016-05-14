@@ -326,7 +326,6 @@ namespace Lithnet.GoogleApps.MA
             type.Attributes.Add(customType);
         }
 
-
         private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
 

@@ -115,6 +115,8 @@
   <ItemGroup>
     <Compile Include="AdapterTests\AdapterGDataSimpleAttributeListTTests.cs" />
     <Compile Include="AdapterTests\AdapterGDataCommonAttributeListTTests.cs" />
+    <Compile Include="AdvancedUserTests.cs" />
+    <Compile Include="UserTests.cs" />
     <Compile Include="GroupTests.cs" />
     <Compile Include="AdapterTests\AdapterCollectionTTests.cs" />
     <Compile Include="AdapterTests\AdapterValueTests.cs" />

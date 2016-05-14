@@ -39,12 +39,26 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ContactRequestFactory.GetContact(csentry.GetAnchorValueOrDefault<string>("id"));
+            string id = csentry.GetAnchorValueOrDefault<string>("id");
+
+            if (id == null)
+            {
+                throw new AttributeNotPresentException("id");
+            }
+
+            return ContactRequestFactory.GetContact(id);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ContactRequestFactory.DeleteContact(csentry.GetAnchorValueOrDefault<string>("id"));
+            string id = csentry.GetAnchorValueOrDefault<string>("id");
+
+            if (id == null)
+            {
+                throw new AttributeNotPresentException("id");
+            }
+
+            ContactRequestFactory.Delete(id);
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
@@ -72,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ContactRequestFactory.CreateContact(obj, this.domain);
+                    result = ContactRequestFactory.Add(obj, this.domain);
                     target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
@@ -83,7 +97,7 @@ namespace Lithnet.GoogleApps.MA
                     }
                     else
                     {
-                        result = ContactRequestFactory.UpdateContact(obj);
+                        result = ContactRequestFactory.Update(obj);
                         target = result;
                     }
                 }

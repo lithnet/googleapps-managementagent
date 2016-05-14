@@ -77,7 +77,7 @@ namespace Lithnet.GoogleApps.MA
                         break;
 
                     case AttributeModificationType.Delete:
-                        foreach (string alias in user.Aliases)
+                        foreach (string alias in UserRequestFactory.GetAliases(csentry.DN))
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -85,7 +85,7 @@ namespace Lithnet.GoogleApps.MA
 
                     case AttributeModificationType.Replace:
                         aliasAdds = change.GetValueAdds<string>();
-                        foreach (string alias in user.Aliases.Except(aliasAdds))
+                        foreach (string alias in UserRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
                         {
                             aliasDeletes.Add(alias);
                         }
