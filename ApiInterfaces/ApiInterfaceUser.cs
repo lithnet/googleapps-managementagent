@@ -60,6 +60,18 @@ namespace Lithnet.GoogleApps.MA
 
             List<AttributeChange> changes = new List<AttributeChange>();
 
+            User user = target as User;
+
+            if (user == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (this.SetDNValue(csentry, user))
+            {
+                hasChanged = true;
+            }
+
             foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
@@ -74,17 +86,17 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = UserRequestFactory.Add((User)target);
+                    result = UserRequestFactory.Add(user);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
                     if (patch)
                     {
-                        result = UserRequestFactory.Patch((User)target, this.GetAnchorValue(target));
+                        result = UserRequestFactory.Patch(user, this.GetAnchorValue(target));
                     }
                     else
                     {
-                        result = UserRequestFactory.Update((User)target, this.GetAnchorValue(target));
+                        result = UserRequestFactory.Update(user, this.GetAnchorValue(target));
                     }
                 }
                 else
@@ -134,6 +146,25 @@ namespace Lithnet.GoogleApps.MA
         public string GetDNValue(object target)
         {
             return ((User)target).PrimaryEmail;
+        }
+
+        private bool SetDNValue(CSEntryChange csentry, User e)
+        {
+            if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
+            {
+                return false;
+            }
+
+            string newDN = csentry.GetNewDNOrDefault<string>();
+
+            if (newDN == null)
+            {
+                return false;
+            }
+
+            e.PrimaryEmail = newDN;
+
+            return true;
         }
 
         protected static string GenerateSecureString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}:'/?-")

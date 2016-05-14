@@ -14,6 +14,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     using System.Security.Cryptography.X509Certificates;
     using Google.Contacts;
     using Google.GData.Contacts;
+    using Google.GData.Extensions;
     using Lithnet.GoogleApps.MA;
 
     [TestClass]
@@ -36,7 +37,18 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 if (t.PrimaryEmail.Address.Contains("d1@"))
                 {
                     bool update = false;
-                    Contact x = ContactRequestFactory.GetContact(t.SelfUri.Content);
+                    ContactEntry x = ContactRequestFactory.GetContact(t.SelfUri.Content);
+
+                    
+                    ExtendedProperty dn = x.ExtendedProperties.FirstOrDefault(e => e.Name == "lithnet-google-ma-dn");
+                    if (dn == null)
+                    {
+                        dn = new ExtendedProperty();
+                        dn.Name = "lithnet-google-ma-dn";
+                        dn.Value = "contact::" + x.PrimaryEmail.Address;
+                        x.ExtendedProperties.Add(dn);
+                        update = true;
+                    }
 
                     if (x.Organizations.Count > 0 && x.Organizations[0].Rel != "http://schemas.google.com/g/2005#work")
                     {
@@ -48,22 +60,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                         x.Organizations[0].Rel = "http://schemas.google.com/g/2005#work";
                         update = true;
                     }
-
-                    if (x.ContactEntry.ExternalIds.Count == 0)
-                    {
-                        ExternalId id = new ExternalId();
-
-                        id.Label = "monashPersonID";
-                        id.Value = Guid.NewGuid().ToString();
-
-                        x.ContactEntry.ExternalIds.Add(id);
-                        update = true;
-                    }
-
+                    
                     if (update)
                     {
                         ContactRequestFactory.UpdateContact(x);
-                        var updated = ContactRequestFactory.GetContact(x.ContactEntry.SelfUri.Content);
+                        var updated = ContactRequestFactory.GetContact(x.SelfUri.Content);
                     }
                 }
             }

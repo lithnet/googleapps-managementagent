@@ -8,11 +8,13 @@ namespace Lithnet.GoogleApps.MA
 {
     using Google.Contacts;
     using Google.GData.Contacts;
+    using Google.GData.Extensions;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
     internal class ApiInterfaceContact : IApiInterfaceObject
     {
+        private const string DNAttributeName = "lithnet-google-ma-dn";
         private static ApiInterfaceKeyedCollection internalInterfaces;
 
         private string domain;
@@ -49,11 +51,16 @@ namespace Lithnet.GoogleApps.MA
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
-            Contact obj = (Contact)target;
+            ContactEntry obj = (ContactEntry)target;
+
+            if (this.SetDNValue(csentry, obj))
+            {
+                hasChanged = true;
+            }
 
             foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Contact].Attributes.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, obj.ContactEntry))
+                if (typeDef.UpdateField(csentry, obj))
                 {
                     hasChanged = true;
                 }
@@ -61,7 +68,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (hasChanged)
             {
-                Contact result;
+                ContactEntry result;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
@@ -83,7 +90,7 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result.ContactEntry));
+                changes.AddRange(this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
             foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
@@ -147,19 +154,48 @@ namespace Lithnet.GoogleApps.MA
         {
             ContactEntry contactEntry = target as ContactEntry;
 
-            if (contactEntry != null)
+            if (contactEntry == null)
             {
-                return "contact:" + contactEntry.PrimaryEmail.Address;
+                throw new InvalidOperationException();
             }
 
-            Contact contact = target as Contact;
-
-            if (contact != null)
+            if (contactEntry.ExtendedProperties.Count > 0)
             {
-                return "contact:" + contact.PrimaryEmail.Address;
+                ExtendedProperty dn = contactEntry.ExtendedProperties.FirstOrDefault(t => t.Name == ApiInterfaceContact.DNAttributeName);
+
+                if (!string.IsNullOrEmpty(dn?.Value))
+                {
+                    return dn.Value;
+                }
             }
 
-            throw new InvalidOperationException();
+            return "contact:" + contactEntry.PrimaryEmail.Address;
+        }
+
+        public bool SetDNValue(CSEntryChange csentry, ContactEntry e)
+        {
+            if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
+            {
+                return false;
+            }
+
+            string newDN = csentry.GetNewDNOrDefault<string>();
+
+            if (newDN == null)
+            {
+                return false;
+            }
+
+            ExtendedProperty dn = e.ExtendedProperties.FirstOrDefault(t => t.Name == ApiInterfaceContact.DNAttributeName);
+
+            if (dn == null)
+            {
+                dn = new ExtendedProperty {Name = ApiInterfaceContact.DNAttributeName};
+                e.ExtendedProperties.Add(dn);
+            }
+
+            dn.Value = newDN;
+            return true;
         }
     }
 }

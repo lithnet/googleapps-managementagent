@@ -52,6 +52,18 @@ namespace Lithnet.GoogleApps.MA
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
+            GoogleGroup group = target as GoogleGroup;
+
+            if (group == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (this.SetDNValue(csentry, group))
+            {
+                hasChanged = true;
+            }
+
             foreach (IMASchemaAttribute typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
@@ -62,21 +74,21 @@ namespace Lithnet.GoogleApps.MA
 
             if (hasChanged)
             {
-                Group result;
+                GoogleGroup result = new GoogleGroup();
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = GroupRequestFactory.Add((Group)target);
+                    result.Group = GroupRequestFactory.Add(group.Group);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
                     if (patch)
                     {
-                        result = GroupRequestFactory.Patch(this.GetAnchorValue(target), (Group)target);
+                        result.Group = GroupRequestFactory.Patch(this.GetAnchorValue(target), group.Group);
                     }
                     else
                     {
-                        result = GroupRequestFactory.Update(this.GetAnchorValue(target), (Group)target);
+                        result.Group = GroupRequestFactory.Update(this.GetAnchorValue(target), group.Group);
                     }
                 }
                 else
@@ -169,6 +181,25 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return group.Email;
+        }
+        
+        private bool SetDNValue(CSEntryChange csentry, GoogleGroup e)
+        {
+            if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
+            {
+                return false;
+            }
+
+            string newDN = csentry.GetNewDNOrDefault<string>();
+
+            if (newDN == null)
+            {
+                return false;
+            }
+
+            e.Group.Email = newDN;
+
+            return true;
         }
     }
 }

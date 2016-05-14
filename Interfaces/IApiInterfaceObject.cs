@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using Google.GData.Extensions;
+    using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
-    internal interface IApiInterfaceObject :IApiInterface
+    internal interface IApiInterfaceObject : IApiInterface
     {
         object CreateInstance(CSEntryChange csentry);
 

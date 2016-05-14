@@ -55,7 +55,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             deltaCSEntry.ObjectType = csentry.ObjectType;
-            CSEntryChangeFactory.SetDeltaDNOnRename(csentry, deltaCSEntry);
 
             try
             {
@@ -89,6 +88,7 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeDelete(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
+            deltaCSEntry.DN = csentry.DN;
 
             maType.ApiInterface.DeleteInstance(csentry);
 
@@ -98,6 +98,7 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
+            deltaCSEntry.DN =  csentry.DN;
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
@@ -121,6 +122,7 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
+            deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
 
             bool fullUpdate = !maType.CanPatch || csentry.AttributeChanges.Any(t => maType.Attributes.Any(u => u.AttributeName == t.Name && !u.CanPatch));
 

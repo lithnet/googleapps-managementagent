@@ -71,6 +71,8 @@ namespace Lithnet.GoogleApps.MA
 
         public string DeltaPath { get; set; }
 
+        private HashSet<string> seenDNs;
+
         public MACapabilities Capabilities
         {
             get
@@ -201,6 +203,7 @@ namespace Lithnet.GoogleApps.MA
             this.operationSchemaTypes = types;
             this.timer = new Stopwatch();
             this.Configuration = new ManagementAgentParameters(configParameters);
+            this.seenDNs = new HashSet<string>();
 
             this.DeltaPath = Path.Combine(ManagementAgent.MADataPath, ManagementAgent.DeltaFile);
 
@@ -542,6 +545,14 @@ namespace Lithnet.GoogleApps.MA
                             i--;
                             continue;
                         }
+                    }
+
+                    string dn = Schema[SchemaConstants.Contact].ApiInterface.GetDNValue(contact);
+
+                    if (!this.seenDNs.Add(dn))
+                    {
+                        Logger.WriteLine($"Ignoring contact {contact.SelfUri.Content} with duplicate dn {dn}");
+                        continue;
                     }
 
                     results.CSEntries.Add(ImportProcessor.GetCSEntryChange(contact, this.operationSchemaTypes.Types[SchemaConstants.Contact]));
