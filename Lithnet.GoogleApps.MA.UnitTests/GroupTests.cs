@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Lithnet.GoogleApps;
 using Lithnet.GoogleApps.MA;
-using Lithnet.GoogleApps.ManagedObjects;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -12,74 +11,505 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     using System.Net;
     using System.Net.Security;
     using System.Security.Cryptography.X509Certificates;
-    using Google.Contacts;
+    using Google;
+    using Google.Apis.Admin.Directory.directory_v1.Data;
     using Google.GData.Contacts;
     using Google.GData.Extensions;
     using Lithnet.GoogleApps.MA;
-
+    using ManagedObjects;
+    using Microsoft.MetadirectoryServices;
+    
     [TestClass]
     public class GroupTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void Add()
         {
-            return;
-            
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Add;
+            cs.DN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            cs.ObjectType = SchemaConstants.Group;
 
-            TestParameters r = new TestParameters();
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("description", "description"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
+           
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@test.com"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("defaultMessageDenyNotificationText", "occupation"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isArchived", false));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maxMessageBytes", 5000000));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("membersCanPostAsTheGroup", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageDisplayFont", "DEFAULT_FONT"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageModerationLevel", "MODERATE_NEW_MEMBERS"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification",true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("replyTo", "REPLY_TO_CUSTOM"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "ALL_MANAGERS_CAN_POST"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewGroup", "ALL_MANAGERS_CAN_VIEW"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewMembership", "ALL_MEMBERS_CAN_VIEW"));
+            //cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanLeaveGroup", "ALL_MANAGERS_CAN_LEAVE"));
+     
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            ConnectionPools.InitializePools(r.Credentials, 1, 1, 1, 1);
-            // SchemaBuilder.CreateGoogleAppsCustomSchema();
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
 
-            foreach (var t in ContactRequestFactory.GetContacts("ga-staff-dev.monash.edu"))
+            string id = null;
+
+            try
             {
-                if (t.PrimaryEmail.Address.Contains("d1@"))
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
                 {
-                    bool update = false;
-                    ContactEntry x = ContactRequestFactory.GetContact(t.SelfUri.Content);
+                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
+                }
 
-                    
-                    ExtendedProperty dn = x.ExtendedProperties.FirstOrDefault(e => e.Name == "lithnet-google-ma-dn");
-                    if (dn == null)
-                    {
-                        dn = new ExtendedProperty();
-                        dn.Name = "lithnet-google-ma-dn";
-                        dn.Value = "contact::" + x.PrimaryEmail.Address;
-                        x.ExtendedProperties.Add(dn);
-                        update = true;
-                    }
+                id = result.AnchorAttributes["id"].GetStringValueAddOrNullPlaceholder();
 
-                    if (x.Organizations.Count > 0 && x.Organizations[0].Rel != "http://schemas.google.com/g/2005#work")
-                    {
-                        if (x.Organizations[0].Label != null)
-                        {
-                            x.Organizations[0].Label = null;
-                        }
+                System.Threading.Thread.Sleep(5000);
 
-                        x.Organizations[0].Rel = "http://schemas.google.com/g/2005#work";
-                        update = true;
-                    }
-                    
-                    if (update)
-                    {
-                        ContactRequestFactory.Update(x);
-                        var updated = ContactRequestFactory.GetContact(x.SelfUri.Content);
-                    }
+                Group e = GroupRequestFactory.Get(id);
+                Assert.AreEqual(cs.DN, e.Email);
+
+                Assert.AreEqual(true, e.AdminCreated);
+                Assert.AreEqual("description", e.Description);
+                Assert.AreEqual("name", e.Name);
+
+                GroupSettings s = GroupSettingsRequestFactory.Get(cs.DN);
+                Assert.AreEqual(true, s.AllowExternalMembers);
+                Assert.AreEqual(true, s.AllowGoogleCommunication);
+                Assert.AreEqual(true, s.AllowWebPosting);
+                Assert.AreEqual(false, s.ArchiveOnly);
+                Assert.AreEqual("test@test.com", s.CustomReplyTo);
+                Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
+                Assert.AreEqual(true, s.IncludeInGlobalAddressList);
+                Assert.AreEqual(false, s.IsArchived);
+                Assert.AreEqual(500000, s.MaxMessageBytes);
+                Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
+                Assert.AreEqual("DEFAULT_FONT", s.MessageDisplayFont);
+                Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
+                Assert.AreEqual("en-GB", s.PrimaryLanguage);
+                Assert.AreEqual(true, s.SendMessageDenyNotification);
+                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
+                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
+                Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
+                Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
+                Assert.AreEqual("ALL_MANAGERS_CAN_LEAVE", s.WhoCanLeaveGroup);
+                Assert.AreEqual("REPLY_TO_CUSTOM", s.ReplyTo);
+                Assert.AreEqual("ALL_MANAGERS_CAN_POST", s.WhoCanPostMessage);
+                Assert.AreEqual("ALL_MANAGERS_CAN_VIEW", s.WhoCanViewGroup);
+                Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
+
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases.ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
                 }
             }
 
+        }
 
-            List<string> items = UserSettingsRequestFactory.GetDelegates("amut0001-student.monash.edu-d1@ga-staff-dev.monash.edu").ToList();
+        [TestMethod]
+        public void Delete()
+        {
+            string id = null;
 
+            try
+            {
+                string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+                Group e = new Group
+                {
+                    Email = dn,
+                    Name = Guid.NewGuid().ToString()
+                };
 
-            var d = SchemaRequestFactory.GetSchema("my_customer", SchemaConstants.CustomGoogleAppsSchemaName);
+                e = GroupRequestFactory.Add(e);
+                id = e.Id;
 
-            User u = UserRequestFactory.Get("amut0001-student.monash.edu-d1@ga-staff-dev.monash.edu");
-            u.CustomSchemas = new Dictionary<string, IDictionary<string, object>>();
-            u.CustomSchemas.Add(SchemaConstants.CustomGoogleAppsSchemaName, new Dictionary<string, object>());
-            u.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].Add(SchemaConstants.CustomSchemaObjectType, SchemaConstants.AdvancedUser);
-            u.IncludeInGlobalAddressList = true;
-            User zx = UserRequestFactory.Update(u, u.PrimaryEmail);
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Delete;
+                cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+                CSEntryChangeResult result = 
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                try
+                {
+                    System.Threading.Thread.Sleep(5000);
+                    e = GroupRequestFactory.Get(id);
+                    Assert.Fail("The object did not get deleted");
+                }
+                catch (GoogleApiException ex)
+                {
+                    if (ex.HttpStatusCode == HttpStatusCode.NotFound)
+                    {
+                        id = null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void Rename()
+        {
+            string id = null;
+
+            try
+            {
+                string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+                Group e = new Group
+                {
+                    Email = dn,
+                    Name = Guid.NewGuid().ToString()
+                };
+
+                e = GroupRequestFactory.Add(e);
+                id = e.Id;
+                System.Threading.Thread.Sleep(5000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = dn;
+
+                string newDN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("DN", new List<ValueChange>() { ValueChange.CreateValueAdd(newDN), ValueChange.CreateValueDelete(dn) }));
+
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+                e = GroupRequestFactory.Get(id);
+                Assert.AreEqual(newDN, e.Email);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void AddAliases()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = GroupRequestFactory.Get(id);
+
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases.ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                   GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void RemoveAliases()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            GroupRequestFactory.AddAlias(id, alias1);
+            GroupRequestFactory.AddAlias(id, alias2);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("aliases"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                e = GroupRequestFactory.Get(id);
+
+                Assert.IsNull(e.Aliases);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void AddAlias()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            GroupRequestFactory.AddAlias(id, alias1);
+            GroupRequestFactory.AddAlias(id, alias2);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
+            {
+                new ValueChange(alias3, ValueModificationType.Add )
+            }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                e = GroupRequestFactory.Get(id);
+
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2, alias3 }, e.Aliases.ToArray());
+
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void RemoveAlias()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            GroupRequestFactory.AddAlias(id, alias1);
+            GroupRequestFactory.AddAlias(id, alias2);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
+            {
+                new ValueChange(alias2, ValueModificationType.Delete )
+            }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants. Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = GroupRequestFactory.Get(id);
+
+                CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases.ToArray());
+
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void ReplaceAliases()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias4 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            GroupRequestFactory.AddAlias(id, alias1);
+            GroupRequestFactory.AddAlias(id, alias2);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("aliases", new List<object>
+            {
+               alias3, alias4
+            }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                e = GroupRequestFactory.Get(id);
+
+                CollectionAssert.AreEquivalent(new string[] { alias3, alias4 }, e.Aliases.ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
 
         }
 

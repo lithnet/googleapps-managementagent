@@ -17,9 +17,9 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
-            Group g = (Group) target;
+            GoogleGroup g = (GoogleGroup) target;
 
-            Func<AttributeChange> x = () => ApiInterfaceGroupAliases.ApplyGroupAliasChanges(csentry, g);
+            Func<AttributeChange> x = () => ApiInterfaceGroupAliases.ApplyGroupAliasChanges(csentry, g.Group);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
 
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -86,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
                         break;
 
                     case AttributeModificationType.Delete:
-                        foreach (string alias in group.Aliases)
+                        foreach (string alias in GroupRequestFactory.GetAliases(csentry.DN))
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -94,7 +94,7 @@ namespace Lithnet.GoogleApps.MA
 
                     case AttributeModificationType.Replace:
                         aliasAdds = change.GetValueAdds<string>();
-                        foreach (string alias in group.Aliases.Except(aliasAdds))
+                        foreach (string alias in GroupRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
                         {
                             aliasDeletes.Add(alias);
                         }

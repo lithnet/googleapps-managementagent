@@ -91,13 +91,15 @@ namespace Lithnet.GoogleApps.MA
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
+                    string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName);
+
                     if (patch)
                     {
-                        result = UserRequestFactory.Patch(user, this.GetAnchorValue(target));
+                        result = UserRequestFactory.Patch(user, id);
                     }
                     else
                     {
-                        result = UserRequestFactory.Update(user, this.GetAnchorValue(target));
+                        result = UserRequestFactory.Update(user, id);
                     }
 
                     target = result;

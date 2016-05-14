@@ -90,12 +90,12 @@ namespace Lithnet.GoogleApps.MA
 
         private string GetAnchorValue(object target)
         {
-            return ((Group)target).Id;
+            return ((GoogleGroup)target).Group.Id;
         }
 
         private string GetDNValue(object target)
         {
-            return ((Group)target).Email;
+            return ((GoogleGroup)target).Group.Id;
         }
     }
 }

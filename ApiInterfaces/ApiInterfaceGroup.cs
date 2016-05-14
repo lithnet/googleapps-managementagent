@@ -9,7 +9,6 @@ namespace Lithnet.GoogleApps.MA
     using Google.Apis.Admin.Directory.directory_v1.Data;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
-    using User = ManagedObjects.User;
 
     internal class ApiInterfaceGroup : IApiInterfaceObject
     {
@@ -31,10 +30,11 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api => "group";
 
-
         public object CreateInstance(CSEntryChange csentry)
         {
-            return new GoogleGroup();
+            GoogleGroup g = new GoogleGroup();
+            g.Group.Email = csentry.DN;
+            return g;
         }
 
         public object GetInstance(CSEntryChange csentry)
@@ -66,7 +66,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, target))
+                if (typeDef.UpdateField(csentry, group.Group))
                 {
                     hasChanged = true;
                 }
@@ -79,16 +79,21 @@ namespace Lithnet.GoogleApps.MA
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
                     result.Group = GroupRequestFactory.Add(group.Group);
+                    group.Group = result.Group;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
+                    string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.Group].AnchorAttributeName);
+
                     if (patch)
                     {
-                        result.Group = GroupRequestFactory.Patch(this.GetAnchorValue(target), group.Group);
+                        result.Group = GroupRequestFactory.Patch(id, group.Group);
+                        group.Group = result.Group;
                     }
                     else
                     {
-                        result.Group = GroupRequestFactory.Update(this.GetAnchorValue(target), group.Group);
+                        result.Group = GroupRequestFactory.Update(id, group.Group);
+                        group.Group = result.Group;
                     }
                 }
                 else
@@ -182,7 +187,7 @@ namespace Lithnet.GoogleApps.MA
 
             return group.Email;
         }
-        
+
         private bool SetDNValue(CSEntryChange csentry, GoogleGroup e)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
@@ -203,3 +208,4 @@ namespace Lithnet.GoogleApps.MA
         }
     }
 }
+
