@@ -206,6 +206,7 @@
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
                 cs.DN = dn;
+                cs.ObjectType = SchemaConstants.User;
 
                 string newDN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
@@ -273,7 +274,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
@@ -391,7 +392,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -453,7 +454,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("aliases"));
@@ -513,7 +514,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
@@ -576,7 +577,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
@@ -641,7 +642,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("aliases", new List<object>
@@ -696,7 +697,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isAdmin", true));
@@ -751,7 +752,7 @@
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Contact;
+            cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("isAdmin", false));

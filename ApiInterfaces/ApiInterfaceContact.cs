@@ -19,14 +19,17 @@ namespace Lithnet.GoogleApps.MA
 
         private string domain;
 
+        protected  MASchemaType SchemaType { get; set; }
+
         static ApiInterfaceContact()
         {
             ApiInterfaceContact.internalInterfaces = new ApiInterfaceKeyedCollection();
         }
 
-        public ApiInterfaceContact(string domain)
+        public ApiInterfaceContact(string domain, MASchemaType type)
         {
             this.domain = domain;
+            this.SchemaType = type;
         }
 
         public string Api => "contact";
@@ -72,7 +75,7 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Contact].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, obj))
                 {
@@ -106,7 +109,7 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
             foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
@@ -119,6 +122,18 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
+            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+
+            foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+            }
+
+            return attributeChanges;
+        }
+
+        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
             ContactEntry entry = source as ContactEntry;
@@ -128,7 +143,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Contact].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, entry))
                 {
@@ -138,12 +153,6 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
             }
-
-            foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
-            }
-
             return attributeChanges;
         }
 

@@ -14,6 +14,8 @@ namespace Lithnet.GoogleApps.MA
     {
         private static ApiInterfaceKeyedCollection internalInterfaces;
 
+        protected MASchemaType SchemaType { get; set; }
+
         static ApiInterfaceGroup()
         {
             ApiInterfaceGroup.internalInterfaces = new ApiInterfaceKeyedCollection
@@ -24,8 +26,9 @@ namespace Lithnet.GoogleApps.MA
             };
         }
 
-        public ApiInterfaceGroup()
+        public ApiInterfaceGroup(MASchemaType type)
         {
+            this.SchemaType = type;
         }
 
         public string Api => "group";
@@ -64,7 +67,7 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, group.Group))
                 {
@@ -83,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
-                    string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.Group].AnchorAttributeName);
+                    string id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName);
 
                     if (patch)
                     {
@@ -101,18 +104,34 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
             foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
             {
-                changes.AddRange(i.ApplyChanges(csentry, type, ref target, patch));
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
+                {
+                    //changes.RemoveAll(t => t.Name == c.Name);
+                    changes.Add(c);
+                }
             }
 
             return changes;
         }
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        {
+            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+
+            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+            }
+
+            return attributeChanges;
+        }
+
+        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -123,7 +142,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, googleGroup.Group))
                 {
@@ -133,12 +152,6 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
             }
-
-            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
-            }
-
             return attributeChanges;
         }
 

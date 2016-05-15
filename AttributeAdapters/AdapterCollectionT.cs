@@ -183,6 +183,11 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
+            if (list.Count == 0)
+            {
+                yield break;
+            }
+
             switch (modType)
             {
                 case ObjectModificationType.Add:

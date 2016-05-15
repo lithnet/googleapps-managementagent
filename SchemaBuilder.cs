@@ -70,9 +70,10 @@ namespace Lithnet.GoogleApps.MA
                 Name = "contact",
                 AnchorAttributeName = "id",
                 CanPatch = false,
-                ApiInterface = new ApiInterfaceContact(config.Domain)
             };
 
+            type.ApiInterface = new ApiInterfaceContact(config.Domain, type);
+            
             AdapterPropertyValue occupation = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -87,7 +88,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.Attributes.Add(occupation);
-            
+
             AdapterPropertyValue billingInformation = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -102,7 +103,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.Attributes.Add(billingInformation);
-            
+
             AdapterPropertyValue birthday = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -117,7 +118,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.Attributes.Add(birthday);
-            
+
             AdapterPropertyValue directoryServer = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -310,7 +311,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Address",
                 AttributeNamePart = null
             };
-            
+
             AdapterGDataCommonAttributeList<GDataEmail> customType = new AdapterGDataCommonAttributeList<GDataEmail>
             {
                 Api = "contact",
@@ -379,7 +380,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "jobDescription"
             };
 
-            
+
             AdapterSubfield location = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
@@ -443,12 +444,12 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Value",
                 AttributeNamePart = null
             };
-            
+
             AdapterGDataCommonAttributeList<PhoneNumber> phonesType = new AdapterGDataCommonAttributeList<PhoneNumber>
             {
                 Api = "contact",
                 AttributeName = "phones",
-                Fields = new List<AdapterSubfield>() {phonesValue},
+                Fields = new List<AdapterSubfield>() { phonesValue },
                 FieldName = "phones",
                 PropertyName = "Phonenumbers",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
@@ -490,7 +491,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Address",
                 AttributeNamePart = "address"
             };
-            
+
             AdapterSubfield protocol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
@@ -500,7 +501,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Protocol",
                 AttributeNamePart = "protocol"
             };
-            
+
             AdapterGDataCommonAttributeList<GDataIM> customType = new AdapterGDataCommonAttributeList<GDataIM>
             {
                 Api = "contact",
@@ -530,8 +531,9 @@ namespace Lithnet.GoogleApps.MA
                 Name = "user",
                 AnchorAttributeName = "id",
                 CanPatch = true,
-                ApiInterface = new ApiInterfaceUser()
             };
+
+            type.ApiInterface = new ApiInterfaceUser(type);
 
             AdapterPropertyValue orgUnitPath = new AdapterPropertyValue
             {
@@ -827,7 +829,7 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType userType = SchemaBuilder.GetUserSchema(config);
             userType.Name = SchemaConstants.AdvancedUser;
-            userType.ApiInterface = new ApiInterfaceAdvancedUser();
+            userType.ApiInterface = new ApiInterfaceAdvancedUser(userType);
 
             AdapterCollection<string> delegates = new AdapterCollection<string>
             {
@@ -853,8 +855,9 @@ namespace Lithnet.GoogleApps.MA
                 Name = "group",
                 AnchorAttributeName = "id",
                 CanPatch = true,
-                ApiInterface = new ApiInterfaceGroup()
             };
+
+            type.ApiInterface = new ApiInterfaceGroup(type);
 
             AdapterPropertyValue adminCreated = new AdapterPropertyValue
             {
@@ -883,7 +886,8 @@ namespace Lithnet.GoogleApps.MA
                 Api = "group",
                 CanPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i
             };
 
             type.Attributes.Add(description);

@@ -20,13 +20,13 @@ namespace Lithnet.GoogleApps.MA
 
             GroupSettings settings;
 
-            if (csentry.ObjectModificationType == ObjectModificationType.Add || patch)
+            if (patch)
             {
                 settings = new GroupSettings();
             }
             else
             {
-                settings = GroupSettingsRequestFactory.Get(this.GetAnchorValue(target));
+                settings = GroupSettingsRequestFactory.Get(this.GetDNValue(target));
             }
 
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
@@ -46,11 +46,11 @@ namespace Lithnet.GoogleApps.MA
 
             if (patch)
             {
-                result = GroupSettingsRequestFactory.Patch(this.GetAnchorValue(target), settings);
+                result = GroupSettingsRequestFactory.Patch(this.GetDNValue(target), settings);
             }
             else
             {
-                result = GroupSettingsRequestFactory.Update(this.GetAnchorValue(target), settings);
+                result = GroupSettingsRequestFactory.Update(this.GetDNValue(target), settings);
             }
 
             return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result);
@@ -95,7 +95,7 @@ namespace Lithnet.GoogleApps.MA
 
         private string GetDNValue(object target)
         {
-            return ((GoogleGroup)target).Group.Id;
+            return ((GoogleGroup)target).Group.Email;
         }
     }
 }

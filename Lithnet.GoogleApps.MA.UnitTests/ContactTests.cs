@@ -136,7 +136,7 @@
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Delete;
                 cs.DN = dn;
-
+                cs.ObjectType = SchemaConstants.Contact;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact]);
 
@@ -193,6 +193,7 @@
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
                 cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Contact;
 
                 string newDN = Guid.NewGuid().ToString();
 
