@@ -12,7 +12,7 @@
     <internal-version>1</internal-version>
     <ma-companyname>Lithnet</ma-companyname>
     <subtype>G3 (Lithnet)</subtype>
-    <ma-listname>GoogleApps (Lithnet)</ma-listname>
+    <ma-listname>Google Apps (Lithnet)</ma-listname>
     <id>{20E66DBD-4729-4A71-8616-034B445E95A4}</id>
     <category>Extensible2</category>
     <password-sync-allowed>0</password-sync-allowed>
@@ -592,7 +592,7 @@
               <attribute object_class="user">id</attribute>
             </anchor>
           </xmlwizard>
-          <ma-help-text>Lithnet GoogleApps Management Agent</ma-help-text>
+          <ma-help-text>Lithnet Google Apps Management Agent</ma-help-text>
         </ui-data>
         <importing>
         </importing>

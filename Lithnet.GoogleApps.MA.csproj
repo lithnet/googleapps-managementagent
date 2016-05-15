@@ -164,8 +164,8 @@
       <HintPath>packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.5973.31569, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Lithnet.MetadirectoryServices.1.0.5973.31569\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
+    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.5980.14720, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lithnet.MetadirectoryServices.1.0.5980.14720\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">

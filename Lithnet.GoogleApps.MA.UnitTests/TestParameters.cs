@@ -43,6 +43,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             
             public string KeyFilePath => ConfigurationManager.AppSettings["keyFilePath"];
 
+            public string LogFilePath => ConfigurationManager.AppSettings["logFilePath"];
+
             public string KeyFilePassword => ConfigurationManager.AppSettings["keyFilePassword"];
 
             public bool DoNotGenerateDelta { get; set; }

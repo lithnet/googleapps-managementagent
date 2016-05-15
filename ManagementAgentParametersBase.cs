@@ -68,6 +68,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string WebsitesFixedTypeFormatParameter = "Websites fixed types";
 
+        protected const string LogFilePathParameter = "Log file";
+
         protected static string[] RequiredScopes = new string[] 
                     { 
                         DirectoryService.Scope.AdminDirectoryUser, 

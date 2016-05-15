@@ -82,6 +82,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
+
         public string ContactRegexFilter
         {
             get
@@ -141,6 +142,22 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
+
+        public string LogFilePath
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.LogFilePathParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.LogFilePathParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
 
         public bool DoNotGenerateDelta
         {
@@ -423,6 +440,8 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserEmailAddressParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.KeyFilePathParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.LogFilePathParameter, null));
 
                     break;
 

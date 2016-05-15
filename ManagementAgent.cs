@@ -12,11 +12,12 @@ using System.Collections.Concurrent;
 using Lithnet.GoogleApps.ManagedObjects;
 using System.Diagnostics;
 using Lithnet.MetadirectoryServices;
+using Google.GData.Contacts;
+using GroupMembership = Lithnet.GoogleApps.ManagedObjects.GroupMembership;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Google.GData.Contacts;
-    using GroupMembership = ManagedObjects.GroupMembership;
+
 
     public class ManagementAgent :
         IMAExtensible2CallExport,
@@ -44,22 +45,15 @@ namespace Lithnet.GoogleApps.MA
 
         private Schema operationSchemaTypes;
 
-        private bool UserImportTaskComplete;
+        private bool userImportTaskComplete;
 
-        private bool GroupImportTaskComplete;
+        private bool groupImportTaskComplete;
 
-        private bool ContactsImportTaskComplete;
+        private bool contactsImportTaskComplete;
 
         private BlockingCollection<object> importCollection;
 
         internal static MASchemaTypes Schema { get; set; }
-
-        public ManagementAgent()
-        {
-            Logger.LogPath = @"D:\MAData\MonashGoogleApps\ma.log";
-        }
-
-        public static string MADataPath => @"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\MaData\g2";
 
         public int ExportDefaultPageSize => 100;
 
@@ -101,14 +95,16 @@ namespace Lithnet.GoogleApps.MA
 
         public void OpenExportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
         {
+            this.Configuration = new ManagementAgentParameters(configParameters);
+            Logger.LogPath = this.Configuration.LogFilePath;
             Logger.WriteLine("Opening export connection");
             this.timer = new Stopwatch();
-            this.Configuration = new ManagementAgentParameters(configParameters);
+            
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
             this.exportRunStep = exportRunStep;
             this.operationSchemaTypes = types;
-            this.DeltaPath = Path.Combine(ManagementAgent.MADataPath, ManagementAgent.DeltaFile);
-
+            this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
+            
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
             ConnectionPools.InitializePools(this.Configuration.Credentials,
                this.Configuration.ExportThreadCount,
@@ -199,13 +195,15 @@ namespace Lithnet.GoogleApps.MA
 
         public OpenImportConnectionResults OpenImportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenImportConnectionRunStep importRunStep)
         {
+            this.Configuration = new ManagementAgentParameters(configParameters);
+            Logger.LogPath = this.Configuration.LogFilePath;
+
             this.importRunStep = importRunStep;
             this.operationSchemaTypes = types;
             this.timer = new Stopwatch();
-            this.Configuration = new ManagementAgentParameters(configParameters);
             this.seenDNs = new HashSet<string>();
 
-            this.DeltaPath = Path.Combine(ManagementAgent.MADataPath, ManagementAgent.DeltaFile);
+            this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
 
             Logger.WriteLine("Opening import connection. Page size {0}", this.importRunStep.PageSize);
 
@@ -245,7 +243,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                this.UserImportTaskComplete = true;
+                this.userImportTaskComplete = true;
             }
 
             if (this.operationSchemaTypes.Types.Contains("group"))
@@ -255,7 +253,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                this.GroupImportTaskComplete = true;
+                this.groupImportTaskComplete = true;
             }
 
             if (this.operationSchemaTypes.Types.Contains(SchemaConstants.Contact))
@@ -265,7 +263,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                this.ContactsImportTaskComplete = true;
+                this.contactsImportTaskComplete = true;
             }
 
             if (this.importUsersTask != null)
@@ -357,11 +355,11 @@ namespace Lithnet.GoogleApps.MA
 
                 Logger.WriteLine("Groups import task complete");
 
-                this.GroupImportTaskComplete = true;
+                this.groupImportTaskComplete = true;
 
                 lock (this.importCollection)
                 {
-                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
+                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
                     {
                         this.importCollection.CompleteAdding();
                     }
@@ -379,11 +377,11 @@ namespace Lithnet.GoogleApps.MA
 
                 Logger.WriteLine("Contacts import task complete");
 
-                this.ContactsImportTaskComplete = true;
+                this.contactsImportTaskComplete = true;
 
                 lock (this.importCollection)
                 {
-                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
+                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
                     {
                         this.importCollection.CompleteAdding();
                     }
@@ -420,11 +418,11 @@ namespace Lithnet.GoogleApps.MA
                 UserRequestFactory.StartImport(this.Configuration.CustomerID, fields, this.importCollection);
                 Logger.WriteLine("User import task complete");
 
-                this.UserImportTaskComplete = true;
+                this.userImportTaskComplete = true;
 
                 lock (this.importCollection)
                 {
-                    if (this.UserImportTaskComplete && this.GroupImportTaskComplete && this.ContactsImportTaskComplete)
+                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
                     {
                         this.importCollection.CompleteAdding();
                     }
@@ -723,6 +721,8 @@ namespace Lithnet.GoogleApps.MA
         public void OpenPasswordConnection(KeyedCollection<string, ConfigParameter> configParameters, Partition partition)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
+            Logger.LogPath = this.Configuration.LogFilePath;
+
             ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
         }
 
