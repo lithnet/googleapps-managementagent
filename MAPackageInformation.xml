@@ -3,6 +3,6 @@
   <ma-internal-version>1</ma-internal-version>
   <ma-companyname>Lithnet</ma-companyname>
   <ma-subtype>G3</ma-subtype>
-  <ma-listname>GoogleApps</ma-listname>
-  <ma-help-text>Lithnet GoogleApps Management Agent</ma-help-text>
+  <ma-listname>Google Apps</ma-listname>
+  <ma-help-text>Lithnet Google Apps Management Agent</ma-help-text>
 </ma-customization-info>
