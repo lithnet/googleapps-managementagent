@@ -95,8 +95,15 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)
         {
+            AttributeChange existingChange = attributeChanges.FirstOrDefault(t => t.Name == attributeName);
+
             if (modificationType == AttributeModificationType.Delete)
             {
+                if (existingChange != null)
+                {
+                    attributeChanges.Remove(existingChange);
+                }
+
                 attributeChanges.Add(AttributeChange.CreateAttributeDelete(attributeName));
                 return;
             }
@@ -110,15 +117,30 @@ namespace Lithnet.GoogleApps.MA
             switch (modificationType)
             {
                 case AttributeModificationType.Add:
-                    adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
-                    if (adds.Count > 0)
+                    if (existingChange != null)
                     {
-                        attributeChanges.Add(AttributeChange.CreateAttributeAdd(attributeName, adds));
+                        foreach (ValueChange valueChange in changes.Where(t => t.ModificationType == ValueModificationType.Add))
+                        {
+                            existingChange.ValueChanges.Add(valueChange);
+                        }
                     }
+                    else
+                    {
+                        adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
 
+                        if (adds.Count > 0)
+                        {
+                            attributeChanges.Add(AttributeChange.CreateAttributeAdd(attributeName, adds));
+                        }
+                    }
                     break;
 
                 case AttributeModificationType.Replace:
+                    if (existingChange != null)
+                    {
+                        attributeChanges.Remove(existingChange);
+                    }
+
                     adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
                     if (adds.Count > 0)
                     {
@@ -128,11 +150,26 @@ namespace Lithnet.GoogleApps.MA
                     break;
 
                 case AttributeModificationType.Update:
-                    if (changes.Count > 0)
+                    if (existingChange != null)
                     {
-                        attributeChanges.Add(AttributeChange.CreateAttributeUpdate(attributeName, changes));
+                        if (existingChange.ModificationType != AttributeModificationType.Update)
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        foreach (ValueChange valueChange in changes)
+                        {
+                            existingChange.ValueChanges.Add(valueChange);
+                        }
                     }
-                    
+                    else
+                    {
+                        if (changes.Count > 0)
+                        {
+                            attributeChanges.Add(AttributeChange.CreateAttributeUpdate(attributeName, changes));
+                        }
+                    }
+
                     break;
 
                 case AttributeModificationType.Delete:
@@ -161,7 +198,7 @@ namespace Lithnet.GoogleApps.MA
                     membership = group.Membership;
                 }
             }
-            
+
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
             {
                 if (type.HasAttribute(typeDef.AttributeName))
@@ -271,7 +308,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-        
+
         private static bool ExistingMembershipRequiredForUpdate(CSEntryChange csentry)
         {
             return (

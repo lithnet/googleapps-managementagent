@@ -9,7 +9,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon />
     <AssemblyKeyContainerName />
-    <AssemblyName>Lithnet.GoogleAppsMA</AssemblyName>
+    <AssemblyName>Lithnet.GoogleApps.MA</AssemblyName>
     <AssemblyOriginatorKeyFile />
     <AssemblyOriginatorKeyMode>None</AssemblyOriginatorKeyMode>
     <DefaultClientScript>JScript</DefaultClientScript>
@@ -194,6 +194,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
+    <Content Include="ExportedMA.xml" />
+    <Content Include="Lithnet.GoogleApps.MA.PackagedMA.xml" />
+    <Content Include="MAPackageInformation.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\googleapps-client\Lithnet.GoogleApps.csproj">
@@ -203,7 +206,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent />
+    <PreBuildEvent>del $(ProjectDir)$(ProjectName).PackagedMA.xml /f
+"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\mapackager.exe" /e:$(ProjectDir)ExportedMA.xml /c:$(ProjectDir)MAPackageInformation.xml /o:$(ProjectDir)$(ProjectName).PackagedMA.xml</PreBuildEvent>
     <PostBuildEvent />
   </PropertyGroup>
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

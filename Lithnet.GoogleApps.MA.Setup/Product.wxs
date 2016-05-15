@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="*" 
+           Name="Lithnet GoogleApps Management Agent"
+           Language="1033"
+           Version="1.1.5979" 
+           Manufacturer="Lithnet" 
+           UpgradeCode="3410d571b358426281edb2990ae57cae">
+
+    <Package  InstallerVersion="200"
+              Compressed="yes"
+              InstallScope="perMachine"
+              InstallPrivileges="elevated"
+              Manufacturer="Lithnet" Platform="x64"/>
+    <Media Id="1" Cabinet="Cab1.cab" EmbedCab="yes" />
+    <MajorUpgrade Schedule="afterInstallExecute" DowngradeErrorMessage="A later version of [ProductName] is already installed" />
+
+    <!-- Prerequisites -->
+
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_45_OR_LATER_INSTALLED" />
+
+    <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again">
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_45_OR_LATER_INSTALLED]]>
+    </Condition>
+
+    <Property Id="FIMINSTALLDIR" Secure="yes">
+      <RegistrySearch Id="FimInstallDirFromRegistry" Root="HKLM" Key="SYSTEM\CurrentControlSet\services\FIMSynchronizationService\Parameters" Name="Path" Type="directory" />
+    </Property>
+
+    <Property Id="SYNCVERSION" Secure="yes">
+      <DirectorySearch Id="MiiserverVersion" Path="[FIMINSTALLDIR]">
+        <DirectorySearch Id="binFolder" AssignToProperty="no" Path="bin">
+          <FileSearch Name="miiserver.exe" MinVersion="4.1.3441.0" />
+        </DirectorySearch>
+      </DirectorySearch>
+    </Property>
+
+    <Condition Message="This application requires Microsoft Forefront Identity Manager 2010 R2 4.1.3441 or later to be installed">
+      <![CDATA[Installed OR SYNCVERSION]]>
+    </Condition>
+    
+    <!-- Installation Paths -->
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="FIMINSTALLDIR" ComponentGuidGenerationSeed="a8b2ba5aac4b4f878f02555da6fc1b0e">
+        <Directory Id="FIMEXTENSIONS" Name="Extensions" />
+        <Directory Id="FIMUISHELL" Name="UIShell">
+          <Directory Id="FIMXMLS" Name="XMLs">
+            <Directory Id="PACKAGEDMAS" Name="PackagedMAs" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!-- Features -->
+
+    <Feature Id="Ecma" Title="Lithnet GoogleApps MA" Level="1">
+      <ComponentGroupRef Id="ManagementAgent" />
+      <ComponentGroupRef Id="PackagedMA" />
+    </Feature>
+
+
+    <ComponentGroup Id="ManagementAgent" Directory="FIMEXTENSIONS">
+      <Component Id="cmp8a9e5af61c92140dc8ffe8d0c5582983e" Guid="*">
+        <File Id="fil5b9cfe4cd7264abeb19e2fe4d5072516" KeyPath="yes" Source="$(var.Lithnet.GoogleApps.MA.TargetDir)Lithnet.GoogleApps.MA.dll" />
+      </Component>
+      <Component Id="cmp98919d8ad8b843e78884dd1b2f9438f2" Guid="*">
+        <File Id="fil3f08b54124624891984b871ba9cf2a96" KeyPath="yes" Source="$(var.Lithnet.GoogleApps.MA.TargetDir)Lithnet.GoogleApps.MA.pdb" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="PackagedMA" Directory="PACKAGEDMAS">
+      <Component Id="cmpb07bbc05eebf498d96761ad9a3adbafd" Guid="*" >
+        <File Id="fil6995479451494f2b9b6076c0fd5061c9" KeyPath="yes" Source="$(var.Lithnet.GoogleApps.MA.ProjectDir)Lithnet.GoogleApps.MA.PackagedMA.xml" />
+      </Component>
+    </ComponentGroup>
+  </Product>
+</Wix>

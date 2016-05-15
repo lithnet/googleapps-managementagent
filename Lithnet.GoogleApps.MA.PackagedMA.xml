@@ -1,0 +1,1107 @@
+<export-ma>
+  <!--WARNING>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!
+!! The contents of this file should not be edited.
+!! Any such modifications to this file may result in errors during import.
+!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+</WARNING-->
+  <ma-data format="Packaged">
+    <format-version>1</format-version>
+    <internal-version>1</internal-version>
+    <ma-companyname>Lithnet</ma-companyname>
+    <subtype>G3 (Lithnet)</subtype>
+    <ma-listname>GoogleApps (Lithnet)</ma-listname>
+    <id>{20E66DBD-4729-4A71-8616-034B445E95A4}</id>
+    <category>Extensible2</category>
+    <password-sync-allowed>0</password-sync-allowed>
+    <schema>
+      <dsml:dsml xmlns:ms-dsml="http://www.microsoft.com/MMS/DSML" xmlns:dsml="http://www.dsml.org/DSML">
+        <dsml:directory-schema ms-dsml:no-objectclass-validation="true">
+          <dsml:class id="user" type="structural" ms-dsml:locked="1">
+            <dsml:name>user</dsml:name>
+            <dsml:attribute ref="#orgUnitPath" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#includeInGlobalAddressList" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#suspended" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#changePasswordAtNextLogin" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#ipWhitelisted" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#primaryEmail" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#isAdmin" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#isDelegatedAdmin" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#lastLoginTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#creationTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#deletionTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#agreedToTerms" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#suspensionReason" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#isMailboxSetup" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#thumbnailPhotoUrl" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#thumbnailPhotoEtag" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#customerId" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#name_givenName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#name_familyName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#notes_contentType" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#notes_value" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#aliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#nonEditableAliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#phones_work" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_name" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_title" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_department" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_symbol" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_location" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_description" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_domain" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_costCenter" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_sourceIsStructured" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_formatted" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_poBox" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_extendedAddress" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_streetAddress" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_locality" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_region" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_postalCode" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_country" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_countryCode" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#id" required="true" ms-dsml:isAnchor="true" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#export_password" required="false" />
+          </dsml:class>
+          <dsml:class id="group" type="structural" ms-dsml:locked="1">
+            <dsml:name>group</dsml:name>
+            <dsml:attribute ref="#adminCreated" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#description" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#primaryEmail" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#name" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#aliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#nonEditableAliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanJoin" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanViewMembership" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanViewGroup" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanInvite" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#allowExternalMembers" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanPostMessage" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#allowWebPosting" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#primaryLanguage" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#maxMessageBytes" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#isArchived" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#archiveOnly" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#messageModerationLevel" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#spamModerationLevel" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#replyTo" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#customReplyTo" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#sendMessageDenyNotification" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#defaultMessageDenyNotificationText" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#showInGroupDirectory" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#allowGoogleCommunication" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#membersCanPostAsTheGroup" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#messageDisplayFont" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#includeInGlobalAddressList" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanLeaveGroup" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#whoCanContactOwner" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#member" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#manager" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#owner" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#externalMember" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#externalManager" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#externalOwner" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#id" required="true" ms-dsml:isAnchor="true" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#export_password" required="false" />
+          </dsml:class>
+          <dsml:class id="contact" type="structural" ms-dsml:locked="1">
+            <dsml:name>contact</dsml:name>
+            <dsml:attribute ref="#occupation" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#billingInformation" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#birthday" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#directoryServer" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#initials" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#maidenName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#mileage" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#nickname" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#sensitivity" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#shortName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#subject" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#name_givenName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#name_familyName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#name_fullName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_name" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_title" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_department" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_symbol" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_location" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_jobDescription" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#email_work" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#phones_work" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#id" required="true" ms-dsml:isAnchor="true" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#export_password" required="false" />
+          </dsml:class>
+          <dsml:class id="advancedUser" type="structural" ms-dsml:locked="1">
+            <dsml:name>advancedUser</dsml:name>
+            <dsml:attribute ref="#orgUnitPath" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#includeInGlobalAddressList" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#suspended" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#changePasswordAtNextLogin" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#ipWhitelisted" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#primaryEmail" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#isAdmin" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#isDelegatedAdmin" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#lastLoginTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#creationTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#deletionTime" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#agreedToTerms" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#suspensionReason" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#isMailboxSetup" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#thumbnailPhotoUrl" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#thumbnailPhotoEtag" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#customerId" required="false" ms-dsml:isAnchor="false" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#name_givenName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#name_familyName" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#notes_contentType" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#notes_value" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#aliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#nonEditableAliases" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#phones_work" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_name" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_title" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_department" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_symbol" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_location" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_description" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_domain" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#organizations_work_costCenter" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_sourceIsStructured" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_formatted" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_poBox" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_extendedAddress" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_streetAddress" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_locality" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_region" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_postalCode" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_country" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#addresses_work_countryCode" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#delegate" required="false" ms-dsml:isAnchor="false" />
+            <dsml:attribute ref="#id" required="true" ms-dsml:isAnchor="true" ms-dsml:allowedOperation="ImportOnly" />
+            <dsml:attribute ref="#export_password" required="false" />
+          </dsml:class>
+          <dsml:attribute-type id="orgUnitPath" single-value="true">
+            <dsml:name>orgUnitPath</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="includeInGlobalAddressList" single-value="true">
+            <dsml:name>includeInGlobalAddressList</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="suspended" single-value="true">
+            <dsml:name>suspended</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="changePasswordAtNextLogin" single-value="true">
+            <dsml:name>changePasswordAtNextLogin</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="ipWhitelisted" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>ipWhitelisted</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="primaryEmail" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>primaryEmail</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="isAdmin" single-value="true">
+            <dsml:name>isAdmin</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="isDelegatedAdmin" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>isDelegatedAdmin</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="lastLoginTime" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>lastLoginTime</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="creationTime" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>creationTime</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="deletionTime" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>deletionTime</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="agreedToTerms" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>agreedToTerms</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="suspensionReason" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>suspensionReason</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="isMailboxSetup" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>isMailboxSetup</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="thumbnailPhotoUrl" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>thumbnailPhotoUrl</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="thumbnailPhotoEtag" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>thumbnailPhotoEtag</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="customerId" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>customerId</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="name_givenName" single-value="true">
+            <dsml:name>name_givenName</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="name_familyName" single-value="true">
+            <dsml:name>name_familyName</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="notes_contentType" single-value="true">
+            <dsml:name>notes_contentType</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="notes_value" single-value="true">
+            <dsml:name>notes_value</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="aliases" single-value="false">
+            <dsml:name>aliases</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="nonEditableAliases" single-value="false">
+            <dsml:name>nonEditableAliases</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="phones_work" single-value="true">
+            <dsml:name>phones_work</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_name" single-value="true">
+            <dsml:name>organizations_work_name</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_title" single-value="true">
+            <dsml:name>organizations_work_title</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_department" single-value="true">
+            <dsml:name>organizations_work_department</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_symbol" single-value="true">
+            <dsml:name>organizations_work_symbol</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_location" single-value="true">
+            <dsml:name>organizations_work_location</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_description" single-value="true">
+            <dsml:name>organizations_work_description</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_domain" single-value="true">
+            <dsml:name>organizations_work_domain</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_costCenter" single-value="true">
+            <dsml:name>organizations_work_costCenter</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_sourceIsStructured" single-value="true">
+            <dsml:name>addresses_work_sourceIsStructured</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_formatted" single-value="true">
+            <dsml:name>addresses_work_formatted</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_poBox" single-value="true">
+            <dsml:name>addresses_work_poBox</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_extendedAddress" single-value="true">
+            <dsml:name>addresses_work_extendedAddress</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_streetAddress" single-value="true">
+            <dsml:name>addresses_work_streetAddress</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_locality" single-value="true">
+            <dsml:name>addresses_work_locality</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_region" single-value="true">
+            <dsml:name>addresses_work_region</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_postalCode" single-value="true">
+            <dsml:name>addresses_work_postalCode</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_country" single-value="true">
+            <dsml:name>addresses_work_country</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="addresses_work_countryCode" single-value="true">
+            <dsml:name>addresses_work_countryCode</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="id" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>id</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="adminCreated" single-value="true" ms-dsml:immutable="true">
+            <dsml:name>adminCreated</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="description" single-value="true">
+            <dsml:name>description</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="name" single-value="true">
+            <dsml:name>name</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanJoin" single-value="true">
+            <dsml:name>whoCanJoin</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanViewMembership" single-value="true">
+            <dsml:name>whoCanViewMembership</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanViewGroup" single-value="true">
+            <dsml:name>whoCanViewGroup</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanInvite" single-value="true">
+            <dsml:name>whoCanInvite</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="allowExternalMembers" single-value="true">
+            <dsml:name>allowExternalMembers</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanPostMessage" single-value="true">
+            <dsml:name>whoCanPostMessage</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="allowWebPosting" single-value="true">
+            <dsml:name>allowWebPosting</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="primaryLanguage" single-value="true">
+            <dsml:name>primaryLanguage</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="maxMessageBytes" single-value="true">
+            <dsml:name>maxMessageBytes</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.27</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="isArchived" single-value="true">
+            <dsml:name>isArchived</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="archiveOnly" single-value="true">
+            <dsml:name>archiveOnly</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="messageModerationLevel" single-value="true">
+            <dsml:name>messageModerationLevel</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="spamModerationLevel" single-value="true">
+            <dsml:name>spamModerationLevel</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="replyTo" single-value="true">
+            <dsml:name>replyTo</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="customReplyTo" single-value="true">
+            <dsml:name>customReplyTo</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="sendMessageDenyNotification" single-value="true">
+            <dsml:name>sendMessageDenyNotification</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="defaultMessageDenyNotificationText" single-value="true">
+            <dsml:name>defaultMessageDenyNotificationText</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="showInGroupDirectory" single-value="true">
+            <dsml:name>showInGroupDirectory</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="allowGoogleCommunication" single-value="true">
+            <dsml:name>allowGoogleCommunication</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="membersCanPostAsTheGroup" single-value="true">
+            <dsml:name>membersCanPostAsTheGroup</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.7</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="messageDisplayFont" single-value="true">
+            <dsml:name>messageDisplayFont</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanLeaveGroup" single-value="true">
+            <dsml:name>whoCanLeaveGroup</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="whoCanContactOwner" single-value="true">
+            <dsml:name>whoCanContactOwner</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="member" single-value="false">
+            <dsml:name>member</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.12</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="manager" single-value="false">
+            <dsml:name>manager</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.12</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="owner" single-value="false">
+            <dsml:name>owner</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.12</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="externalMember" single-value="false">
+            <dsml:name>externalMember</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="externalManager" single-value="false">
+            <dsml:name>externalManager</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="externalOwner" single-value="false">
+            <dsml:name>externalOwner</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="occupation" single-value="true">
+            <dsml:name>occupation</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="billingInformation" single-value="true">
+            <dsml:name>billingInformation</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="birthday" single-value="true">
+            <dsml:name>birthday</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="directoryServer" single-value="true">
+            <dsml:name>directoryServer</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="initials" single-value="true">
+            <dsml:name>initials</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="maidenName" single-value="true">
+            <dsml:name>maidenName</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="mileage" single-value="true">
+            <dsml:name>mileage</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="nickname" single-value="true">
+            <dsml:name>nickname</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="sensitivity" single-value="true">
+            <dsml:name>sensitivity</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="shortName" single-value="true">
+            <dsml:name>shortName</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="subject" single-value="true">
+            <dsml:name>subject</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="name_fullName" single-value="true">
+            <dsml:name>name_fullName</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="organizations_work_jobDescription" single-value="true">
+            <dsml:name>organizations_work_jobDescription</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="email_work" single-value="true">
+            <dsml:name>email_work</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="delegate" single-value="false">
+            <dsml:name>delegate</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.12</dsml:syntax>
+          </dsml:attribute-type>
+          <dsml:attribute-type id="export_password" single-value="true" ms-dsml:encrypted="true" ms-dsml:export-only="true">
+            <dsml:name>export_password</dsml:name>
+            <dsml:syntax>1.3.6.1.4.1.1466.115.121.1.15</dsml:syntax>
+          </dsml:attribute-type>
+        </dsml:directory-schema>
+      </dsml:dsml>
+    </schema>
+    <attribute-inclusion>
+    </attribute-inclusion>
+    <stay-disconnector />
+    <join />
+    <projection />
+    <export-attribute-flow />
+    <extension />
+    <controller-configuration>
+      <application-architecture>process</application-architecture>
+    </controller-configuration>
+    <ma-ui-settings>
+      <account-joiner-queries>
+        <attributes>
+        </attributes>
+        <filters max_mv_search_results="">
+        </filters>
+      </account-joiner-queries>
+    </ma-ui-settings>
+    <private-configuration>
+      <MAConfig>
+        <ui-data>
+          <xmlwizard>
+            <properties>
+              <sample_file>
+              </sample_file>
+              <code_page_description>
+              </code_page_description>
+            </properties>
+            <partitions>
+            </partitions>
+            <primary_class_mappings>
+            </primary_class_mappings>
+            <object_classes>
+            </object_classes>
+            <attributes>
+            </attributes>
+            <anchor>
+              <attribute object_class="advancedUser">id</attribute>
+              <attribute object_class="contact">id</attribute>
+              <attribute object_class="group">id</attribute>
+              <attribute object_class="user">id</attribute>
+            </anchor>
+          </xmlwizard>
+          <ma-help-text>Lithnet GoogleApps Management Agent</ma-help-text>
+        </ui-data>
+        <importing>
+        </importing>
+        <exporting>
+        </exporting>
+        <ldap-dn>0</ldap-dn>
+        <change_type_attribute>
+        </change_type_attribute>
+        <add_change_type_value>Add</add_change_type_value>
+        <modify_change_type_value>Modify</modify_change_type_value>
+        <delete_change_type_value>Delete</delete_change_type_value>
+        <primary_class_mappings>
+        </primary_class_mappings>
+        <enable-unapplied-merge>0</enable-unapplied-merge>
+        <password-extension-config>
+          <password-extension-enabled>0</password-extension-enabled>
+          <dll data-owner="ISV">
+          </dll>
+          <password-set-enabled>
+          </password-set-enabled>
+          <password-change-enabled>
+          </password-change-enabled>
+          <connection-info>
+            <connect-to>
+            </connect-to>
+            <user>
+            </user>
+          </connection-info>
+          <timeout>
+          </timeout>
+        </password-extension-config>
+        <file-type>Extensible2</file-type>
+        <extension-config>
+          <filename data-owner="ISV">Lithnet.GoogleApps.MA.dll</filename>
+          <import-default-page-size>100</import-default-page-size>
+          <import-max-page-size>9999</import-max-page-size>
+          <export-default-page-size>100</export-default-page-size>
+          <export-max-page-size>9999</export-max-page-size>
+          <export-mode data-owner="ISV">call-based</export-mode>
+          <import-mode>call-based</import-mode>
+          <export-enabled data-owner="ISV">1</export-enabled>
+          <import-enabled data-owner="ISV">1</import-enabled>
+          <discovery-partition>
+          </discovery-partition>
+          <discovery-schema>extensibility</discovery-schema>
+          <discovery-hierarchy>
+          </discovery-hierarchy>
+          <password-management-enabled>
+          </password-management-enabled>
+          <assembly-version>1.0.5978.26289</assembly-version>
+          <supports-parameters-ex>1</supports-parameters-ex>
+          <export-type>1</export-type>
+          <capability-bits>2147883568</capability-bits>
+        </extension-config>
+        <parameter-definitions refreshSchema="0" refreshPartition="0" refreshConnectivityParameters="0" refreshSchemaParameters="0" refreshCapabilitiesParameters="0" refreshGlobalParameters="0" refreshOtherParameters="0">
+          <parameter>
+            <name>
+            </name>
+            <use>connectivity</use>
+            <type>label</type>
+            <validation>
+            </validation>
+            <text>Credentials</text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Customer ID</name>
+            <use>connectivity</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>my_customer</default-value>
+          </parameter>
+          <parameter>
+            <name>Primary domain</name>
+            <use>connectivity</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Service account email address</name>
+            <use>connectivity</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>User email address</name>
+            <use>connectivity</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Key file (p12)</name>
+            <use>connectivity</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Key file password</name>
+            <use>connectivity</use>
+            <type>encrypted-string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>User regex email address filter</name>
+            <use>global</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Group regex email address filter</name>
+            <use>global</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Contact regex email address filter</name>
+            <use>global</use>
+            <type>string</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Exclude user-created groups</name>
+            <use>global</use>
+            <type>checkbox</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>0</default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>label</type>
+            <validation>
+            </validation>
+            <text>The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line. For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home</text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Phones fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Organizations fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>IM Address fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>External IDs fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Relations fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Addresses fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Email fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Websites fixed types</name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>text</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>
+            </name>
+            <use>schema</use>
+            <page-number>1</page-number>
+            <type>divider</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>
+            </default-value>
+          </parameter>
+          <parameter>
+            <name>Do not save delta data on export</name>
+            <use>run-step</use>
+            <type>checkbox</type>
+            <validation>
+            </validation>
+            <text>
+            </text>
+            <default-value>0</default-value>
+          </parameter>
+        </parameter-definitions>
+        <parameter-values>
+        </parameter-values>
+        <default_visible_attributes>
+          <attribute>orgUnitPath</attribute>
+          <attribute>includeInGlobalAddressList</attribute>
+          <attribute>suspended</attribute>
+          <attribute>changePasswordAtNextLogin</attribute>
+          <attribute>ipWhitelisted</attribute>
+          <attribute>id</attribute>
+          <attribute>primaryEmail</attribute>
+          <attribute>isAdmin</attribute>
+          <attribute>isDelegatedAdmin</attribute>
+          <attribute>lastLoginTime</attribute>
+          <attribute>creationTime</attribute>
+          <attribute>deletionTime</attribute>
+          <attribute>agreedToTerms</attribute>
+          <attribute>suspensionReason</attribute>
+          <attribute>isMailboxSetup</attribute>
+          <attribute>thumbnailPhotoUrl</attribute>
+          <attribute>thumbnailPhotoEtag</attribute>
+          <attribute>customerId</attribute>
+          <attribute>name_givenName</attribute>
+          <attribute>name_familyName</attribute>
+          <attribute>notes_contentType</attribute>
+          <attribute>notes_value</attribute>
+          <attribute>aliases</attribute>
+          <attribute>nonEditableAliases</attribute>
+          <attribute>phones_work</attribute>
+          <attribute>organizations_work_name</attribute>
+          <attribute>organizations_work_title</attribute>
+          <attribute>organizations_work_department</attribute>
+          <attribute>organizations_work_symbol</attribute>
+          <attribute>organizations_work_location</attribute>
+          <attribute>organizations_work_description</attribute>
+          <attribute>organizations_work_domain</attribute>
+          <attribute>organizations_work_costCenter</attribute>
+          <attribute>addresses_work_sourceIsStructured</attribute>
+          <attribute>addresses_work_formatted</attribute>
+          <attribute>addresses_work_poBox</attribute>
+          <attribute>addresses_work_extendedAddress</attribute>
+          <attribute>addresses_work_streetAddress</attribute>
+          <attribute>addresses_work_locality</attribute>
+          <attribute>addresses_work_region</attribute>
+          <attribute>addresses_work_postalCode</attribute>
+          <attribute>addresses_work_country</attribute>
+          <attribute>addresses_work_countryCode</attribute>
+          <attribute>adminCreated</attribute>
+          <attribute>description</attribute>
+          <attribute>name</attribute>
+          <attribute>whoCanJoin</attribute>
+          <attribute>whoCanViewMembership</attribute>
+          <attribute>whoCanViewGroup</attribute>
+          <attribute>whoCanInvite</attribute>
+          <attribute>allowExternalMembers</attribute>
+          <attribute>whoCanPostMessage</attribute>
+          <attribute>allowWebPosting</attribute>
+          <attribute>primaryLanguage</attribute>
+          <attribute>maxMessageBytes</attribute>
+          <attribute>isArchived</attribute>
+          <attribute>archiveOnly</attribute>
+          <attribute>messageModerationLevel</attribute>
+          <attribute>spamModerationLevel</attribute>
+          <attribute>replyTo</attribute>
+          <attribute>customReplyTo</attribute>
+          <attribute>sendMessageDenyNotification</attribute>
+          <attribute>defaultMessageDenyNotificationText</attribute>
+          <attribute>showInGroupDirectory</attribute>
+          <attribute>allowGoogleCommunication</attribute>
+          <attribute>membersCanPostAsTheGroup</attribute>
+          <attribute>messageDisplayFont</attribute>
+          <attribute>whoCanLeaveGroup</attribute>
+          <attribute>whoCanContactOwner</attribute>
+          <attribute>member</attribute>
+          <attribute>manager</attribute>
+          <attribute>owner</attribute>
+          <attribute>externalMember</attribute>
+          <attribute>externalManager</attribute>
+          <attribute>externalOwner</attribute>
+          <attribute>occupation</attribute>
+          <attribute>billingInformation</attribute>
+          <attribute>birthday</attribute>
+          <attribute>directoryServer</attribute>
+          <attribute>initials</attribute>
+          <attribute>maidenName</attribute>
+          <attribute>mileage</attribute>
+          <attribute>nickname</attribute>
+          <attribute>sensitivity</attribute>
+          <attribute>shortName</attribute>
+          <attribute>subject</attribute>
+          <attribute>name_fullName</attribute>
+          <attribute>organizations_work_jobDescription</attribute>
+          <attribute>email_work</attribute>
+          <attribute>delegate</attribute>
+        </default_visible_attributes>
+      </MAConfig>
+    </private-configuration>
+    <SyncConfig-refresh-schema>0</SyncConfig-refresh-schema>
+    <ma-partition-data>
+    </ma-partition-data>
+    <ma-run-data>
+    </ma-run-data>
+    <capabilities-mask>80061a31</capabilities-mask>
+    <export-type>1</export-type>
+    <dn-construction />
+    <password-sync>
+      <maximum-retry-count>10</maximum-retry-count>
+      <retry-interval>60</retry-interval>
+      <allow-low-security>0</allow-low-security>
+    </password-sync>
+    <component_mappings />
+  </ma-data>
+  <mv-data>
+    <import-attribute-flow />
+  </mv-data>
+</export-ma>
