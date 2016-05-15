@@ -17,9 +17,15 @@ namespace Lithnet.GoogleApps.MA
 
         private static RNGCryptoServiceProvider cryptoProvider = new RNGCryptoServiceProvider();
 
-        public ApiInterfaceUser()
+        protected string objectClass;
+
+        protected MASchemaType SchemaType { get; set; }
+
+        public ApiInterfaceUser(MASchemaType type)
         {
             this.InternalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
+            this.objectClass = SchemaConstants.User;
+            this.SchemaType = type;
         }
 
         public virtual string Api => "user";
@@ -38,7 +44,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName),
+                    Id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName),
                     PrimaryEmail = csentry.DN
                 };
             }
@@ -72,7 +78,7 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
                 {
@@ -91,7 +97,7 @@ namespace Lithnet.GoogleApps.MA
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
-                    string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName);
+                    string id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName);
 
                     if (patch)
                     {
@@ -109,14 +115,13 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
                 foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
                 {
-                    changes.RemoveAll(t => t.Name == c.Name);
                     changes.Add(c);
                 }
             }
@@ -126,9 +131,21 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
+            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+
+            foreach (IApiInterface i in this.InternalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+            }
+
+            return attributeChanges;
+        }
+
+        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.User].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, source))
                 {
@@ -138,12 +155,6 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
             }
-
-            foreach (IApiInterface i in this.InternalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
-            }
-
             return attributeChanges;
         }
 

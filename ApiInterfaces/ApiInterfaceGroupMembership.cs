@@ -106,19 +106,33 @@ namespace Lithnet.GoogleApps.MA
                 return;
             }
 
+            IList<object> adds;
             switch (modificationType)
             {
                 case AttributeModificationType.Add:
-                    attributeChanges.Add(AttributeChange.CreateAttributeAdd(attributeName, changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList()));
+                    adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
+                    if (adds.Count > 0)
+                    {
+                        attributeChanges.Add(AttributeChange.CreateAttributeAdd(attributeName, adds));
+                    }
+
                     break;
 
                 case AttributeModificationType.Replace:
-                    attributeChanges.Add(AttributeChange.CreateAttributeReplace(attributeName, changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList()));
+                    adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
+                    if (adds.Count > 0)
+                    {
+                        attributeChanges.Add(AttributeChange.CreateAttributeReplace(attributeName, adds));
+                    }
+
                     break;
 
                 case AttributeModificationType.Update:
-                    attributeChanges.Add(AttributeChange.CreateAttributeUpdate(attributeName, changes));
-
+                    if (changes.Count > 0)
+                    {
+                        attributeChanges.Add(AttributeChange.CreateAttributeUpdate(attributeName, changes));
+                    }
+                    
                     break;
 
                 case AttributeModificationType.Delete:

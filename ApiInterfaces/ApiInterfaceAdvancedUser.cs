@@ -12,9 +12,11 @@ namespace Lithnet.GoogleApps.MA
 
     internal class ApiInterfaceAdvancedUser : ApiInterfaceUser
     {
-        public ApiInterfaceAdvancedUser()
+        public ApiInterfaceAdvancedUser(MASchemaType type)
+            :base (type)
         {
             this.InternalInterfaces.Add(new ApiInterfaceUserDelegates());
+            this.objectClass = SchemaConstants.AdvancedUser;
         }
 
         public override object CreateInstance(CSEntryChange csentry)
@@ -40,7 +42,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName)
+                    Id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName)
                 };
             }
         }
