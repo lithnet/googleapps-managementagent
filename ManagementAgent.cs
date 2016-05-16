@@ -96,21 +96,25 @@ namespace Lithnet.GoogleApps.MA
         public void OpenExportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
+            this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
+
             Logger.LogPath = this.Configuration.LogFilePath;
             Logger.WriteLine("Opening export connection");
+
             this.timer = new Stopwatch();
-            
+
+            ConnectionPools.InitializePools(this.Configuration.Credentials,
+             this.Configuration.ExportThreadCount,
+             this.Configuration.ExportThreadCount,
+             this.Configuration.EmailSettingsServicePoolSize,
+             this.Configuration.ContactsServicePoolSize);
+
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
             this.exportRunStep = exportRunStep;
             this.operationSchemaTypes = types;
-            this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
             
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
-            ConnectionPools.InitializePools(this.Configuration.Credentials,
-               this.Configuration.ExportThreadCount,
-               this.Configuration.ExportThreadCount,
-               this.Configuration.EmailSettingsServicePoolSize,
-               this.Configuration.ContactsServicePoolSize);
+          
 
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             this.timer.Start();
