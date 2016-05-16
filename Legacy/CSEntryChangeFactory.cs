@@ -16,64 +16,64 @@ namespace Lithnet.GoogleApps.MA
 {
     internal static class CSEntryChangeFactory
     {
-        public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
-        {
-            try
-            {
-                switch (csentry.ObjectType)
-                {
-                    case SchemaConstants.User:
-                        return CSEntryChangeFactoryUser.PutCSEntryChangeUser(csentry, config, type);
+        //public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, IManagementAgentParameters config, SchemaType type)
+        //{
+        //    try
+        //    {
+        //        switch (csentry.ObjectType)
+        //        {
+        //            case SchemaConstants.User:
+        //                return CSEntryChangeFactoryUser.PutCSEntryChangeUser(csentry, config, type);
 
-                    case "group":
-                        return CSEntryChangeFactoryGroup.PutCSEntryChangeGroup(csentry, config, type);
+        //            case "group":
+        //                return CSEntryChangeFactoryGroup.PutCSEntryChangeGroup(csentry, config, type);
 
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-            catch (Google.GoogleApiException ex)
-            {
-                string errortype = ex.Message;
-                string detail = ex.StackTrace;
-                Logger.WriteException(ex);
+        //            default:
+        //                throw new InvalidOperationException();
+        //        }
+        //    }
+        //    catch (Google.GoogleApiException ex)
+        //    {
+        //        string errortype = ex.Message;
+        //        string detail = ex.StackTrace;
+        //        Logger.WriteException(ex);
 
-                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorConnectedDirectoryMissingObject, errortype, detail);
-                }
-                else if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorPermissionIssue, errortype, detail);
-                }
-                else
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, errortype, detail);
-                }
-            }
-        }
+        //        if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+        //        {
+        //            return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorConnectedDirectoryMissingObject, errortype, detail);
+        //        }
+        //        else if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+        //        {
+        //            return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorPermissionIssue, errortype, detail);
+        //        }
+        //        else
+        //        {
+        //            return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, errortype, detail);
+        //        }
+        //    }
+        //}
 
-        internal static void SetDeltaDNOnRename(CSEntryChange csentry, CSEntryChange deltaCSEntry)
-        {
-            switch (csentry.ObjectModificationType)
-            {
-                case ObjectModificationType.Add:
-                case ObjectModificationType.Delete:
-                    deltaCSEntry.DN = csentry.DN;
-                    break;
+        //internal static void SetDeltaDNOnRename(CSEntryChange csentry, CSEntryChange deltaCSEntry)
+        //{
+        //    switch (csentry.ObjectModificationType)
+        //    {
+        //        case ObjectModificationType.Add:
+        //        case ObjectModificationType.Delete:
+        //            deltaCSEntry.DN = csentry.DN;
+        //            break;
 
-                case ObjectModificationType.Replace:
-                case ObjectModificationType.Update:
-                    string newDN = csentry.GetNewDNOrDefault<string>();
+        //        case ObjectModificationType.Replace:
+        //        case ObjectModificationType.Update:
+        //            string newDN = csentry.GetNewDNOrDefault<string>();
 
-                    deltaCSEntry.DN = newDN ?? csentry.DN;
-                    break;
+        //            deltaCSEntry.DN = newDN ?? csentry.DN;
+        //            break;
 
-                case ObjectModificationType.Unconfigured:
-                case ObjectModificationType.None:
-                default:
-                    throw new InvalidOperationException("Unsupported or unknown modification type");
-            }
-        }
+        //        case ObjectModificationType.Unconfigured:
+        //        case ObjectModificationType.None:
+        //        default:
+        //            throw new InvalidOperationException("Unsupported or unknown modification type");
+        //    }
+        //}
     }
 }

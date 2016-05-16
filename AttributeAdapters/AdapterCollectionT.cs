@@ -36,6 +36,8 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsReadOnly { get; set; }
 
+        public bool IsAnchor => false;
+
         public bool CanProcessAttribute(string attribute)
         {
             return this.AttributeName == attribute;

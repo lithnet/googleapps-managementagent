@@ -144,6 +144,11 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
+                if (typeDef.IsAnchor)
+                {
+                    continue;
+                }
+                
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, googleGroup.Group))
                 {
                     if (type.HasAttribute(change.Name))

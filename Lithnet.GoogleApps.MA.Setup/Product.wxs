@@ -5,13 +5,13 @@
            Language="1033"
            Version="1.1.5980" 
            Manufacturer="Lithnet" 
-           UpgradeCode="3410d571b358426281edb2990ae57cae">
+           UpgradeCode="3410d571b358426281edb2990ae57cae" >
 
     <Package  InstallerVersion="200"
               Compressed="yes"
               InstallScope="perMachine"
               InstallPrivileges="elevated"
-              Manufacturer="Lithnet" Platform="x64"/>
+              Manufacturer="Lithnet" Platform="x64" />
     <Media Id="1" Cabinet="Cab1.cab" EmbedCab="yes" />
     <MajorUpgrade Schedule="afterInstallExecute" DowngradeErrorMessage="A later version of [ProductName] is already installed" />
 

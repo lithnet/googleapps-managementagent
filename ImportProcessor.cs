@@ -8,6 +8,7 @@ namespace Lithnet.GoogleApps.MA
 {
     using System.Diagnostics.Tracing;
     using ManagedObjects;
+    using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
 
     internal static class ImportProcessor
@@ -19,6 +20,14 @@ namespace Lithnet.GoogleApps.MA
             CSEntryChange csentry = CSEntryChange.Create();
             csentry.ObjectModificationType = ObjectModificationType.Add;
             csentry.ObjectType = type.Name;
+            string anchorValue = maType.ApiInterface.GetAnchorValue(source);
+
+            if (anchorValue == null)
+            {
+                throw new AttributeNotPresentException(maType.AnchorAttributeName);
+            }
+
+            csentry.CreateAttributeAdd(maType.AnchorAttributeName, anchorValue);
 
             try
             {

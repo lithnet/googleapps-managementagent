@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using System.Diagnostics.CodeAnalysis;
     using Google.Contacts;
     using Google.GData.Contacts;
     using Google.GData.Extensions;
@@ -15,6 +16,8 @@ namespace Lithnet.GoogleApps.MA
     internal class ApiInterfaceContact : IApiInterfaceObject
     {
         internal const string DNAttributeName = "lithnet-google-ma-dn";
+
+        [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
         private static ApiInterfaceKeyedCollection internalInterfaces;
 
         private string domain;
@@ -145,6 +148,11 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
             {
+                if (typeDef.IsAnchor)
+                {
+                    continue;
+                }
+
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, entry))
                 {
                     if (type.HasAttribute(change.Name))

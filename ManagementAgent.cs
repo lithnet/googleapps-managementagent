@@ -135,7 +135,8 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteSeparatorLine('-');
                     Logger.WriteLine("Starting export {0} for user {1}", csentry.ObjectModificationType, csentry.DN);
                     SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
-                    CSEntryChangeResult result = CSEntryChangeFactory.PutCSEntryChange(csentry, this.Configuration, type);
+
+                    CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type);
                     lock (results)
                     {
                         results.CSEntryChangeResults.Add(result);

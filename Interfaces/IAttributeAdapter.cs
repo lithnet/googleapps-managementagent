@@ -17,6 +17,8 @@
 
         bool IsReadOnly { get; }
 
+        bool IsAnchor { get; }
+
         bool CanProcessAttribute(string attribute);
 
         bool UpdateField(CSEntryChange csentry, object obj);

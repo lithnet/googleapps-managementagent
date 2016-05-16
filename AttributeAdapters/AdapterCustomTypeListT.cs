@@ -34,6 +34,8 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsReadOnly { get; set; }
 
+        public bool IsAnchor => false;
+
         public bool IsPrimaryCandidateType { get; set; }
 
         private IList<AdapterPropertyValue> attributes;
