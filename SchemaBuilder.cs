@@ -73,7 +73,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.ApiInterface = new ApiInterfaceContact(config.Domain, type);
-            
+
             AdapterPropertyValue occupation = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -562,7 +562,8 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 CanPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
             type.Attributes.Add(includeInGal);
@@ -578,7 +579,8 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 CanPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
             type.Attributes.Add(suspended);
@@ -594,7 +596,8 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 CanPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
             type.Attributes.Add(changePasswordAtNextLogin);
@@ -609,7 +612,8 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IpWhitelisted",
                 Api = "user",
                 CanPatch = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
             type.Attributes.Add(ipWhitelisted);
@@ -656,10 +660,11 @@ namespace Lithnet.GoogleApps.MA
                 Api = "usermakeadmin",
                 CanPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
+        };
 
-            type.Attributes.Add(isAdmin);
+        type.Attributes.Add(isAdmin);
 
             AdapterPropertyValue isDelegatedAdmin = new AdapterPropertyValue
             {
@@ -671,10 +676,11 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsDelegatedAdmin",
                 Api = "user",
                 CanPatch = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isDelegatedAdmin);
+        type.Attributes.Add(isDelegatedAdmin);
 
             AdapterPropertyValue lastLoginTime = new AdapterPropertyValue
             {
@@ -689,7 +695,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(lastLoginTime);
+        type.Attributes.Add(lastLoginTime);
 
             AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
@@ -704,7 +710,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(creationTime);
+        type.Attributes.Add(creationTime);
 
             AdapterPropertyValue deletionTime = new AdapterPropertyValue
             {
@@ -719,7 +725,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(deletionTime);
+        type.Attributes.Add(deletionTime);
 
             AdapterPropertyValue agreedToTerms = new AdapterPropertyValue
             {
@@ -731,10 +737,11 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AgreedToTerms",
                 Api = "user",
                 CanPatch = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(agreedToTerms);
+        type.Attributes.Add(agreedToTerms);
 
             AdapterPropertyValue suspensionReason = new AdapterPropertyValue
             {
@@ -749,7 +756,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(suspensionReason);
+        type.Attributes.Add(suspensionReason);
 
             AdapterPropertyValue isMailboxSetup = new AdapterPropertyValue
             {
@@ -761,10 +768,11 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsMailboxSetup",
                 Api = "user",
                 CanPatch = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isMailboxSetup);
+        type.Attributes.Add(isMailboxSetup);
 
             AdapterPropertyValue thumbnailPhotoUrl = new AdapterPropertyValue
             {
@@ -779,7 +787,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(thumbnailPhotoUrl);
+        type.Attributes.Add(thumbnailPhotoUrl);
 
             AdapterPropertyValue thumbnailPhotoEtag = new AdapterPropertyValue
             {
@@ -794,7 +802,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(thumbnailPhotoEtag);
+        type.Attributes.Add(thumbnailPhotoEtag);
 
             AdapterPropertyValue customerId = new AdapterPropertyValue
             {
@@ -809,7 +817,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(customerId);
+        type.Attributes.Add(customerId);
 
             SchemaBuilder.AddUserNames(type);
             SchemaBuilder.AddUserNotes(type);
@@ -825,1166 +833,1175 @@ namespace Lithnet.GoogleApps.MA
             return type;
         }
 
-        public static MASchemaType GetAdvancedUserSchema(IManagementAgentParameters config)
+    public static MASchemaType GetAdvancedUserSchema(IManagementAgentParameters config)
+    {
+        MASchemaType userType = SchemaBuilder.GetUserSchema(config);
+        userType.Name = SchemaConstants.AdvancedUser;
+        userType.ApiInterface = new ApiInterfaceAdvancedUser(userType);
+
+        AdapterCollection<string> delegates = new AdapterCollection<string>
         {
-            MASchemaType userType = SchemaBuilder.GetUserSchema(config);
-            userType.Name = SchemaConstants.AdvancedUser;
-            userType.ApiInterface = new ApiInterfaceAdvancedUser(userType);
-
-            AdapterCollection<string> delegates = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = null,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "delegate",
-                PropertyName = "Delegates",
-                Api = "userdelegates",
-                CanPatch = true,
-            };
-
-            userType.Attributes.Add(delegates);
-
-            return userType;
-        }
-
-        public static MASchemaType GetGroupSchema()
-        {
-            MASchemaType type = new MASchemaType
-            {
-                Attributes = new List<IAttributeAdapter>(),
-                Name = "group",
-                AnchorAttributeName = "id",
-                CanPatch = true,
-            };
-
-            type.ApiInterface = new ApiInterfaceGroup(type);
-
-            AdapterPropertyValue adminCreated = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "adminCreated",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "adminCreated",
-                PropertyName = "AdminCreated",
-                Api = "group",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(adminCreated);
-
-            AdapterPropertyValue description = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "description",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "description",
-                PropertyName = "Description",
-                Api = "group",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false,
-                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i
-            };
-
-            type.Attributes.Add(description);
-
-            AdapterPropertyValue email = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "email",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "primaryEmail",
-                PropertyName = "Email",
-                Api = "group",
-                CanPatch = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(email);
-
-            AdapterPropertyValue id = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "id",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Id",
-                Api = "group",
-                CanPatch = true,
-                IsAnchor = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(id);
-
-            AdapterPropertyValue name = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "name",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "name",
-                PropertyName = "Name",
-                Api = "group",
-                CanPatch = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(name);
-
-            SchemaBuilder.AddGroupAliases(type);
-            SchemaBuilder.AddGroupSettings(type);
-            SchemaBuilder.AddGroupMembers(type);
-            return type;
-        }
-
-        private static void AddGroupMembers(MASchemaType type)
-        {
-            AdapterCollection<string> members = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "member",
-                PropertyName = "Members",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(members);
-
-            AdapterCollection<string> managers = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "manager",
-                PropertyName = "Managers",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(managers);
-
-            AdapterCollection<string> owners = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "owner",
-                PropertyName = "Owners",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(owners);
-
-            AdapterCollection<string> externalMembers = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalMember",
-                PropertyName = "ExternalMembers",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(externalMembers);
-
-            AdapterCollection<string> externalManagers = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalManager",
-                PropertyName = "ExternalManagers",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(externalManagers);
-
-            AdapterCollection<string> externalOwners = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "email",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalOwner",
-                PropertyName = "ExternalOwners",
-                Api = "groupmembership",
-                CanPatch = true,
-            };
-
-            type.Attributes.Add(externalOwners);
-        }
-
-        private static void AddGroupSettings(MASchemaType type)
-        {
-            AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanJoin",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanJoin",
-                PropertyName = "WhoCanJoin",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanJoin);
-
-            AdapterPropertyValue whoCanViewMembership = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanViewMembership",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanViewMembership",
-                PropertyName = "WhoCanViewMembership",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanViewMembership);
-
-            AdapterPropertyValue whoCanViewGroup = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanViewGroup",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanViewGroup",
-                PropertyName = "WhoCanViewGroup",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanViewGroup);
-
-            AdapterPropertyValue whoCanInvite = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanInvite",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanInvite",
-                PropertyName = "WhoCanInvite",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanInvite);
-
-            //MASchemaAttribute whoCanAdd = new MASchemaAttribute
-            //{
-            //    AttributeType = AttributeType.String,
-            //    FieldName = "whoCanAdd",
-            //    IsMultivalued = false,
-            //    Operation = AttributeOperation.ImportExport,
-            //    AttributeName = "whoCanAdd",
-            //    PropertyName = "WhoCanAdd",
-            //    Api = "groupsettings",
-            //    CanPatch = true,
-            //    IsArrayAttribute = false
-            //};
-            //
-            //type.Attributes.Add(whoCanAdd);
-
-            AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "allowExternalMembers",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowExternalMembers",
-                PropertyName = "AllowExternalMembers",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(allowExternalMembers);
-
-            AdapterPropertyValue whoCanPostMessage = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanPostMessage",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanPostMessage",
-                PropertyName = "WhoCanPostMessage",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanPostMessage);
-
-            AdapterPropertyValue allowWebPosting = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "allowWebPosting",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowWebPosting",
-                PropertyName = "AllowWebPosting",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(allowWebPosting);
-
-            AdapterPropertyValue primaryLanguage = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "primaryLanguage",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "primaryLanguage",
-                PropertyName = "PrimaryLanguage",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(primaryLanguage);
-
-            AdapterPropertyValue maxMessageBytes = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Integer,
-                FieldName = "maxMessageBytes",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "maxMessageBytes",
-                PropertyName = "MaxMessageBytes",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(maxMessageBytes);
-
-            AdapterPropertyValue isArchived = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "isArchived",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "isArchived",
-                PropertyName = "IsArchived",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(isArchived);
-
-
-            AdapterPropertyValue archiveOnly = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "archiveOnly",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "archiveOnly",
-                PropertyName = "ArchiveOnly",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(archiveOnly);
-
-            AdapterPropertyValue messageModerationLevel = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "messageModerationLevel",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "messageModerationLevel",
-                PropertyName = "MessageModerationLevel",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(messageModerationLevel);
-
-
-            AdapterPropertyValue spamModerationLevel = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "spamModerationLevel",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "spamModerationLevel",
-                PropertyName = "SpamModerationLevel",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(spamModerationLevel);
-
-            AdapterPropertyValue replyTo = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "replyTo",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "replyTo",
-                PropertyName = "ReplyTo",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(replyTo);
-
-            AdapterPropertyValue customReplyTo = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "customReplyTo",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "customReplyTo",
-                PropertyName = "CustomReplyTo",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(customReplyTo);
-
-            AdapterPropertyValue sendMessageDenyNotification = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "sendMessageDenyNotification",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "sendMessageDenyNotification",
-                PropertyName = "SendMessageDenyNotification",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(sendMessageDenyNotification);
-
-
-            AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "defaultMessageDenyNotificationText",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "defaultMessageDenyNotificationText",
-                PropertyName = "DefaultMessageDenyNotificationText",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(defaultMessageDenyNotificationText);
-
-            AdapterPropertyValue showInGroupDirectory = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "showInGroupDirectory",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "showInGroupDirectory",
-                PropertyName = "ShowInGroupDirectory",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(showInGroupDirectory);
-
-
-            AdapterPropertyValue allowGoogleCommunication = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "allowGoogleCommunication",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowGoogleCommunication",
-                PropertyName = "AllowGoogleCommunication",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(allowGoogleCommunication);
-
-            AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "membersCanPostAsTheGroup",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "membersCanPostAsTheGroup",
-                PropertyName = "MembersCanPostAsTheGroup",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(membersCanPostAsTheGroup);
-
-            AdapterPropertyValue messageDisplayFont = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "messageDisplayFont",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "messageDisplayFont",
-                PropertyName = "MessageDisplayFont",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(messageDisplayFont);
-
-            AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "includeInGlobalAddressList",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "includeInGlobalAddressList",
-                PropertyName = "IncludeInGlobalAddressList",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(includeInGlobalAddressList);
-
-            AdapterPropertyValue whoCanLeaveGroup = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanLeaveGroup",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanLeaveGroup",
-                PropertyName = "WhoCanLeaveGroup",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanLeaveGroup);
-
-
-            AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanContactOwner",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanContactOwner",
-                PropertyName = "WhoCanContactOwner",
-                Api = "groupsettings",
-                CanPatch = true,
-                UseNullPlaceHolder = true,
-                IsArrayAttribute = false
-            };
-
-            type.Attributes.Add(whoCanContactOwner);
-        }
-
-        private static void AddUserNames(MASchemaType type)
-        {
-            AdapterSubfield givenName = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "givenName",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "GivenName",
-                AttributeNamePart = "givenName"
-            };
-
-            AdapterSubfield familyName = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "familyName",
-                IsMultivalued = false,
-                PropertyName = "FamilyName",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "familyName"
-            };
-
-            AdapterNestedType schemaItem = new AdapterNestedType
-            {
-                Api = "user",
-                AttributeName = "name",
-                Fields = new List<AdapterSubfield>() { givenName, familyName },
-                FieldName = "name",
-                PropertyName = "Name",
-                CanPatch = false
-            };
-
-            type.Attributes.Add(schemaItem);
-        }
-
-        private static void AddContactNames(MASchemaType type)
-        {
-            AdapterSubfield givenName = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "givenName",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "GivenName",
-                AttributeNamePart = "givenName"
-            };
-
-            AdapterSubfield familyName = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "familyName",
-                IsMultivalued = false,
-                PropertyName = "FamilyName",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "familyName"
-            };
-
-            AdapterSubfield fullName = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "fullName",
-                IsMultivalued = false,
-                PropertyName = "FullName",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "fullName"
-            };
-
-            AdapterNestedType schemaItem = new AdapterNestedType
-            {
-                Api = "contact",
-                AttributeName = "name",
-                Fields = new List<AdapterSubfield>() { givenName, familyName, fullName },
-                FieldName = "name",
-                PropertyName = "Name",
-                CanPatch = false
-            };
-
-            type.Attributes.Add(schemaItem);
-        }
-
-        private static void AddUserNotes(MASchemaType type)
-        {
-            AdapterSubfield notesValue = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "value",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = "value"
-            };
-
-            AdapterSubfield notesContentType = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "contentType",
-                IsMultivalued = false,
-                PropertyName = "ContentType",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "contentType"
-            };
-
-            AdapterNestedType notesType = new AdapterNestedType
-            {
-                Api = "user",
-                AttributeName = "notes",
-                Fields = new List<AdapterSubfield>() { notesContentType, notesValue },
-                FieldName = "notes",
-                PropertyName = "Notes",
-                CanPatch = false
-            };
-
-            type.Attributes.Add(notesType);
-        }
-
-        private static void AddUserWebSites(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield webSiteValue = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "value",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
-            };
-
-            AdapterSubfield webSitePrimary = new AdapterSubfield
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
-                IsMultivalued = false,
-                PropertyName = "Primary",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
-            };
-
-            AdapterCustomTypeList<Website> webSiteType = new AdapterCustomTypeList<Website>
-            {
-                Api = "user",
-                AttributeName = "websites",
-                Fields = new List<AdapterSubfield>() { webSitePrimary, webSiteValue },
-                FieldName = "websites",
-                PropertyName = "Websites",
-                IsPrimaryCandidateType = true,
-                KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(webSiteType);
-        }
-
-        private static void AddGroupAliases(MASchemaType type)
-        {
-            AdapterCollection<string> aliasesList = new AdapterCollection<string>
-            {
-                Api = "groupaliases",
-                AttributeName = "aliases",
-                FieldName = "aliases",
-                PropertyName = "Aliases",
-                CanPatch = true,
-                IsReadOnly = false
-            };
-
-            type.Attributes.Add(aliasesList);
-
-            AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
-            {
-                Api = "group",
-                AttributeName = "nonEditableAliases",
-                FieldName = "nonEditableAliases",
-                PropertyName = "NonEditableAliases",
-                CanPatch = false,
-                IsReadOnly = true
-            };
-
-            type.Attributes.Add(nonEditableAliasesList);
-        }
-
-        private static void AddUserAliases(MASchemaType type)
-        {
-            AdapterCollection<string> aliasesList = new AdapterCollection<string>
-            {
-                Api = "useraliases",
-                AttributeName = "aliases",
-                FieldName = "aliases",
-                PropertyName = "Aliases",
-                CanPatch = true,
-                IsReadOnly = false
-            };
-
-            type.Attributes.Add(aliasesList);
-
-            AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
-            {
-                Api = "user",
-                AttributeName = "nonEditableAliases",
-                FieldName = "nonEditableAliases",
-                PropertyName = "NonEditableAliases",
-                CanPatch = false,
-                IsReadOnly = true
-            };
-
-            type.Attributes.Add(nonEditableAliasesList);
-        }
-
-        private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield phonesValue = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "value",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
-            };
-
-            AdapterCustomTypeList<Phone> phonesType = new AdapterCustomTypeList<Phone>
-            {
-                Api = "user",
-                AttributeName = "phones",
-                Fields = new List<AdapterSubfield>() { phonesValue },
-                FieldName = "phones",
-                PropertyName = "Phones",
-                IsPrimaryCandidateType = true,
-                KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(phonesType);
-        }
-
-        private static void AddUserOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield name = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "name",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Name",
-                AttributeNamePart = "name"
-            };
-
-            AdapterSubfield title = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "title",
-                IsMultivalued = false,
-                PropertyName = "Title",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "title"
-            };
-
-            AdapterSubfield department = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "department",
-                IsMultivalued = false,
-                PropertyName = "Department",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "department"
-            };
-
-            AdapterSubfield symbol = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "symbol",
-                IsMultivalued = false,
-                PropertyName = "Symbol",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "symbol"
-            };
-
-            AdapterSubfield location = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "location",
-                IsMultivalued = false,
-                PropertyName = "Location",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "location"
-            };
-
-            AdapterSubfield description = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "description",
-                IsMultivalued = false,
-                PropertyName = "Description",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "description"
-            };
-
-            AdapterSubfield domain = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "domain",
-                IsMultivalued = false,
-                PropertyName = "Domain",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "domain"
-            };
-
-            AdapterSubfield costCenter = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "costCenter",
-                IsMultivalued = false,
-                PropertyName = "CostCenter",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "costCenter"
-            };
-
-            AdapterCustomTypeList<Organization> customType = new AdapterCustomTypeList<Organization>
-            {
-                Api = "user",
-                AttributeName = "organizations",
-                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location, description, domain, costCenter },
-                FieldName = "organizations",
-                PropertyName = "Organizations",
-                IsPrimaryCandidateType = true,
-                KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(customType);
-        }
-
-        private static void AddUserAddresses(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield sourceIsStructured = new AdapterSubfield
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "sourceIsStructured",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "SourceIsStructured",
-                AttributeNamePart = "sourceIsStructured"
-            };
-
-            AdapterSubfield formatted = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "formatted",
-                IsMultivalued = false,
-                PropertyName = "Formatted",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "formatted"
-            };
-
-            AdapterSubfield poBox = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "poBox",
-                IsMultivalued = false,
-                PropertyName = "POBox",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "poBox"
-            };
-
-            AdapterSubfield extendedAddress = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "extendedAddress",
-                IsMultivalued = false,
-                PropertyName = "ExtendedAddress",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "extendedAddress"
-            };
-
-
-            AdapterSubfield streetAddress = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "streetAddress",
-                IsMultivalued = false,
-                PropertyName = "StreetAddress",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "streetAddress"
-            };
-
-            AdapterSubfield locality = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "locality",
-                IsMultivalued = false,
-                PropertyName = "Locality",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "locality"
-            };
-
-            AdapterSubfield region = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "region",
-                IsMultivalued = false,
-                PropertyName = "Region",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "region"
-            };
-
-            AdapterSubfield postalCode = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "postalCode",
-                IsMultivalued = false,
-                PropertyName = "PostalCode",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "postalCode"
-            };
-
-            AdapterSubfield country = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "country",
-                IsMultivalued = false,
-                PropertyName = "Country",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "country"
-            };
-
-            AdapterSubfield countryCode = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "countryCode",
-                IsMultivalued = false,
-                PropertyName = "CountryCode",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "countryCode"
-            };
-
-            AdapterCustomTypeList<Address> customType = new AdapterCustomTypeList<Address>
-            {
-                Api = "user",
-                AttributeName = "addresses",
-                Fields = new List<AdapterSubfield>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
-                FieldName = "addresses",
-                PropertyName = "Addresses",
-                IsPrimaryCandidateType = true,
-                KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(customType);
-        }
-
-        private static void AddUserRelations(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield value = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "value",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
-            };
-
-            AdapterCustomTypeList<Relation> customType = new AdapterCustomTypeList<Relation>
-            {
-                Api = "user",
-                AttributeName = "relations",
-                Fields = new List<AdapterSubfield>() { value },
-                FieldName = "relations",
-                PropertyName = "Relations",
-                KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(customType);
-        }
-
-        private static void AddUserExternalIds(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield value = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "value",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
-            };
-
-            AdapterCustomTypeList<ExternalID> customType = new AdapterCustomTypeList<ExternalID>
-            {
-                Api = "user",
-                AttributeName = "externalIds",
-                Fields = new List<AdapterSubfield>() { value },
-                FieldName = "externalIds",
-                PropertyName = "ExternalIds",
-                KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(customType);
-        }
-
-        private static void AddUserIms(MASchemaType type, IManagementAgentParameters config)
-        {
-            AdapterSubfield im = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "im",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "IMAddress",
-                AttributeNamePart = "address"
-            };
-
-            AdapterSubfield protocol = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "protocol",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Protocol",
-                AttributeNamePart = "protocol"
-            };
-
-            AdapterCustomTypeList<IM> customType = new AdapterCustomTypeList<IM>
-            {
-                Api = "user",
-                AttributeName = "ims",
-                Fields = new List<AdapterSubfield>() { im, protocol },
-                FieldName = "ims",
-                PropertyName = "Ims",
-                IsPrimaryCandidateType = true,
-                KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
-                CanPatch = false
-            };
-
-            type.Attributes.Add(customType);
-        }
-
-        public static void CreateGoogleAppsCustomSchema()
-        {
-            G.Schema schema = new G.Schema();
-
-            schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
-            schema.Fields = new List<SchemaFieldSpec>();
-            schema.Fields.Add(new SchemaFieldSpec()
-            {
-                FieldName = SchemaConstants.CustomSchemaObjectType,
-                FieldType = "STRING",
-                MultiValued = false,
-                ReadAccessType = "ADMINS_AND_SELF"
-            });
-
-            SchemaRequestFactory.CreateSchema("my_customer", schema);
-
-        }
+            AttributeType = AttributeType.Reference,
+            FieldName = null,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "delegate",
+            PropertyName = "Delegates",
+            Api = "userdelegates",
+            CanPatch = true,
+        };
+
+        userType.Attributes.Add(delegates);
+
+        return userType;
     }
+
+    public static MASchemaType GetGroupSchema()
+    {
+        MASchemaType type = new MASchemaType
+        {
+            Attributes = new List<IAttributeAdapter>(),
+            Name = "group",
+            AnchorAttributeName = "id",
+            CanPatch = true,
+        };
+
+        type.ApiInterface = new ApiInterfaceGroup(type);
+
+        AdapterPropertyValue adminCreated = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "adminCreated",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportOnly,
+            AttributeName = "adminCreated",
+            PropertyName = "AdminCreated",
+            Api = "group",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(adminCreated);
+
+        AdapterPropertyValue description = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "description",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "description",
+            PropertyName = "Description",
+            Api = "group",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i
+        };
+
+        type.Attributes.Add(description);
+
+        AdapterPropertyValue email = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "email",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportOnly,
+            AttributeName = "primaryEmail",
+            PropertyName = "Email",
+            Api = "group",
+            CanPatch = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(email);
+
+        AdapterPropertyValue id = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "id",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportOnly,
+            AttributeName = "id",
+            PropertyName = "Id",
+            Api = "group",
+            CanPatch = true,
+            IsAnchor = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(id);
+
+        AdapterPropertyValue name = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "name",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "name",
+            PropertyName = "Name",
+            Api = "group",
+            CanPatch = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(name);
+
+        SchemaBuilder.AddGroupAliases(type);
+        SchemaBuilder.AddGroupSettings(type);
+        SchemaBuilder.AddGroupMembers(type);
+        return type;
+    }
+
+    private static void AddGroupMembers(MASchemaType type)
+    {
+        AdapterCollection<string> members = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.Reference,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "member",
+            PropertyName = "Members",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(members);
+
+        AdapterCollection<string> managers = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.Reference,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "manager",
+            PropertyName = "Managers",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(managers);
+
+        AdapterCollection<string> owners = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.Reference,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "owner",
+            PropertyName = "Owners",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(owners);
+
+        AdapterCollection<string> externalMembers = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "externalMember",
+            PropertyName = "ExternalMembers",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(externalMembers);
+
+        AdapterCollection<string> externalManagers = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "externalManager",
+            PropertyName = "ExternalManagers",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(externalManagers);
+
+        AdapterCollection<string> externalOwners = new AdapterCollection<string>
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "email",
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "externalOwner",
+            PropertyName = "ExternalOwners",
+            Api = "groupmembership",
+            CanPatch = true,
+        };
+
+        type.Attributes.Add(externalOwners);
+    }
+
+    private static void AddGroupSettings(MASchemaType type)
+    {
+        AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanJoin",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanJoin",
+            PropertyName = "WhoCanJoin",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanJoin);
+
+        AdapterPropertyValue whoCanViewMembership = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanViewMembership",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanViewMembership",
+            PropertyName = "WhoCanViewMembership",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanViewMembership);
+
+        AdapterPropertyValue whoCanViewGroup = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanViewGroup",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanViewGroup",
+            PropertyName = "WhoCanViewGroup",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanViewGroup);
+
+        AdapterPropertyValue whoCanInvite = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanInvite",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanInvite",
+            PropertyName = "WhoCanInvite",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanInvite);
+
+        //MASchemaAttribute whoCanAdd = new MASchemaAttribute
+        //{
+        //    AttributeType = AttributeType.String,
+        //    FieldName = "whoCanAdd",
+        //    IsMultivalued = false,
+        //    Operation = AttributeOperation.ImportExport,
+        //    AttributeName = "whoCanAdd",
+        //    PropertyName = "WhoCanAdd",
+        //    Api = "groupsettings",
+        //    CanPatch = true,
+        //    IsArrayAttribute = false
+        //};
+        //
+        //type.Attributes.Add(whoCanAdd);
+
+        AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "allowExternalMembers",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "allowExternalMembers",
+            PropertyName = "AllowExternalMembers",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(allowExternalMembers);
+
+        AdapterPropertyValue whoCanPostMessage = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanPostMessage",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanPostMessage",
+            PropertyName = "WhoCanPostMessage",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanPostMessage);
+
+        AdapterPropertyValue allowWebPosting = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "allowWebPosting",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "allowWebPosting",
+            PropertyName = "AllowWebPosting",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(allowWebPosting);
+
+        AdapterPropertyValue primaryLanguage = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "primaryLanguage",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "primaryLanguage",
+            PropertyName = "PrimaryLanguage",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(primaryLanguage);
+
+        AdapterPropertyValue maxMessageBytes = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Integer,
+            FieldName = "maxMessageBytes",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "maxMessageBytes",
+            PropertyName = "MaxMessageBytes",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(maxMessageBytes);
+
+        AdapterPropertyValue isArchived = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "isArchived",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "isArchived",
+            PropertyName = "IsArchived",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(isArchived);
+
+
+        AdapterPropertyValue archiveOnly = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "archiveOnly",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "archiveOnly",
+            PropertyName = "ArchiveOnly",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(archiveOnly);
+
+        AdapterPropertyValue messageModerationLevel = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "messageModerationLevel",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "messageModerationLevel",
+            PropertyName = "MessageModerationLevel",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(messageModerationLevel);
+
+
+        AdapterPropertyValue spamModerationLevel = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "spamModerationLevel",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "spamModerationLevel",
+            PropertyName = "SpamModerationLevel",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(spamModerationLevel);
+
+        AdapterPropertyValue replyTo = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "replyTo",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "replyTo",
+            PropertyName = "ReplyTo",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(replyTo);
+
+        AdapterPropertyValue customReplyTo = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "customReplyTo",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "customReplyTo",
+            PropertyName = "CustomReplyTo",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(customReplyTo);
+
+        AdapterPropertyValue sendMessageDenyNotification = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "sendMessageDenyNotification",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "sendMessageDenyNotification",
+            PropertyName = "SendMessageDenyNotification",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(sendMessageDenyNotification);
+
+
+        AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "defaultMessageDenyNotificationText",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "defaultMessageDenyNotificationText",
+            PropertyName = "DefaultMessageDenyNotificationText",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(defaultMessageDenyNotificationText);
+
+        AdapterPropertyValue showInGroupDirectory = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "showInGroupDirectory",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "showInGroupDirectory",
+            PropertyName = "ShowInGroupDirectory",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(showInGroupDirectory);
+
+
+        AdapterPropertyValue allowGoogleCommunication = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "allowGoogleCommunication",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "allowGoogleCommunication",
+            PropertyName = "AllowGoogleCommunication",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(allowGoogleCommunication);
+
+        AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "membersCanPostAsTheGroup",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "membersCanPostAsTheGroup",
+            PropertyName = "MembersCanPostAsTheGroup",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(membersCanPostAsTheGroup);
+
+        AdapterPropertyValue messageDisplayFont = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "messageDisplayFont",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "messageDisplayFont",
+            PropertyName = "MessageDisplayFont",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(messageDisplayFont);
+
+        AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "includeInGlobalAddressList",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "includeInGlobalAddressList",
+            PropertyName = "IncludeInGlobalAddressList",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false,
+            CastForImport = (i) => i ?? false
+        };
+
+        type.Attributes.Add(includeInGlobalAddressList);
+
+        AdapterPropertyValue whoCanLeaveGroup = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanLeaveGroup",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanLeaveGroup",
+            PropertyName = "WhoCanLeaveGroup",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanLeaveGroup);
+
+
+        AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "whoCanContactOwner",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            AttributeName = "whoCanContactOwner",
+            PropertyName = "WhoCanContactOwner",
+            Api = "groupsettings",
+            CanPatch = true,
+            UseNullPlaceHolder = true,
+            IsArrayAttribute = false
+        };
+
+        type.Attributes.Add(whoCanContactOwner);
+    }
+
+    private static void AddUserNames(MASchemaType type)
+    {
+        AdapterSubfield givenName = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "givenName",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "GivenName",
+            AttributeNamePart = "givenName"
+        };
+
+        AdapterSubfield familyName = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "familyName",
+            IsMultivalued = false,
+            PropertyName = "FamilyName",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "familyName"
+        };
+
+        AdapterNestedType schemaItem = new AdapterNestedType
+        {
+            Api = "user",
+            AttributeName = "name",
+            Fields = new List<AdapterSubfield>() { givenName, familyName },
+            FieldName = "name",
+            PropertyName = "Name",
+            CanPatch = false
+        };
+
+        type.Attributes.Add(schemaItem);
+    }
+
+    private static void AddContactNames(MASchemaType type)
+    {
+        AdapterSubfield givenName = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "givenName",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "GivenName",
+            AttributeNamePart = "givenName"
+        };
+
+        AdapterSubfield familyName = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "familyName",
+            IsMultivalued = false,
+            PropertyName = "FamilyName",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "familyName"
+        };
+
+        AdapterSubfield fullName = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "fullName",
+            IsMultivalued = false,
+            PropertyName = "FullName",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "fullName"
+        };
+
+        AdapterNestedType schemaItem = new AdapterNestedType
+        {
+            Api = "contact",
+            AttributeName = "name",
+            Fields = new List<AdapterSubfield>() { givenName, familyName, fullName },
+            FieldName = "name",
+            PropertyName = "Name",
+            CanPatch = false
+        };
+
+        type.Attributes.Add(schemaItem);
+    }
+
+    private static void AddUserNotes(MASchemaType type)
+    {
+        AdapterSubfield notesValue = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "value",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Value",
+            AttributeNamePart = "value"
+        };
+
+        AdapterSubfield notesContentType = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "contentType",
+            IsMultivalued = false,
+            PropertyName = "ContentType",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "contentType"
+        };
+
+        AdapterNestedType notesType = new AdapterNestedType
+        {
+            Api = "user",
+            AttributeName = "notes",
+            Fields = new List<AdapterSubfield>() { notesContentType, notesValue },
+            FieldName = "notes",
+            PropertyName = "Notes",
+            CanPatch = false
+        };
+
+        type.Attributes.Add(notesType);
+    }
+
+    private static void AddUserWebSites(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield webSiteValue = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "value",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Value",
+            AttributeNamePart = null
+        };
+
+        AdapterSubfield webSitePrimary = new AdapterSubfield
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "primary",
+            IsMultivalued = false,
+            PropertyName = "Primary",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "primary"
+        };
+
+        AdapterCustomTypeList<Website> webSiteType = new AdapterCustomTypeList<Website>
+        {
+            Api = "user",
+            AttributeName = "websites",
+            Fields = new List<AdapterSubfield>() { webSitePrimary, webSiteValue },
+            FieldName = "websites",
+            PropertyName = "Websites",
+            IsPrimaryCandidateType = true,
+            KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(webSiteType);
+    }
+
+    private static void AddGroupAliases(MASchemaType type)
+    {
+        AdapterCollection<string> aliasesList = new AdapterCollection<string>
+        {
+            Api = "groupaliases",
+            AttributeName = "aliases",
+            FieldName = "aliases",
+            PropertyName = "Aliases",
+            CanPatch = true,
+            IsReadOnly = false
+        };
+
+        type.Attributes.Add(aliasesList);
+
+        AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
+        {
+            Api = "group",
+            AttributeName = "nonEditableAliases",
+            FieldName = "nonEditableAliases",
+            PropertyName = "NonEditableAliases",
+            CanPatch = false,
+            IsReadOnly = true
+        };
+
+        type.Attributes.Add(nonEditableAliasesList);
+    }
+
+    private static void AddUserAliases(MASchemaType type)
+    {
+        AdapterCollection<string> aliasesList = new AdapterCollection<string>
+        {
+            Api = "useraliases",
+            AttributeName = "aliases",
+            FieldName = "aliases",
+            PropertyName = "Aliases",
+            CanPatch = true,
+            IsReadOnly = false
+        };
+
+        type.Attributes.Add(aliasesList);
+
+        AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
+        {
+            Api = "user",
+            AttributeName = "nonEditableAliases",
+            FieldName = "nonEditableAliases",
+            PropertyName = "NonEditableAliases",
+            CanPatch = false,
+            IsReadOnly = true
+        };
+
+        type.Attributes.Add(nonEditableAliasesList);
+    }
+
+    private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield phonesValue = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "value",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Value",
+            AttributeNamePart = null
+        };
+
+        AdapterCustomTypeList<Phone> phonesType = new AdapterCustomTypeList<Phone>
+        {
+            Api = "user",
+            AttributeName = "phones",
+            Fields = new List<AdapterSubfield>() { phonesValue },
+            FieldName = "phones",
+            PropertyName = "Phones",
+            IsPrimaryCandidateType = true,
+            KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(phonesType);
+    }
+
+    private static void AddUserOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield name = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "name",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Name",
+            AttributeNamePart = "name"
+        };
+
+        AdapterSubfield title = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "title",
+            IsMultivalued = false,
+            PropertyName = "Title",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "title"
+        };
+
+        AdapterSubfield department = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "department",
+            IsMultivalued = false,
+            PropertyName = "Department",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "department"
+        };
+
+        AdapterSubfield symbol = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "symbol",
+            IsMultivalued = false,
+            PropertyName = "Symbol",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "symbol"
+        };
+
+        AdapterSubfield location = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "location",
+            IsMultivalued = false,
+            PropertyName = "Location",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "location"
+        };
+
+        AdapterSubfield description = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "description",
+            IsMultivalued = false,
+            PropertyName = "Description",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "description"
+        };
+
+        AdapterSubfield domain = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "domain",
+            IsMultivalued = false,
+            PropertyName = "Domain",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "domain"
+        };
+
+        AdapterSubfield costCenter = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "costCenter",
+            IsMultivalued = false,
+            PropertyName = "CostCenter",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "costCenter"
+        };
+
+        AdapterCustomTypeList<Organization> customType = new AdapterCustomTypeList<Organization>
+        {
+            Api = "user",
+            AttributeName = "organizations",
+            Fields = new List<AdapterSubfield>() { name, title, department, symbol, location, description, domain, costCenter },
+            FieldName = "organizations",
+            PropertyName = "Organizations",
+            IsPrimaryCandidateType = true,
+            KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(customType);
+    }
+
+    private static void AddUserAddresses(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield sourceIsStructured = new AdapterSubfield
+        {
+            AttributeType = AttributeType.Boolean,
+            FieldName = "sourceIsStructured",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "SourceIsStructured",
+            AttributeNamePart = "sourceIsStructured"
+        };
+
+        AdapterSubfield formatted = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "formatted",
+            IsMultivalued = false,
+            PropertyName = "Formatted",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "formatted"
+        };
+
+        AdapterSubfield poBox = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "poBox",
+            IsMultivalued = false,
+            PropertyName = "POBox",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "poBox"
+        };
+
+        AdapterSubfield extendedAddress = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "extendedAddress",
+            IsMultivalued = false,
+            PropertyName = "ExtendedAddress",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "extendedAddress"
+        };
+
+
+        AdapterSubfield streetAddress = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "streetAddress",
+            IsMultivalued = false,
+            PropertyName = "StreetAddress",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "streetAddress"
+        };
+
+        AdapterSubfield locality = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "locality",
+            IsMultivalued = false,
+            PropertyName = "Locality",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "locality"
+        };
+
+        AdapterSubfield region = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "region",
+            IsMultivalued = false,
+            PropertyName = "Region",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "region"
+        };
+
+        AdapterSubfield postalCode = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "postalCode",
+            IsMultivalued = false,
+            PropertyName = "PostalCode",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "postalCode"
+        };
+
+        AdapterSubfield country = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "country",
+            IsMultivalued = false,
+            PropertyName = "Country",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "country"
+        };
+
+        AdapterSubfield countryCode = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "countryCode",
+            IsMultivalued = false,
+            PropertyName = "CountryCode",
+            Operation = AttributeOperation.ImportExport,
+            AttributeNamePart = "countryCode"
+        };
+
+        AdapterCustomTypeList<Address> customType = new AdapterCustomTypeList<Address>
+        {
+            Api = "user",
+            AttributeName = "addresses",
+            Fields = new List<AdapterSubfield>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
+            FieldName = "addresses",
+            PropertyName = "Addresses",
+            IsPrimaryCandidateType = true,
+            KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(customType);
+    }
+
+    private static void AddUserRelations(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield value = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "value",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Value",
+            AttributeNamePart = null
+        };
+
+        AdapterCustomTypeList<Relation> customType = new AdapterCustomTypeList<Relation>
+        {
+            Api = "user",
+            AttributeName = "relations",
+            Fields = new List<AdapterSubfield>() { value },
+            FieldName = "relations",
+            PropertyName = "Relations",
+            KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(customType);
+    }
+
+    private static void AddUserExternalIds(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield value = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "value",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Value",
+            AttributeNamePart = null
+        };
+
+        AdapterCustomTypeList<ExternalID> customType = new AdapterCustomTypeList<ExternalID>
+        {
+            Api = "user",
+            AttributeName = "externalIds",
+            Fields = new List<AdapterSubfield>() { value },
+            FieldName = "externalIds",
+            PropertyName = "ExternalIds",
+            KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(customType);
+    }
+
+    private static void AddUserIms(MASchemaType type, IManagementAgentParameters config)
+    {
+        AdapterSubfield im = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "im",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "IMAddress",
+            AttributeNamePart = "address"
+        };
+
+        AdapterSubfield protocol = new AdapterSubfield
+        {
+            AttributeType = AttributeType.String,
+            FieldName = "protocol",
+            IsMultivalued = false,
+            Operation = AttributeOperation.ImportExport,
+            PropertyName = "Protocol",
+            AttributeNamePart = "protocol"
+        };
+
+        AdapterCustomTypeList<IM> customType = new AdapterCustomTypeList<IM>
+        {
+            Api = "user",
+            AttributeName = "ims",
+            Fields = new List<AdapterSubfield>() { im, protocol },
+            FieldName = "ims",
+            PropertyName = "Ims",
+            IsPrimaryCandidateType = true,
+            KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
+            CanPatch = false
+        };
+
+        type.Attributes.Add(customType);
+    }
+
+    public static void CreateGoogleAppsCustomSchema()
+    {
+        G.Schema schema = new G.Schema();
+
+        schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
+        schema.Fields = new List<SchemaFieldSpec>();
+        schema.Fields.Add(new SchemaFieldSpec()
+        {
+            FieldName = SchemaConstants.CustomSchemaObjectType,
+            FieldType = "STRING",
+            MultiValued = false,
+            ReadAccessType = "ADMINS_AND_SELF"
+        });
+
+        SchemaRequestFactory.CreateSchema("my_customer", schema);
+
+    }
+}
 }
