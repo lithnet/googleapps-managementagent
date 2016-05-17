@@ -125,8 +125,12 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string alias in aliasDeletes)
                     {
-                        Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
-                        UserRequestFactory.RemoveAlias(csentry.DN, alias);
+                        if (user.PrimaryEmail != alias)
+                        {
+                            Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
+                            UserRequestFactory.RemoveAlias(csentry.DN, alias);
+                        }
+
                         valueChanges.Add(ValueChange.CreateValueDelete(alias));
                     }
                 }

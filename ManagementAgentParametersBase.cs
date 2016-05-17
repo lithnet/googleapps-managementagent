@@ -11,6 +11,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Admin.Directory.directory_v1;
 using Google.Apis.Groupssettings.v1;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -129,6 +130,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return this.certificate;
+        }
+
+        public static bool HttpDebugEnabled
+        {
+            get { return ConfigurationManager.AppSettings["lithnet-google-ma-http-debug-enabled"] == "1"; }
         }
     }
 }

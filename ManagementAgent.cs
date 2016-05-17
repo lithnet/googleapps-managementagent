@@ -17,6 +17,9 @@ using GroupMembership = Lithnet.GoogleApps.ManagedObjects.GroupMembership;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using System.Net;
+    using System.Net.Security;
+    using System.Security.Cryptography.X509Certificates;
 
 
     public class ManagementAgent :
@@ -94,10 +97,20 @@ namespace Lithnet.GoogleApps.MA
 
         internal IManagementAgentParameters Configuration { get; private set; }
 
+        private void SetHttpDebugMode()
+        {
+            if (ManagementAgentParametersBase.HttpDebugEnabled)
+            {
+                ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+                ConnectionPools.DisableGzip = true;
+            }
+        }
+
         public void OpenExportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
             this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
+            this.SetHttpDebugMode();
 
             Logger.LogPath = this.Configuration.LogFilePath;
             Logger.WriteLine("Opening export connection");
@@ -232,6 +245,7 @@ namespace Lithnet.GoogleApps.MA
         private void OpenImportConnectionFull(Schema types)
         {
             this.importCollection = new BlockingCollection<object>();
+            this.SetHttpDebugMode();
 
             ConnectionPools.InitializePools(this.Configuration.Credentials,
                 this.Configuration.GroupMembersImportThreadCount + 1,
@@ -732,6 +746,7 @@ namespace Lithnet.GoogleApps.MA
         public void OpenPasswordConnection(KeyedCollection<string, ConfigParameter> configParameters, Partition partition)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
+            this.SetHttpDebugMode();
             Logger.LogPath = this.Configuration.LogFilePath;
 
             ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);

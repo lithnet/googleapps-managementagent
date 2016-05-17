@@ -124,6 +124,11 @@ namespace Lithnet.GoogleApps.MA
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
 
+            if (csentry.DN != deltaCSEntry.DN)
+            {
+                Logger.WriteLine($"DN rename {csentry.DN} -> {deltaCSEntry.DN}");
+            }
+
             bool canPatch = maType.CanPatch(csentry.AttributeChanges);
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
