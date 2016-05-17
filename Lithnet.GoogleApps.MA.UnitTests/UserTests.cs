@@ -371,6 +371,65 @@
         }
 
         [TestMethod]
+        public void PartialUpdate()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            User e = new User
+            {
+                PrimaryEmail = dn,
+                Password = Guid.NewGuid().ToString(),
+                Name = new UserName
+                {
+                    GivenName = "gn",
+                    FamilyName = "sn"
+                }
+            };
+
+            e.ExternalIds = new List<ExternalID>();
+            e.ExternalIds.Add(new ExternalID() { Type = "work", Value = "test1" });
+            e.ExternalIds.Add(new ExternalID() { Type = "home", Value = "test2" });
+
+            e = UserRequestFactory.Add(e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.User;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalIds_work", "eidwork"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = UserRequestFactory.Get(id);
+
+                Assert.AreEqual(2, e.ExternalIds.Count);
+                Assert.AreEqual("eidwork", e.ExternalIds[0].Value);
+                Assert.AreEqual("test2", e.ExternalIds[1].Value);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UserRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
         public void AddAliases()
         {
             string id = null;

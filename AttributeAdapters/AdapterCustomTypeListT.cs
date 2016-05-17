@@ -26,7 +26,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api { get; set; }
 
-        public bool CanPatch { get; set; }
+        public bool SupportsPatch { get; set; }
 
         public IList<string> KnownTypes { get; set; }
 
@@ -85,7 +85,7 @@ namespace Lithnet.GoogleApps.MA
                     AttributeType = item.AttributeType,
                     FieldName = item.FieldName,
                     IsArrayAttribute = true,
-                    CanPatch = this.CanPatch,
+                    SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
                     AttributeName = item.GetAttributeName($"{this.AttributeName}_{type}"),
                     Operation = item.Operation,

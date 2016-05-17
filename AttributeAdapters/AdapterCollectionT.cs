@@ -26,7 +26,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api { get; set; }
 
-        public bool CanPatch { get; set; }
+        public bool SupportsPatch { get; set; }
 
         public bool IsMultivalued => true;
 

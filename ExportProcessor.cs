@@ -124,22 +124,24 @@ namespace Lithnet.GoogleApps.MA
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
 
-            bool fullUpdate = !maType.CanPatch || csentry.AttributeChanges.Any(t => maType.Attributes.Any(u => u.AttributeName == t.Name && !u.CanPatch));
+            bool canPatch = maType.CanPatch(csentry.AttributeChanges);
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
             object instance;
 
-            if (fullUpdate)
+            if (canPatch)
             {
-                instance = primaryInterface.GetInstance(csentry);
+                Logger.WriteLine($"Performing PATCH update operation for {csentry.DN}");
+                instance = primaryInterface.CreateInstance(csentry);
             }
             else
             {
-                instance = primaryInterface.CreateInstance(csentry);
+                Logger.WriteLine($"Performing FULL update operation for {csentry.DN}");
+                instance = primaryInterface.GetInstance(csentry);
             }
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance, !fullUpdate))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance, canPatch))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }

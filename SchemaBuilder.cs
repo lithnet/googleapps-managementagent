@@ -69,7 +69,7 @@ namespace Lithnet.GoogleApps.MA
                 Attributes = new List<IAttributeAdapter>(),
                 Name = "contact",
                 AnchorAttributeName = "id",
-                CanPatch = false,
+                SupportsPatch = false,
             };
 
             type.ApiInterface = new ApiInterfaceContact(config.Domain, type);
@@ -83,7 +83,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "occupation",
                 PropertyName = "Occupation",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -98,7 +98,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "billingInformation",
                 PropertyName = "BillingInformation",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -113,7 +113,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "birthday",
                 PropertyName = "Birthday",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -128,7 +128,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "directoryServer",
                 PropertyName = "DirectoryServer",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -144,7 +144,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "initials",
                 PropertyName = "Initials",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -159,7 +159,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "maidenName",
                 PropertyName = "MaidenName",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -174,7 +174,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "mileage",
                 PropertyName = "Mileage",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -189,7 +189,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "nickname",
                 PropertyName = "Nickname",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -207,7 +207,7 @@ namespace Lithnet.GoogleApps.MA
             //    AttributeName = "priority",
             //    PropertyName = "Priority",
             //    Api = "contact",
-            //    CanPatch = false,
+            //    SupportsPatch = false,
             //    IsArrayAttribute = false
             //};
             //
@@ -222,7 +222,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "sensitivity",
                 PropertyName = "Sensitivity",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -237,7 +237,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "shortName",
                 PropertyName = "ShortName",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -252,7 +252,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "subject",
                 PropertyName = "Subject",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -267,7 +267,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "location",
                 PropertyName = "Location",
                 Api = "contact",
-                CanPatch = false,
+                SupportsPatch = false,
                 IsArrayAttribute = false
             };
 
@@ -282,7 +282,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "id",
                 PropertyName = "Id",
                 Api = "contact",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsAnchor = true,
                 IsArrayAttribute = false,
                 CastForImport = (value) => ((AtomId)value).AbsoluteUri,
@@ -320,7 +320,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "email",
                 PropertyName = "Emails",
                 KnownTypes = config.EmailsAttributeFixedTypes?.ToList(),
-                CanPatch = false,
+                SupportsPatch = false,
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" }, { "http://schemas.google.com/g/2005#home", "home" }, { "http://schemas.google.com/g/2005#other", "other" } }
             };
 
@@ -399,7 +399,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "organizations",
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
-                CanPatch = false,
+                SupportsPatch = false,
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" } }
             };
 
@@ -426,7 +426,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "externalIds",
                 PropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
-                CanPatch = false,
+                SupportsPatch = false,
                 KnownRels = new HashSet<string>() { "account", "customer", "network", "organization" }
             };
 
@@ -453,7 +453,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "phones",
                 PropertyName = "Phonenumbers",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
-                CanPatch = false,
+                SupportsPatch = false,
                 KnownRels = new Dictionary<string, string>()
                 {
                     { "http://schemas.google.com/g/2005#work_pager", "work_pager" } ,
@@ -510,7 +510,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "ims",
                 PropertyName = "IMs",
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
-                CanPatch = false,
+                SupportsPatch = false,
                 KnownRels = new Dictionary<string, string>()
                 {
                     { "http://schemas.google.com/g/2005#work", "work" } ,
@@ -530,7 +530,7 @@ namespace Lithnet.GoogleApps.MA
                 Attributes = new List<IAttributeAdapter>(),
                 Name = "user",
                 AnchorAttributeName = "id",
-                CanPatch = true,
+                SupportsPatch = true,
             };
 
             type.ApiInterface = new ApiInterfaceUser(type);
@@ -544,7 +544,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "orgUnitPath",
                 PropertyName = "OrgUnitPath",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false
             };
@@ -560,7 +560,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "includeInGlobalAddressList",
                 PropertyName = "IncludeInGlobalAddressList",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
@@ -577,7 +577,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "suspended",
                 PropertyName = "Suspended",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
@@ -594,7 +594,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "changePasswordAtNextLogin",
                 PropertyName = "ChangePasswordAtNextLogin",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
@@ -611,7 +611,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "ipWhitelisted",
                 PropertyName = "IpWhitelisted",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
@@ -627,7 +627,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "id",
                 PropertyName = "Id",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsAnchor = true,
                 IsArrayAttribute = false
             };
@@ -643,7 +643,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "primaryEmail",
                 PropertyName = "PrimaryEmail",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -658,7 +658,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "isAdmin",
                 PropertyName = "IsAdmin",
                 Api = "usermakeadmin",
-                CanPatch = true,
+                SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
@@ -675,7 +675,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "isDelegatedAdmin",
                 PropertyName = "IsDelegatedAdmin",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
@@ -691,7 +691,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "lastLoginTime",
                 PropertyName = "LastLoginTime",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -706,7 +706,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "creationTime",
                 PropertyName = "CreationTime",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -721,7 +721,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "deletionTime",
                 PropertyName = "DeletionTime",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -736,7 +736,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "agreedToTerms",
                 PropertyName = "AgreedToTerms",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
@@ -752,7 +752,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "suspensionReason",
                 PropertyName = "SuspensionReason",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -767,7 +767,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "isMailboxSetup",
                 PropertyName = "IsMailboxSetup",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
@@ -783,7 +783,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "thumbnailPhotoUrl",
                 PropertyName = "ThumbnailPhotoUrl",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -798,7 +798,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "thumbnailPhotoEtag",
                 PropertyName = "ThumbnailPhotoEtag",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -813,7 +813,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "customerId",
                 PropertyName = "CustomerId",
                 Api = "user",
-                CanPatch = true,
+                SupportsPatch = true,
                 IsArrayAttribute = false
             };
 
@@ -847,7 +847,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "delegate",
             PropertyName = "Delegates",
             Api = "userdelegates",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         userType.Attributes.Add(delegates);
@@ -862,7 +862,7 @@ namespace Lithnet.GoogleApps.MA
             Attributes = new List<IAttributeAdapter>(),
             Name = "group",
             AnchorAttributeName = "id",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.ApiInterface = new ApiInterfaceGroup(type);
@@ -876,7 +876,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "adminCreated",
             PropertyName = "AdminCreated",
             Api = "group",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -893,7 +893,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "description",
             PropertyName = "Description",
             Api = "group",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i
@@ -910,7 +910,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "primaryEmail",
             PropertyName = "Email",
             Api = "group",
-            CanPatch = true,
+            SupportsPatch = true,
             IsArrayAttribute = false
         };
 
@@ -925,7 +925,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "id",
             PropertyName = "Id",
             Api = "group",
-            CanPatch = true,
+            SupportsPatch = true,
             IsAnchor = true,
             IsArrayAttribute = false
         };
@@ -941,7 +941,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "name",
             PropertyName = "Name",
             Api = "group",
-            CanPatch = true,
+            SupportsPatch = true,
             IsArrayAttribute = false
         };
 
@@ -963,7 +963,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "member",
             PropertyName = "Members",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(members);
@@ -976,7 +976,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "manager",
             PropertyName = "Managers",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(managers);
@@ -989,7 +989,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "owner",
             PropertyName = "Owners",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(owners);
@@ -1002,7 +1002,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "externalMember",
             PropertyName = "ExternalMembers",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(externalMembers);
@@ -1015,7 +1015,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "externalManager",
             PropertyName = "ExternalManagers",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(externalManagers);
@@ -1028,7 +1028,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "externalOwner",
             PropertyName = "ExternalOwners",
             Api = "groupmembership",
-            CanPatch = true,
+            SupportsPatch = true,
         };
 
         type.Attributes.Add(externalOwners);
@@ -1045,7 +1045,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanJoin",
             PropertyName = "WhoCanJoin",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1061,7 +1061,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanViewMembership",
             PropertyName = "WhoCanViewMembership",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1077,7 +1077,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanViewGroup",
             PropertyName = "WhoCanViewGroup",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1093,29 +1093,29 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanInvite",
             PropertyName = "WhoCanInvite",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
 
         type.Attributes.Add(whoCanInvite);
 
-        //MASchemaAttribute whoCanAdd = new MASchemaAttribute
-        //{
-        //    AttributeType = AttributeType.String,
-        //    FieldName = "whoCanAdd",
-        //    IsMultivalued = false,
-        //    Operation = AttributeOperation.ImportExport,
-        //    AttributeName = "whoCanAdd",
-        //    PropertyName = "WhoCanAdd",
-        //    Api = "groupsettings",
-        //    CanPatch = true,
-        //    IsArrayAttribute = false
-        //};
-        //
-        //type.Attributes.Add(whoCanAdd);
+            //MASchemaAttribute whoCanAdd = new MASchemaAttribute
+            //{
+            //    AttributeType = AttributeType.String,
+            //    FieldName = "whoCanAdd",
+            //    IsMultivalued = false,
+            //    Operation = AttributeOperation.ImportExport,
+            //    AttributeName = "whoCanAdd",
+            //    PropertyName = "WhoCanAdd",
+            //    Api = "groupsettings",
+            //    SupportsPatch = true,
+            //    IsArrayAttribute = false
+            //};
+            //
+            //type.Attributes.Add(whoCanAdd);
 
-        AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
+            AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
         {
             AttributeType = AttributeType.Boolean,
             FieldName = "allowExternalMembers",
@@ -1124,7 +1124,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "allowExternalMembers",
             PropertyName = "AllowExternalMembers",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1141,7 +1141,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanPostMessage",
             PropertyName = "WhoCanPostMessage",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1157,7 +1157,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "allowWebPosting",
             PropertyName = "AllowWebPosting",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1174,7 +1174,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "primaryLanguage",
             PropertyName = "PrimaryLanguage",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1190,7 +1190,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "maxMessageBytes",
             PropertyName = "MaxMessageBytes",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1206,7 +1206,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "isArchived",
             PropertyName = "IsArchived",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1224,7 +1224,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "archiveOnly",
             PropertyName = "ArchiveOnly",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1241,7 +1241,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "messageModerationLevel",
             PropertyName = "MessageModerationLevel",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1258,7 +1258,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "spamModerationLevel",
             PropertyName = "SpamModerationLevel",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1274,7 +1274,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "replyTo",
             PropertyName = "ReplyTo",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1290,7 +1290,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "customReplyTo",
             PropertyName = "CustomReplyTo",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1306,7 +1306,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "sendMessageDenyNotification",
             PropertyName = "SendMessageDenyNotification",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1324,7 +1324,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "defaultMessageDenyNotificationText",
             PropertyName = "DefaultMessageDenyNotificationText",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1340,7 +1340,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "showInGroupDirectory",
             PropertyName = "ShowInGroupDirectory",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1358,7 +1358,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "allowGoogleCommunication",
             PropertyName = "AllowGoogleCommunication",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1375,7 +1375,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "membersCanPostAsTheGroup",
             PropertyName = "MembersCanPostAsTheGroup",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1391,7 +1391,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "messageDisplayFont",
             PropertyName = "MessageDisplayFont",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1407,7 +1407,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "includeInGlobalAddressList",
             PropertyName = "IncludeInGlobalAddressList",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false,
             CastForImport = (i) => i ?? false
@@ -1424,7 +1424,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanLeaveGroup",
             PropertyName = "WhoCanLeaveGroup",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1441,7 +1441,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "whoCanContactOwner",
             PropertyName = "WhoCanContactOwner",
             Api = "groupsettings",
-            CanPatch = true,
+            SupportsPatch = true,
             UseNullPlaceHolder = true,
             IsArrayAttribute = false
         };
@@ -1478,7 +1478,7 @@ namespace Lithnet.GoogleApps.MA
             Fields = new List<AdapterSubfield>() { givenName, familyName },
             FieldName = "name",
             PropertyName = "Name",
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(schemaItem);
@@ -1523,7 +1523,7 @@ namespace Lithnet.GoogleApps.MA
             Fields = new List<AdapterSubfield>() { givenName, familyName, fullName },
             FieldName = "name",
             PropertyName = "Name",
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(schemaItem);
@@ -1558,7 +1558,7 @@ namespace Lithnet.GoogleApps.MA
             Fields = new List<AdapterSubfield>() { notesContentType, notesValue },
             FieldName = "notes",
             PropertyName = "Notes",
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(notesType);
@@ -1595,7 +1595,7 @@ namespace Lithnet.GoogleApps.MA
             PropertyName = "Websites",
             IsPrimaryCandidateType = true,
             KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(webSiteType);
@@ -1609,7 +1609,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "aliases",
             FieldName = "aliases",
             PropertyName = "Aliases",
-            CanPatch = true,
+            SupportsPatch = true,
             IsReadOnly = false
         };
 
@@ -1621,7 +1621,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "nonEditableAliases",
             FieldName = "nonEditableAliases",
             PropertyName = "NonEditableAliases",
-            CanPatch = false,
+            SupportsPatch = false,
             IsReadOnly = true
         };
 
@@ -1636,7 +1636,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "aliases",
             FieldName = "aliases",
             PropertyName = "Aliases",
-            CanPatch = true,
+            SupportsPatch = true,
             IsReadOnly = false
         };
 
@@ -1648,7 +1648,7 @@ namespace Lithnet.GoogleApps.MA
             AttributeName = "nonEditableAliases",
             FieldName = "nonEditableAliases",
             PropertyName = "NonEditableAliases",
-            CanPatch = false,
+            SupportsPatch = false,
             IsReadOnly = true
         };
 
@@ -1676,7 +1676,7 @@ namespace Lithnet.GoogleApps.MA
             PropertyName = "Phones",
             IsPrimaryCandidateType = true,
             KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(phonesType);
@@ -1773,7 +1773,7 @@ namespace Lithnet.GoogleApps.MA
             PropertyName = "Organizations",
             IsPrimaryCandidateType = true,
             KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(customType);
@@ -1891,7 +1891,7 @@ namespace Lithnet.GoogleApps.MA
             PropertyName = "Addresses",
             IsPrimaryCandidateType = true,
             KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(customType);
@@ -1917,7 +1917,7 @@ namespace Lithnet.GoogleApps.MA
             FieldName = "relations",
             PropertyName = "Relations",
             KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(customType);
@@ -1943,7 +1943,7 @@ namespace Lithnet.GoogleApps.MA
             FieldName = "externalIds",
             PropertyName = "ExternalIds",
             KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(customType);
@@ -1980,7 +1980,7 @@ namespace Lithnet.GoogleApps.MA
             PropertyName = "Ims",
             IsPrimaryCandidateType = true,
             KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
-            CanPatch = false
+            SupportsPatch = false
         };
 
         type.Attributes.Add(customType);

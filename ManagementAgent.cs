@@ -23,9 +23,10 @@ namespace Lithnet.GoogleApps.MA
         IMAExtensible2CallExport,
         IMAExtensible2CallImport,
         IMAExtensible2GetSchema,
-        IMAExtensible2GetCapabilities, IMAExtensible2GetParameters,
-        IMAExtensible2GetParametersEx
-
+        IMAExtensible2GetCapabilities,
+        IMAExtensible2GetParameters,
+        IMAExtensible2GetParametersEx,
+        IMAExtensible2Password
     {
         private const string DeltaFile = "lithnet.googleapps.ma.delta.xml";
 
@@ -112,9 +113,9 @@ namespace Lithnet.GoogleApps.MA
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
             this.exportRunStep = exportRunStep;
             this.operationSchemaTypes = types;
-            
+
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
-          
+
 
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             this.timer.Start();
@@ -329,6 +330,11 @@ namespace Lithnet.GoogleApps.MA
                 groupFieldList.Add(fieldName);
             }
 
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "groupaliases"))
+            {
+                groupFieldList.Add(fieldName);
+            }
+            
             string groupFields = string.Format("groups({0}), nextPageToken", string.Join(",", groupFieldList));
 
             HashSet<string> groupSettingList = new HashSet<string>();

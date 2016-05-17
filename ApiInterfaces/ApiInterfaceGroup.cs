@@ -42,7 +42,10 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return GroupRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            return new GoogleGroup()
+            {
+                Group = GroupRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN)
+            };
         }
 
         public void DeleteInstance(CSEntryChange csentry)
@@ -148,7 +151,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     continue;
                 }
-                
+
                 foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, googleGroup.Group))
                 {
                     if (type.HasAttribute(change.Name))

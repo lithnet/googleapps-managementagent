@@ -73,7 +73,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            if (this.SetDNValue(csentry, user))
+            if (ApiInterfaceUser.SetDNValue(csentry, user))
             {
                 hasChanged = true;
             }
@@ -173,7 +173,7 @@ namespace Lithnet.GoogleApps.MA
             return ((User)target).PrimaryEmail;
         }
 
-        private bool SetDNValue(CSEntryChange csentry, User e)
+        private static bool SetDNValue(CSEntryChange csentry, User e)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
             {

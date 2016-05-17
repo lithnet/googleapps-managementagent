@@ -41,6 +41,15 @@ namespace Lithnet.GoogleApps.MA
                         Logger.WriteLine($"Deleted member {member}", LogLevel.Debug);
                     }
 
+                    if (allMembersToDelete.Count == 1)
+                    {
+                        Logger.WriteLine($"Deleted {allMembersToDelete.Count} member");
+                    }
+                    else
+                    {
+                        Logger.WriteLine($"Deleted {allMembersToDelete.Count} members");
+                    }
+
                     ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToDelete.Members.ToValueChange(ValueModificationType.Delete), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToDelete.Managers.ToValueChange(ValueModificationType.Delete), changes);
@@ -66,9 +75,18 @@ namespace Lithnet.GoogleApps.MA
                 {
                     GroupMemberRequestFactory.AddMembers(csentry.DN, allMembersToAdd, true);
 
-                    foreach (string member in allMembersToDelete)
+                    foreach (Member member in allMembersToAdd)
                     {
-                        Logger.WriteLine($"Added member {member}", LogLevel.Debug);
+                        Logger.WriteLine($"Added {member.Role} {member.Email}", LogLevel.Debug);
+                    }
+
+                    if (allMembersToAdd.Count == 1)
+                    {
+                        Logger.WriteLine($"Added {allMembersToAdd.Count} member");
+                    }
+                    else
+                    {
+                        Logger.WriteLine($"Added {allMembersToAdd.Count} members");
                     }
 
                     ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToAdd.Members.ToValueChange(ValueModificationType.Add), changes);

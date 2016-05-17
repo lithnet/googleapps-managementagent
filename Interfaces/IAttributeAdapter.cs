@@ -13,13 +13,13 @@
 
         string Api { get; set; }
 
-        bool CanPatch { get; set; }
-
         bool IsReadOnly { get; }
 
         bool IsAnchor { get; }
 
         bool CanProcessAttribute(string attribute);
+
+        bool SupportsPatch { get; }
 
         bool UpdateField(CSEntryChange csentry, object obj);
 

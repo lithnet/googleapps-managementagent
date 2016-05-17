@@ -450,6 +450,29 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+        public void test()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}-d1@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            GroupRequestFactory.AddAlias(id, alias1);
+            GroupRequestFactory.AddAlias(id, alias2);
+
+        }
+
+        [TestMethod]
         public void AddAlias()
         {
             string id = null;

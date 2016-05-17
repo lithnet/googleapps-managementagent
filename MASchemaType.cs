@@ -8,6 +8,8 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using System.Collections.ObjectModel;
+
     internal class MASchemaType
     {
         public string Name { get; set; }
@@ -16,7 +18,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string AnchorAttributeName { get; set; }
 
-        public bool CanPatch { get; set; }
+        public bool SupportsPatch { get; set; }
 
         public IApiInterfaceObject ApiInterface { get; set; }
 
@@ -33,6 +35,11 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return type;
+        }
+
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        {
+            return this.SupportsPatch && this.Attributes.Any(t => changes.Contains(t.AttributeName) && t.SupportsPatch != true);
         }
 
         public IEnumerable<string> GetFieldNames(SchemaType type, string api = null)

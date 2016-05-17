@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Lithnet.GoogleApps.MA
 {
     using Google.Apis.Admin.Directory.directory_v1.Data;
+    using Logging;
     using ManagedObjects;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
@@ -17,7 +18,7 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
-            GoogleGroup g = (GoogleGroup) target;
+            GoogleGroup g = (GoogleGroup)target;
 
             Func<AttributeChange> x = () => ApiInterfaceGroupAliases.ApplyGroupAliasChanges(csentry, g.Group);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
@@ -133,6 +134,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string alias in aliasDeletes)
                     {
+                        Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
                         GroupRequestFactory.RemoveAlias(csentry.DN, alias);
                         valueChanges.Add(ValueChange.CreateValueDelete(alias));
                     }
@@ -140,7 +142,12 @@ namespace Lithnet.GoogleApps.MA
 
                 foreach (string alias in aliasAdds)
                 {
-                    GroupRequestFactory.AddAlias(csentry.DN, alias);
+                    Logger.WriteLine($"Adding alias {alias}", LogLevel.Debug);
+                    if (alias != csentry.DN)
+                    {
+                        GroupRequestFactory.AddAlias(csentry.DN, alias);
+                    }
+
                     valueChanges.Add(ValueChange.CreateValueAdd(alias));
                 }
             }
