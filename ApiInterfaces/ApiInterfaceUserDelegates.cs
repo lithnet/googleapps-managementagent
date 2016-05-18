@@ -145,11 +145,11 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (csentry.ObjectModificationType == ObjectModificationType.Update)
                     {
-                        change = AttributeChange.CreateAttributeUpdate("delegates", valueChanges);
+                        change = AttributeChange.CreateAttributeUpdate("delegate", valueChanges);
                     }
                     else
                     {
-                        change = AttributeChange.CreateAttributeAdd("delegates", valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
+                        change = AttributeChange.CreateAttributeAdd("delegate", valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
                     }
                 }
             }

@@ -40,7 +40,14 @@ namespace Lithnet.GoogleApps.MA
                     Action x = () => UserRequestFactory.MakeAdmin(makeAdmin, id);
                     x.ExecuteWithRetryOnNotFound();
 
-                    changes.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
+                    if (change.ModificationType == AttributeModificationType.Replace)
+                    {
+                        changes.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
+                    }
+                    else
+                    {
+                        changes.Add(AttributeChange.CreateAttributeReplace("isAdmin", makeAdmin));
+                    }
                 }
             }
 
