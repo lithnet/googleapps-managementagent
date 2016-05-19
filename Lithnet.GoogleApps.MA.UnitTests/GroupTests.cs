@@ -76,7 +76,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
-                id = result.AnchorAttributes["id"].GetStringValueAddOrNullPlaceholder();
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 Group e = GroupRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.Email);

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-  <Product Id="*" 
+  <Product Id="*"
            Name="Lithnet GoogleApps Management Agent"
            Language="1033"
-           Version="1.1.5982" 
-           Manufacturer="Lithnet" 
+           Version="1.1.5983"
+           Manufacturer="Lithnet"
            UpgradeCode="3410d571b358426281edb2990ae57cae" >
 
     <Package  InstallerVersion="200"
@@ -38,7 +38,26 @@
     <Condition Message="This application requires Microsoft Forefront Identity Manager 2010 R2 4.1.3441 or later to be installed">
       <![CDATA[Installed OR SYNCVERSION]]>
     </Condition>
-    
+
+    <UI>
+      <UIRef Id="WixUI_Common" />
+      <Property Id="WixUI_Mode" Value="Custom" />
+
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="9" Bold="yes" />
+      <TextStyle Id="WixUI_Font_Title"  FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="EndDialog" Value="Return" Order="2"></Publish>
+
+    </UI>
     <!-- Installation Paths -->
 
     <Directory Id="TARGETDIR" Name="SourceDir">

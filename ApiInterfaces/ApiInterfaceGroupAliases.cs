@@ -134,7 +134,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string alias in aliasDeletes)
                     {
-                        if (group.Email != alias)
+                        if (!group.Email.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
                         {
                             Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
                             GroupRequestFactory.RemoveAlias(csentry.DN, alias);
@@ -146,9 +146,9 @@ namespace Lithnet.GoogleApps.MA
 
                 foreach (string alias in aliasAdds)
                 {
-                    Logger.WriteLine($"Adding alias {alias}", LogLevel.Debug);
-                    if (alias != csentry.DN)
+                    if (!csentry.DN.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
                     {
+                        Logger.WriteLine($"Adding alias {alias}", LogLevel.Debug);
                         GroupRequestFactory.AddAlias(csentry.DN, alias);
                     }
 

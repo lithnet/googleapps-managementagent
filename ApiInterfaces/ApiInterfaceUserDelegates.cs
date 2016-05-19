@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lithnet.GoogleApps.MA
 {
+    using Logging;
     using ManagedObjects;
     using MetadirectoryServices;
     using Microsoft.MetadirectoryServices;
@@ -128,6 +129,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string delete in deletes)
                     {
+                        Logger.WriteLine($"Removing delegate {delete}");
                         UserSettingsRequestFactory.RemoveDelegate(csentry.DN, delete);
                         valueChanges.Add(ValueChange.CreateValueDelete(delete));
                     }
@@ -135,6 +137,7 @@ namespace Lithnet.GoogleApps.MA
 
                 foreach (string add in adds)
                 {
+                    Logger.WriteLine($"Adding delegate {add}");
                     UserSettingsRequestFactory.AddDelegate(csentry.DN, add);
                     valueChanges.Add(ValueChange.CreateValueAdd(add));
                 }

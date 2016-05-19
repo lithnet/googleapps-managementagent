@@ -83,12 +83,6 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Legacy\CSEntryChangeExtensions.cs" />
-    <Compile Include="Legacy\CSEntryChangeFactory.cs" />
-    <Compile Include="Legacy\CSEntryChangeFactoryGroup.cs" />
-    <Compile Include="Legacy\CSEntryChangeFactoryUser.cs" />
-    <Compile Include="Legacy\CSEntryChangeToGroup.cs" />
-    <Compile Include="Legacy\CSEntryChangeToUser.cs" />
     <Compile Include="ExportProcessor.cs" />
     <Compile Include="GenericExtensions.cs" />
     <Compile Include="Interfaces\IAttributeAdapter.cs" />
@@ -106,10 +100,10 @@
     <Compile Include="AttributeAdapters\AdapterCustomTypeListT.cs" />
     <Compile Include="AttributeAdapters\AdapterSubfield.cs" />
     <Compile Include="AttributeAdapters\AdapterPropertyValue.cs" />
-    <Compile Include="MASchemaTypes.cs" />
-    <Compile Include="MASchemaType.cs" />
-    <Compile Include="SchemaBuilder.cs" />
-    <Compile Include="SchemaConstants.cs" />
+    <Compile Include="Schema\MASchemaTypes.cs" />
+    <Compile Include="Schema\MASchemaType.cs" />
+    <Compile Include="Schema\SchemaBuilder.cs" />
+    <Compile Include="Schema\SchemaConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
