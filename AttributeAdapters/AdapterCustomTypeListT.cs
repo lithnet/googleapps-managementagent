@@ -145,12 +145,12 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.IsPrimaryCandidateType)
                 {
-                    if (this.SetPrimaryCandidate(item, item.Type))
+                    if (this.SetPrimaryOnMissingType(item))
                     {
                         hasChanged = true;
                     }
 
-                    if (this.SetPrimaryOnMissingType(item))
+                    if (this.SetPrimaryCandidate(item, item.Type))
                     {
                         hasChanged = true;
                     }
