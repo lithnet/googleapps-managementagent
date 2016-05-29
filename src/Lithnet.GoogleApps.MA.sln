@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps", "..\googleapps-client\Lithnet.GoogleApps.csproj", "{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps", "..\..\googleapps-client\Lithnet.GoogleApps.csproj", "{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA.UnitTests", "Lithnet.GoogleApps.MA.UnitTests\Lithnet.GoogleApps.MA.UnitTests.csproj", "{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}"
 EndProject

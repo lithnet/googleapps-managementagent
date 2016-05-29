@@ -130,11 +130,11 @@
     <Compile Include="UserUpdateTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\googleapps-client\Lithnet.GoogleApps.csproj">
+    <ProjectReference Include="..\..\..\googleapps-client\Lithnet.GoogleApps.csproj">
       <Project>{f26eac4c-f7f2-4aec-916d-3923b2916da3}</Project>
       <Name>Lithnet.GoogleApps</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Lithnet.GoogleApps.MA.csproj">
+    <ProjectReference Include="..\Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj">
       <Project>{bc2a1015-af9b-4a54-9f04-96337d88657f}</Project>
       <Name>Lithnet.GoogleApps.MA</Name>
     </ProjectReference>
