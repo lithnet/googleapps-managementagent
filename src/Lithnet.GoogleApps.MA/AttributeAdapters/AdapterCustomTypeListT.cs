@@ -156,7 +156,10 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
 
-                typedObjects.Add(item.Type, item);
+                if (item.Type != null)
+                {
+                    typedObjects.Add(item.Type, item);
+                }
             }
 
             foreach (IGrouping<string, Tuple<AttributeChange, AdapterPropertyValue>> group in changes)
