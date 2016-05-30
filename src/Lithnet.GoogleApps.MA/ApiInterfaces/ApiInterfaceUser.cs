@@ -125,6 +125,8 @@ namespace Lithnet.GoogleApps.MA
                     changes.Add(c);
                 }
             }
+            
+            this.AddMissingDeletes(changes, csentry);
 
             return changes;
         }
@@ -160,7 +162,25 @@ namespace Lithnet.GoogleApps.MA
                     }
                 }
             }
+
             return attributeChanges;
+        }
+
+        private void AddMissingDeletes(List<AttributeChange> deltaChanges, CSEntryChange csentry)
+        {
+            // This is a workaround for an issue where when we delete the last value from a CustomTypeListT, we do not see the change
+            // come in when we parse the updated object from google, as the value is null. There is no way to tell if it is null because
+            // it was deleted, or never present, making it difficult to send an appopriate 'delete' value back to FIM. The workaround is to
+            // replay any 'deletes' from the original CSEntryChange back in the delta, provided that one of the API interfaces hasnt already
+            // contributed an AttributeChange for it.
+
+            foreach (AttributeChange change in csentry.AttributeChanges.Where(t => t.ModificationType == AttributeModificationType.Delete))
+            {
+                if (deltaChanges.All(t => t.Name != change.Name))
+                {
+                    deltaChanges.Add(change);
+                }
+            }
         }
 
         public string GetAnchorValue(object target)

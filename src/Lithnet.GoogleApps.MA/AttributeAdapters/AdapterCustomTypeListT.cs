@@ -206,9 +206,6 @@ namespace Lithnet.GoogleApps.MA
                 if (this.IsPrimary(item))
                 {
                     item.Type = this.PrimaryType;
-                }
-                else
-                {
                     return true;
                 }
             }

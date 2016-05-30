@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps", "..\..\googleapps-client\Lithnet.GoogleApps.csproj", "{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA.UnitTests", "Lithnet.GoogleApps.MA.UnitTests\Lithnet.GoogleApps.MA.UnitTests.csproj", "{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Lithnet.GoogleApps.MA.Setup", "Lithnet.GoogleApps.MA.Setup\Lithnet.GoogleApps.MA.Setup.wixproj", "{0EE7DB2B-4379-4867-A359-09E81BAB057D}"
@@ -27,14 +25,6 @@ Global
 		{BC2A1015-AF9B-4A54-9F04-96337D88657F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC2A1015-AF9B-4A54-9F04-96337D88657F}.Release|x86.ActiveCfg = Release|Any CPU
 		{BC2A1015-AF9B-4A54-9F04-96337D88657F}.Release|x86.Build.0 = Release|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Debug|x86.Build.0 = Debug|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Release|x86.ActiveCfg = Release|Any CPU
-		{F26EAC4C-F7F2-4AEC-916D-3923B2916DA3}.Release|x86.Build.0 = Release|Any CPU
 		{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}.Debug|x86.ActiveCfg = Debug|Any CPU

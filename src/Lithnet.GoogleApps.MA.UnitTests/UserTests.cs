@@ -371,6 +371,72 @@
         }
 
         [TestMethod]
+        public void UpdateRemoveLastOrgValue()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            User e = new User
+            {
+                PrimaryEmail = dn,
+                Password = Guid.NewGuid().ToString(),
+                Name = new UserName
+                {
+                    GivenName = "gn",
+                    FamilyName = "sn"
+                }
+            };
+
+            e.ExternalIds = new List<ExternalID>();
+            e.ExternalIds.Add(new ExternalID() { Type = "work", Value = "test" });
+            e.Organizations = new List<Organization>();
+            e.Organizations.Add(new Organization()
+            {
+                Location = "test",
+                Type = "work"
+            });
+
+            e.Phones = new List<Phone>();
+            e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
+            e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
+
+
+            e = UserRequestFactory.Add(e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.User;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("organizations_work_location"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = UserRequestFactory.Get(id);
+                Assert.AreEqual(cs.DN, e.PrimaryEmail);
+                Assert.IsNull(e.Organizations);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UserRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
         public void PartialUpdate()
         {
             string id = null;
@@ -658,7 +724,7 @@
 
                 e = UserRequestFactory.Get(id);
 
-                CollectionAssert.AreEquivalent(new string[] { alias1  }, e.Aliases);
+                CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases);
 
             }
             finally
