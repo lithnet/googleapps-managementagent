@@ -101,7 +101,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (ManagementAgentParametersBase.HttpDebugEnabled)
             {
-                ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+                ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 ConnectionPools.DisableGzip = true;
             }
         }
@@ -624,7 +624,7 @@ namespace Lithnet.GoogleApps.MA
                 Thread.Sleep(1000);
             }
 
-            Logger.WriteLine("Import page complete. Returning {0} objects to sync engine", results.CSEntries.Count);
+            Logger.WriteLine("Import page complete. Returning {0} objects to sync engine", LogLevel.Debug, results.CSEntries.Count);
             return results;
         }
 
