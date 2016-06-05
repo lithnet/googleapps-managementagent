@@ -754,11 +754,6 @@ namespace Lithnet.GoogleApps.MA
 
         public void SetPassword(CSEntry csentry, System.Security.SecureString newPassword, PasswordOptions options)
         {
-            if (options == PasswordOptions.ValidatePassword)
-            {
-                return;
-            }
-
             try
             {
                 UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword.ConvertToUnsecureString());
