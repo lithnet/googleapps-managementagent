@@ -139,6 +139,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 this.ServiceAccountEmailAddress,
                 this.UserEmailAddress,
                 this.GetCertificate(this.KeyFilePath, this.KeyFilePassword));
+
+            public string MALogFile => Path.Combine(this.LogFilePath, "ma-operations.log");
+
+            public string PasswordOperationLogFile => Path.Combine(this.LogFilePath, "password-operations.log");
         }
     }
 }

@@ -112,7 +112,7 @@ namespace Lithnet.GoogleApps.MA
             this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
             this.SetHttpDebugMode();
 
-            Logger.LogPath = this.Configuration.LogFilePath;
+            Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
 
             this.timer = new Stopwatch();
@@ -215,7 +215,7 @@ namespace Lithnet.GoogleApps.MA
         public OpenImportConnectionResults OpenImportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenImportConnectionRunStep importRunStep)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
-            Logger.LogPath = this.Configuration.LogFilePath;
+            Logger.LogPath = this.Configuration.MALogFile;
 
             this.importRunStep = importRunStep;
             this.operationSchemaTypes = types;
@@ -747,7 +747,7 @@ namespace Lithnet.GoogleApps.MA
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
             this.SetHttpDebugMode();
-            Logger.LogPath = this.Configuration.LogFilePath;
+            Logger.LogPath = this.Configuration.PasswordOperationLogFile;
 
             ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
         }

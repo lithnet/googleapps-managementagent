@@ -158,6 +158,25 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public string MALogFile
+        {
+            get
+            {
+                string root = Path.GetDirectoryName(this.LogFilePath);
+
+                return root == null ? null : Path.Combine(root, "ma-operations.log");
+            }
+        }
+
+        public string PasswordOperationLogFile
+        {
+            get
+            {
+                string root = Path.GetDirectoryName(this.LogFilePath);
+
+                return root == null ? null : Path.Combine(root, "password-operations.log");
+            }
+        }
 
         public bool DoNotGenerateDelta
         {

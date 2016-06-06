@@ -41,8 +41,10 @@ namespace Lithnet.GoogleApps.MA
 
         string KeyFilePath { get; }
 
-        string LogFilePath { get; }
+        string MALogFile { get; }
         
+        string PasswordOperationLogFile { get; }
+
         bool DoNotGenerateDelta { get; }
 
         string Domain { get; }
