@@ -158,7 +158,10 @@ namespace Lithnet.GoogleApps.MA
 
                 if (item.Type != null)
                 {
-                    typedObjects.Add(item.Type, item);
+                    if (!typedObjects.ContainsKey(item.Type))
+                    {
+                        typedObjects.Add(item.Type, item);
+                    }
                 }
             }
 
