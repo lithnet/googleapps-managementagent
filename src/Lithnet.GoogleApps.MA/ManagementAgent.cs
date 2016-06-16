@@ -14,14 +14,10 @@ using System.Diagnostics;
 using Lithnet.MetadirectoryServices;
 using Google.GData.Contacts;
 using GroupMembership = Lithnet.GoogleApps.ManagedObjects.GroupMembership;
+using System.Net;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Net;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
-
-
     public class ManagementAgent :
         IMAExtensible2CallExport,
         IMAExtensible2CallImport,
@@ -719,21 +715,11 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<ConfigParameterDefinition> GetConfigParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
-            //if (pageNumber > 1)
-            //{
-            //    return null;
-            //}
-
             return ManagementAgentParameters.GetParameters(configParameters, page);
         }
 
         public ParameterValidationResult ValidateConfigParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
-            //if (pageNumber > 1)
-            //{
-            //    return new ParameterValidationResult(ParameterValidationResultCode.Success, null, null);
-            //}
-
             ManagementAgentParameters parameters = new ManagementAgentParameters(configParameters);
             return parameters.ValidateParameters(page);
         }
@@ -756,7 +742,7 @@ namespace Lithnet.GoogleApps.MA
         {
             try
             {
-                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword.ConvertToUnsecureString());
+                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword);
                 Logger.WriteLine("Set password for {0}", csentry.DN.ToString());
             }
             catch (Exception ex)
@@ -771,7 +757,7 @@ namespace Lithnet.GoogleApps.MA
         {
             try
             {
-                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword.ConvertToUnsecureString());
+                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword);
                 Logger.WriteLine("Changed password for {0}", csentry.DN.ToString());
             }
             catch (Exception ex)
