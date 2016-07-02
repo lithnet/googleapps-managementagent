@@ -755,17 +755,7 @@ namespace Lithnet.GoogleApps.MA
 
         public void ChangePassword(CSEntry csentry, System.Security.SecureString oldPassword, System.Security.SecureString newPassword)
         {
-            try
-            {
-                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword);
-                Logger.WriteLine("Changed password for {0}", csentry.DN.ToString());
-            }
-            catch (Exception ex)
-            {
-                Logger.WriteLine("Error changing password for {0}", csentry.DN.ToString());
-                Logger.WriteException(ex);
-                throw;
-            }
+            throw new EntryPointNotImplementedException();
         }
 
         public void ClosePasswordConnection()
