@@ -128,7 +128,22 @@ namespace Lithnet.GoogleApps.MA
                         if (!user.PrimaryEmail.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
                         {
                             Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
-                            UserRequestFactory.RemoveAlias(csentry.DN, alias);
+
+                            try
+                            {
+                                UserRequestFactory.RemoveAlias(csentry.DN, alias);
+                            }
+                            catch (Google.GoogleApiException ex)
+                            {
+                                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+                                {
+                                    Logger.WriteLine($"Alias {alias} does not exist on object");
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
                         }
 
                         valueChanges.Add(ValueChange.CreateValueDelete(alias));

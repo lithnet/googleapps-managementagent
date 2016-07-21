@@ -738,6 +738,69 @@
         }
 
         [TestMethod]
+        public void SilentlyRemoveNonExistentAlias()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            User e = new User
+            {
+                PrimaryEmail = dn,
+                Password = Guid.NewGuid().ToString(),
+                Name = new UserName
+                {
+                    GivenName = "gn",
+                    FamilyName = "sn"
+                }
+            };
+
+            e = UserRequestFactory.Add(e);
+            id = e.Id;
+
+            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            UserRequestFactory.AddAlias(id, alias1);
+            UserRequestFactory.AddAlias(id, alias2);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.User;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
+            {
+                new ValueChange($"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}", ValueModificationType.Delete )
+            }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = UserRequestFactory.Get(id);
+
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
+
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UserRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
         public void ReplaceAliases()
         {
             string id = null;
