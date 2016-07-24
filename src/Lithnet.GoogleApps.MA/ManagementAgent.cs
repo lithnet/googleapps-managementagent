@@ -620,7 +620,7 @@ namespace Lithnet.GoogleApps.MA
                 Thread.Sleep(1000);
             }
 
-            Logger.WriteLine("Import page complete. Returning {0} objects to sync engine", LogLevel.Debug, results.CSEntries.Count);
+            //Logger.WriteLine("Import page complete. Returning {0} objects to sync engine", LogLevel.Debug, results.CSEntries.Count);
             return results;
         }
 
