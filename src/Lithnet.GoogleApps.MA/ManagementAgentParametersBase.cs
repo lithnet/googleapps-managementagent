@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.MetadirectoryServices;
-using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
-using System.IO;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Admin.Directory.directory_v1;
 using Google.Apis.Groupssettings.v1;
-using System.Text.RegularExpressions;
 using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
@@ -20,7 +12,7 @@ namespace Lithnet.GoogleApps.MA
         protected const string CustomerIDParameter = "Customer ID";
 
         protected const string DomainParameter = "Primary domain";
-        
+
         protected const string ServiceAccountEmailAddressParameter = "Service account email address";
 
         protected const string UserEmailAddressParameter = "User email address";
@@ -36,7 +28,7 @@ namespace Lithnet.GoogleApps.MA
         protected const string GroupRegexFilterParameter = "Group regex email address filter";
 
         protected const string ContactRegexFilterParameter = "Contact regex email address filter";
-        
+
         protected const string DoNotGenerateDeltaParameter = "Do not save delta data on export";
 
         protected const string ExternalIDsFormatParameter = "External IDs format";
@@ -64,18 +56,18 @@ namespace Lithnet.GoogleApps.MA
         protected const string AddressesFixedTypeFormatParameter = "Addresses fixed types";
 
         protected const string EmailsFixedTypeFormatParameter = "Email fixed types";
-        
+
         protected const string WebsitesFormatParameter = "Websites attribute format";
 
         protected const string WebsitesFixedTypeFormatParameter = "Websites fixed types";
 
         protected const string LogFilePathParameter = "Log file path";
 
-        protected static string[] RequiredScopes = new string[] 
-                    { 
-                        DirectoryService.Scope.AdminDirectoryUser, 
-                        DirectoryService.Scope.AdminDirectoryGroup, 
-                        DirectoryService.Scope.AdminDirectoryGroupMember, 
+        protected static string[] RequiredScopes = new string[]
+                    {
+                        DirectoryService.Scope.AdminDirectoryUser,
+                        DirectoryService.Scope.AdminDirectoryGroup,
+                        DirectoryService.Scope.AdminDirectoryGroupMember,
                         GroupssettingsService.Scope.AppsGroupsSettings,
                         DirectoryService.Scope.AdminDirectoryUserschema,
                         "https://www.googleapis.com/auth/admin.directory.domain",
@@ -101,7 +93,7 @@ namespace Lithnet.GoogleApps.MA
         public int GroupMembersImportThreadCount { get; protected set; }
 
         public int ContactsServicePoolSize { get; protected set; }
-        
+
         public int EmailSettingsServicePoolSize { get; protected set; }
 
         public int ExportThreadCount { get; protected set; }
@@ -126,15 +118,12 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.certificate == null)
             {
-                this.certificate = new X509Certificate2(path, password, X509KeyStorageFlags.Exportable);
+                this.certificate = new X509Certificate2(Environment.ExpandEnvironmentVariables(path), password, X509KeyStorageFlags.Exportable);
             }
 
             return this.certificate;
         }
 
-        public static bool HttpDebugEnabled
-        {
-            get { return ConfigurationManager.AppSettings["lithnet-google-ma-http-debug-enabled"] == "1"; }
-        }
+        public static bool HttpDebugEnabled => ConfigurationManager.AppSettings["lithnet-google-ma-http-debug-enabled"] == "1";
     }
 }
