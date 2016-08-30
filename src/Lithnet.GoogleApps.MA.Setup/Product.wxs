@@ -3,7 +3,7 @@
   <Product Id="*"
            Name="Lithnet GoogleApps Management Agent"
            Language="1033"
-           Version="1.1.6049"
+           Version="1.1.6086"
            Manufacturer="Lithnet"
            UpgradeCode="3410d571b358426281edb2990ae57cae" >
 

@@ -262,6 +262,7 @@
                 Department = "test",
                 Symbol = "test",
                 Location = "test",
+                Type = "work"
             });
 
             e.Phones = new List<Phone>();

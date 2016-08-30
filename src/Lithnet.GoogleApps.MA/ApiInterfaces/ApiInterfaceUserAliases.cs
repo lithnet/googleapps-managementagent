@@ -135,7 +135,8 @@ namespace Lithnet.GoogleApps.MA
                             }
                             catch (Google.GoogleApiException ex)
                             {
-                                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+                                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound || 
+                                    ex.Error?.Message == "Invalid Input: resource_id")
                                 {
                                     Logger.WriteLine($"Alias {alias} does not exist on object");
                                 }

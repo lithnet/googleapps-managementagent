@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Lithnet.GoogleApps;
-using Lithnet.GoogleApps.MA;
+using Microsoft.MetadirectoryServices;
+using System.Linq;
+using System.Net;
+using Google;
+using Google.Apis.Admin.Directory.directory_v1.Data;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
-    using System.Linq;
-    using System.Net;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
-    using Google;
-    using Google.Apis.Admin.Directory.directory_v1.Data;
-    using Google.GData.Contacts;
-    using Google.GData.Extensions;
-    using Lithnet.GoogleApps.MA;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     [TestClass]
     public class GroupTests
     {
@@ -39,9 +30,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@test.com"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customFooterText", "custom footer"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("defaultMessageDenyNotificationText", "occupation"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isArchived", false));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeCustomFooter", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maxMessageBytes", 5000000));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("membersCanPostAsTheGroup", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageDisplayFont", "DEFAULT_FONT"));
@@ -50,6 +43,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
@@ -91,8 +85,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
                 Assert.AreEqual("test@test.com", s.CustomReplyTo);
+                Assert.AreEqual("custom footer", s.CustomFooterText);
                 Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);
+                Assert.AreEqual(true, s.IncludeCustomFooter);
                 Assert.AreEqual(false, s.IsArchived);
                 Assert.AreEqual(5000000, s.MaxMessageBytes);
                 Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
@@ -103,6 +99,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
@@ -151,9 +148,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@test.com"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customFooterText", "custom footer"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("defaultMessageDenyNotificationText", "occupation"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isArchived", false));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeCustomFooter", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maxMessageBytes", 5000000));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("membersCanPostAsTheGroup", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageDisplayFont", "DEFAULT_FONT"));
@@ -162,6 +161,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
@@ -199,8 +199,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
                 Assert.AreEqual("test@test.com", s.CustomReplyTo);
+                Assert.AreEqual("custom footer", s.CustomFooterText);
                 Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);
+                Assert.AreEqual(true, s.IncludeCustomFooter);
                 Assert.AreEqual(false, s.IsArchived);
                 Assert.AreEqual(5000000, s.MaxMessageBytes);
                 Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
@@ -211,6 +213,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
@@ -446,29 +449,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     GroupRequestFactory.Delete(id);
                 }
             }
-
-        }
-
-        [TestMethod]
-        public void test()
-        {
-            string id = null;
-            string dn = $"{Guid.NewGuid()}-d1@{UnitTestControl.TestParameters.Domain}";
-            Group e = new Group
-            {
-                Email = dn,
-                Name = Guid.NewGuid().ToString()
-            };
-
-            e = GroupRequestFactory.Add(e);
-            id = e.Id;
-
-            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-
-            GroupRequestFactory.AddAlias(id, alias1);
-            GroupRequestFactory.AddAlias(id, alias2);
 
         }
 

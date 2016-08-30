@@ -129,6 +129,11 @@ namespace Lithnet.GoogleApps.MA
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
 
+            if (this.propInfo == null)
+            {
+                throw new InvalidOperationException($"The property {this.PropertyName} was not found on the object of type {obj.GetType().FullName}");
+            }
+            
             object value = this.propInfo.GetValue(obj);
             if (this.CastForImport != null)
             {

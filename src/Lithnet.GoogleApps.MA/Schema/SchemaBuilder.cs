@@ -1036,6 +1036,38 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddGroupSettings(MASchemaType type)
         {
+            AdapterPropertyValue includeCustomFooter = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "includeCustomFooter",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "includeCustomFooter",
+                PropertyName = "IncludeCustomFooter",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                UseNullPlaceHolder = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(includeCustomFooter);
+
+            AdapterPropertyValue customFooterText = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "customFooterText",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "customFooterText",
+                PropertyName = "CustomFooterText",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                UseNullPlaceHolder = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(customFooterText);
+
             AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -1100,20 +1132,21 @@ namespace Lithnet.GoogleApps.MA
 
             type.Attributes.Add(whoCanInvite);
 
-            //MASchemaAttribute whoCanAdd = new MASchemaAttribute
-            //{
-            //    AttributeType = AttributeType.String,
-            //    FieldName = "whoCanAdd",
-            //    IsMultivalued = false,
-            //    Operation = AttributeOperation.ImportExport,
-            //    AttributeName = "whoCanAdd",
-            //    PropertyName = "WhoCanAdd",
-            //    Api = "groupsettings",
-            //    SupportsPatch = true,
-            //    IsArrayAttribute = false
-            //};
-            //
-            //type.Attributes.Add(whoCanAdd);
+            AdapterPropertyValue whoCanAdd = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanAdd",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanAdd",
+                PropertyName = "WhoCanAdd",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                UseNullPlaceHolder = true,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(whoCanAdd);
 
             AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
             {
