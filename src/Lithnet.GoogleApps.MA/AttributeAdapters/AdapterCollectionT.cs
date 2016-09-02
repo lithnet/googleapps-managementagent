@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using Lithnet.Logging;
+using System.Reflection;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Collections;
-    using Logging;
-    using System.Reflection;
-    using ManagedObjects;
-
     internal class AdapterCollection<T> : IAttributeAdapter
     {
         private PropertyInfo propInfo;
@@ -34,7 +28,7 @@ namespace Lithnet.GoogleApps.MA
 
         public AttributeOperation Operation { get; set; }
 
-        public bool IsReadOnly { get; set; }
+        public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
         public bool IsAnchor => false;
 
@@ -171,7 +165,7 @@ namespace Lithnet.GoogleApps.MA
         public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
             ICollection<T> list = this.GetList(obj);
-
+           
             if (list == null)
             {
                 if (modType == ObjectModificationType.Update)

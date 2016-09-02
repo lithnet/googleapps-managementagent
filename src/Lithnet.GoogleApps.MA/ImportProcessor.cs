@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Diagnostics.Tracing;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal static class ImportProcessor
     {
         public static CSEntryChange GetCSEntryChange(object source, SchemaType type)

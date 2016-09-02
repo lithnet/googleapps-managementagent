@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Lithnet.Logging;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Logging;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
 
     internal class ApiInterfaceUserDelegates : IApiInterface
     {

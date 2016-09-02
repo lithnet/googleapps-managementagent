@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Lithnet.Logging;
+using System.Diagnostics.CodeAnalysis;
+using Google.GData.Contacts;
+using Google.GData.Extensions;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Diagnostics.CodeAnalysis;
-    using Google.Contacts;
-    using Google.GData.Contacts;
-    using Google.GData.Extensions;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal class ApiInterfaceContact : IApiInterfaceObject
     {
         internal const string DNAttributeName = "lithnet-google-ma-dn";
@@ -22,7 +22,7 @@ namespace Lithnet.GoogleApps.MA
 
         private string domain;
 
-        protected  MASchemaType SchemaType { get; set; }
+        protected MASchemaType SchemaType { get; set; }
 
         static ApiInterfaceContact()
         {
@@ -198,6 +198,53 @@ namespace Lithnet.GoogleApps.MA
             return contactEntry.PrimaryEmail == null ? null : "contact:" + contactEntry.PrimaryEmail.Address;
         }
 
+        public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
+        {
+            Task t = new Task(() =>
+            {
+                Logger.WriteLine("Starting contacts import task");
+
+                HashSet<string> seenDNs = new HashSet<string>();
+
+                foreach (ContactEntry contact in ContactRequestFactory.GetContacts(config.Domain))
+                {
+                    if (!string.IsNullOrWhiteSpace(config.ContactRegexFilter))
+                    {
+                        if (contact.PrimaryEmail != null)
+                        {
+                            if (!Regex.IsMatch(contact.PrimaryEmail.Address, config.ContactRegexFilter, RegexOptions.IgnoreCase))
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    string dn = this.GetDNValue(contact);
+
+                    if (dn == null)
+                    {
+                        Logger.WriteLine($"Contact {contact.SelfUri.Content} had no DN or primary email attribute, ignoring");
+                        continue;
+                    }
+
+                    if (!seenDNs.Add(dn))
+                    {
+                        Logger.WriteLine($"Ignoring contact {contact.SelfUri.Content} with duplicate dn {dn}");
+                        continue;
+                    }
+
+
+                    collection.Add(ImportProcessor.GetCSEntryChange(contact, schema.Types[SchemaConstants.Contact]));
+                }
+
+                Logger.WriteLine("Contacts import task complete");
+            });
+
+            t.Start();
+
+            return t;
+        }
+
         public bool SetDNValue(CSEntryChange csentry, ContactEntry e)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
@@ -232,7 +279,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (dn == null)
                 {
-                    dn = new ExtendedProperty {Name = ApiInterfaceContact.DNAttributeName};
+                    dn = new ExtendedProperty { Name = ApiInterfaceContact.DNAttributeName };
                     e.ExtendedProperties.Add(dn);
                 }
 

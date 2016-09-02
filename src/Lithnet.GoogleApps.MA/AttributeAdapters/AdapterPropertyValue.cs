@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
+using System.Reflection;
+using Lithnet.Logging;
+using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Linq.Expressions;
-    using System.Reflection;
-    using Google.GData.Client;
-    using Logging;
-    using MetadirectoryServices;
-
     internal class AdapterPropertyValue : IAttributeAdapter
     {
         private PropertyInfo propInfo;
@@ -42,6 +35,8 @@ namespace Lithnet.GoogleApps.MA
 
         public Func<object, object> CastForImport { get; set; }
 
+        public Func<object, object> CastForExport { get; set; }
+        
         public bool UseNullPlaceHolder { get; set; }
 
         internal string AssignedType { get; set; }
@@ -78,6 +73,11 @@ namespace Lithnet.GoogleApps.MA
                 {
                     value = Constants.NullValuePlaceholder;
                 }
+            }
+
+            if (this.CastForExport != null)
+            {
+                value = this.CastForExport(value);
             }
 
             this.propInfo.SetValue(obj, value, null);

@@ -1,28 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
+using Google.GData.Client;
+using Google.GData.Contacts;
+using Google.GData.Extensions;
+using Lithnet.GoogleApps.ManagedObjects;
+using Microsoft.MetadirectoryServices;
+using Relation = Lithnet.GoogleApps.ManagedObjects.Relation;
+using Website = Lithnet.GoogleApps.ManagedObjects.Website;
+using GDataOrganization = Google.GData.Extensions.Organization;
+using GDataEmail = Google.GData.Extensions.EMail;
+using GDataIM = Google.GData.Extensions.IMAddress;
+using Organization = Lithnet.GoogleApps.ManagedObjects.Organization;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.IO;
-    using System.Runtime.Serialization;
-    using System.Xml;
-    using Google.Apis.Admin.Directory.directory_v1.Data;
-    using Google.GData.Client;
-    using Google.GData.Contacts;
-    using Google.GData.Extensions;
-    using ManagedObjects;
-    using Microsoft.MetadirectoryServices;
-    using Relation = ManagedObjects.Relation;
-    using Website = ManagedObjects.Website;
-    using GDataOrganization = Google.GData.Extensions.Organization;
-    using GDataEmail = Google.GData.Extensions.EMail;
-    using GDataIM = Google.GData.Extensions.IMAddress;
-    using Organization = ManagedObjects.Organization;
-
     internal static class SchemaBuilder
     {
         public static MASchemaTypes GetSchema(IManagementAgentParameters config)
@@ -31,7 +24,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 SchemaBuilder.GetSchema(SchemaConstants.User, config),
                 SchemaBuilder.GetSchema(SchemaConstants.Group, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Contact, config)
+                SchemaBuilder.GetSchema(SchemaConstants.Contact, config),
+                SchemaBuilder.GetSchema(SchemaConstants.Domain, config)
             };
 
             if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
@@ -57,9 +51,86 @@ namespace Lithnet.GoogleApps.MA
 
                 case SchemaConstants.Contact:
                     return SchemaBuilder.GetContactSchema(config);
+
+                case SchemaConstants.Domain:
+                    return SchemaBuilder.GetDomainSchema(config);
             }
 
             throw new InvalidOperationException();
+        }
+
+        public static MASchemaType GetDomainSchema(IManagementAgentParameters config)
+        {
+            MASchemaType type = new MASchemaType
+            {
+                Attributes = new List<IAttributeAdapter>(),
+                Name = "domain",
+                AnchorAttributeName = SchemaConstants.DomainName,
+                SupportsPatch = false,
+            };
+
+            type.ApiInterface = new ApiInterfaceDomain(config.CustomerID, type);
+
+            AdapterPropertyValue domainName = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "domainName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "domainName",
+                PropertyName = "DomainName",
+                Api = "domain",
+                SupportsPatch = false,
+                IsArrayAttribute = false,
+                IsAnchor = true
+            };
+
+            type.Attributes.Add(domainName);
+
+            AdapterPropertyValue isPrimary = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "isPrimary",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "isPrimary",
+                PropertyName = "IsPrimary",
+                Api = "domain",
+                SupportsPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(isPrimary);
+
+            AdapterPropertyValue verified = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "verified",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "verified",
+                PropertyName = "Verified",
+                Api = "domain",
+                SupportsPatch = false,
+                IsArrayAttribute = false
+            };
+
+            type.Attributes.Add(verified);
+
+            AdapterCollection<string> domainAliases = new AdapterCollection<string>
+            {
+                Api = "domain",
+                AttributeName = "domainAliases",
+                FieldName = "domainAliases",
+                PropertyName = "DomainAliasNames",
+                SupportsPatch = false,
+                AttributeType = AttributeType.String,
+                Operation = AttributeOperation.ImportOnly
+            };
+
+            type.Attributes.Add(domainAliases);
+          
+            return type;
         }
 
         public static MASchemaType GetContactSchema(IManagementAgentParameters config)
@@ -1225,7 +1296,16 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 UseNullPlaceHolder = true,
-                IsArrayAttribute = false
+                IsArrayAttribute = false,
+                CastForExport = (value) =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+                    
+                    return (int) value;
+                }
             };
 
             type.Attributes.Add(maxMessageBytes);
@@ -1643,7 +1723,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "aliases",
                 PropertyName = "Aliases",
                 SupportsPatch = true,
-                IsReadOnly = false
+                Operation = AttributeOperation.ImportExport
             };
 
             type.Attributes.Add(aliasesList);
@@ -1655,7 +1735,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "nonEditableAliases",
                 PropertyName = "NonEditableAliases",
                 SupportsPatch = false,
-                IsReadOnly = true
+                Operation = AttributeOperation.ImportOnly
             };
 
             type.Attributes.Add(nonEditableAliasesList);
@@ -1670,7 +1750,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "aliases",
                 PropertyName = "Aliases",
                 SupportsPatch = true,
-                IsReadOnly = false
+                Operation = AttributeOperation.ImportExport
             };
 
             type.Attributes.Add(aliasesList);
@@ -1682,7 +1762,7 @@ namespace Lithnet.GoogleApps.MA
                 FieldName = "nonEditableAliases",
                 PropertyName = "NonEditableAliases",
                 SupportsPatch = false,
-                IsReadOnly = true
+                Operation = AttributeOperation.ImportOnly
             };
 
             type.Attributes.Add(nonEditableAliasesList);
@@ -2024,8 +2104,8 @@ namespace Lithnet.GoogleApps.MA
             G.Schema schema = new G.Schema();
 
             schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
-            schema.Fields = new List<SchemaFieldSpec>();
-            schema.Fields.Add(new SchemaFieldSpec()
+            schema.Fields = new List<G.SchemaFieldSpec>();
+            schema.Fields.Add(new G.SchemaFieldSpec()
             {
                 FieldName = SchemaConstants.CustomSchemaObjectType,
                 FieldType = "STRING",

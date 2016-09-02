@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
-using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA

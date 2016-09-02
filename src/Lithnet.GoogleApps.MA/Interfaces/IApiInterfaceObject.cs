@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Google.GData.Extensions;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
 
     internal interface IApiInterfaceObject : IApiInterface
     {
@@ -21,5 +16,7 @@ namespace Lithnet.GoogleApps.MA
         string GetAnchorValue(object target);
 
         string GetDNValue(object target);
+
+        Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection);
     }
 }

@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using System.Reflection;
+using Google.GData.Extensions;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Collections;
-    using Logging;
-    using System.Reflection;
-    using Google.GData.Extensions;
-    using ManagedObjects;
-
     internal class AdapterGDataSimpleAttributeList<T> : IAttributeAdapter where T : SimpleAttribute, new()
     {
         private PropertyInfo propInfo;

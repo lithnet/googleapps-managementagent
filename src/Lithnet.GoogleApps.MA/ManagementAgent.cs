@@ -1,19 +1,15 @@
 using System;
 using System.IO;
-using System.Linq;
 using Microsoft.MetadirectoryServices;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Lithnet.Logging;
 using System.Threading;
 using System.Collections.Concurrent;
-using Lithnet.GoogleApps.ManagedObjects;
 using System.Diagnostics;
 using Lithnet.MetadirectoryServices;
-using Google.GData.Contacts;
-using GroupMembership = Lithnet.GoogleApps.ManagedObjects.GroupMembership;
+using Lithnet.GoogleApps.ManagedObjects;
 using System.Net;
 
 namespace Lithnet.GoogleApps.MA
@@ -35,21 +31,11 @@ namespace Lithnet.GoogleApps.MA
 
         private Stopwatch timer;
 
+        private Task importTask;
+
         private int opCount;
 
-        private Task importUsersTask;
-
-        private Task importGroupsTask;
-
-        private Task importContactsTask;
-
         private Schema operationSchemaTypes;
-
-        private bool userImportTaskComplete;
-
-        private bool groupImportTaskComplete;
-
-        private bool contactsImportTaskComplete;
 
         private BlockingCollection<object> importCollection;
 
@@ -99,6 +85,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 ConnectionPools.DisableGzip = true;
+                Logger.WriteLine("WARNING: HTTPS Debugging enabled. Service certificate validation and GZIP compression are both disabled");
             }
         }
 
@@ -252,220 +239,74 @@ namespace Lithnet.GoogleApps.MA
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
 
-            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.User) || this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
+            List<Task> tasks = new List<Task>();
+
+            foreach (MASchemaType item in ManagementAgent.Schema)
             {
-                this.SetupUserImportTask(types);
-                Logger.WriteLine("User import task setup complete");
-            }
-            else
-            {
-                this.userImportTaskComplete = true;
+                Task t = item.ApiInterface.GetItems(this.Configuration, types, this.importCollection);
+
+                if (t != null)
+                {
+                    tasks.Add(t);
+                }
             }
 
-            if (this.operationSchemaTypes.Types.Contains("group"))
-            {
-                this.SetupGroupsImportTask();
-                Logger.WriteLine("Group import task setup complete");
-            }
-            else
-            {
-                this.groupImportTaskComplete = true;
-            }
-
-            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.Contact))
-            {
-                this.SetupContactsImportTask();
-                Logger.WriteLine("Contacts import task setup complete");
-            }
-            else
-            {
-                this.contactsImportTaskComplete = true;
-            }
-
-            if (this.importUsersTask != null)
-            {
-                this.importUsersTask.Start();
-            }
-
-            if (this.importGroupsTask != null)
-            {
-                this.importGroupsTask.Start();
-            }
-
-            if (this.importContactsTask != null)
-            {
-                this.importContactsTask.Start();
-            }
+            this.importTask = Task.WhenAll(tasks.ToArray());
+            this.importTask.ContinueWith(z => this.importCollection.CompleteAdding());
         }
 
-        private void ThrowOnFaultedTask()
-        {
-            if (this.importGroupsTask != null)
-            {
-                if (this.importGroupsTask.IsFaulted)
-                {
-                    throw this.importGroupsTask.Exception;
-                }
-            }
+        //private void ThrowOnFaultedTask()
+        //{
+        //    if (this.importGroupsTask != null)
+        //    {
+        //        if (this.importGroupsTask.IsFaulted)
+        //        {
+        //            throw this.importGroupsTask.Exception;
+        //        }
+        //    }
 
-            if (this.importUsersTask != null)
-            {
-                if (this.importUsersTask.IsFaulted)
-                {
-                    throw this.importUsersTask.Exception;
-                }
-            }
+        //    if (this.importUsersTask != null)
+        //    {
+        //        if (this.importUsersTask.IsFaulted)
+        //        {
+        //            throw this.importUsersTask.Exception;
+        //        }
+        //    }
 
 
-            if (this.importContactsTask != null)
-            {
-                if (this.importContactsTask.IsFaulted)
-                {
-                    throw this.importContactsTask.Exception;
-                }
-            }
-        }
+        //    if (this.importContactsTask != null)
+        //    {
+        //        if (this.importContactsTask.IsFaulted)
+        //        {
+        //            throw this.importContactsTask.Exception;
+        //        }
+        //    }
 
-        private void SetupGroupsImportTask()
-        {
-
-            HashSet<string> groupFieldList = new HashSet<string>
-            {
-                SchemaConstants.Email,
-                SchemaConstants.ID
-            };
-
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "group"))
-            {
-                groupFieldList.Add(fieldName);
-            }
-
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "groupaliases"))
-            {
-                groupFieldList.Add(fieldName);
-            }
-            
-            string groupFields = string.Format("groups({0}), nextPageToken", string.Join(",", groupFieldList));
-
-            HashSet<string> groupSettingList = new HashSet<string>();
-
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(this.operationSchemaTypes.Types[SchemaConstants.Group], "groupsettings"))
-            {
-                groupSettingList.Add(fieldName);
-            }
-
-            bool settingsRequired = groupSettingList.Count > 0;
-
-            string groupSettingsFields = string.Join(",", groupSettingList);
-
-            bool membersRequired = ManagementAgent.Schema[SchemaConstants.Group].Attributes.Any(t => t.Api == "groupmembership" && this.operationSchemaTypes.Types[SchemaConstants.Group].Attributes.Contains(t.AttributeName));
-
-            GroupRequestFactory.MemberThreads = this.Configuration.GroupMembersImportThreadCount;
-            GroupRequestFactory.SettingsThreads = this.Configuration.GroupSettingsImportThreadCount;
-
-            this.importGroupsTask = new Task(() =>
-            {
-                Logger.WriteLine("Starting group import task");
-                Logger.WriteLine("Requesting group fields: " + groupFields);
-                Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
-
-                Logger.WriteLine("Requesting settings: " + settingsRequired.ToString());
-                Logger.WriteLine("Requesting members: " + membersRequired.ToString());
-
-                GroupRequestFactory.ImportGroups(this.Configuration.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields, this.importCollection);
-
-                Logger.WriteLine("Groups import task complete");
-
-                this.groupImportTaskComplete = true;
-
-                lock (this.importCollection)
-                {
-                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
-                    {
-                        this.importCollection.CompleteAdding();
-                    }
-                }
-            });
-        }
-
-        private void SetupContactsImportTask()
-        {
-            this.importContactsTask = new Task(() =>
-            {
-                Logger.WriteLine("Starting contacts import task");
-
-                ContactRequestFactory.GetContacts(this.Configuration.Domain, this.importCollection);
-
-                Logger.WriteLine("Contacts import task complete");
-
-                this.contactsImportTaskComplete = true;
-
-                lock (this.importCollection)
-                {
-                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
-                    {
-                        this.importCollection.CompleteAdding();
-                    }
-                }
-            });
-        }
-
-        private void SetupUserImportTask(Schema types)
-        {
-            HashSet<string> fieldNames = new HashSet<string>();
-
-            fieldNames.Add(SchemaConstants.PrimaryEmail);
-            fieldNames.Add(SchemaConstants.ID);
-
-            if (types.Types.Contains(SchemaConstants.User) || types.Types.Contains(SchemaConstants.AdvancedUser))
-            {
-                foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(types.Types[SchemaConstants.User]))
-                {
-                    fieldNames.Add(field);
-                }
-            }
-
-            if (this.operationSchemaTypes.Types.Contains(SchemaConstants.AdvancedUser))
-            {
-                fieldNames.Add($"customSchemas/{SchemaConstants.CustomGoogleAppsSchemaName}");
-            }
-
-            string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
-
-            this.importUsersTask = new Task(() =>
-            {
-                Logger.WriteLine("Starting user import task");
-                Logger.WriteLine("Requesting fields: " + fields);
-                UserRequestFactory.StartImport(this.Configuration.CustomerID, fields, this.importCollection);
-                Logger.WriteLine("User import task complete");
-
-                this.userImportTaskComplete = true;
-
-                lock (this.importCollection)
-                {
-                    if (this.userImportTaskComplete && this.groupImportTaskComplete && this.contactsImportTaskComplete)
-                    {
-                        this.importCollection.CompleteAdding();
-                    }
-                }
-            });
-        }
+        //    if (this.importDomainsTask != null)
+        //    {
+        //        if (this.importDomainsTask.IsFaulted)
+        //        {
+        //            throw this.importDomainsTask.Exception;
+        //        }
+        //    }
+        //}
 
         public GetImportEntriesResults GetImportEntries(GetImportEntriesRunStep importRunStep)
         {
             GetImportEntriesResults results;
 
-            if (this.importRunStep.ImportType == OperationType.Full)
+            switch (this.importRunStep.ImportType)
             {
-                results = this.GetImportEntriesFull();
-            }
-            else if (this.importRunStep.ImportType == OperationType.Delta)
-            {
-                results = this.GetImportEntriesDelta();
-            }
-            else
-            {
-                throw new NotSupportedException();
+                case OperationType.Full:
+                    results = this.GetImportEntriesFull();
+                    break;
+
+                case OperationType.Delta:
+                    results = this.GetImportEntriesDelta();
+                    break;
+
+                default:
+                    throw new NotSupportedException();
             }
 
             return results;
@@ -473,8 +314,7 @@ namespace Lithnet.GoogleApps.MA
 
         private GetImportEntriesResults GetImportEntriesDelta()
         {
-            GetImportEntriesResults results = new GetImportEntriesResults();
-            results.CSEntries = new List<CSEntryChange>();
+            GetImportEntriesResults results = new GetImportEntriesResults { CSEntries = new List<CSEntryChange>() };
 
             int count = 0;
 
@@ -492,13 +332,15 @@ namespace Lithnet.GoogleApps.MA
 
         private GetImportEntriesResults GetImportEntriesFull()
         {
-            GetImportEntriesResults results = new GetImportEntriesResults();
-            results.CSEntries = new List<CSEntryChange>();
-            //Logger.WriteLine("Import batch starting for {0} objects", this.importRunStep.PageSize);
+            GetImportEntriesResults results = new GetImportEntriesResults { CSEntries = new List<CSEntryChange>() };
 
             for (int i = 0; i < this.importRunStep.PageSize; i++)
             {
-                this.ThrowOnFaultedTask();
+                //this.ThrowOnFaultedTask();
+                if (this.importTask.IsFaulted)
+                {
+                    throw this.importTask.Exception;    
+                }
 
                 if (this.importCollection.IsCompleted)
                 {
@@ -515,100 +357,14 @@ namespace Lithnet.GoogleApps.MA
 
                 Interlocked.Increment(ref this.opCount);
 
-                User user = item as User;
+                CSEntryChange csentry = item as CSEntryChange;
 
-                if (user != null)
+                if (csentry != null)
                 {
-                    if (!string.IsNullOrWhiteSpace(this.Configuration.UserRegexFilter))
-                    {
-                        if (!Regex.IsMatch(user.PrimaryEmail, this.Configuration.UserRegexFilter, RegexOptions.IgnoreCase))
-                        {
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    SchemaType type = this.operationSchemaTypes.Types[SchemaConstants.User];
-
-                    if (user.CustomSchemas != null)
-                    {
-                        if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
-                        {
-                            if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
-                            {
-                                string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
-                                if (this.operationSchemaTypes.Types.Contains(objectType))
-                                {
-                                    type = this.operationSchemaTypes.Types[objectType];
-                                }
-                            }
-                        }
-                    }
-
-                    results.CSEntries.Add(ImportProcessor.GetCSEntryChange(user, type));
+                    results.CSEntries.Add(csentry);
                     continue;
                 }
 
-                GoogleGroup group = item as GoogleGroup;
-
-                if (group != null)
-                {
-                    if (!string.IsNullOrWhiteSpace(this.Configuration.GroupRegexFilter))
-                    {
-                        if (!Regex.IsMatch(group.Group.Email, this.Configuration.GroupRegexFilter, RegexOptions.IgnoreCase))
-                        {
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    if (this.Configuration.ExcludeUserCreated)
-                    {
-                        if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
-                        {
-                            i--;
-                            continue;
-                        }
-                    }
-
-                    results.CSEntries.Add(this.GetCSEntryForGroup(group));
-                    continue;
-                }
-
-                ContactEntry contact = item as ContactEntry;
-
-                if (contact != null)
-                {
-                    if (!string.IsNullOrWhiteSpace(this.Configuration.ContactRegexFilter))
-                    {
-                        if (contact.PrimaryEmail != null)
-                        {
-                            if (!Regex.IsMatch(contact.PrimaryEmail.Address, this.Configuration.ContactRegexFilter, RegexOptions.IgnoreCase))
-                            {
-                                i--;
-                                continue;
-                            }
-                        }
-                    }
-
-                    string dn = Schema[SchemaConstants.Contact].ApiInterface.GetDNValue(contact);
-
-                    if (dn == null)
-                    {
-                        Logger.WriteLine($"Contact {contact.SelfUri.Content} had no DN or primary email attribute, ignoring");
-                        continue;
-                    }
-
-                    if (!this.seenDNs.Add(dn))
-                    {
-                        Logger.WriteLine($"Ignoring contact {contact.SelfUri.Content} with duplicate dn {dn}");
-                        continue;
-                    }
-
-                    results.CSEntries.Add(ImportProcessor.GetCSEntryChange(contact, this.operationSchemaTypes.Types[SchemaConstants.Contact]));
-                    continue;
-
-                }
 
                 throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
             }
@@ -620,34 +376,14 @@ namespace Lithnet.GoogleApps.MA
                 Thread.Sleep(1000);
             }
 
-            //Logger.WriteLine("Import page complete. Returning {0} objects to sync engine", LogLevel.Debug, results.CSEntries.Count);
             return results;
         }
 
-        private CSEntryChange GetCSEntryForGroup(GoogleGroup group)
-        {
-            CSEntryChange csentry;
-
-            if (group.Errors.Count > 0)
-            {
-                csentry = CSEntryChange.Create();
-                csentry.ObjectType = "group";
-                csentry.ObjectModificationType = ObjectModificationType.Add;
-                csentry.DN = group.Group.Email;
-                csentry.ErrorCodeImport = MAImportError.ImportErrorCustomContinueRun;
-                csentry.ErrorDetail = group.Errors.FirstOrDefault()?.StackTrace;
-                csentry.ErrorName = group.Errors.FirstOrDefault()?.Message;
-            }
-            else
-            {
-                csentry = ImportProcessor.GetCSEntryChange(group, this.operationSchemaTypes.Types[SchemaConstants.Group]);
-            }
-            return csentry;
-        }
 
         public CloseImportConnectionResults CloseImportConnection(CloseImportConnectionRunStep importRunStep)
         {
             Logger.WriteLine("Closing import connection: {0}", importRunStep.Reason);
+
             try
             {
                 if (this.importRunStep.ImportType == OperationType.Full)
@@ -669,6 +405,7 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteException(ex);
                 throw;
             }
+
             Logger.WriteSeparatorLine('*');
             Logger.WriteLine("Operation statistics");
             Logger.WriteLine("Import objects: {0}", this.opCount);

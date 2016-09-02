@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal class ApiInterfaceAdvancedUser : ApiInterfaceUser
     {
         public ApiInterfaceAdvancedUser(MASchemaType type)
             :base (type)
         {
             this.InternalInterfaces.Add(new ApiInterfaceUserDelegates());
-            this.objectClass = SchemaConstants.AdvancedUser;
+            this.ObjectClass = SchemaConstants.AdvancedUser;
         }
 
         public override object CreateInstance(CSEntryChange csentry)

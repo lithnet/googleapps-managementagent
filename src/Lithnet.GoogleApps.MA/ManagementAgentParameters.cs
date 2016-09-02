@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.MetadirectoryServices;
 using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Admin.Directory.directory_v1;
-using Google.Apis.Groupssettings.v1;
 using System.Text.RegularExpressions;
 
 namespace Lithnet.GoogleApps.MA

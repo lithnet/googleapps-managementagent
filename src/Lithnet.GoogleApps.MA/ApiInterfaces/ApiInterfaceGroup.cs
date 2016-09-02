@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Lithnet.Logging;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
+using Group = Google.Apis.Admin.Directory.directory_v1.Data.Group;
+using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Google.Apis.Admin.Directory.directory_v1.Data;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal class ApiInterfaceGroup : IApiInterfaceObject
     {
         private static ApiInterfaceKeyedCollection internalInterfaces;
@@ -207,6 +209,102 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return group.Email;
+        }
+
+        public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
+        {
+            HashSet<string> groupFieldList = new HashSet<string>
+            {
+                SchemaConstants.Email,
+                SchemaConstants.ID
+            };
+
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "group"))
+            {
+                groupFieldList.Add(fieldName);
+            }
+
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "groupaliases"))
+            {
+                groupFieldList.Add(fieldName);
+            }
+
+            string groupFields = string.Format("groups({0}), nextPageToken", string.Join(",", groupFieldList));
+
+            HashSet<string> groupSettingList = new HashSet<string>();
+
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "groupsettings"))
+            {
+                groupSettingList.Add(fieldName);
+            }
+
+            bool settingsRequired = groupSettingList.Count > 0;
+
+            string groupSettingsFields = string.Join(",", groupSettingList);
+
+            bool membersRequired = ManagementAgent.Schema[SchemaConstants.Group].Attributes.Any(u => u.Api == "groupmembership" && schema.Types[SchemaConstants.Group].Attributes.Contains(u.AttributeName));
+
+            GroupRequestFactory.MemberThreads = config.GroupMembersImportThreadCount;
+            GroupRequestFactory.SettingsThreads = config.GroupSettingsImportThreadCount;
+
+            Task t = new Task(() =>
+            {
+                Logger.WriteLine("Starting group import task");
+                Logger.WriteLine("Requesting group fields: " + groupFields);
+                Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
+
+                Logger.WriteLine("Requesting settings: " + settingsRequired.ToString());
+                Logger.WriteLine("Requesting members: " + membersRequired.ToString());
+
+                foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields))
+                {
+                    if (!string.IsNullOrWhiteSpace(config.GroupRegexFilter))
+                    {
+                        if (!Regex.IsMatch(group.Group.Email, config.GroupRegexFilter, RegexOptions.IgnoreCase))
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (config.ExcludeUserCreated)
+                    {
+                        if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
+                        {
+                            continue;
+                        }
+                    }
+
+                    collection.Add(this.GetCSEntryForGroup(group, schema));
+                    continue;
+                }
+
+                Logger.WriteLine("Groups import task complete");
+            });
+
+            t.Start();
+
+            return t;
+        }
+
+        private CSEntryChange GetCSEntryForGroup(GoogleGroup group, Schema schema)
+        {
+            CSEntryChange csentry;
+
+            if (group.Errors.Count > 0)
+            {
+                csentry = CSEntryChange.Create();
+                csentry.ObjectType = "group";
+                csentry.ObjectModificationType = ObjectModificationType.Add;
+                csentry.DN = group.Group.Email;
+                csentry.ErrorCodeImport = MAImportError.ImportErrorCustomContinueRun;
+                csentry.ErrorDetail = group.Errors.FirstOrDefault()?.StackTrace;
+                csentry.ErrorName = group.Errors.FirstOrDefault()?.Message;
+            }
+            else
+            {
+                csentry = ImportProcessor.GetCSEntryChange(group, schema.Types[SchemaConstants.Group]);
+            }
+            return csentry;
         }
 
         private bool SetDNValue(CSEntryChange csentry, GoogleGroup e)

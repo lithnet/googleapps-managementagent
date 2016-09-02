@@ -1,30 +1,31 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Lithnet.Logging;
+using System.Security.Cryptography;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Security.Cryptography;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal class ApiInterfaceUser : IApiInterfaceObject
     {
         protected ApiInterfaceKeyedCollection InternalInterfaces { get; private set; }
 
         private static RNGCryptoServiceProvider cryptoProvider = new RNGCryptoServiceProvider();
 
-        protected string objectClass;
+        protected string ObjectClass;
 
         protected MASchemaType SchemaType { get; set; }
 
         public ApiInterfaceUser(MASchemaType type)
         {
             this.InternalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
-            this.objectClass = SchemaConstants.User;
+            this.ObjectClass = SchemaConstants.User;
             this.SchemaType = type;
         }
 
@@ -125,7 +126,7 @@ namespace Lithnet.GoogleApps.MA
                     changes.Add(c);
                 }
             }
-            
+
             this.AddMissingDeletes(changes, csentry);
 
             return changes;
@@ -191,6 +192,83 @@ namespace Lithnet.GoogleApps.MA
         public string GetDNValue(object target)
         {
             return ((User)target).PrimaryEmail;
+        }
+
+        public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
+        {
+            if (this.GetType() == typeof(ApiInterfaceAdvancedUser))
+            {
+                if (schema.Types.Contains(SchemaConstants.User))
+                {
+                    // This function doesnt need to run for advanced users, if the user class will be called.
+                    return null;
+                }
+            }
+
+            HashSet<string> fieldNames = new HashSet<string>
+            {
+                SchemaConstants.PrimaryEmail,
+                SchemaConstants.ID
+            };
+
+            if (schema.Types.Contains(SchemaConstants.User) || schema.Types.Contains(SchemaConstants.AdvancedUser))
+            {
+                foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(schema.Types[SchemaConstants.User]))
+                {
+                    fieldNames.Add(field);
+                }
+            }
+
+            if (schema.Types.Contains(SchemaConstants.AdvancedUser))
+            {
+                fieldNames.Add($"customSchemas/{SchemaConstants.CustomGoogleAppsSchemaName}");
+            }
+
+            string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
+
+            Task t = new Task(() =>
+            {
+                Logger.WriteLine("Starting user import task");
+                Logger.WriteLine("Requesting fields: " + fields);
+
+                foreach (User user in UserRequestFactory.GetUsers(config.CustomerID, fields))
+                {
+                    if (!string.IsNullOrWhiteSpace(config.UserRegexFilter))
+                    {
+                        if (!Regex.IsMatch(user.PrimaryEmail, config.UserRegexFilter, RegexOptions.IgnoreCase))
+                        {
+                            continue;
+                        }
+                    }
+
+                    SchemaType type = schema.Types[SchemaConstants.User];
+
+                    if (user.CustomSchemas != null)
+                    {
+                        if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
+                        {
+                            if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
+                            {
+                                string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                                if (schema.Types.Contains(objectType))
+                                {
+                                    type = schema.Types[objectType];
+                                }
+                            }
+                        }
+                    }
+
+                    collection.Add(ImportProcessor.GetCSEntryChange(user, type));
+                    continue;
+                }
+
+                Logger.WriteLine("User import task complete");
+
+            });
+
+            t.Start();
+
+            return t;
         }
 
         private static bool SetDNValue(CSEntryChange csentry, User e)

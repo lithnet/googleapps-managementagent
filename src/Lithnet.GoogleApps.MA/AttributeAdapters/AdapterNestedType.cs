@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using System.Reflection;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Logging;
-    using System.Reflection;
-
     internal class AdapterNestedType : IAttributeAdapter
     {
         private PropertyInfo propInfo;

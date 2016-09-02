@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using System.Collections;
+using Lithnet.Logging;
+using System.Reflection;
+using Lithnet.GoogleApps.ManagedObjects;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Collections;
-    using Logging;
-    using System.Reflection;
-    using ManagedObjects;
-
     internal class AdapterCustomTypeList<T> : IAttributeAdapter where T : CustomTypeObject, new()
     {
         private PropertyInfo propInfo;

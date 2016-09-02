@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Google.Apis.Admin.Directory.directory_v1.Data;
+using Lithnet.Logging;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Google.Apis.Admin.Directory.directory_v1.Data;
-    using Logging;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-
     internal class ApiInterfaceGroupAliases : IApiInterface
     {
         public string Api => "groupaliases";

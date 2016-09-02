@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lithnet.GoogleApps.MA
+﻿namespace Lithnet.GoogleApps.MA
 {
     internal static class SchemaConstants
     {
@@ -13,6 +7,7 @@ namespace Lithnet.GoogleApps.MA
         public const string User = "user";
         public const string AdvancedUser = "advancedUser";
         public const string Contact = "contact";
+        public const string Domain = "domain";
 
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
         public const string CustomSchemaObjectType = "objectType";
@@ -86,5 +81,11 @@ namespace Lithnet.GoogleApps.MA
         public const string Addresses = "addresses";
         public const string Notes = "notes";
         public const string Kind = "kind";
+
+        public const string DomainAliases = "domainAliases";
+        public const string DomainName = "domainName";
+        public const string Verified = "verified";
+        public const string IsPrimary = "isPrimary";
+
     }
 }

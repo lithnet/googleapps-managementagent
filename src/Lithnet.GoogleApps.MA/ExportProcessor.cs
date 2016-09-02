@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Lithnet.Logging;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
+using Microsoft.MetadirectoryServices.DetachedObjectModel;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using Logging;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-    using Microsoft.MetadirectoryServices.DetachedObjectModel;
-
     internal static class ExportProcessor
     {
         public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type)

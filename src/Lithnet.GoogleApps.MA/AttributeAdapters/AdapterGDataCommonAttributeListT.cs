@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Serialization;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
+using Lithnet.Logging;
+using System.Reflection;
+using Google.GData.Extensions;
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Collections;
-    using Logging;
-    using System.Reflection;
-    using Google.GData.Extensions;
-    using ManagedObjects;
-
     internal class AdapterGDataCommonAttributeList<T> : IAttributeAdapter where T : ICommonAttributes, new()
     {
         private const string OtherRel = "http://schemas.google.com/g/2005#other";
