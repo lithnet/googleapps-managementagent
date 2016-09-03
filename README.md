@@ -12,4 +12,13 @@ The Lithnet Google Apps Management Agent provides support for managing Google Ap
 
 > Note: as most Google APIs do not provide delta support, this MA only confirms what was exported in a delta import. Changes made in Google Apps directly will not be seen until the next full import operation)
 
+## System Requirements
+The Lithnet Google App MA requires FIM 2010 R2 at least version 4.1.3441, and .NET Framework 4.6.
 
+## Getting started
+Download the management agent from the [releases page](https://github.com/lithnet/googleapps-managementagent/releases)
+Read the [getting started guide](https://github.com/lithnet/googleapps-managementagent/wiki)
+
+## Keep up to date
+* [Visit my blog](ttp://blog.lithiumblue.com)
+* [Follow me on twitter](https://twitter.com/RyanLNewington)![](http://twitter.com/favicon.ico)
