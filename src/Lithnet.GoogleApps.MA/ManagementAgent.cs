@@ -93,10 +93,10 @@ namespace Lithnet.GoogleApps.MA
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
             this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
-            this.SetHttpDebugMode();
 
             Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
+            this.SetHttpDebugMode();
 
             this.timer = new Stopwatch();
 
@@ -130,7 +130,7 @@ namespace Lithnet.GoogleApps.MA
                     Interlocked.Increment(ref this.opCount);
                     Logger.StartThreadLog();
                     Logger.WriteSeparatorLine('-');
-                    Logger.WriteLine("Starting export {0} for user {1}", csentry.ObjectModificationType, csentry.DN);
+                    Logger.WriteLine("Starting export {0} for {1}", csentry.ObjectModificationType, csentry.DN);
                     SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
 
                     CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type);
@@ -469,8 +469,8 @@ namespace Lithnet.GoogleApps.MA
         public void OpenPasswordConnection(KeyedCollection<string, ConfigParameter> configParameters, Partition partition)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
-            this.SetHttpDebugMode();
             Logger.LogPath = this.Configuration.PasswordOperationLogFile;
+            this.SetHttpDebugMode();
 
             ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
         }
