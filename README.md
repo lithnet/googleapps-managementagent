@@ -21,5 +21,5 @@ Download the management agent from the [releases page](https://github.com/lithne
 Read the [getting started guide](https://github.com/lithnet/googleapps-managementagent/wiki)
 
 ## Keep up to date
-* [Visit my blog](ttp://blog.lithiumblue.com)
+* [Visit my blog](http://blog.lithiumblue.com)
 * [Follow me on twitter](https://twitter.com/RyanLNewington)![](http://twitter.com/favicon.ico)
