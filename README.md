@@ -17,6 +17,7 @@ The Lithnet Google App MA requires FIM 2010 R2 at least version 4.1.3441, and .N
 
 ## Getting started
 Download the management agent from the [releases page](https://github.com/lithnet/googleapps-managementagent/releases)
+
 Read the [getting started guide](https://github.com/lithnet/googleapps-managementagent/wiki)
 
 ## Keep up to date
