@@ -1304,7 +1304,7 @@ namespace Lithnet.GoogleApps.MA
                         return null;
                     }
                     
-                    return (int) value;
+                    return Convert.ToInt32((long)value);
                 }
             };
 
