@@ -51,11 +51,12 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        private static void GetGroupAliasChanges(CSEntryChange csentry, Group group, out IList<string> aliasAdds, out IList<string> aliasDeletes)
+        private static void GetGroupAliasChanges(CSEntryChange csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll)
         {
             aliasAdds = new List<string>();
             aliasDeletes = new List<string>();
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == "aliases");
+            deletingAll = false;
 
             if (csentry.ObjectModificationType == ObjectModificationType.Replace)
             {
@@ -87,6 +88,8 @@ namespace Lithnet.GoogleApps.MA
                         {
                             aliasDeletes.Add(alias);
                         }
+
+                        deletingAll = true;
                         break;
 
                     case AttributeModificationType.Replace:
@@ -113,8 +116,9 @@ namespace Lithnet.GoogleApps.MA
         {
             IList<string> aliasAdds;
             IList<string> aliasDeletes;
+            bool deletingAll;
 
-            ApiInterfaceGroupAliases.GetGroupAliasChanges(csentry, group, out aliasAdds, out aliasDeletes);
+            ApiInterfaceGroupAliases.GetGroupAliasChanges(csentry, out aliasAdds, out aliasDeletes, out deletingAll);
 
             if (aliasAdds.Count == 0 && aliasDeletes.Count == 0)
             {
@@ -157,7 +161,14 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (csentry.ObjectModificationType == ObjectModificationType.Update)
                     {
-                        change = AttributeChange.CreateAttributeUpdate("aliases", valueChanges);
+                        if (deletingAll && valueChanges.Count == aliasDeletes?.Count)
+                        {
+                            change = AttributeChange.CreateAttributeDelete("aliases");
+                        }
+                        else
+                        {
+                            change = AttributeChange.CreateAttributeUpdate("aliases", valueChanges);
+                        }
                     }
                     else
                     {
@@ -170,4 +181,3 @@ namespace Lithnet.GoogleApps.MA
         }
     }
 }
-

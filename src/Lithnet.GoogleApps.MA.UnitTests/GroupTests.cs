@@ -235,7 +235,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-        
+
         [TestMethod]
         public void Delete()
         {
@@ -629,6 +629,80 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+        public void AddGroupWithMembers()
+        {
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Add;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Group;
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", Guid.NewGuid().ToString()));
+
+            Group group1;
+            Group group2;
+            string member1 = this.CreateGroup(out group1);
+            string member2 = this.CreateGroup(out group2);
+            string member3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+            ManagedObjects.User e = new ManagedObjects.User
+            {
+                PrimaryEmail = member3,
+                Password = Guid.NewGuid().ToString(),
+                Name =
+                    {
+                        GivenName = "test",
+                        FamilyName = "test"
+                    }
+            };
+
+            e = UserRequestFactory.Add(e);
+            
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1, member2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object>() { member3 }));
+
+            CSEntryChangeResult result = null;
+
+            try
+            {
+                result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                CollectionAssert.AreEquivalent(new string[] { member1, member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+            }
+            finally
+            {
+                string id = result?.AnchorAttributes.FirstOrDefault()?.GetValueAdd<string>();
+
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+
+                if (group1?.Id != null)
+                {
+                    GroupRequestFactory.Delete(group1.Id);
+                }
+
+                if (group2?.Id != null)
+                {
+                    GroupRequestFactory.Delete(group2.Id);
+                }
+
+                if (e?.Id != null)
+                {
+                    UserRequestFactory.Delete(e.Id);
+                }
+            }
+        }
+
+        [TestMethod]
         public void AddMembers()
         {
             string id = null;
@@ -668,6 +742,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     GroupRequestFactory.Delete(id);
                 }
+
+                GroupRequestFactory.Delete(member1);
+                GroupRequestFactory.Delete(member2);
             }
 
         }

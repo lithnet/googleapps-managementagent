@@ -88,6 +88,9 @@ namespace Lithnet.GoogleApps.MA
                 {
                     result.Group = GroupRequestFactory.Add(group.Group);
                     group.Group = result.Group;
+                    
+                    // Group membership operations fail on newly created groups if processed too quickly
+                    System.Threading.Thread.Sleep(1000);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -111,7 +114,7 @@ namespace Lithnet.GoogleApps.MA
 
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
-
+           
             foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
             {
                 foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))

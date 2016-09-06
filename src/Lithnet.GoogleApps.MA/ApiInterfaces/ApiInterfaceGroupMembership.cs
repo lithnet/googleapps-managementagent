@@ -55,6 +55,12 @@ namespace Lithnet.GoogleApps.MA
                 }
                 catch (AggregateGroupUpdateException ex)
                 {
+                    Logger.WriteLine("The following member removals failed");
+                    foreach (Exception e in ex.Exceptions)
+                    {
+                        Logger.WriteException(e);
+                    }
+
                     ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToDelete.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToDelete.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
@@ -94,6 +100,12 @@ namespace Lithnet.GoogleApps.MA
                 }
                 catch (AggregateGroupUpdateException ex)
                 {
+                    Logger.WriteLine("The following member additions failed");
+                    foreach(Exception e in ex.Exceptions)
+                    {
+                        Logger.WriteException(e);
+                    }
+
                     ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToAdd.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToAdd.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
                     ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToAdd.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
@@ -228,7 +240,7 @@ namespace Lithnet.GoogleApps.MA
         {
             adds = new GroupMembership();
             deletes = new GroupMembership();
-            GroupMembership existingGroupMembership = null;
+            GroupMembership existingGroupMembership;
 
             if (ApiInterfaceGroupMembership.ExistingMembershipRequiredForUpdate(csentry) | replacing)
             {
