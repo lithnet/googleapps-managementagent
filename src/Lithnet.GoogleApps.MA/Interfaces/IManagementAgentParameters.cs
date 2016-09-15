@@ -38,6 +38,8 @@ namespace Lithnet.GoogleApps.MA
 
         string Domain { get; }
 
+        bool InheritGroupRoles { get; }
+
         IEnumerable<string> PhonesAttributeFixedTypes { get; }
 
         IEnumerable<string> OrganizationsAttributeFixedTypes { get; }

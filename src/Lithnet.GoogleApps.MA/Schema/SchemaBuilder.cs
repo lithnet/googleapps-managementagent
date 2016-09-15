@@ -1333,7 +1333,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeType = AttributeType.Boolean,
                 FieldName = "archiveOnly",
                 IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
+                Operation = AttributeOperation.ImportOnly,
                 AttributeName = "archiveOnly",
                 PropertyName = "ArchiveOnly",
                 Api = "groupsettings",

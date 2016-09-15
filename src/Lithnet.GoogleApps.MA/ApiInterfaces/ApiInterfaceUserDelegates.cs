@@ -13,7 +13,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "userdelegates";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
             Func<AttributeChange> x = () => ApiInterfaceUserDelegates.ApplyDelegateChanges(csentry);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();

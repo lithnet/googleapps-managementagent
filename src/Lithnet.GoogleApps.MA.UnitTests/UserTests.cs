@@ -66,7 +66,7 @@
 
             try
             {
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
@@ -145,7 +145,7 @@
                 cs.DN = dn;
                 cs.ObjectType = SchemaConstants.User;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -214,7 +214,7 @@
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -320,7 +320,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -414,7 +414,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -471,7 +471,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -529,7 +529,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -588,7 +588,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -651,7 +651,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -714,7 +714,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -777,7 +777,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -842,7 +842,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -894,7 +894,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -949,7 +949,7 @@
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {

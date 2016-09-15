@@ -133,7 +133,7 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteLine("Starting export {0} for {1}", csentry.ObjectModificationType, csentry.DN);
                     SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
 
-                    CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type);
+                    CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
                     lock (results)
                     {
                         results.CSEntryChangeResults.Add(result);
@@ -255,42 +255,6 @@ namespace Lithnet.GoogleApps.MA
             this.importTask.ContinueWith(z => this.importCollection.CompleteAdding());
         }
 
-        //private void ThrowOnFaultedTask()
-        //{
-        //    if (this.importGroupsTask != null)
-        //    {
-        //        if (this.importGroupsTask.IsFaulted)
-        //        {
-        //            throw this.importGroupsTask.Exception;
-        //        }
-        //    }
-
-        //    if (this.importUsersTask != null)
-        //    {
-        //        if (this.importUsersTask.IsFaulted)
-        //        {
-        //            throw this.importUsersTask.Exception;
-        //        }
-        //    }
-
-
-        //    if (this.importContactsTask != null)
-        //    {
-        //        if (this.importContactsTask.IsFaulted)
-        //        {
-        //            throw this.importContactsTask.Exception;
-        //        }
-        //    }
-
-        //    if (this.importDomainsTask != null)
-        //    {
-        //        if (this.importDomainsTask.IsFaulted)
-        //        {
-        //            throw this.importDomainsTask.Exception;
-        //        }
-        //    }
-        //}
-
         public GetImportEntriesResults GetImportEntries(GetImportEntriesRunStep importRunStep)
         {
             GetImportEntriesResults results;
@@ -336,7 +300,6 @@ namespace Lithnet.GoogleApps.MA
 
             for (int i = 0; i < this.importRunStep.PageSize; i++)
             {
-                //this.ThrowOnFaultedTask();
                 if (this.importTask.IsFaulted)
                 {
                     throw this.importTask.Exception;    

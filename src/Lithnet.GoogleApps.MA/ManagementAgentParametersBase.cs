@@ -11,6 +11,8 @@ namespace Lithnet.GoogleApps.MA
     {
         protected const string CustomerIDParameter = "Customer ID";
 
+        protected const string InheritGroupRolesParameter = "Inherit group roles";
+        
         protected const string DomainParameter = "Primary domain";
 
         protected const string ServiceAccountEmailAddressParameter = "Service account email address";

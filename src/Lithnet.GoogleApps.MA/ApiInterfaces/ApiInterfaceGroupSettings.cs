@@ -10,7 +10,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "groupsettings";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type,  ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
             bool hasChanged = false;
 
@@ -30,6 +30,26 @@ namespace Lithnet.GoogleApps.MA
                 if (typeDef.UpdateField(csentry, settings))
                 {
                     hasChanged = true;
+                }
+            }
+
+            if (settings.WhoCanPostMessage != null)
+            {
+                if (settings.WhoCanPostMessage == "NONE_CAN_POST")
+                {
+                    if (settings.ArchiveOnly != true)
+                    {
+                        settings.ArchiveOnly = true;
+                        hasChanged = true;
+                    }
+                }
+                else
+                {
+                    if (settings.ArchiveOnly != false)
+                    {
+                        settings.ArchiveOnly = false;
+                        hasChanged = true;
+                    }
                 }
             }
 

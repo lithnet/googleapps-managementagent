@@ -38,6 +38,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             public string UserRegexFilter { get; set; }
             public string ContactRegexFilter { get; set;  }
 
+            public bool InheritGroupRoles { get; set; }
+
             public string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
             public string Domain => ConfigurationManager.AppSettings["domain"];
             

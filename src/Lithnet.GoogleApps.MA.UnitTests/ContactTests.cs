@@ -58,7 +58,7 @@
 
             try
             {
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
                 
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
@@ -140,7 +140,7 @@
                 cs.DN = dn;
                 cs.ObjectType = SchemaConstants.Contact;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -202,7 +202,7 @@
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("DN", new List<ValueChange>() { ValueChange.CreateValueAdd(newDN), ValueChange.CreateValueDelete(dn) }));
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -305,7 +305,7 @@
 
             try
             {
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact]);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {

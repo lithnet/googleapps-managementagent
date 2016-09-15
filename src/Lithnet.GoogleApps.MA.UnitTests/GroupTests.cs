@@ -63,7 +63,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -179,7 +179,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -237,6 +237,87 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+        public void UpdateNoneCanPostOn()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = "name"
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Group;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+            
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "NONE_CAN_POST"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
+                }
+
+                e = GroupRequestFactory.Get(id);
+                Assert.AreEqual(cs.DN, e.Email);
+
+                GroupSettings s = GroupSettingsRequestFactory.Get(cs.DN);
+               
+                Assert.AreEqual(true, s.ArchiveOnly);
+              
+                Assert.AreEqual("NONE_CAN_POST", s.WhoCanPostMessage);
+
+
+                cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "ALL_IN_DOMAIN_CAN_POST"));
+
+                result =
+                   ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
+                }
+
+                e = GroupRequestFactory.Get(id);
+                Assert.AreEqual(cs.DN, e.Email);
+
+                s = GroupSettingsRequestFactory.Get(cs.DN);
+
+                Assert.AreEqual(false, s.ArchiveOnly);
+
+                Assert.AreEqual("ALL_IN_DOMAIN_CAN_POST", s.WhoCanPostMessage);
+
+
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                    CSEntryChangeQueue.SaveQueue("D:\\temp\\group-update.xml", UnitTestControl.MmsSchema);
+                }
+            }
+        }
+
+      
+
+        [TestMethod]
         public void Delete()
         {
             string id = null;
@@ -259,7 +340,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -324,7 +405,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -374,7 +455,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -429,7 +510,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -487,7 +568,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -545,7 +626,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -605,7 +686,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -665,7 +746,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             try
             {
-                result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -725,7 +806,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -775,7 +856,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -822,7 +903,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -869,7 +950,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -919,7 +1000,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group]);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {

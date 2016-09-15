@@ -64,7 +64,7 @@ namespace Lithnet.GoogleApps.MA
             DomainsRequestFactory.Delete(this.customerID, id);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -106,7 +106,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IApiInterface i in ApiInterfaceDomain.internalInterfaces)
             {
-                changes.AddRange(i.ApplyChanges(csentry, type, ref target, patch));
+                changes.AddRange(i.ApplyChanges(csentry, type, config, ref target, patch));
             }
 
             return changes;

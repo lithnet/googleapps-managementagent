@@ -13,7 +13,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "groupmembership";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;
@@ -75,7 +75,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 try
                 {
-                    GroupMemberRequestFactory.AddMembers(csentry.DN, allMembersToAdd, true);
+                    GroupMemberRequestFactory.AddMembers(csentry.DN, this.NormalizeMembershipList(config, allMembersToAdd), true);
 
                     foreach (Member member in allMembersToAdd)
                     {
@@ -101,7 +101,7 @@ namespace Lithnet.GoogleApps.MA
                 catch (AggregateGroupUpdateException ex)
                 {
                     Logger.WriteLine("The following member additions failed");
-                    foreach(Exception e in ex.Exceptions)
+                    foreach (Exception e in ex.Exceptions)
                     {
                         Logger.WriteException(e);
                     }
@@ -117,6 +117,51 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return changes;
+        }
+
+        private List<Member> NormalizeMembershipList(IManagementAgentParameters config, List<Member> members)
+        {
+            if (!config.InheritGroupRoles)
+            {
+                return members;
+            }
+
+            Dictionary<string, Member> normalizedList = new Dictionary<string, Member>(StringComparer.CurrentCultureIgnoreCase);
+
+            foreach (Member member in members)
+            {
+                if (normalizedList.ContainsKey(member.Email))
+                {
+                    Member existingMember = normalizedList[member.Email];
+
+                    if (existingMember.Role == "OWNER")
+                    {
+                        continue;
+                    }
+
+                    if (existingMember.Role == "MANAGER")
+                    {
+                        if (member.Role == "OWNER")
+                        {
+                            normalizedList[member.Email] = member;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        normalizedList[member.Email] = member;
+                    }
+                }
+                else
+                {
+                    normalizedList.Add(member.Email, member);
+                }
+            }
+
+            return normalizedList.Select(t => t.Value).ToList();
         }
 
         private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)

@@ -10,7 +10,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Api => "usermakeadmin";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
             List<AttributeChange> changes = new List<AttributeChange>();

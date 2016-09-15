@@ -34,6 +34,30 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public bool InheritGroupRoles
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.InheritGroupRolesParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.InheritGroupRolesParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public string ServiceAccountEmailAddress
         {
             get
@@ -465,6 +489,10 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.GroupRegexFilterParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactRegexFilterParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.InheritGroupRolesParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Inheriting group roles forces the MA to include owners in the managers list, and managers in the members list"));
+
                     break;
 
                 case ConfigParameterPage.Partition:

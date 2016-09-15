@@ -9,11 +9,11 @@ namespace Lithnet.GoogleApps.MA
 {
     internal static class ExportProcessor
     {
-        public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type)
+        public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config)
         {
             try
             {
-                return ExportProcessor.PutCSEntryChangeObject(csentry, type);
+                return ExportProcessor.PutCSEntryChangeObject(csentry, type, config);
             }
             catch (Google.GoogleApiException ex)
             {
@@ -36,7 +36,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, SchemaType type)
+        public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config)
         {
             MASchemaType maType = ManagementAgent.Schema[type.Name];
 
@@ -56,13 +56,13 @@ namespace Lithnet.GoogleApps.MA
                 switch (csentry.ObjectModificationType)
                 {
                     case ObjectModificationType.Add:
-                        return ExportProcessor.PutCSEntryChangeAdd(csentry, deltaCSEntry, maType, type);
+                        return ExportProcessor.PutCSEntryChangeAdd(csentry, deltaCSEntry, maType, type, config);
 
                     case ObjectModificationType.Delete:
                         return ExportProcessor.PutCSEntryChangeDelete(csentry, deltaCSEntry, maType);
 
                     case ObjectModificationType.Update:
-                        return ExportProcessor.PutCSEntryChangeUpdate(csentry, deltaCSEntry, maType, type);
+                        return ExportProcessor.PutCSEntryChangeUpdate(csentry, deltaCSEntry, maType, type, config);
 
                     default:
                     case ObjectModificationType.None:
@@ -90,16 +90,16 @@ namespace Lithnet.GoogleApps.MA
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }
 
-        private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type)
+        private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
-            deltaCSEntry.DN =  csentry.DN;
+            deltaCSEntry.DN = csentry.DN;
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
             object instance = primaryInterface.CreateInstance(csentry);
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, config, ref instance))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }
@@ -114,7 +114,7 @@ namespace Lithnet.GoogleApps.MA
             return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, MAExportError.Success);
         }
 
-        private static CSEntryChangeResult PutCSEntryChangeUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type)
+        private static CSEntryChangeResult PutCSEntryChangeUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
@@ -141,7 +141,7 @@ namespace Lithnet.GoogleApps.MA
                 instance = primaryInterface.GetInstance(csentry);
             }
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance, canPatch))
+            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, config, ref instance, canPatch))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }
