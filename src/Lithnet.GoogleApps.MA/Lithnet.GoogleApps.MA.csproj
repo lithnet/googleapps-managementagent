@@ -207,7 +207,7 @@
   <PropertyGroup>
     <PreBuildEvent>del $(ProjectDir)$(ProjectName).PackagedMA.xml /f
 "C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\mapackager.exe" /e:$(ProjectDir)ExportedMA.xml /c:$(ProjectDir)MAPackageInformation.xml /o:$(ProjectDir)$(ProjectName).PackagedMA.xml</PreBuildEvent>
-    <PostBuildEvent />
+    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\signtool.exe" sign /sha1 5ce168989b1359309dddee460c10e96fa60fa78b /t http://time.certum.pl /v $(TargetFileName)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
