@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lithnet.GoogleApps.MA;
+using Lithnet.GoogleApps.ManagedObjects;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
-    using System.Net;
-    using System.Net.Security;
-    using System.Security.Cryptography.X509Certificates;
-    using Lithnet.GoogleApps.MA;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using ManagementAgent = global::Lithnet.GoogleApps.MA.ManagementAgent;
-
+    
     [TestClass]
     internal static class UnitTestControl
     {
-        static UnitTestControl()
-        {
-           // UnitTestControl.BuildSchema();
-        }
-
         [AssemblyCleanup()]
         public static void AssemblyCleanup()
         {
@@ -40,11 +29,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public static void Initialize(TestContext c)
         {
             BuildSchema();
+            GroupMembership.GetInternalDomains(TestParameters.CustomerID);
         }
 
         private static void BuildSchema()
         {
-            ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
             ConnectionPools.DisableGzip = true;
 
             UnitTestControl.TestParameters = new TestParameters();

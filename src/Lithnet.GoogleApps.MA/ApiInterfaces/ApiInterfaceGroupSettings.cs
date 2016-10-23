@@ -69,10 +69,10 @@ namespace Lithnet.GoogleApps.MA
                 result = GroupSettingsRequestFactory.Update(this.GetDNValue(target), settings);
             }
 
-            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result);
+            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result, config);
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 

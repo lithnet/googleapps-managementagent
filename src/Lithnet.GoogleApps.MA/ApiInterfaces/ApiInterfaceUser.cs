@@ -132,13 +132,13 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
             }
 
             return attributeChanges;
@@ -258,7 +258,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    collection.Add(ImportProcessor.GetCSEntryChange(user, type));
+                    collection.Add(ImportProcessor.GetCSEntryChange(user, type, config));
                     continue;
                 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Runtime.InteropServices;
@@ -133,14 +134,7 @@ namespace Lithnet.GoogleApps.MA
         /// <returns>An informative string representation of an object, or a null value if the object is null</returns>
         public static string ToSmartStringOrNull(this object obj)
         {
-            if (obj == null)
-            {
-                return null;
-            }
-            else
-            {
-                return obj.ToSmartString();
-            }
+            return obj?.ToSmartString();
         }
 
         /// <summary>
@@ -150,13 +144,32 @@ namespace Lithnet.GoogleApps.MA
         /// <returns>An informative string representation of an object, or a null value if the object is null</returns>
         public static string ToSmartStringOrEmptyString(this object obj)
         {
-            if (obj == null)
+            return obj == null ? string.Empty : obj.ToSmartString();
+        }
+
+        public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
+        {
+            if (items == null)
             {
-                return string.Empty;
+                return;
             }
-            else
+
+            foreach (T item in items)
             {
-                return obj.ToSmartString();
+                hashset.Add(item);
+            }
+        }
+
+        public static void RemoveRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
+        {
+            if (items == null)
+            {
+                return;
+            }
+
+            foreach (T item in items)
+            {
+                hashset.Remove(item);
             }
         }
     }

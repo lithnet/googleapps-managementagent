@@ -85,8 +85,8 @@
       <HintPath>..\packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.GoogleApps, Version=1.0.6089.23020, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6089.23020\lib\net452\Lithnet.GoogleApps.dll</HintPath>
+    <Reference Include="Lithnet.GoogleApps, Version=1.0.6141.15607, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6141.15607\lib\net452\Lithnet.GoogleApps.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">
@@ -133,6 +133,8 @@
     <Compile Include="AdapterTests\AdapterGDataSimpleAttributeListTTests.cs" />
     <Compile Include="AdapterTests\AdapterGDataCommonAttributeListTTests.cs" />
     <Compile Include="AdvancedUserTests.cs" />
+    <Compile Include="GroupMemberInheritedRoleTests.cs" />
+    <Compile Include="GroupMemberTests.cs" />
     <Compile Include="UserTests.cs" />
     <Compile Include="GroupTests.cs" />
     <Compile Include="AdapterTests\AdapterCollectionTTests.cs" />

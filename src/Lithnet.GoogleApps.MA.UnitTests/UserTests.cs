@@ -920,7 +920,46 @@
         [TestMethod]
         public void TakeAdmin()
         {
-            string id = null;
+            User e = UserTests.CreateUser();
+
+            try
+            {
+                UserRequestFactory.MakeAdmin(true, e.Id);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.PrimaryEmail;
+                cs.ObjectType = SchemaConstants.User;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("isAdmin", false));
+
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = UserRequestFactory.Get(e.Id);
+
+                Assert.AreEqual(false, e.IsAdmin);
+            }
+            finally
+            {
+                if (e.Id != null)
+                {
+                    UserRequestFactory.Delete(e.Id);
+                }
+            }
+
+        }
+
+        internal static User CreateUser()
+        {
             string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             User e = new User
             {
@@ -934,42 +973,8 @@
             };
 
             e = UserRequestFactory.Add(e);
-            id = e.Id;
-            System.Threading.Thread.Sleep(5000);
-            UserRequestFactory.MakeAdmin(true, id);
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.User;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("isAdmin", false));
-
-            try
-            {
-                CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
-
-                if (result.ErrorCode != MAExportError.Success)
-                {
-                    Assert.Fail(result.ErrorName);
-                }
-
-                System.Threading.Thread.Sleep(5000);
-
-                e = UserRequestFactory.Get(id);
-
-                Assert.AreEqual(false, e.IsAdmin);
-            }
-            finally
-            {
-                if (id != null)
-                {
-                    UserRequestFactory.Delete(id);
-                }
-            }
-
+            System.Threading.Thread.Sleep(1000);
+            return e;
         }
     }
 }

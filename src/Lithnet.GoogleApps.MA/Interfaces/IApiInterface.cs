@@ -10,6 +10,6 @@ namespace Lithnet.GoogleApps.MA
 
         IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false);
 
-        IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source);
+        IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config);
     }
 }

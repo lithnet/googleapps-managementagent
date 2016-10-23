@@ -97,6 +97,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
             this.SetHttpDebugMode();
+            GroupMemberRequestFactory.BatchSize = ManagementAgentParametersBase.GroupMemberBatchSize;
 
             this.timer = new Stopwatch();
 

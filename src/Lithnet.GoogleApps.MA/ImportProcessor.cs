@@ -6,7 +6,7 @@ namespace Lithnet.GoogleApps.MA
 {
     internal static class ImportProcessor
     {
-        public static CSEntryChange GetCSEntryChange(object source, SchemaType type)
+        public static CSEntryChange GetCSEntryChange(object source, SchemaType type, IManagementAgentParameters config)
         {
             MASchemaType maType = ManagementAgent.Schema[type.Name];
 
@@ -26,7 +26,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 csentry.DN = maType.ApiInterface.GetDNValue(source);
 
-                foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.DN, csentry.ObjectModificationType, type, source))
+                foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.DN, csentry.ObjectModificationType, type, source, config))
                 {
                     csentry.AttributeChanges.Add(change);
                 }

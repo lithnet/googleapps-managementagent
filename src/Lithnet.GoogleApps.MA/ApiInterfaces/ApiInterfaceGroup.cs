@@ -127,13 +127,13 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
             foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
             }
 
             return attributeChanges;
@@ -256,8 +256,8 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Requesting group fields: " + groupFields);
                 Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
 
-                Logger.WriteLine("Requesting settings: " + settingsRequired.ToString());
-                Logger.WriteLine("Requesting members: " + membersRequired.ToString());
+                Logger.WriteLine("Requesting settings: " + settingsRequired);
+                Logger.WriteLine("Requesting members: " + membersRequired);
 
                 foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields))
                 {
@@ -277,12 +277,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    if (membersRequired)
-                    {
-                        ApiInterfaceGroup.ApplyMembershipModifications(config, @group);
-                    }
-
-                    collection.Add(this.GetCSEntryForGroup(group, schema));
+                    collection.Add(this.GetCSEntryForGroup(group, schema, config));
                     continue;
                 }
 
@@ -294,23 +289,7 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private static void ApplyMembershipModifications(IManagementAgentParameters config, GoogleGroup group)
-        {
-            if (config.InheritGroupRoles && group.Membership != null)
-            {
-                foreach (string value in group.Membership.Owners)
-                {
-                    group.Membership.Managers.Add(value);
-                }
-
-                foreach (string value in group.Membership.Managers)
-                {
-                    group.Membership.Members.Add(value);
-                }
-            }
-        }
-
-        private CSEntryChange GetCSEntryForGroup(GoogleGroup group, Schema schema)
+        private CSEntryChange GetCSEntryForGroup(GoogleGroup group, Schema schema, IManagementAgentParameters config)
         {
             CSEntryChange csentry;
 
@@ -326,8 +305,9 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                csentry = ImportProcessor.GetCSEntryChange(group, schema.Types[SchemaConstants.Group]);
+                csentry = ImportProcessor.GetCSEntryChange(group, schema.Types[SchemaConstants.Group], config);
             }
+
             return csentry;
         }
 

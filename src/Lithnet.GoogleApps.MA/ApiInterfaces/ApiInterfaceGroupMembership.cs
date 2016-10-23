@@ -17,108 +17,167 @@ namespace Lithnet.GoogleApps.MA
         {
             GroupMembership membershipToDelete;
             GroupMembership membershipToAdd;
+            IList<Member> roleChanges;
+            GroupMembership reportedAdds;
+            GroupMembership reportedDeletes;
+
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            ApiInterfaceGroupMembership.GetMemberChangesFromCSEntryChange(csentry, out membershipToAdd, out membershipToDelete, csentry.ObjectModificationType == ObjectModificationType.Replace);
+            ApiInterfaceGroupMembership.GetMemberChangesFromCSEntryChange(csentry, out membershipToAdd, out membershipToDelete, out reportedAdds, out reportedDeletes, out roleChanges, csentry.ObjectModificationType == ObjectModificationType.Replace, config);
 
             HashSet<string> allMembersToDelete = membershipToDelete.GetAllMembers();
             List<Member> allMembersToAdd = membershipToAdd.ToMemberList();
 
             AttributeModificationType modificationType = csentry.ObjectModificationType == ObjectModificationType.Update ? AttributeModificationType.Update : AttributeModificationType.Add;
-
-            if (csentry.ObjectModificationType != ObjectModificationType.Add && allMembersToDelete.Count > 0)
+            try
             {
-                try
+                if (csentry.ObjectModificationType != ObjectModificationType.Add && allMembersToDelete.Count > 0)
                 {
-                    GroupMemberRequestFactory.RemoveMembers(csentry.DN, allMembersToDelete.ToList(), false);
-
-                    foreach (string member in allMembersToDelete)
+                    try
                     {
-                        Logger.WriteLine($"Deleted member {member}", LogLevel.Debug);
-                    }
+                        GroupMemberRequestFactory.RemoveMembers(csentry.DN, allMembersToDelete.ToList(), false);
 
-                    if (allMembersToDelete.Count == 1)
-                    {
-                        Logger.WriteLine($"Deleted {allMembersToDelete.Count} member");
-                    }
-                    else
-                    {
-                        Logger.WriteLine($"Deleted {allMembersToDelete.Count} members");
-                    }
+                        foreach (string member in allMembersToDelete)
+                        {
+                            Logger.WriteLine($"Deleted member {member}", LogLevel.Debug);
+                        }
 
-                    ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToDelete.Members.ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToDelete.Managers.ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, membershipToDelete.ExternalManagers.ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, membershipToDelete.Owners.ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, membershipToDelete.ExternalOwners.ToValueChange(ValueModificationType.Delete), changes);
+                        if (allMembersToDelete.Count == 1)
+                        {
+                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} member");
+                        }
+                        else
+                        {
+                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} members");
+                        }
+                    }
+                    catch (AggregateGroupUpdateException ex)
+                    {
+                        Logger.WriteLine("The following member removals failed");
+                        foreach (Exception e in ex.Exceptions)
+                        {
+                            Logger.WriteException(e);
+                        }
+
+                        reportedDeletes.RemoveMembers(ex.FailedMembers);
+                        throw;
+                    }
                 }
-                catch (AggregateGroupUpdateException ex)
-                {
-                    Logger.WriteLine("The following member removals failed");
-                    foreach (Exception e in ex.Exceptions)
-                    {
-                        Logger.WriteException(e);
-                    }
 
-                    ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToDelete.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToDelete.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToDelete.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, membershipToDelete.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, membershipToDelete.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, membershipToDelete.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Delete), changes);
-                    throw;
+                if (csentry.ObjectModificationType != ObjectModificationType.Add && roleChanges?.Count > 0)
+                {
+                    try
+                    {
+                        foreach (Member change in roleChanges)
+                        {
+                            GroupMemberRequestFactory.ChangeMemberRole(csentry.DN, change);
+                        }
+
+                        foreach (Member member in roleChanges)
+                        {
+                            Logger.WriteLine($"Changed member role {member.Email} to {member.Role}", LogLevel.Debug);
+                        }
+                    }
+                    catch (AggregateGroupUpdateException ex)
+                    {
+                        Logger.WriteLine("The following member role changes failed");
+
+                        foreach (Exception e in ex.Exceptions)
+                        {
+                            Logger.WriteException(e);
+                        }
+
+                        throw;
+                    }
+                }
+
+                if (allMembersToAdd.Count > 0)
+                {
+                    try
+                    {
+                        GroupMemberRequestFactory.AddMembers(csentry.DN, this.NormalizeMembershipList(config, allMembersToAdd), false);
+
+                        foreach (Member member in allMembersToAdd)
+                        {
+                            Logger.WriteLine($"Added {member.Role} {member.Email}", LogLevel.Debug);
+                        }
+
+                        if (allMembersToAdd.Count == 1)
+                        {
+                            Logger.WriteLine($"Added {allMembersToAdd.Count} member");
+                        }
+                        else
+                        {
+                            Logger.WriteLine($"Added {allMembersToAdd.Count} members");
+                        }
+                    }
+                    catch (AggregateGroupUpdateException ex)
+                    {
+                        Logger.WriteLine("The following member additions failed");
+                        foreach (Exception e in ex.Exceptions)
+                        {
+                            Logger.WriteException(e);
+                        }
+
+                        reportedAdds.RemoveMembers(ex.FailedMembers);
+                        throw;
+                    }
                 }
             }
-
-            if (allMembersToAdd.Count > 0)
+            finally
             {
-                try
-                {
-                    GroupMemberRequestFactory.AddMembers(csentry.DN, this.NormalizeMembershipList(config, allMembersToAdd), true);
 
-                    foreach (Member member in allMembersToAdd)
-                    {
-                        Logger.WriteLine($"Added {member.Role} {member.Email}", LogLevel.Debug);
-                    }
+                ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, reportedDeletes.Members.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedDeletes.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, reportedDeletes.Managers.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedDeletes.ExternalManagers.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, reportedDeletes.Owners.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedDeletes.ExternalOwners.ToValueChange(ValueModificationType.Delete), changes);
 
-                    if (allMembersToAdd.Count == 1)
-                    {
-                        Logger.WriteLine($"Added {allMembersToAdd.Count} member");
-                    }
-                    else
-                    {
-                        Logger.WriteLine($"Added {allMembersToAdd.Count} members");
-                    }
-
-                    ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToAdd.Members.ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToAdd.ExternalMembers.ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToAdd.Managers.ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, membershipToAdd.ExternalManagers.ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, membershipToAdd.Owners.ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, membershipToAdd.ExternalOwners.ToValueChange(ValueModificationType.Add), changes);
-                }
-                catch (AggregateGroupUpdateException ex)
-                {
-                    Logger.WriteLine("The following member additions failed");
-                    foreach (Exception e in ex.Exceptions)
-                    {
-                        Logger.WriteException(e);
-                    }
-
-                    ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, membershipToAdd.Members.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, membershipToAdd.ExternalMembers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, membershipToAdd.Managers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, membershipToAdd.ExternalManagers.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, membershipToAdd.Owners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, membershipToAdd.ExternalOwners.Except(ex.FailedMembers).ToValueChange(ValueModificationType.Add), changes);
-                    throw;
-                }
+                ApiInterfaceGroupMembership.AddAttributeChange("member", modificationType, reportedAdds.Members.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedAdds.ExternalMembers.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("manager", modificationType, reportedAdds.Managers.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedAdds.ExternalManagers.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("owner", modificationType, reportedAdds.Owners.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedAdds.ExternalOwners.ToValueChange(ValueModificationType.Add), changes);
             }
 
             return changes;
         }
 
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        {
+            List<AttributeChange> attributeChanges = new List<AttributeChange>();
+
+            GroupMembership membership = source as GroupMembership;
+
+            if (membership == null)
+            {
+                GoogleGroup group = source as GoogleGroup;
+
+                if (group == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    membership = group.Membership;
+                }
+            }
+
+            this.ApplyRoleInheritance(config, membership);
+
+            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            {
+                if (type.HasAttribute(typeDef.AttributeName))
+                {
+                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
+                }
+            }
+
+            return attributeChanges;
+        }
+        
         private List<Member> NormalizeMembershipList(IManagementAgentParameters config, List<Member> members)
         {
             if (!config.InheritGroupRoles)
@@ -249,47 +308,48 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
             }
         }
-
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        
+        private void ApplyRoleInheritance(IManagementAgentParameters config, GroupMembership membership)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            GroupMembership membership = source as GroupMembership;
-
-            if (membership == null)
+            if (config.InheritGroupRoles && membership != null)
             {
-                GoogleGroup group = source as GoogleGroup;
-
-                if (group == null)
+                foreach (string value in membership.Owners)
                 {
-                    throw new InvalidOperationException();
+                    membership.Managers.Add(value);
                 }
-                else
+
+                foreach (string value in membership.ExternalOwners)
                 {
-                    membership = group.Membership;
+                    membership.ExternalManagers.Add(value);
+                }
+
+                foreach (string value in membership.Managers)
+                {
+                    membership.Members.Add(value);
+                }
+
+                foreach (string value in membership.ExternalManagers)
+                {
+                    membership.ExternalMembers.Add(value);
                 }
             }
-
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
-            {
-                if (type.HasAttribute(typeDef.AttributeName))
-                {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
-                }
-            }
-
-            return attributeChanges;
         }
 
-        private static void GetMemberChangesFromCSEntryChange(CSEntryChange csentry, out GroupMembership adds, out GroupMembership deletes, bool replacing)
+        private static void GetMemberChangesFromCSEntryChange(CSEntryChange csentry, out GroupMembership adds, out GroupMembership deletes, out GroupMembership reportedAdds, out GroupMembership reportedDeletes, out IList<Member> roleChanges, bool replacing, IManagementAgentParameters config)
         {
             adds = new GroupMembership();
             deletes = new GroupMembership();
-            GroupMembership existingGroupMembership;
+            reportedAdds = new GroupMembership();
+            reportedDeletes = new GroupMembership();
+            roleChanges = new List<Member>();
 
-            if (ApiInterfaceGroupMembership.ExistingMembershipRequiredForUpdate(csentry) | replacing)
+            GroupMembership existingGroupMembership;
+            bool hasExistingMembership = false;
+
+            if (replacing | ApiInterfaceGroupMembership.ExistingMembershipRequiredForUpdate(csentry, config))
             {
                 existingGroupMembership = GroupMemberRequestFactory.GetMembership(csentry.DN);
+                hasExistingMembership = true;
             }
             else
             {
@@ -302,6 +362,81 @@ namespace Lithnet.GoogleApps.MA
             ApiInterfaceGroupMembership.GetMemberChangesFromCSEntryChange(csentry, adds.ExternalManagers, deletes.ExternalManagers, existingGroupMembership.ExternalManagers, "externalManager", replacing);
             ApiInterfaceGroupMembership.GetMemberChangesFromCSEntryChange(csentry, adds.Owners, deletes.Owners, existingGroupMembership.Owners, "owner", replacing);
             ApiInterfaceGroupMembership.GetMemberChangesFromCSEntryChange(csentry, adds.ExternalOwners, deletes.ExternalOwners, existingGroupMembership.ExternalOwners, "externalOwner", replacing);
+
+            if (hasExistingMembership && config.InheritGroupRoles)
+            {
+                ApiInterfaceGroupMembership.ApplyRoleChanges(adds, deletes, out reportedAdds, out reportedDeletes, out roleChanges);
+            }
+
+            reportedAdds.MergeMembership(adds);
+            reportedDeletes.MergeMembership(deletes);
+        }
+
+        private static void ApplyRoleChanges(GroupMembership adds, GroupMembership deletes, out GroupMembership reportedAdds, out GroupMembership reportedDeletes, out IList<Member> roleChanges)
+        {
+            roleChanges = new List<Member>();
+            reportedAdds = new GroupMembership();
+            reportedDeletes = new GroupMembership();
+
+            // Downgrades to member
+            foreach (var member in deletes.Managers.Except(deletes.Members).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MEMBER" });
+                deletes.Managers.Remove(member);
+                reportedDeletes.Managers.Add(member);
+            }
+
+            foreach (var member in deletes.ExternalManagers.Except(deletes.ExternalMembers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MEMBER" });
+                deletes.ExternalManagers.Remove(member);
+                reportedDeletes.ExternalManagers.Add(member);
+            }
+
+            // Downgrades to managers
+            foreach (var member in deletes.Owners.Except(deletes.Managers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MANAGER" });
+                deletes.Owners.Remove(member);
+                reportedDeletes.Owners.Add(member);
+            }
+
+            foreach (var member in deletes.ExternalOwners.Except(deletes.ExternalManagers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MANAGER" });
+                deletes.ExternalOwners.Remove(member);
+                reportedDeletes.ExternalOwners.Add(member);
+            }
+            
+            // Upgrades to manager
+            foreach (var member in adds.Managers.Except(adds.Members).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MANAGER" });
+                adds.Managers.Remove(member);
+                reportedAdds.Managers.Add(member);
+            }
+
+            foreach (var member in adds.ExternalManagers.Except(adds.ExternalMembers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "MANAGER" });
+                adds.ExternalManagers.Remove(member);
+                reportedAdds.ExternalManagers.Add(member);
+            }
+
+            // Upgrades to owner
+            foreach (var member in adds.Owners.Except(adds.Managers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "OWNER" });
+                adds.Owners.Remove(member);
+                reportedAdds.Owners.Add(member);
+            }
+
+            foreach (var member in adds.ExternalOwners.Except(adds.ExternalManagers).ToList())
+            {
+                roleChanges.Add(new Member() { Email = member, Role = "OWNER" });
+                adds.ExternalOwners.Remove(member);
+                reportedAdds.ExternalOwners.Add(member);
+            }
         }
 
         private static void GetMemberChangesFromCSEntryChange(CSEntryChange csentry, HashSet<string> adds, HashSet<string> deletes, HashSet<string> existingMembers, string attributeName, bool replacing)
@@ -380,8 +515,24 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private static bool ExistingMembershipRequiredForUpdate(CSEntryChange csentry)
+        private static bool ExistingMembershipRequiredForUpdate(CSEntryChange csentry, IManagementAgentParameters config)
         {
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
+            {
+                return false;
+            }
+
+            if (config.InheritGroupRoles)
+            {
+                return (
+               csentry.AttributeChanges.Any(t => (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace) && t.Name == "member") ||
+               csentry.AttributeChanges.Any(t => (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace) && t.Name == "externalMember") ||
+               csentry.AttributeChanges.Any(t => t.Name == "manager") ||
+               csentry.AttributeChanges.Any(t => t.Name == "externalManager") ||
+               csentry.AttributeChanges.Any(t => t.Name == "owner") ||
+               csentry.AttributeChanges.Any(t => t.Name == "externalOwner"));
+            }
+
             return (
                 csentry.AttributeChanges.Any(t => (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace) && t.Name == "member") ||
                 csentry.AttributeChanges.Any(t => (t.ModificationType == AttributeModificationType.Delete || t.ModificationType == AttributeModificationType.Replace) && t.Name == "externalMember") ||

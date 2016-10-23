@@ -65,6 +65,15 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string LogFilePathParameter = "Log file path";
 
+        protected const string SettingHttpDebugEnabled = "lithnet-google-ma-http-debug-enabled";
+        protected const string SettingImportThreadsGroupSettings = "lithnet-google-ma-import-threads-group-settings";
+        protected const string SettingImportThreadsGroupMembers = "lithnet-google-ma-import-threads-group-members";
+        protected const string SettingExportThreads = "lithnet-google-ma-export-threads";
+        protected const string SettingExportThreadsGroupMember = "lithnet-google-ma-export-threads-group-member";
+        protected const string SettingExportBatchSizeGroupMember = "lithnet-google-ma-export-batch-size-group-member";
+        protected const string SettingPoolSizeContacts = "lithnet-google-ma-pool-size-contacts";
+        protected const string SettingPoolSizeEmailSettings = "lithnet-google-ma-pool-size-email-settings";
+
         protected static string[] RequiredScopes = new string[]
                     {
                         DirectoryService.Scope.AdminDirectoryUser,
@@ -80,25 +89,6 @@ namespace Lithnet.GoogleApps.MA
         private X509Certificate2 certificate;
 
         private ServiceAccountCredential credentials;
-
-        protected ManagementAgentParametersBase()
-        {
-            this.GroupMembersImportThreadCount = 10;
-            this.GroupSettingsImportThreadCount = 30;
-            this.ContactsServicePoolSize = 30;
-            this.EmailSettingsServicePoolSize = 30;
-            this.ExportThreadCount = 30;
-        }
-
-        public int GroupSettingsImportThreadCount { get; protected set; }
-
-        public int GroupMembersImportThreadCount { get; protected set; }
-
-        public int ContactsServicePoolSize { get; protected set; }
-
-        public int EmailSettingsServicePoolSize { get; protected set; }
-
-        public int ExportThreadCount { get; protected set; }
 
         protected ServiceAccountCredential GetCredentials(string serviceAccountEmailAddress, string userEmailAddress, X509Certificate2 cert)
         {
@@ -126,6 +116,140 @@ namespace Lithnet.GoogleApps.MA
             return this.certificate;
         }
 
-        public static bool HttpDebugEnabled => ConfigurationManager.AppSettings["lithnet-google-ma-http-debug-enabled"] == "1";
+        public static bool HttpDebugEnabled => ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingHttpDebugEnabled] == "1";
+
+        public static int GroupMemberBatchSize
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingExportBatchSizeGroupMember];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
+
+
+        public int GroupSettingsImportThreadCount
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingImportThreadsGroupSettings];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 30;
+                }
+                else
+                {
+                    return 30;
+                }
+            }
+        }
+
+        public int GroupMembersImportThreadCount
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingImportThreadsGroupMembers];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 10;
+                }
+                else
+                {
+                    return 10;
+                }
+            }
+        }
+
+        public int ExportThreadCount
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingExportThreads];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 30;
+                }
+                else
+                {
+                    return 30;
+                }
+            }
+        }
+
+        public int GroupMemberExportThreadCount
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingExportThreadsGroupMember];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 10;
+                }
+                else
+                {
+                    return 10;
+                }
+            }
+        }
+
+        public int ContactsServicePoolSize
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingPoolSizeContacts];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 30;
+                }
+                else
+                {
+                    return 30;
+                }
+            }
+        }
+
+        public int EmailSettingsServicePoolSize
+        {
+            get
+            {
+                string value = ConfigurationManager.AppSettings[ManagementAgentParametersBase.SettingPoolSizeEmailSettings];
+
+                int result;
+
+                if (int.TryParse(value, out result))
+                {
+                    return result > 0 ? result : 30;
+                }
+                else
+                {
+                    return 30;
+                }
+            }
+        }
     }
 }
