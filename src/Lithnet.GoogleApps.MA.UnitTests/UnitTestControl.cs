@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Linq;
 using Lithnet.GoogleApps.ManagedObjects;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.MetadirectoryServices;
-using Microsoft.MetadirectoryServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Schema = Microsoft.MetadirectoryServices.Schema;
+using User = Lithnet.GoogleApps.ManagedObjects.User;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -43,6 +47,44 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.Schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
             ManagementAgent.Schema = UnitTestControl.Schema;
             UnitTestControl.MmsSchema = UnitTestControl.Schema.GetSchema();
+        }
+
+        public static void Cleanup(params object[] objects)
+        {
+            if (objects == null)
+            {
+                return;
+            }
+
+            foreach (Group g in objects.OfType<Group>())
+            {
+                if (g != null)
+                {
+                    GroupRequestFactory.Delete(g.Id);
+                }
+            }
+
+            foreach (User u in objects.OfType<User>())
+            {
+                if (u != null)
+                {
+                    UserRequestFactory.Delete(u.Id);
+                }
+            }
+        }
+        public static Group CreateGroup()
+        {
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            e = GroupRequestFactory.Add(e);
+
+            Thread.Sleep(1000);
+            return e;
         }
     }
 }
