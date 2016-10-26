@@ -74,7 +74,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 User e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -154,7 +154,7 @@
 
                 try
                 {
-                    System.Threading.Thread.Sleep(5000);
+                    System.Threading.Thread.Sleep(1000);
                     e = UserRequestFactory.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -201,7 +201,7 @@
 
                 e = UserRequestFactory.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -221,7 +221,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
@@ -327,7 +327,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -536,7 +536,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -595,7 +595,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -658,7 +658,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -721,7 +721,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -784,7 +784,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -849,7 +849,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -901,7 +901,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -942,7 +942,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(2000);
 
                 e = UserRequestFactory.Get(e.Id);
 

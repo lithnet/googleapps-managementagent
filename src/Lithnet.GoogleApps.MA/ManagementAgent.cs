@@ -81,7 +81,7 @@ namespace Lithnet.GoogleApps.MA
 
         private void SetHttpDebugMode()
         {
-            if (ManagementAgentParametersBase.HttpDebugEnabled)
+            if (MAConfigurationSection.Configuration.HttpDebugEnabled)
             {
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                 ConnectionPools.DisableGzip = true;
@@ -97,15 +97,12 @@ namespace Lithnet.GoogleApps.MA
             Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
             this.SetHttpDebugMode();
-            GroupMemberRequestFactory.BatchSize = ManagementAgentParametersBase.GroupMemberBatchSize;
-
+            GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
+            GroupRequestFactory.MemberThreads = MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember;
+            
             this.timer = new Stopwatch();
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials,
-             this.Configuration.ExportThreadCount,
-             this.Configuration.ExportThreadCount,
-             this.Configuration.EmailSettingsServicePoolSize,
-             this.Configuration.ContactsServicePoolSize);
+            this.InitializeConnectionPools();
 
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
             this.exportRunStep = exportRunStep;
@@ -119,9 +116,23 @@ namespace Lithnet.GoogleApps.MA
 
         }
 
+        private void InitializeConnectionPools()
+        {
+            ConnectionPools.InitializePools(this.Configuration.Credentials, MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+                MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize,
+                MAConfigurationSection.Configuration.EmailSettingsApi.PoolSize,
+                MAConfigurationSection.Configuration.ContactsApi.PoolSize);
+
+            ConnectionPools.SetConcurrentOperationLimitGroupMember(MAConfigurationSection.Configuration.DirectoryApi.ExportThreadsGroupMember);
+            ConnectionPools.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
+            ConnectionPools.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+            ConnectionPools.SetRateLimitEmailSettingsService(MAConfigurationSection.Configuration.EmailSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+            ConnectionPools.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+        }
+
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
-            ParallelOptions po = new ParallelOptions { MaxDegreeOfParallelism = this.Configuration.ExportThreadCount };
+            ParallelOptions po = new ParallelOptions { MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ExportThreads };
             PutExportEntriesResults results = new PutExportEntriesResults();
 
             Parallel.ForEach(csentries, po, (csentry) =>
@@ -231,11 +242,7 @@ namespace Lithnet.GoogleApps.MA
             this.importCollection = new BlockingCollection<object>();
             this.SetHttpDebugMode();
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials,
-                this.Configuration.GroupMembersImportThreadCount + 1,
-                this.Configuration.GroupSettingsImportThreadCount,
-                this.Configuration.EmailSettingsServicePoolSize,
-                this.Configuration.ContactsServicePoolSize);
+            this.InitializeConnectionPools();
 
             GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);

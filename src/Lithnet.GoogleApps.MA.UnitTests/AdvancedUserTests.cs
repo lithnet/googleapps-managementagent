@@ -75,7 +75,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 User e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -155,7 +155,7 @@
 
                 try
                 {
-                    System.Threading.Thread.Sleep(5000);
+                    System.Threading.Thread.Sleep(1000);
                     e = UserRequestFactory.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -202,7 +202,7 @@
 
                 e = UserRequestFactory.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -222,7 +222,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
@@ -328,7 +328,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -412,7 +412,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -471,7 +471,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -534,7 +534,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -597,7 +597,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(2000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -662,7 +662,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -714,7 +714,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -748,7 +748,7 @@
 
             e = UserRequestFactory.Add(e);
             id = e.Id;
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(1000);
             UserRequestFactory.MakeAdmin(true, id);
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -769,7 +769,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = UserRequestFactory.Get(id);
 
@@ -815,7 +815,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(2000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }
@@ -889,7 +889,7 @@
             UserSettingsRequestFactory.AddDelegate(dn, delegate1);
             UserSettingsRequestFactory.AddDelegate(dn, delegate2);
 
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(1000);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -909,7 +909,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate1 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }
@@ -936,7 +936,7 @@
             UserSettingsRequestFactory.AddDelegate(dn, delegate1);
             UserSettingsRequestFactory.AddDelegate(dn, delegate2);
 
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(5000);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -956,7 +956,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }
@@ -991,7 +991,7 @@
             string delegate4 = this.CreateUser(out x);
             UserSettingsRequestFactory.AddDelegate(dn, delegate1);
             UserSettingsRequestFactory.AddDelegate(dn, delegate2);
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(5000);
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("delegate", new List<object>() { delegate3, delegate4 }));
 
@@ -1005,7 +1005,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate3, delegate4 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }

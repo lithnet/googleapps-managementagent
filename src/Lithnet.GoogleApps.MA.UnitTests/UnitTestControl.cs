@@ -30,6 +30,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             BuildSchema();
             GroupMembership.GetInternalDomains(TestParameters.CustomerID);
+            var x = MAConfigurationSection.Configuration;
         }
 
         private static void BuildSchema()

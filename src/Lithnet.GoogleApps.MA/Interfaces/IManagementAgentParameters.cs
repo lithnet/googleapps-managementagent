@@ -5,15 +5,6 @@ namespace Lithnet.GoogleApps.MA
 {
     internal interface IManagementAgentParameters
     {
-        int GroupSettingsImportThreadCount { get; }
-
-        int GroupMembersImportThreadCount { get; }
-        int ContactsServicePoolSize { get; }
-
-        int EmailSettingsServicePoolSize { get;  }
-
-        int ExportThreadCount { get; }
-
         ServiceAccountCredential Credentials { get; }
 
         string CustomerID { get; }

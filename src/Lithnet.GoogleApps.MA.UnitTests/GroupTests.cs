@@ -347,7 +347,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 try
                 {
-                    System.Threading.Thread.Sleep(5000);
+                    System.Threading.Thread.Sleep(1000);
                     e = GroupRequestFactory.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -390,7 +390,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = GroupRequestFactory.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -410,7 +410,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
                 e = GroupRequestFactory.Get(id);
                 Assert.AreEqual(newDN, e.Email);
             }
@@ -460,7 +460,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = GroupRequestFactory.Get(id);
 
@@ -515,7 +515,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = GroupRequestFactory.Get(id);
 
@@ -573,7 +573,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = GroupRequestFactory.Get(id);
 
@@ -631,7 +631,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = GroupRequestFactory.Get(id);
 
@@ -691,7 +691,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 e = GroupRequestFactory.Get(id);
 

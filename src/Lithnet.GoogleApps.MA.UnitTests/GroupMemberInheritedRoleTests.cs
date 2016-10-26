@@ -16,7 +16,39 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             UnitTestControl.TestParameters.InheritGroupRoles = true;
         }
-       
+
+
+        //
+
+        [TestMethod]
+        public void Test5()
+        {
+            string id = null;
+
+            try
+            {
+                Group e = GroupRequestFactory.Get("phaneendra-test-2@d2-monash-edu.ga-staff-dev.monash.edu");
+
+                
+                
+                GroupMembership members = GroupMemberRequestFactory.GetMembership(e.Email);
+                ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership();
+                IList<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members, UnitTestControl.TestParameters);
+
+                AttributeChange manager = changes.First(t => t.Name == "externalManager");
+                AttributeChange member = changes.First(t => t.Name == "externalMember");
+
+                
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+        }
+
         [TestMethod]
         public void TestExternalManagerIsExternalMember()
         {
@@ -376,6 +408,80 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
+
+        [TestMethod]
+        public void ChangeRoleForLargeNumberOfMembers()
+        {
+            return;
+
+            string id = null;
+            try
+            {
+                Group e;
+                string dn = this.CreateGroup(out e);
+                id = e.Id;
+
+                System.Threading.Thread.Sleep(1000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+                List<object> addresses = new List<object>();
+
+                for (int i = 0; i < 100; i++)
+                {
+                    string address = $"user{i}@lithnet.io";
+                    addresses.Add(address);
+                }
+
+                //addresses.Add("notanaddress");
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalMember", addresses));
+
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(1000);
+
+                CollectionAssert.AreEquivalent(addresses.ToArray(), GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.ToArray());
+
+                cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalManager", addresses));
+
+                result =
+                   ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(1000);
+
+                CollectionAssert.AreEquivalent(addresses.ToArray(), GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    GroupRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
 
         private string CreateGroup(out Group e)
         {

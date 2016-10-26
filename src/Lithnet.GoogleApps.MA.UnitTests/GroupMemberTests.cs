@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.MetadirectoryServices;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
+using User = Lithnet.GoogleApps.ManagedObjects.User;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -18,72 +22,57 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             UnitTestControl.TestParameters.InheritGroupRoles = false;
         }
-      
+
         [TestMethod]
         public void DeleteAddMember()
         {
-            string id = null;
+            Group e = null;
+
             try
             {
-                Group e;
-                string dn = this.CreateGroup(out e);
-                id = e.Id;
+                e = this.CreateGroup();
 
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1000);
 
-                GroupMemberRequestFactory.AddMember(id, "test@test.com", "MEMBER");
-                GroupMemberRequestFactory.RemoveMember(id, "test@test.com");
+                GroupMemberRequestFactory.AddMember(e.Id, "test@test.com", "MEMBER");
+                GroupMemberRequestFactory.RemoveMember(e.Id, "test@test.com");
                 System.Threading.Thread.Sleep(500);
 
-                GroupMemberRequestFactory.AddMember(id, "test@test.com", "MEMBER");
+                GroupMemberRequestFactory.AddMember(e.Id, "test@test.com", "MEMBER");
 
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e);
             }
         }
 
         [TestMethod]
         public void AddGroupWithMembers()
         {
-            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", Guid.NewGuid().ToString()));
-
-            Group group1;
-            Group group2;
-            string member1 = this.CreateGroup(out group1);
-            string member2 = this.CreateGroup(out group2);
-            string member3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-
-            ManagedObjects.User e = new ManagedObjects.User
-            {
-                PrimaryEmail = member3,
-                Password = Guid.NewGuid().ToString(),
-                Name =
-                    {
-                        GivenName = "test",
-                        FamilyName = "test"
-                    }
-            };
-
-            e = UserRequestFactory.Add(e);
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1, member2 }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object>() { member3 }));
-
-            CSEntryChangeResult result = null;
+            Group member1 = null;
+            Group member2 = null;
+            User member3 = null;
 
             try
             {
+                string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Add;
+                cs.DN = dn;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", Guid.NewGuid().ToString()));
+
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+                member3 = UserTests.CreateUser();
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1.Email, member2.Email }));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object>() { member3.PrimaryEmail }));
+
+                CSEntryChangeResult result = null;
+
                 result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
@@ -91,58 +80,38 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1, member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
-                string id = result?.AnchorAttributes.FirstOrDefault()?.GetValueAdd<string>();
-
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
-
-                if (group1?.Id != null)
-                {
-                    GroupRequestFactory.Delete(group1.Id);
-                }
-
-                if (group2?.Id != null)
-                {
-                    GroupRequestFactory.Delete(group2.Id);
-                }
-
-                if (e?.Id != null)
-                {
-                    UserRequestFactory.Delete(e.Id);
-                }
+                this.Cleanup(member1, member2, member3);
             }
         }
 
         [TestMethod]
         public void AddMembers()
         {
-            string id = null;
-            Group e;
-            string dn = this.CreateGroup(out e);
-            id = e.Id;
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            Group x;
-            string member1 = this.CreateGroup(out x);
-            string member2 = this.CreateGroup(out x);
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1, member2 }));
+            Group e = null;
+            Group member1 = null;
+            Group member2 = null;
 
             try
             {
+                e = this.CreateGroup();
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1.Email, member2.Email }));
+
+
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -151,48 +120,41 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1, member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
-
-                GroupRequestFactory.Delete(member1);
-                GroupRequestFactory.Delete(member2);
+                this.Cleanup(e, member1, member2);
             }
-
         }
 
         [TestMethod]
         public void AddMember()
         {
-            string id = null;
-            Group e;
-            string dn = this.CreateGroup(out e);
-            id = e.Id;
-            Group x;
-            string member1 = this.CreateGroup(out x);
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member1 });
-
-            System.Threading.Thread.Sleep(10000);
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            string member2 = this.CreateGroup(out x);
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member2 }));
+            Group e = null;
+            Group member1 = null;
+            Group member2 = null;
 
             try
             {
+                e = this.CreateGroup();
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+
+                System.Threading.Thread.Sleep(1000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member2.Email }));
+
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -201,41 +163,36 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1, member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e, member1, member2);
             }
-
         }
 
         [TestMethod]
         public void AddAndRemoveLargeNumberOfMembers()
         {
-            string id = null;
+            Group e = null;
+
             try
             {
-                Group e;
-                string dn = this.CreateGroup(out e);
-                id = e.Id;
+                e = this.CreateGroup();
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
-                cs.DN = dn;
+                cs.DN = e.Email;
                 cs.ObjectType = SchemaConstants.Group;
-                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
                 List<object> addresses = new List<object>();
 
-                for (int i = 0; i < 1000; i++)
+                for (int i = 0; i < 100; i++)
                 {
                     string address = $"user{i}@lithnet.io";
                     addresses.Add(address);
@@ -243,7 +200,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalMember", addresses));
 
-
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -252,18 +208,17 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 CollectionAssert.AreEquivalent(addresses.ToArray(), GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.ToArray());
 
                 cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
-                cs.DN = dn;
+                cs.DN = e.Email;
                 cs.ObjectType = SchemaConstants.Group;
-                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("externalMember"));
-                //cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalMember", new List<ValueChange>() { ValueChange.CreateValueAdd("user0@lithnet.io"), ValueChange.CreateValueDelete("test@test.com") }));
 
                 result =
                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -273,46 +228,133 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
                 Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Members.Count);
 
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e);
             }
+        }
 
+        [TestMethod]
+        public void TriggerBackOff()
+        {
+            return;
+
+            List<Group> groups = new List<Group>();
+
+            try
+            {
+                List<CSEntryChange> changes = new List<CSEntryChange>();
+
+                for (int i = 0; i < 50; i++)
+                {
+                    Group e = this.CreateGroup();
+                    groups.Add(e);
+                    CSEntryChange cs = GroupMemberTests.CreateCSEntryUpdate(e);
+
+                    List<object> addresses = new List<object>();
+
+                    for (int j = 0; j < 100; j++)
+                    {
+                        string address = $"user-{Guid.NewGuid()}@lithnet.io";
+                        addresses.Add(address);
+                    }
+
+                    cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalMember", addresses));
+                    changes.Add(cs);
+                }
+
+                int directoryServicePoolSize = 30;
+                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, directoryServicePoolSize, 30, 30, 30);
+                int threadCount = 0;
+                GroupMemberRequestFactory.BatchSize = 100;
+                ConnectionPools.SetConcurrentOperationLimitGroupMember(5);
+                
+                Task q = new Task(() =>
+                {
+                    Parallel.For(0, 1000, u =>
+                    {
+                        User x = UserTests.CreateUser();
+                        Trace.WriteLine($"Created user {x.PrimaryEmail}");
+                        UserRequestFactory.Delete(x.Id);
+                    });
+
+                });
+
+                q.Start();
+
+                ParallelOptions op = new ParallelOptions();
+                op.MaxDegreeOfParallelism = directoryServicePoolSize;
+
+                Parallel.ForEach(changes, op, t =>
+                {
+                    int threadID = Interlocked.Increment(ref threadCount);
+
+                    Trace.WriteLine($"Thread count {threadID}");
+
+                    try
+                    {
+                        CSEntryChangeResult result =
+                            ExportProcessor.PutCSEntryChange(t, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                        if (result.ErrorCode != MAExportError.Success)
+                        {
+                            Assert.Fail(result.ErrorName);
+                        }
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref threadCount);
+                    }
+                });
+            }
+            finally
+            {
+                this.Cleanup(groups.ToArray<object>());
+                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, 1, 1, 1, 1);
+            }
+        }
+
+        private static CSEntryChange CreateCSEntryUpdate(Group e)
+        {
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = e.Email;
+            cs.ObjectType = SchemaConstants.Group;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+            return cs;
         }
 
         [TestMethod]
         public void RemoveMember()
         {
-            string id = null;
-            Group e;
-            string dn = this.CreateGroup(out e);
-            id = e.Id;
-            Group x;
-            string member1 = this.CreateGroup(out x);
-            string member2 = this.CreateGroup(out x);
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member1 });
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member2 });
-
-            System.Threading.Thread.Sleep(10000);
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("member", new List<ValueChange>() { new ValueChange(member2, ValueModificationType.Delete) }));
+            Group e = null;
+            Group member1 = null;
+            Group member2 = null;
 
             try
             {
+                e = this.CreateGroup();
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+
+                System.Threading.Thread.Sleep(1000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("member", new List<ValueChange>() { new ValueChange(member2.Email, ValueModificationType.Delete) }));
+
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -321,95 +363,90 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e, member1, member2);
             }
-
         }
-      
+
         [TestMethod]
         public void RemoveMembers()
         {
-            string id = null;
-            Group e;
-            string dn = this.CreateGroup(out e);
-            id = e.Id;
-            Group x;
-            string member1 = this.CreateGroup(out x);
-            string member2 = this.CreateGroup(out x);
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member1 });
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member2 });
-
-            System.Threading.Thread.Sleep(10000);
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("member"));
+            Group e = null;
+            Group member1 = null;
+            Group member2 = null;
 
             try
             {
-                CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+                e = this.CreateGroup();
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+
+                System.Threading.Thread.Sleep(1000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("member"));
+
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Members.Count);
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e, member1, member2);
             }
-
         }
 
         [TestMethod]
         public void ReplaceMembers()
         {
-            string id = null;
-            Group e;
-            string dn = this.CreateGroup(out e);
-            id = e.Id;
-
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = dn;
-            cs.ObjectType = SchemaConstants.Group;
-            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-
-            Group x;
-            string member1 = this.CreateGroup(out x);
-            string member2 = this.CreateGroup(out x);
-            string member3 = this.CreateGroup(out x);
-            string member4 = this.CreateGroup(out x);
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member1 });
-            GroupMemberRequestFactory.AddMember(dn, new Member() { Email = member2 });
-
-            System.Threading.Thread.Sleep(10000);
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("member", new List<object>() { member3, member4 }));
+            Group e = null;
+            Group member1 = null;
+            Group member2 = null;
+            Group member3 = null;
+            Group member4 = null;
 
             try
             {
+                e = this.CreateGroup();
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
+
+                member1 = this.CreateGroup();
+                member2 = this.CreateGroup();
+                member3 = this.CreateGroup();
+                member4 = this.CreateGroup();
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+
+                System.Threading.Thread.Sleep(1000);
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("member", new List<object>() { member3.Email, member4.Email }));
+
+
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -418,24 +455,45 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member3, member4 }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member3.Email, member4.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
-                if (id != null)
-                {
-                    GroupRequestFactory.Delete(id);
-                }
+                this.Cleanup(e, member1, member2, member3, member4);
             }
 
         }
 
-        private string CreateGroup(out Group e)
+        private void Cleanup(params object[] objects)
+        {
+            if (objects == null)
+            {
+                return;
+            }
+
+            foreach (Group g in objects.OfType<Group>())
+            {
+                if (g != null)
+                {
+                    GroupRequestFactory.Delete(g.Id);
+                }
+            }
+
+            foreach (User u in objects.OfType<User>())
+            {
+                if (u != null)
+                {
+                    UserRequestFactory.Delete(u.Id);
+                }
+            }
+        }
+
+        private Group CreateGroup()
         {
             string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            e = new Group
+            Group e = new Group
             {
                 Email = dn,
                 Name = Guid.NewGuid().ToString()
@@ -443,7 +501,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             e = GroupRequestFactory.Add(e);
 
-            return dn;
+            return e;
         }
     }
 }
+

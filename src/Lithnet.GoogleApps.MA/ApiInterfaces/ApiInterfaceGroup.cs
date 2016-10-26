@@ -247,9 +247,6 @@ namespace Lithnet.GoogleApps.MA
 
             bool membersRequired = ManagementAgent.Schema[SchemaConstants.Group].Attributes.Any(u => u.Api == "groupmembership" && schema.Types[SchemaConstants.Group].Attributes.Contains(u.AttributeName));
 
-            GroupRequestFactory.MemberThreads = config.GroupMembersImportThreadCount;
-            GroupRequestFactory.SettingsThreads = config.GroupSettingsImportThreadCount;
-
             Task t = new Task(() =>
             {
                 Logger.WriteLine("Starting group import task");
