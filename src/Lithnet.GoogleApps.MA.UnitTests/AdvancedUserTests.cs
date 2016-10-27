@@ -202,7 +202,7 @@
 
                 e = UserRequestFactory.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -222,7 +222,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
@@ -815,7 +815,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }
@@ -956,7 +956,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(10000);
 
                 CollectionAssert.AreEquivalent(new string[] { }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }
@@ -991,7 +991,7 @@
             string delegate4 = this.CreateUser(out x);
             UserSettingsRequestFactory.AddDelegate(dn, delegate1);
             UserSettingsRequestFactory.AddDelegate(dn, delegate2);
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(10000);
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("delegate", new List<object>() { delegate3, delegate4 }));
 
@@ -1005,7 +1005,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(10000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate3, delegate4 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }

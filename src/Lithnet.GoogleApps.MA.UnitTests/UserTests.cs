@@ -201,7 +201,7 @@
 
                 e = UserRequestFactory.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -221,7 +221,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
@@ -942,7 +942,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(5000);
 
                 e = UserRequestFactory.Get(e.Id);
 

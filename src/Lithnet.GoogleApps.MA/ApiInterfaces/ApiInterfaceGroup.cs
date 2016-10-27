@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -256,25 +257,36 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Requesting settings: " + settingsRequired);
                 Logger.WriteLine("Requesting members: " + membersRequired);
 
-                foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields))
-                {
-                    if (!string.IsNullOrWhiteSpace(config.GroupRegexFilter))
-                    {
-                        if (!Regex.IsMatch(group.Group.Email, config.GroupRegexFilter, RegexOptions.IgnoreCase))
-                        {
-                            continue;
-                        }
-                    }
+                Regex filter = null;
 
-                    if (config.ExcludeUserCreated)
-                    {
-                        if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
-                        {
-                            continue;
-                        }
-                    }
+                if (config.GroupRegexFilter != null)
+                {
+                    filter = new Regex(config.GroupRegexFilter);
+                }
+
+                foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields, config.ExcludeUserCreated, filter))
+                {
+                    //if (!string.IsNullOrWhiteSpace(config.GroupRegexFilter))
+                    //{
+                    //    if (!Regex.IsMatch(group.Group.Email, config.GroupRegexFilter, RegexOptions.IgnoreCase))
+                    //    {
+                    //        Debug.WriteLine($"Ignoring group based on regex filter: {group.Group.Email}");
+                    //        continue;
+                    //    }
+                    //}
+
+                    //if (config.ExcludeUserCreated)
+                    //{
+                    //    if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
+                    //    {
+                    //        Debug.WriteLine($"Ignoring user created group: {group.Group.Email}");
+                    //        continue;
+                    //    }
+                    //}
 
                     collection.Add(this.GetCSEntryForGroup(group, schema, config));
+                    Debug.WriteLine($"Created CSEntryChange for group: {group.Group.Email}");
+
                     continue;
                 }
 
