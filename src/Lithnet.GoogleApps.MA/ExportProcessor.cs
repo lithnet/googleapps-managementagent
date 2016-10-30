@@ -21,11 +21,7 @@ namespace Lithnet.GoogleApps.MA
                 string detail = ex.StackTrace;
                 Logger.WriteException(ex);
 
-                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorConnectedDirectoryMissingObject, errortype, detail);
-                }
-                else if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+                if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
                 {
                     return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorPermissionIssue, errortype, detail);
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
 using Lithnet.GoogleApps.ManagedObjects;
@@ -70,13 +71,22 @@ namespace Lithnet.GoogleApps.MA
                     {
                         foreach (Member change in roleChanges)
                         {
-                            GroupMemberRequestFactory.ChangeMemberRole(csentry.DN, change);
-                        }
+                            try
+                            {
+                                GroupMemberRequestFactory.ChangeMemberRole(csentry.DN, change);
+                                Logger.WriteLine($"Changed member role {change.Email} to {change.Role}", LogLevel.Debug);
+                            }
+                            catch (GoogleApiException ex)
+                            {
+                                if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+                                {
+                                    throw new UnexpectedDataException($"Member {change.Email} cannot be assigned {change.Role} without being made a member", ex);
+                                }
 
-                        foreach (Member member in roleChanges)
-                        {
-                            Logger.WriteLine($"Changed member role {member.Email} to {member.Role}", LogLevel.Debug);
+                                throw;
+                            }
                         }
+                        
                     }
                     catch (AggregateGroupUpdateException ex)
                     {
@@ -469,6 +479,7 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Add:
                         foreach (string address in csentry.GetValueAdds<string>(attributeName))
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(address, attributeName);
                             adds.Add(address);
                         }
                         break;
@@ -476,6 +487,7 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Delete:
                         foreach (string member in existingMembers)
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(member, attributeName);
                             deletes.Add(member);
                         }
 
@@ -485,11 +497,13 @@ namespace Lithnet.GoogleApps.MA
                         IList<string> newMembers = csentry.GetValueAdds<string>(attributeName);
                         foreach (string address in newMembers)
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(address, attributeName);
                             adds.Add(address);
                         }
 
                         foreach (string member in existingMembers.Except(newMembers))
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(member, attributeName);
                             deletes.Add(member);
                         }
 
@@ -498,11 +512,13 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Update:
                         foreach (string address in csentry.GetValueDeletes<string>(attributeName))
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(address, attributeName);
                             deletes.Add(address);
                         }
 
                         foreach (string address in csentry.GetValueAdds<string>(attributeName))
                         {
+                            ApiInterfaceGroupMembership.ValidateAddress(address, attributeName);
                             adds.Add(address);
                         }
 
@@ -511,6 +527,24 @@ namespace Lithnet.GoogleApps.MA
                     case AttributeModificationType.Unconfigured:
                     default:
                         throw new NotSupportedException("The modification type was unknown or unsupported");
+                }
+            }
+        }
+
+        private static void ValidateAddress(string address, string attributeName)
+        {
+            if (attributeName.StartsWith("external"))
+            {
+                if (GroupMembership.IsAddressInternal(address))
+                {
+                    throw new UnexpectedDataException($"The value {address} cannot be exported as {attributeName} as it is a known internal domain. It should be exported as {attributeName.Replace("external", string.Empty)}");
+                }
+            }
+            else
+            {
+                if (GroupMembership.IsAddressExternal(address))
+                {
+                    throw new UnexpectedDataException($"The value {address} cannot be exported as {attributeName} as it is not a known internal domain. It should be exported as external{attributeName}");
                 }
             }
         }

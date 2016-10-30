@@ -29,8 +29,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string member1 = "user1@lithnet.io";
                 string member2 = "user2@lithnet.io";
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member1});
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member2});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1 });
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2 });
 
                 Thread.Sleep(1000);
 
@@ -75,7 +75,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(1000);
 
                 string member2 = "test@test.com";
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member2, Role = "MANAGER"});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
                 Thread.Sleep(1000);
 
@@ -108,7 +108,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 user = UserTests.CreateUser();
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = user.PrimaryEmail, Role = "MANAGER"});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = user.PrimaryEmail, Role = "MANAGER" });
 
                 Thread.Sleep(1000);
 
@@ -139,7 +139,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(1000);
 
                 string member2 = "test@test.com";
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member2, Role = "OWNER"});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2, Role = "OWNER" });
 
                 Thread.Sleep(1000);
 
@@ -174,7 +174,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 user = UserTests.CreateUser();
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = user.PrimaryEmail, Role = "OWNER"});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = user.PrimaryEmail, Role = "OWNER" });
 
                 Thread.Sleep(1000);
 
@@ -218,7 +218,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Email));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalManager", new List<ValueChange>() {new ValueChange(member2, ValueModificationType.Delete)}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalManager", new List<ValueChange>() { new ValueChange(member2, ValueModificationType.Delete) }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -234,13 +234,67 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, membership.ExternalManagers.Count);
                 Assert.AreEqual(0, membership.Managers.Count);
                 Assert.AreEqual(0, membership.Members.Count);
-                CollectionAssert.AreEquivalent(new string[] {member2}, membership.ExternalMembers.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member2 }, membership.ExternalMembers.ToArray());
             }
             finally
             {
                 UnitTestControl.Cleanup(e);
             }
 
+        }
+
+        [TestMethod]
+        public void DowngradeManagersToMembers()
+        {
+            Group e = null;
+            User member1 = null;
+            User member2 = null;
+            User member3 = null;
+            User member4 = null;
+
+            try
+            {
+                e = UnitTestControl.CreateGroup();
+
+                member1 = UserTests.CreateUser();
+                member2 = UserTests.CreateUser();
+                member3 = UserTests.CreateUser();
+                member4 = UserTests.CreateUser();
+
+                GroupMemberRequestFactory.AddMember(e.Email, member1.PrimaryEmail, "MANAGER");
+                GroupMemberRequestFactory.AddMember(e.Email, member2.PrimaryEmail, "MANAGER");
+                GroupMemberRequestFactory.AddMember(e.Email, member3.PrimaryEmail, "MEMBER");
+                GroupMemberRequestFactory.AddMember(e.Email, member4.PrimaryEmail, "MEMBER");
+                Thread.Sleep(1000);
+
+                CSEntryChange cs = CSEntryChange.Create();
+                cs.ObjectModificationType = ObjectModificationType.Update;
+                cs.DN = e.Email;
+                cs.ObjectType = SchemaConstants.Group;
+                cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Email));
+
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("manager"));
+
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                Thread.Sleep(1000);
+                GroupMembership membership = GroupMemberRequestFactory.GetMembership(cs.DN);
+
+                Assert.AreEqual(0, membership.ExternalManagers.Count);
+                Assert.AreEqual(0, membership.Managers.Count);
+                Assert.AreEqual(0, membership.ExternalMembers.Count);
+                CollectionAssert.AreEquivalent(new string[] { member1.PrimaryEmail, member2.PrimaryEmail, member3.PrimaryEmail, member4.PrimaryEmail }, membership.Members.ToArray());
+            }
+            finally
+            {
+                UnitTestControl.Cleanup(e, member1, member2, member3, member4);
+            }
         }
 
         [TestMethod]
@@ -265,7 +319,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalOwner", new List<ValueChange>() {new ValueChange(member2, ValueModificationType.Delete)}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalOwner", new List<ValueChange>() { new ValueChange(member2, ValueModificationType.Delete) }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -282,7 +336,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, membership.Owners.Count);
                 Assert.AreEqual(0, membership.Managers.Count);
                 Assert.AreEqual(0, membership.Members.Count);
-                CollectionAssert.AreEquivalent(new string[] {member2}, membership.ExternalManagers.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member2 }, membership.ExternalManagers.ToArray());
             }
             finally
             {
@@ -301,7 +355,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(1000);
 
                 string member2 = "test@test.com";
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member2});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2 });
 
                 Thread.Sleep(1000);
 
@@ -311,7 +365,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalManager", new List<ValueChange>() {new ValueChange(member2, ValueModificationType.Add)}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalManager", new List<ValueChange>() { new ValueChange(member2, ValueModificationType.Add) }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -323,7 +377,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] {member2}, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.ToArray());
             }
             finally
             {
@@ -342,7 +396,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(1000);
 
                 string member2 = "test@test.com";
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() {Email = member2, Role = "MANAGER"});
+                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
                 Thread.Sleep(1000);
 
@@ -352,7 +406,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalOwner", new List<ValueChange>() {new ValueChange(member2, ValueModificationType.Add)}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("externalOwner", new List<ValueChange>() { new ValueChange(member2, ValueModificationType.Add) }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -364,7 +418,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] {member2}, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalOwners.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member2 }, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalOwners.ToArray());
             }
             finally
             {

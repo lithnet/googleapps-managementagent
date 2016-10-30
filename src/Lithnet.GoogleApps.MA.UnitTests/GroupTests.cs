@@ -237,6 +237,55 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+        public void UpdateDescription()
+        {
+            string id = null;
+            string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = "name",
+                Description = "description"
+            };
+
+            e = GroupRequestFactory.Add(e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.Group;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("description"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
+                }
+
+                e = GroupRequestFactory.Get(id);
+                Assert.AreEqual(cs.DN, e.Email);
+
+                Assert.AreEqual(true, e.AdminCreated);
+                Assert.AreEqual(null, e.Description);
+                Assert.AreEqual("name", e.Name);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                   // GroupRequestFactory.Delete(id);
+                    CSEntryChangeQueue.SaveQueue("D:\\temp\\group-update.xml", UnitTestControl.MmsSchema);
+                }
+            }
+        }
+        [TestMethod]
         public void UpdateNoneCanPostOn()
         {
             string id = null;
@@ -706,7 +755,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
 
         }
-       
+
         private string CreateGroup(out Group e)
         {
             string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
