@@ -967,7 +967,8 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
                 UseNullPlaceHolder = true,
                 IsArrayAttribute = false,
-                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i
+                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
+                CastForExport = (i) => (string)i == Constants.NullValuePlaceholder ? "" : i
             };
 
             type.Attributes.Add(description);
