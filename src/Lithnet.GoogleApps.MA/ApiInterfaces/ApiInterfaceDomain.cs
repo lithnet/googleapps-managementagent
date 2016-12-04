@@ -34,6 +34,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api => "domain";
 
+        public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
 
         public object CreateInstance(CSEntryChange csentry)
         {

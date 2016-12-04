@@ -17,6 +17,8 @@ namespace Lithnet.GoogleApps.MA
 
         string GetDNValue(object target);
 
+        ObjectModificationType DeltaUpdateType { get; }
+
         Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection);
     }
 }

@@ -392,6 +392,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Emails",
                 KnownTypes = config.EmailsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false,
+                IsEmpty = (t) => string.IsNullOrWhiteSpace(t.Address),
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" }, { "http://schemas.google.com/g/2005#home", "home" }, { "http://schemas.google.com/g/2005#other", "other" } }
             };
 
@@ -471,6 +472,15 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Organizations",
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false,
+                IsEmpty = (t) =>
+                {
+                    return string.IsNullOrWhiteSpace(t.Department) &&
+                           string.IsNullOrWhiteSpace(t.JobDescription) &&
+                           string.IsNullOrWhiteSpace(t.Name) &&
+                           string.IsNullOrWhiteSpace(t.Title) &&
+                           string.IsNullOrWhiteSpace(t.Symbol) &&
+                           string.IsNullOrWhiteSpace(t.Location);
+                },
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" } }
             };
 
@@ -525,6 +535,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Phonenumbers",
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
                 SupportsPatch = false,
+                IsEmpty = (t) => string.IsNullOrWhiteSpace(t.Value),
                 KnownRels = new Dictionary<string, string>()
                 {
                     { "http://schemas.google.com/g/2005#work_pager", "work_pager" } ,
@@ -582,6 +593,8 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IMs",
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false,
+                IsEmpty = (t) => string.IsNullOrWhiteSpace(t.Address),
+
                 KnownRels = new Dictionary<string, string>()
                 {
                     { "http://schemas.google.com/g/2005#work", "work" } ,

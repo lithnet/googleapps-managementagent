@@ -264,7 +264,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public void UpdateNoneCanPostOn()
         {
             Group e = null;
-
+            
             try
             {
                 e = GroupRequestFactory.Add(e);

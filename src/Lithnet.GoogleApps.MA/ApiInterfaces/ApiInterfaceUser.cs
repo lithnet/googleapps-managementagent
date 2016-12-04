@@ -31,6 +31,8 @@ namespace Lithnet.GoogleApps.MA
 
         public virtual string Api => "user";
 
+        public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
+        
         public virtual object CreateInstance(CSEntryChange csentry)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)

@@ -112,7 +112,6 @@ namespace Lithnet.GoogleApps.MA
 
         private static CSEntryChangeResult PutCSEntryChangeUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
-            deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
             deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
 
             if (csentry.DN != deltaCSEntry.DN)
@@ -123,7 +122,8 @@ namespace Lithnet.GoogleApps.MA
             bool canPatch = maType.CanPatch(csentry.AttributeChanges);
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
-
+            deltaCSEntry.ObjectModificationType = primaryInterface.DeltaUpdateType;
+            
             object instance;
 
             if (canPatch)

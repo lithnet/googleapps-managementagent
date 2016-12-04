@@ -36,6 +36,8 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api => "group";
 
+        public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
+
         public object CreateInstance(CSEntryChange csentry)
         {
             GoogleGroup g = new GoogleGroup();
@@ -266,24 +268,6 @@ namespace Lithnet.GoogleApps.MA
 
                 foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields, config.ExcludeUserCreated, filter))
                 {
-                    //if (!string.IsNullOrWhiteSpace(config.GroupRegexFilter))
-                    //{
-                    //    if (!Regex.IsMatch(group.Group.Email, config.GroupRegexFilter, RegexOptions.IgnoreCase))
-                    //    {
-                    //        Debug.WriteLine($"Ignoring group based on regex filter: {group.Group.Email}");
-                    //        continue;
-                    //    }
-                    //}
-
-                    //if (config.ExcludeUserCreated)
-                    //{
-                    //    if (!group.Group.AdminCreated.HasValue || !group.Group.AdminCreated.Value)
-                    //    {
-                    //        Debug.WriteLine($"Ignoring user created group: {group.Group.Email}");
-                    //        continue;
-                    //    }
-                    //}
-
                     collection.Add(this.GetCSEntryForGroup(group, schema, config));
                     Debug.WriteLine($"Created CSEntryChange for group: {group.Group.Email}");
 

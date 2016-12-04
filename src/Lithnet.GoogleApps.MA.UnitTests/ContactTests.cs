@@ -363,5 +363,155 @@
             }
 
         }
+
+        [TestMethod]
+        public void ContactDeletePhoneNumber()
+        {
+            string id = null;
+            string dn = Guid.NewGuid().ToString();
+            ContactEntry e = new ContactEntry
+            {
+                BillingInformation = "test",
+                Birthday = "2001-01-01",
+                DirectoryServer = "test",
+                Initials = "test",
+                Location = "test",
+                MaidenName = "test",
+                Mileage = "test",
+                Nickname = "test",
+                Occupation = "test",
+                Sensitivity = "normal",
+                ShortName = "test",
+                Subject = "test",
+            };
+
+            e.ExternalIds.Add(new ExternalId() { Label = "work", Value = "test" });
+            e.Organizations.Add(new Organization()
+            {
+                Rel = "http://schemas.google.com/g/2005#work",
+                Name = "test",
+                Title = "test",
+                Department = "test",
+                Symbol = "test",
+                JobDescription = "test",
+                Location = "test",
+            });
+
+            e.Phonenumbers.Add(new PhoneNumber() { Primary = true, Rel = "http://schemas.google.com/g/2005#home", Value = "test" });
+
+            e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
+
+            e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+            id = e.SelfUri.Content;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = Guid.NewGuid().ToString();
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("phones_home"));
+
+            try
+            {
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = ContactRequestFactory.GetContact(id);
+               
+
+                Assert.AreEqual(0, e.Phonenumbers.Count);
+               
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    ContactRequestFactory.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void ContactDeleteExternalID()
+        {
+            string id = null;
+            string dn = Guid.NewGuid().ToString();
+            ContactEntry e = new ContactEntry
+            {
+                BillingInformation = "test",
+                Birthday = "2001-01-01",
+                DirectoryServer = "test",
+                Initials = "test",
+                Location = "test",
+                MaidenName = "test",
+                Mileage = "test",
+                Nickname = "test",
+                Occupation = "test",
+                Sensitivity = "normal",
+                ShortName = "test",
+                Subject = "test",
+            };
+
+            e.ExternalIds.Add(new ExternalId() { Label = "work", Value = "test" });
+            e.Organizations.Add(new Organization()
+            {
+                Rel = "http://schemas.google.com/g/2005#work",
+                Name = "test",
+                Title = "test",
+                Department = "test",
+                Symbol = "test",
+                JobDescription = "test",
+                Location = "test",
+            });
+
+            e.Phonenumbers.Add(new PhoneNumber() { Primary = true, Rel = "http://schemas.google.com/g/2005#home", Value = "test" });
+
+            e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
+
+            e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+            id = e.SelfUri.Content;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = Guid.NewGuid().ToString();
+            cs.ObjectType = SchemaConstants.Contact;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("externalIds_work"));
+
+            try
+            {
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(5000);
+
+                e = ContactRequestFactory.GetContact(id);
+
+
+                Assert.AreEqual(0, e.ExternalIds.Count);
+
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    ContactRequestFactory.Delete(id);
+                }
+            }
+
+        }
     }
 }

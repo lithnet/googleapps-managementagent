@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.MetadirectoryServices;
@@ -34,6 +35,8 @@ namespace Lithnet.GoogleApps.MA
         public bool IsReadOnly { get; set; }
 
         public bool IsAnchor => false;
+
+        public Func<T, bool> IsEmpty { get; set; }
 
         private IList<AdapterPropertyValue> attributes;
 
@@ -163,6 +166,11 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
+            if (this.RemoveEmptyItems(list))
+            {
+                hasChanged = true;
+            }
+
             return hasChanged;
         }
 
@@ -180,6 +188,32 @@ namespace Lithnet.GoogleApps.MA
                     yield return field.GetSchemaAttribute($"{this.AttributeName}_{type}");
                 }
             }
+        }
+
+        private bool RemoveEmptyItems(IList<T> items)
+        {
+            bool updated = false;
+
+            if (items == null)
+            {
+                return false;
+            }
+
+            if (this.IsEmpty == null)
+            {
+                return false;
+            }
+
+            foreach (T item in items.ToList())
+            {
+                if (this.IsEmpty(item))
+                {
+                    items.Remove(item);
+                    updated = true;
+                }
+            }
+
+            return updated;
         }
 
         private IList<T> GetList(object obj)
@@ -220,7 +254,7 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteLine($"Ignoring duplicate type {type} for attribute {this.AttributeName} on object {dn}", LogLevel.Debug);
                     continue;
                 }
-                
+
                 foreach (AdapterPropertyValue attribute in this.Attributes)
                 {
                     if (attribute.AssignedType == type)

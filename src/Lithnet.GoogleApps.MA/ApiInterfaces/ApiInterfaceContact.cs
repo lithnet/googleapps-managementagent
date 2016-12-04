@@ -89,6 +89,7 @@ namespace Lithnet.GoogleApps.MA
             if (hasChanged)
             {
                 ContactEntry result;
+                ObjectModificationType deltaModType = csentry.ObjectModificationType;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
@@ -106,13 +107,18 @@ namespace Lithnet.GoogleApps.MA
                         result = ContactRequestFactory.Update(obj);
                         target = result;
                     }
+
+                    if (deltaModType == ObjectModificationType.Update)
+                    {
+                        deltaModType = ObjectModificationType.Replace;
+                    }
                 }
                 else
                 {
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+                changes.AddRange(this.GetChanges(csentry.DN, deltaModType, type, result, config));
             }
 
             foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
@@ -197,6 +203,8 @@ namespace Lithnet.GoogleApps.MA
 
             return contactEntry.PrimaryEmail == null ? null : "contact:" + contactEntry.PrimaryEmail.Address;
         }
+
+        public ObjectModificationType DeltaUpdateType => ObjectModificationType.Replace;
 
         public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
         {

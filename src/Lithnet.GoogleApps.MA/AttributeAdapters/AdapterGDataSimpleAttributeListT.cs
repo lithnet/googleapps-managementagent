@@ -153,6 +153,11 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
+            if (this.RemoveEmptyItems(list))
+            {
+                hasChanged = true;
+            }
+
             return hasChanged;
         }
 
@@ -170,6 +175,26 @@ namespace Lithnet.GoogleApps.MA
                     yield return field.GetSchemaAttribute($"{this.AttributeName}_{type}");
                 }
             }
+        }
+        private bool RemoveEmptyItems(IList<T> items)
+        {
+            bool updated = false;
+
+            if (items == null)
+            {
+                return false;
+            }
+
+            foreach (T item in items.ToList())
+            {
+                if (string.IsNullOrWhiteSpace(item.Value))
+                {
+                    items.Remove(item);
+                    updated = true;
+                }
+            }
+
+            return updated;
         }
 
         private IList<T> GetList(object obj)
