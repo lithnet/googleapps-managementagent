@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
 EndProject
@@ -34,9 +34,11 @@ Global
 		{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}.Release|x86.Build.0 = Release|Any CPU
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|Any CPU.Build.0 = Debug|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x86.ActiveCfg = Debug|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x86.Build.0 = Debug|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Release|Any CPU.ActiveCfg = Release|x86
+		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Release|Any CPU.Build.0 = Release|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Release|x86.ActiveCfg = Release|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Lithnet.MetadirectoryServices;
 using Lithnet.GoogleApps.ManagedObjects;
 using System.Net;
+using System.Linq;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -99,7 +100,7 @@ namespace Lithnet.GoogleApps.MA
             this.SetHttpDebugMode();
             GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
             GroupRequestFactory.MemberThreads = MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember;
-            
+
             this.timer = new Stopwatch();
 
             this.InitializeConnectionPools();
@@ -209,32 +210,40 @@ namespace Lithnet.GoogleApps.MA
 
         public OpenImportConnectionResults OpenImportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenImportConnectionRunStep importRunStep)
         {
-            this.Configuration = new ManagementAgentParameters(configParameters);
-            Logger.LogPath = this.Configuration.MALogFile;
-
-            this.importRunStep = importRunStep;
-            this.operationSchemaTypes = types;
-            this.timer = new Stopwatch();
-            this.seenDNs = new HashSet<string>();
-
-            this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
-
-            Logger.WriteLine("Opening import connection. Page size {0}", this.importRunStep.PageSize);
-
-            if (this.importRunStep.ImportType == OperationType.Delta)
+            try
             {
-                CSEntryChangeQueue.LoadQueue(this.DeltaPath);
-                Logger.WriteLine("Delta full import from file started. {0} entries to import", CSEntryChangeQueue.Count);
+                this.Configuration = new ManagementAgentParameters(configParameters);
+                Logger.LogPath = this.Configuration.MALogFile;
+
+                this.importRunStep = importRunStep;
+                this.operationSchemaTypes = types;
+                this.timer = new Stopwatch();
+                this.seenDNs = new HashSet<string>();
+
+                this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
+
+                Logger.WriteLine("Opening import connection. Page size {0}", this.importRunStep.PageSize);
+
+                if (this.importRunStep.ImportType == OperationType.Delta)
+                {
+                    CSEntryChangeQueue.LoadQueue(this.DeltaPath);
+                    Logger.WriteLine("Delta full import from file started. {0} entries to import", CSEntryChangeQueue.Count);
+                }
+                else
+                {
+                    this.OpenImportConnectionFull(types);
+
+                    Logger.WriteLine("Background full import from Google started");
+                }
+
+                this.timer.Start();
+                return new OpenImportConnectionResults("<placeholder>");
             }
-            else
+            catch (Exception ex)
             {
-                this.OpenImportConnectionFull(types);
-
-                Logger.WriteLine("Background full import from Google started");
+                Logger.WriteException(ex);
+                throw;
             }
-
-            this.timer.Start();
-            return new OpenImportConnectionResults("<placeholder>");
         }
 
         private void OpenImportConnectionFull(Schema types)
@@ -249,7 +258,7 @@ namespace Lithnet.GoogleApps.MA
 
             List<Task> tasks = new List<Task>();
 
-            foreach (MASchemaType item in ManagementAgent.Schema)
+            foreach (MASchemaType item in ManagementAgent.Schema.Where(t => types.Types.Contains(t.Name)))
             {
                 Task t = item.ApiInterface.GetItems(this.Configuration, types, this.importCollection);
 
@@ -310,7 +319,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.importTask.IsFaulted)
                 {
-                    throw this.importTask.Exception;    
+                    throw this.importTask.Exception;
                 }
 
                 if (this.importCollection.IsCompleted)
