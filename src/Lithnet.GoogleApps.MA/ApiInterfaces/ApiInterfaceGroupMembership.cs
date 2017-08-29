@@ -40,16 +40,16 @@ namespace Lithnet.GoogleApps.MA
 
                         foreach (string member in allMembersToDelete)
                         {
-                            Logger.WriteLine($"Deleted member {member}", LogLevel.Debug);
+                            Logger.WriteLine($"Deleted member {member} from group {csentry.DN}", LogLevel.Debug);
                         }
 
                         if (allMembersToDelete.Count == 1)
                         {
-                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} member");
+                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} member from group {csentry.DN}");
                         }
                         else
                         {
-                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} members");
+                            Logger.WriteLine($"Deleted {allMembersToDelete.Count} members from group {csentry.DN}");
                         }
                     }
                     catch (AggregateGroupUpdateException ex)
