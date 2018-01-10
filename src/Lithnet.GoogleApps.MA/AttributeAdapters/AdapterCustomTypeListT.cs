@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
 using System.Collections;
+using System.Collections.ObjectModel;
 using Lithnet.Logging;
 using System.Reflection;
 using Lithnet.GoogleApps.ManagedObjects;
@@ -13,6 +14,14 @@ namespace Lithnet.GoogleApps.MA
     internal class AdapterCustomTypeList<T> : IAttributeAdapter where T : CustomTypeObject, new()
     {
         private PropertyInfo propInfo;
+
+        public IEnumerable<string> MmsAttributeNames
+        {
+            get
+            {
+                yield return this.AttributeName;
+            }
+        }
 
         public string AttributeName { get; set; }
 
@@ -93,17 +102,9 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private IEnumerable<string> AttributeNames
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            get
-            {
-                yield return this.AttributeName;
-
-                foreach (AdapterPropertyValue attribute in this.Attributes)
-                {
-                    yield return attribute.AttributeName;
-                }
-            }
+            return this.SupportsPatch;
         }
 
         public bool CanProcessAttribute(string attribute)

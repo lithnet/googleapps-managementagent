@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
@@ -16,6 +17,13 @@ namespace Lithnet.GoogleApps.MA
 
         private PropertyInfo propInfo;
 
+        public IEnumerable<string> MmsAttributeNames
+        {
+            get
+            {
+                yield return this.AttributeName;
+            }
+        }
         public string AttributeName { get; set; }
 
         public string FieldName { get; set; }
@@ -51,6 +59,10 @@ namespace Lithnet.GoogleApps.MA
 
                 return this.attributes;
             }
+        }
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        {
+            return this.SupportsPatch;
         }
 
         private IList<AdapterPropertyValue> GetConstructedAttributes()

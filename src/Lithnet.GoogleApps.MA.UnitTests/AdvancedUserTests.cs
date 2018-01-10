@@ -75,7 +75,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 User e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -155,7 +155,7 @@
 
                 try
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                     e = UserRequestFactory.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -328,7 +328,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -412,7 +412,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -471,7 +471,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -534,7 +534,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -662,7 +662,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -714,7 +714,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -748,7 +748,7 @@
 
             e = UserRequestFactory.Add(e);
             id = e.Id;
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
             UserRequestFactory.MakeAdmin(true, id);
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -769,7 +769,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UserRequestFactory.Get(id);
 
@@ -889,7 +889,7 @@
             UserSettingsRequestFactory.AddDelegate(dn, delegate1);
             UserSettingsRequestFactory.AddDelegate(dn, delegate2);
 
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -909,7 +909,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate1 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }

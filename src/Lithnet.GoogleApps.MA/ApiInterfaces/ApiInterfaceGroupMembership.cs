@@ -177,11 +177,14 @@ namespace Lithnet.GoogleApps.MA
 
             this.ApplyRoleInheritance(config, membership);
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (type.HasAttribute(typeDef.AttributeName))
+                foreach (string attributeName in typeDef.MmsAttributeNames)
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
+                    if (type.HasAttribute(attributeName))
+                    {
+                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
+                    }
                 }
             }
 

@@ -78,7 +78,7 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, obj))
                 {
@@ -152,7 +152,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.IsAnchor)
                 {

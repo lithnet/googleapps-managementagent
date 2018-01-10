@@ -25,7 +25,7 @@ namespace Lithnet.GoogleApps.MA
                 settings = GroupSettingsRequestFactory.Get(this.GetDNValue(target));
             }
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, settings))
                 {
@@ -93,11 +93,14 @@ namespace Lithnet.GoogleApps.MA
             }
 
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (type.HasAttribute(typeDef.AttributeName))
+                foreach (string attributeName in typeDef.MmsAttributeNames)
                 {
-                    attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, settings));
+                    if (type.HasAttribute(attributeName))
+                    {
+                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, settings));
+                    }
                 }
             }
 

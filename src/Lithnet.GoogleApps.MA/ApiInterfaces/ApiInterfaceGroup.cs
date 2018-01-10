@@ -75,7 +75,7 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, group.Group))
                 {
@@ -153,7 +153,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.IsAnchor)
                 {
@@ -247,9 +247,13 @@ namespace Lithnet.GoogleApps.MA
             bool settingsRequired = groupSettingList.Count > 0;
 
             string groupSettingsFields = string.Join(",", groupSettingList);
-
-            bool membersRequired = ManagementAgent.Schema[SchemaConstants.Group].Attributes.Any(u => u.Api == "groupmembership" && schema.Types[SchemaConstants.Group].Attributes.Contains(u.AttributeName));
-
+            
+            bool membersRequired =
+                ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(u => u.Api == "groupmembership").Any(v =>
+                {
+                    return v.MmsAttributeNames.Any(attributeName => schema.Types[SchemaConstants.Group].Attributes.Contains(attributeName));
+                });
+            
             Task t = new Task(() =>
             {
                 Logger.WriteLine("Starting group import task");

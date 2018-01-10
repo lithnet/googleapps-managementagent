@@ -32,17 +32,15 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.AdvancedUser].Attributes.Where(t => t.Api == this.Api && t.AttributeName == SchemaConstants.Delegate))
+            if (!type.HasAttribute(SchemaConstants.Delegate))
             {
-                if (!type.HasAttribute(typeDef.AttributeName))
-                {
-                    continue;
-                }
-
-                List<string> delegates = UserSettingsRequestFactory.GetDelegates(((User)source).PrimaryEmail).ToList();
-                attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }));
-                break;
+                return attributeChanges;
             }
+
+            IAttributeAdapter typeDef = ManagementAgent.Schema[SchemaConstants.AdvancedUser].AttributeAdapters.First(t => t.Api == this.Api);
+
+            List<string> delegates = UserSettingsRequestFactory.GetDelegates(((User)source).PrimaryEmail).ToList();
+            attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }));
 
             return attributeChanges;
         }

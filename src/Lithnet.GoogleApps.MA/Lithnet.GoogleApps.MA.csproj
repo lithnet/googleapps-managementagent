@@ -72,6 +72,11 @@
     <Compile Include="ApiInterfaces\ApiInterfaceDomain.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceContact.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceUserDelegates.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldMultivalued.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomSchemaField.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldSingleValued.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomSchema.cs" />
+    <Compile Include="AttributeAdapters\AdapterCustomSchemas.cs" />
     <Compile Include="ConfigSections\EmailSettingsApiElement.cs" />
     <Compile Include="ConfigSections\ContactsApiElement.cs" />
     <Compile Include="ConfigSections\GroupsSettingsApiElement.cs" />
@@ -169,16 +174,15 @@
       <HintPath>..\packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.GoogleApps, Version=1.0.6520.18538, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6520.18538\lib\net452\Lithnet.GoogleApps.dll</HintPath>
+    <Reference Include="Lithnet.GoogleApps, Version=1.0.6584.31522, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6584.31522\lib\net452\Lithnet.GoogleApps.dll</HintPath>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.6017.24789, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.MetadirectoryServices.1.0.6017.24789\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.6478.33562, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lithnet.MetadirectoryServices.1.0.6478.33562\lib\net40\Lithnet.MetadirectoryServices.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>

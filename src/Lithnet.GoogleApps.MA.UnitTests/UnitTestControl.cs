@@ -2,8 +2,6 @@
 using System.Linq;
 using Lithnet.GoogleApps.ManagedObjects;
 using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.MetadirectoryServices;
@@ -17,6 +15,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     internal static class UnitTestControl
     {
+        internal const int PostGoogleOperationSleepInterval = 5000;
+
         [AssemblyCleanup()]
         public static void AssemblyCleanup()
         {

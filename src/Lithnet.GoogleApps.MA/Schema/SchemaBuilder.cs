@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
 using Google.GData.Client;
 using Google.GData.Contacts;
@@ -63,7 +64,7 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IAttributeAdapter>(),
+                AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "domain",
                 AnchorAttributeName = SchemaConstants.DomainName,
                 SupportsPatch = false,
@@ -85,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
                 IsAnchor = true
             };
 
-            type.Attributes.Add(domainName);
+            type.AttributeAdapters.Add(domainName);
 
             AdapterPropertyValue isPrimary = new AdapterPropertyValue
             {
@@ -100,7 +101,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(isPrimary);
+            type.AttributeAdapters.Add(isPrimary);
 
             AdapterPropertyValue verified = new AdapterPropertyValue
             {
@@ -115,7 +116,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(verified);
+            type.AttributeAdapters.Add(verified);
 
             AdapterCollection<string> domainAliases = new AdapterCollection<string>
             {
@@ -128,8 +129,8 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportOnly
             };
 
-            type.Attributes.Add(domainAliases);
-          
+            type.AttributeAdapters.Add(domainAliases);
+
             return type;
         }
 
@@ -137,7 +138,7 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IAttributeAdapter>(),
+                AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "contact",
                 AnchorAttributeName = "id",
                 SupportsPatch = false,
@@ -158,7 +159,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(occupation);
+            type.AttributeAdapters.Add(occupation);
 
             AdapterPropertyValue billingInformation = new AdapterPropertyValue
             {
@@ -173,7 +174,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(billingInformation);
+            type.AttributeAdapters.Add(billingInformation);
 
             AdapterPropertyValue birthday = new AdapterPropertyValue
             {
@@ -188,7 +189,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(birthday);
+            type.AttributeAdapters.Add(birthday);
 
             AdapterPropertyValue directoryServer = new AdapterPropertyValue
             {
@@ -203,7 +204,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(directoryServer);
+            type.AttributeAdapters.Add(directoryServer);
 
 
             AdapterPropertyValue initials = new AdapterPropertyValue
@@ -219,7 +220,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(initials);
+            type.AttributeAdapters.Add(initials);
 
             AdapterPropertyValue maidenName = new AdapterPropertyValue
             {
@@ -234,7 +235,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(maidenName);
+            type.AttributeAdapters.Add(maidenName);
 
             AdapterPropertyValue mileage = new AdapterPropertyValue
             {
@@ -249,7 +250,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(mileage);
+            type.AttributeAdapters.Add(mileage);
 
             AdapterPropertyValue nickname = new AdapterPropertyValue
             {
@@ -264,7 +265,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(nickname);
+            type.AttributeAdapters.Add(nickname);
 
             // There is a bug in the contact implementation where priority thinks its occupation, causing an error when saving contacts
             // So no support for priority!
@@ -297,7 +298,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(sensitivity);
+            type.AttributeAdapters.Add(sensitivity);
 
             AdapterPropertyValue shortName = new AdapterPropertyValue
             {
@@ -312,7 +313,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(shortName);
+            type.AttributeAdapters.Add(shortName);
 
             AdapterPropertyValue subject = new AdapterPropertyValue
             {
@@ -327,7 +328,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(subject);
+            type.AttributeAdapters.Add(subject);
 
             AdapterPropertyValue location = new AdapterPropertyValue
             {
@@ -342,7 +343,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(location);
+            type.AttributeAdapters.Add(location);
 
             AdapterPropertyValue id = new AdapterPropertyValue
             {
@@ -359,7 +360,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (value) => ((AtomId)value).AbsoluteUri,
             };
 
-            type.Attributes.Add(id);
+            type.AttributeAdapters.Add(id);
 
             SchemaBuilder.AddContactNames(type);
             SchemaBuilder.AddContactOrganizationsAttributes(type, config);
@@ -396,7 +397,7 @@ namespace Lithnet.GoogleApps.MA
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" }, { "http://schemas.google.com/g/2005#home", "home" }, { "http://schemas.google.com/g/2005#other", "other" } }
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
@@ -484,7 +485,7 @@ namespace Lithnet.GoogleApps.MA
                 KnownRels = new Dictionary<string, string>() { { "http://schemas.google.com/g/2005#work", "work" } }
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
@@ -511,7 +512,7 @@ namespace Lithnet.GoogleApps.MA
                 KnownRels = new HashSet<string>() { "account", "customer", "network", "organization" }
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddContactPhones(MASchemaType type, IManagementAgentParameters config)
@@ -559,7 +560,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             };
 
-            type.Attributes.Add(phonesType);
+            type.AttributeAdapters.Add(phonesType);
         }
 
         private static void AddContactIms(MASchemaType type, IManagementAgentParameters config)
@@ -604,14 +605,14 @@ namespace Lithnet.GoogleApps.MA
 
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         public static MASchemaType GetUserSchema(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IAttributeAdapter>(),
+                AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "user",
                 AnchorAttributeName = "id",
                 SupportsPatch = true,
@@ -633,7 +634,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(orgUnitPath);
+            type.AttributeAdapters.Add(orgUnitPath);
 
             AdapterPropertyValue includeInGal = new AdapterPropertyValue
             {
@@ -650,7 +651,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(includeInGal);
+            type.AttributeAdapters.Add(includeInGal);
 
             AdapterPropertyValue suspended = new AdapterPropertyValue
             {
@@ -667,7 +668,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(suspended);
+            type.AttributeAdapters.Add(suspended);
 
             AdapterPropertyValue changePasswordAtNextLogin = new AdapterPropertyValue
             {
@@ -684,7 +685,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(changePasswordAtNextLogin);
+            type.AttributeAdapters.Add(changePasswordAtNextLogin);
 
             AdapterPropertyValue ipWhitelisted = new AdapterPropertyValue
             {
@@ -700,7 +701,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(ipWhitelisted);
+            type.AttributeAdapters.Add(ipWhitelisted);
 
             AdapterPropertyValue id = new AdapterPropertyValue
             {
@@ -716,7 +717,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(id);
+            type.AttributeAdapters.Add(id);
 
             AdapterPropertyValue primaryEmail = new AdapterPropertyValue
             {
@@ -731,7 +732,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(primaryEmail);
+            type.AttributeAdapters.Add(primaryEmail);
 
             AdapterPropertyValue isAdmin = new AdapterPropertyValue
             {
@@ -748,7 +749,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isAdmin);
+            type.AttributeAdapters.Add(isAdmin);
 
             AdapterPropertyValue isDelegatedAdmin = new AdapterPropertyValue
             {
@@ -764,7 +765,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isDelegatedAdmin);
+            type.AttributeAdapters.Add(isDelegatedAdmin);
 
             AdapterPropertyValue lastLoginTime = new AdapterPropertyValue
             {
@@ -779,7 +780,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(lastLoginTime);
+            type.AttributeAdapters.Add(lastLoginTime);
 
             AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
@@ -794,7 +795,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(creationTime);
+            type.AttributeAdapters.Add(creationTime);
 
             AdapterPropertyValue deletionTime = new AdapterPropertyValue
             {
@@ -809,7 +810,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(deletionTime);
+            type.AttributeAdapters.Add(deletionTime);
 
             AdapterPropertyValue agreedToTerms = new AdapterPropertyValue
             {
@@ -825,7 +826,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(agreedToTerms);
+            type.AttributeAdapters.Add(agreedToTerms);
 
             AdapterPropertyValue suspensionReason = new AdapterPropertyValue
             {
@@ -840,7 +841,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(suspensionReason);
+            type.AttributeAdapters.Add(suspensionReason);
 
             AdapterPropertyValue isMailboxSetup = new AdapterPropertyValue
             {
@@ -856,7 +857,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isMailboxSetup);
+            type.AttributeAdapters.Add(isMailboxSetup);
 
             AdapterPropertyValue thumbnailPhotoUrl = new AdapterPropertyValue
             {
@@ -871,7 +872,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(thumbnailPhotoUrl);
+            type.AttributeAdapters.Add(thumbnailPhotoUrl);
 
             AdapterPropertyValue thumbnailPhotoEtag = new AdapterPropertyValue
             {
@@ -886,7 +887,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(thumbnailPhotoEtag);
+            type.AttributeAdapters.Add(thumbnailPhotoEtag);
 
             AdapterPropertyValue customerId = new AdapterPropertyValue
             {
@@ -901,7 +902,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(customerId);
+            type.AttributeAdapters.Add(customerId);
 
             SchemaBuilder.AddUserNames(type);
             SchemaBuilder.AddUserNotes(type);
@@ -913,6 +914,7 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilder.AddUserRelations(type, config);
             SchemaBuilder.AddUserExternalIds(type, config);
             SchemaBuilder.AddUserIms(type, config);
+            SchemaBuilder.AddUserCustomSchema(type, config);
 
             return type;
         }
@@ -928,13 +930,13 @@ namespace Lithnet.GoogleApps.MA
                 AttributeType = AttributeType.Reference,
                 FieldName = null,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "delegate",
+                AttributeName = SchemaConstants.Delegate,
                 PropertyName = "Delegates",
                 Api = "userdelegates",
                 SupportsPatch = true,
             };
 
-            userType.Attributes.Add(delegates);
+            userType.AttributeAdapters.Add(delegates);
 
             return userType;
         }
@@ -943,7 +945,7 @@ namespace Lithnet.GoogleApps.MA
         {
             MASchemaType type = new MASchemaType
             {
-                Attributes = new List<IAttributeAdapter>(),
+                AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "group",
                 AnchorAttributeName = "id",
                 SupportsPatch = true,
@@ -966,7 +968,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(adminCreated);
+            type.AttributeAdapters.Add(adminCreated);
 
             AdapterPropertyValue description = new AdapterPropertyValue
             {
@@ -984,7 +986,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForExport = (i) => (string)i == Constants.NullValuePlaceholder ? "" : i
             };
 
-            type.Attributes.Add(description);
+            type.AttributeAdapters.Add(description);
 
             AdapterPropertyValue email = new AdapterPropertyValue
             {
@@ -999,7 +1001,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(email);
+            type.AttributeAdapters.Add(email);
 
             AdapterPropertyValue id = new AdapterPropertyValue
             {
@@ -1015,7 +1017,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(id);
+            type.AttributeAdapters.Add(id);
 
             AdapterPropertyValue name = new AdapterPropertyValue
             {
@@ -1030,7 +1032,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(name);
+            type.AttributeAdapters.Add(name);
 
             SchemaBuilder.AddGroupAliases(type);
             SchemaBuilder.AddGroupSettings(type);
@@ -1051,7 +1053,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(members);
+            type.AttributeAdapters.Add(members);
 
             AdapterCollection<string> managers = new AdapterCollection<string>
             {
@@ -1064,7 +1066,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(managers);
+            type.AttributeAdapters.Add(managers);
 
             AdapterCollection<string> owners = new AdapterCollection<string>
             {
@@ -1077,7 +1079,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(owners);
+            type.AttributeAdapters.Add(owners);
 
             AdapterCollection<string> externalMembers = new AdapterCollection<string>
             {
@@ -1090,7 +1092,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(externalMembers);
+            type.AttributeAdapters.Add(externalMembers);
 
             AdapterCollection<string> externalManagers = new AdapterCollection<string>
             {
@@ -1103,7 +1105,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(externalManagers);
+            type.AttributeAdapters.Add(externalManagers);
 
             AdapterCollection<string> externalOwners = new AdapterCollection<string>
             {
@@ -1116,7 +1118,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.Attributes.Add(externalOwners);
+            type.AttributeAdapters.Add(externalOwners);
         }
 
         private static void AddGroupSettings(MASchemaType type)
@@ -1135,7 +1137,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(includeCustomFooter);
+            type.AttributeAdapters.Add(includeCustomFooter);
 
             AdapterPropertyValue customFooterText = new AdapterPropertyValue
             {
@@ -1151,7 +1153,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(customFooterText);
+            type.AttributeAdapters.Add(customFooterText);
 
             AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
             {
@@ -1167,7 +1169,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanJoin);
+            type.AttributeAdapters.Add(whoCanJoin);
 
             AdapterPropertyValue whoCanViewMembership = new AdapterPropertyValue
             {
@@ -1183,7 +1185,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanViewMembership);
+            type.AttributeAdapters.Add(whoCanViewMembership);
 
             AdapterPropertyValue whoCanViewGroup = new AdapterPropertyValue
             {
@@ -1199,7 +1201,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanViewGroup);
+            type.AttributeAdapters.Add(whoCanViewGroup);
 
             AdapterPropertyValue whoCanInvite = new AdapterPropertyValue
             {
@@ -1215,7 +1217,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanInvite);
+            type.AttributeAdapters.Add(whoCanInvite);
 
             AdapterPropertyValue whoCanAdd = new AdapterPropertyValue
             {
@@ -1231,7 +1233,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanAdd);
+            type.AttributeAdapters.Add(whoCanAdd);
 
             AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
             {
@@ -1248,7 +1250,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(allowExternalMembers);
+            type.AttributeAdapters.Add(allowExternalMembers);
 
             AdapterPropertyValue whoCanPostMessage = new AdapterPropertyValue
             {
@@ -1264,7 +1266,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanPostMessage);
+            type.AttributeAdapters.Add(whoCanPostMessage);
 
             AdapterPropertyValue allowWebPosting = new AdapterPropertyValue
             {
@@ -1281,7 +1283,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(allowWebPosting);
+            type.AttributeAdapters.Add(allowWebPosting);
 
             AdapterPropertyValue primaryLanguage = new AdapterPropertyValue
             {
@@ -1297,7 +1299,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(primaryLanguage);
+            type.AttributeAdapters.Add(primaryLanguage);
 
             AdapterPropertyValue maxMessageBytes = new AdapterPropertyValue
             {
@@ -1317,12 +1319,12 @@ namespace Lithnet.GoogleApps.MA
                     {
                         return null;
                     }
-                    
+
                     return Convert.ToInt32((long)value);
                 }
             };
 
-            type.Attributes.Add(maxMessageBytes);
+            type.AttributeAdapters.Add(maxMessageBytes);
 
             AdapterPropertyValue isArchived = new AdapterPropertyValue
             {
@@ -1339,7 +1341,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(isArchived);
+            type.AttributeAdapters.Add(isArchived);
 
 
             AdapterPropertyValue archiveOnly = new AdapterPropertyValue
@@ -1357,7 +1359,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(archiveOnly);
+            type.AttributeAdapters.Add(archiveOnly);
 
             AdapterPropertyValue messageModerationLevel = new AdapterPropertyValue
             {
@@ -1373,7 +1375,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(messageModerationLevel);
+            type.AttributeAdapters.Add(messageModerationLevel);
 
 
             AdapterPropertyValue spamModerationLevel = new AdapterPropertyValue
@@ -1390,7 +1392,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(spamModerationLevel);
+            type.AttributeAdapters.Add(spamModerationLevel);
 
             AdapterPropertyValue replyTo = new AdapterPropertyValue
             {
@@ -1406,7 +1408,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(replyTo);
+            type.AttributeAdapters.Add(replyTo);
 
             AdapterPropertyValue customReplyTo = new AdapterPropertyValue
             {
@@ -1422,7 +1424,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(customReplyTo);
+            type.AttributeAdapters.Add(customReplyTo);
 
             AdapterPropertyValue sendMessageDenyNotification = new AdapterPropertyValue
             {
@@ -1439,7 +1441,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(sendMessageDenyNotification);
+            type.AttributeAdapters.Add(sendMessageDenyNotification);
 
 
             AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
@@ -1456,7 +1458,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(defaultMessageDenyNotificationText);
+            type.AttributeAdapters.Add(defaultMessageDenyNotificationText);
 
             AdapterPropertyValue showInGroupDirectory = new AdapterPropertyValue
             {
@@ -1473,7 +1475,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(showInGroupDirectory);
+            type.AttributeAdapters.Add(showInGroupDirectory);
 
 
             AdapterPropertyValue allowGoogleCommunication = new AdapterPropertyValue
@@ -1491,7 +1493,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(allowGoogleCommunication);
+            type.AttributeAdapters.Add(allowGoogleCommunication);
 
             AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
             {
@@ -1507,7 +1509,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(membersCanPostAsTheGroup);
+            type.AttributeAdapters.Add(membersCanPostAsTheGroup);
 
             AdapterPropertyValue messageDisplayFont = new AdapterPropertyValue
             {
@@ -1523,7 +1525,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(messageDisplayFont);
+            type.AttributeAdapters.Add(messageDisplayFont);
 
             AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
             {
@@ -1540,7 +1542,7 @@ namespace Lithnet.GoogleApps.MA
                 CastForImport = (i) => i ?? false
             };
 
-            type.Attributes.Add(includeInGlobalAddressList);
+            type.AttributeAdapters.Add(includeInGlobalAddressList);
 
             AdapterPropertyValue whoCanLeaveGroup = new AdapterPropertyValue
             {
@@ -1556,7 +1558,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanLeaveGroup);
+            type.AttributeAdapters.Add(whoCanLeaveGroup);
 
 
             AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
@@ -1573,7 +1575,7 @@ namespace Lithnet.GoogleApps.MA
                 IsArrayAttribute = false
             };
 
-            type.Attributes.Add(whoCanContactOwner);
+            type.AttributeAdapters.Add(whoCanContactOwner);
         }
 
         private static void AddUserNames(MASchemaType type)
@@ -1608,7 +1610,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(schemaItem);
+            type.AttributeAdapters.Add(schemaItem);
         }
 
         private static void AddContactNames(MASchemaType type)
@@ -1653,7 +1655,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(schemaItem);
+            type.AttributeAdapters.Add(schemaItem);
         }
 
         private static void AddUserNotes(MASchemaType type)
@@ -1688,7 +1690,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(notesType);
+            type.AttributeAdapters.Add(notesType);
         }
 
         private static void AddUserWebSites(MASchemaType type, IManagementAgentParameters config)
@@ -1725,7 +1727,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(webSiteType);
+            type.AttributeAdapters.Add(webSiteType);
         }
 
         private static void AddGroupAliases(MASchemaType type)
@@ -1740,7 +1742,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport
             };
 
-            type.Attributes.Add(aliasesList);
+            type.AttributeAdapters.Add(aliasesList);
 
             AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
@@ -1752,7 +1754,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportOnly
             };
 
-            type.Attributes.Add(nonEditableAliasesList);
+            type.AttributeAdapters.Add(nonEditableAliasesList);
         }
 
         private static void AddUserAliases(MASchemaType type)
@@ -1767,7 +1769,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport
             };
 
-            type.Attributes.Add(aliasesList);
+            type.AttributeAdapters.Add(aliasesList);
 
             AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
@@ -1779,7 +1781,7 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportOnly
             };
 
-            type.Attributes.Add(nonEditableAliasesList);
+            type.AttributeAdapters.Add(nonEditableAliasesList);
         }
 
         private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)
@@ -1806,7 +1808,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(phonesType);
+            type.AttributeAdapters.Add(phonesType);
         }
 
         private static void AddUserOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
@@ -1903,7 +1905,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddUserAddresses(MASchemaType type, IManagementAgentParameters config)
@@ -2021,7 +2023,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddUserRelations(MASchemaType type, IManagementAgentParameters config)
@@ -2047,7 +2049,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddUserExternalIds(MASchemaType type, IManagementAgentParameters config)
@@ -2073,7 +2075,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
         }
 
         private static void AddUserIms(MASchemaType type, IManagementAgentParameters config)
@@ -2110,7 +2112,100 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-            type.Attributes.Add(customType);
+            type.AttributeAdapters.Add(customType);
+        }
+
+        private static void AddUserCustomSchema(MASchemaType type, IManagementAgentParameters config)
+        {
+            G.Schemas schemas = null;
+
+            try
+            {
+                schemas = SchemaRequestFactory.ListSchemas(config.CustomerID);
+            }
+            catch (Google.GoogleApiException ex)
+            {
+                if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    return;
+                }
+
+                throw;
+            }
+
+            if (schemas == null)
+            {
+                return;
+            }
+
+            AdapterCustomSchemas customSchemas = new AdapterCustomSchemas();
+            customSchemas.Api = "user";
+
+            foreach (G.Schema schema in schemas.SchemasValue)
+            {
+                if (schema.SchemaName.Equals(SchemaConstants.CustomGoogleAppsSchemaName))
+                {
+                    continue;
+                }
+
+                AdapterCustomSchema customSchema = new AdapterCustomSchema();
+
+                customSchema.SchemaName = schema.SchemaName;
+                
+                foreach (G.SchemaFieldSpec field in schema.Fields)
+                {
+                    AdapterCustomSchemaField f;
+
+                    if (field.MultiValued ?? false)
+                    {
+                        f = new AdapterCustomSchemaMultivaluedField();
+                    }
+                    else
+                    {
+                        f = new AdapterCustomSchemaSingleValuedField();
+                    }
+
+                    switch (field.FieldType.ToLowerInvariant())
+                    {
+                        case "int64":
+                            f.AttributeType = AttributeType.Integer;
+                            break;
+
+                        case "bool":
+                            f.AttributeType = AttributeType.Boolean;
+                            break;
+
+                        default:
+                            f.AttributeType = AttributeType.String;
+                            break;
+                    }
+                    
+                    if (f.IsMultivalued && !(f.AttributeType == AttributeType.String || f.AttributeType == AttributeType.Integer))
+                    {
+                        continue;
+                    }
+
+                    f.FieldName = $"{field.FieldName}";
+                    f.SchemaName = schema.SchemaName;
+                    f.Operation = AttributeOperation.ImportExport;
+                    f.MmsAttributeName = Regex.Replace($"{schema.SchemaName}_{field.FieldName}", "[^a-zA-Z0-9_\\-]", "_", RegexOptions.IgnoreCase);
+                    f.PropertyName = $"{field.FieldName}";
+                    f.UseNullPlaceHolder = true;
+                    f.FieldSpec = field;
+
+                    customSchema.Fields.Add(f);
+                }
+
+                if (customSchema.Fields.Count > 0)
+                {
+                    customSchemas.CustomSchemas.Add(customSchema);
+                }
+            }
+
+            if (customSchemas.CustomSchemas.Count > 0)
+            {
+                type.AttributeAdapters.Add(customSchemas);
+            }
         }
 
         public static void CreateGoogleAppsCustomSchema()

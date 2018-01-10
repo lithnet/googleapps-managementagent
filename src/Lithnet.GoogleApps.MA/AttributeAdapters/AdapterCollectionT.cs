@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
@@ -11,6 +12,14 @@ namespace Lithnet.GoogleApps.MA
     internal class AdapterCollection<T> : IAttributeAdapter
     {
         private PropertyInfo propInfo;
+
+        public IEnumerable<string> MmsAttributeNames
+        {
+            get
+            {
+                yield return this.AttributeName;
+            }
+        }
 
         public string AttributeName { get; set; }
 
@@ -37,6 +46,11 @@ namespace Lithnet.GoogleApps.MA
             return this.AttributeName == attribute;
         }
 
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        {
+            return this.SupportsPatch;
+        }
+        
         public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)

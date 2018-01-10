@@ -81,14 +81,14 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged = true;
             }
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.UpdateField(csentry, target))
                 {
                     hasChanged = true;
                 }
             }
-
+            
             if (hasChanged)
             {
                 User result;
@@ -150,7 +150,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            foreach (IAttributeAdapter typeDef in this.SchemaType.Attributes.Where(t => t.Api == this.Api))
+            foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.IsAnchor)
                 {
@@ -242,7 +242,7 @@ namespace Lithnet.GoogleApps.MA
                             continue;
                         }
                     }
-
+                    
                     SchemaType type = schema.Types[SchemaConstants.User];
 
                     if (user.CustomSchemas != null)

@@ -1,15 +1,15 @@
-﻿namespace Lithnet.GoogleApps.MA
+﻿using System.Collections.ObjectModel;
+
+namespace Lithnet.GoogleApps.MA
 {
     using System.Collections.Generic;
     using Microsoft.MetadirectoryServices;
 
     internal interface IAttributeAdapter
     {
-        string AttributeName { get; set; }
+        IEnumerable<string> MmsAttributeNames { get; }
 
         string FieldName { get; set; }
-
-        string PropertyName { get; set; }
 
         string Api { get; set; }
 
@@ -19,14 +19,14 @@
 
         bool CanProcessAttribute(string attribute);
 
-        bool SupportsPatch { get; }
+        bool CanPatch(KeyedCollection<string, AttributeChange> changes);
 
         bool UpdateField(CSEntryChange csentry, object obj);
 
         IEnumerable<SchemaAttribute> GetSchemaAttributes();
 
         IEnumerable<string> GetFieldNames(SchemaType type, string api = null);
-        
+
         IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
     }
 }

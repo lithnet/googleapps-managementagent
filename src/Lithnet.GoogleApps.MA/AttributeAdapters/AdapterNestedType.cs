@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
@@ -12,6 +13,14 @@ namespace Lithnet.GoogleApps.MA
         private PropertyInfo propInfo;
 
         private IList<AdapterPropertyValue> attributes;
+
+        public IEnumerable<string> MmsAttributeNames
+        {
+            get
+            {
+                return this.AttributeAdapters.Select(t => t.AttributeName);
+            }
+        }
 
         public string AttributeName { get; set; }
 
@@ -29,7 +38,7 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsAnchor => false;
 
-        public IList<AdapterPropertyValue> Attributes
+        public IList<AdapterPropertyValue> AttributeAdapters
         {
             get
             {
@@ -69,7 +78,7 @@ namespace Lithnet.GoogleApps.MA
 
         public bool CanProcessAttribute(string attribute)
         {
-            return this.AttributeName == attribute || this.Attributes.Any(t => t.AttributeName == attribute);
+            return this.AttributeName == attribute || this.MmsAttributeNames.Any(t => t == attribute);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -124,6 +133,10 @@ namespace Lithnet.GoogleApps.MA
                 yield return field.GetSchemaAttribute(this.AttributeName);
             }
         }
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        {
+            return this.SupportsPatch;
+        }
 
         public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
@@ -137,7 +150,7 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            string childFields = string.Join(",", this.Attributes.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName));
+            string childFields = string.Join(",", this.AttributeAdapters.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName));
 
             if (!string.IsNullOrWhiteSpace(childFields))
             {
@@ -147,7 +160,7 @@ namespace Lithnet.GoogleApps.MA
 
         private IEnumerable<Tuple<AttributeChange, AdapterPropertyValue>> GetAttributeChanges(CSEntryChange csentry)
         {
-            foreach (AdapterPropertyValue attribute in this.Attributes)
+            foreach (AdapterPropertyValue attribute in this.AttributeAdapters)
             {
                 if (csentry.HasAttributeChange(attribute.AttributeName))
                 {
@@ -170,7 +183,7 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            foreach (AdapterPropertyValue attribute in this.Attributes)
+            foreach (AdapterPropertyValue attribute in this.AttributeAdapters)
             {
                 foreach (AttributeChange change in attribute.CreateAttributeChanges(dn, modType, value))
                 {

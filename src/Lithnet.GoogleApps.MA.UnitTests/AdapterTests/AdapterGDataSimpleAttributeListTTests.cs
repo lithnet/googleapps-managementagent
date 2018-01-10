@@ -18,7 +18,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeAdd()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].Attributes.First(t => t.AttributeName == "externalIds");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].GetAdapterForMmsAttribute("externalIds");
 
             ContactEntry e = new ContactEntry();
 
@@ -43,7 +43,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeReplace()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].Attributes.First(t => t.AttributeName == "externalIds");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].GetAdapterForMmsAttribute("externalIds");
 
             ContactEntry e = new ContactEntry();
 
@@ -69,7 +69,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeUpdate()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].Attributes.First(t => t.AttributeName == "externalIds");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].GetAdapterForMmsAttribute("externalIds");
 
             ContactEntry e = new ContactEntry();
 
@@ -95,7 +95,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeAdd()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].Attributes.First(t => t.AttributeName == "externalIds");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].GetAdapterForMmsAttribute("externalIds");
 
             ContactEntry e = new ContactEntry();
 
@@ -112,7 +112,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdate()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].Attributes.First(t => t.AttributeName == "externalIds");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["contact"].GetAdapterForMmsAttribute("externalIds");
 
             ContactEntry e = new ContactEntry();
             e.ExternalIds.Add(new ExternalId()

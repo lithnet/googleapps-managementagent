@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeAdd()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -54,7 +54,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeReplace()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -96,7 +96,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestToCSEntryChangeUpdate()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
 
             User u = new User
             {
@@ -139,7 +139,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeAdd()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
 
@@ -159,7 +159,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeReplace()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
@@ -180,7 +180,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdateDeleteLastValue()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "organizations");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "organizations");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 
@@ -196,7 +196,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestFromCSEntryChangeUpdate()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].Attributes.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
 

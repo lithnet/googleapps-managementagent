@@ -136,6 +136,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.ObjectType = SchemaConstants.Group;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("description", "description"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
@@ -267,7 +268,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             
             try
             {
-                e = GroupRequestFactory.Add(e);
+                e = UnitTestControl.CreateGroup();
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -351,7 +352,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 try
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                     e = GroupRequestFactory.Get(e.Id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -400,7 +401,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 e = GroupRequestFactory.Get(e.Id);
                 Assert.AreEqual(newDN, e.Email);
             }
@@ -438,7 +439,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = GroupRequestFactory.Get(e.Id);
 
@@ -481,7 +482,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = GroupRequestFactory.Get(e.Id);
 
@@ -529,7 +530,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = GroupRequestFactory.Get(e.Id);
 
@@ -577,7 +578,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = GroupRequestFactory.Get(e.Id);
 
@@ -627,7 +628,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = GroupRequestFactory.Get(e.Id);
 

@@ -10,7 +10,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string Name { get; set; }
 
-        public List<IAttributeAdapter> Attributes { get; set; }
+        public List<IAttributeAdapter> AttributeAdapters { get; set; }
 
         public string AnchorAttributeName { get; set; }
 
@@ -22,7 +22,7 @@ namespace Lithnet.GoogleApps.MA
         {
             SchemaType type = SchemaType.Create(this.Name, true);
 
-            foreach (IAttributeAdapter attribute in this.Attributes)
+            foreach (IAttributeAdapter attribute in this.AttributeAdapters)
             {
                 foreach (SchemaAttribute maAttribute in attribute.GetSchemaAttributes())
                 {
@@ -33,14 +33,30 @@ namespace Lithnet.GoogleApps.MA
             return type;
         }
 
+        public IAttributeAdapter GetAdapterForMmsAttribute(string attributeName)
+        {
+            foreach (IAttributeAdapter a in this.AttributeAdapters)
+            {
+                foreach (string mmsName in a.MmsAttributeNames)
+                {
+                    if (mmsName == attributeName)
+                    {
+                        return a;
+                    }
+                }
+            }
+
+            throw new KeyNotFoundException($"There was no adapter found for the attribute {attributeName}");
+        }
+
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch && this.Attributes.Any(t => changes.Contains(t.AttributeName) && t.SupportsPatch != true);
+            return this.SupportsPatch && this.AttributeAdapters.All(t => t.CanPatch(changes));
         }
 
         public IEnumerable<string> GetFieldNames(SchemaType type, string api = null)
         {
-            foreach (IAttributeAdapter attribute in this.Attributes)
+            foreach (IAttributeAdapter attribute in this.AttributeAdapters)
             {
                 foreach (string field in attribute.GetFieldNames(type, api))
                 {

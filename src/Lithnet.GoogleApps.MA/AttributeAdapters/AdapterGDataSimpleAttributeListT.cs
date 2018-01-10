@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.MetadirectoryServices;
 using Lithnet.MetadirectoryServices;
@@ -11,6 +12,14 @@ namespace Lithnet.GoogleApps.MA
     internal class AdapterGDataSimpleAttributeList<T> : IAttributeAdapter where T : SimpleAttribute, new()
     {
         private PropertyInfo propInfo;
+
+        public IEnumerable<string> MmsAttributeNames
+        {
+            get
+            {
+                yield return this.AttributeName;
+            }
+        }
 
         public string AttributeName { get; set; }
 
@@ -61,6 +70,11 @@ namespace Lithnet.GoogleApps.MA
                     yield return maSchemaAttribute;
                 }
             }
+        }
+
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        {
+            return this.SupportsPatch;
         }
 
         private IEnumerable<AdapterPropertyValue> GetAttributesOfType(string type)
