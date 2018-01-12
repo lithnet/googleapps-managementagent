@@ -65,14 +65,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                if (this.IsMultivalued)
-                {
-                    list = this.GetValuesFromArray(schema[this.FieldName]);
-                }
-                else
-                {
-                    list = new List<object>(valueAdds);
-                }
+                list = this.GetValuesFromArray(schema[this.FieldName]);
             }
 
             if (modType == AttributeModificationType.Update)
@@ -90,7 +83,7 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine($"Adding value {this.MmsAttributeName} -> {value}");
             }
 
-            if (this.IsMultivalued && list.Count > 0)
+            if (list.Count > 0)
             {
                 List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
 
@@ -107,15 +100,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 object value = null;
 
-                if (list.Count == 0)
-                {
-                    value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
-                    Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
-                }
-                else
-                {
-                    value = list.FirstOrDefault();
-                }
+                value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
+                Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
 
                 schema[this.FieldName] = value;
             }
@@ -156,32 +142,16 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            if (this.IsMultivalued)
-            {
-                IList<object> values = this.GetValuesFromArray(value);
-                values = this.ConvertToNativeFimFormat(values);
+            IList<object> values = this.GetValuesFromArray(value);
+            values = this.ConvertToNativeFimFormat(values);
 
-                if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
-                {
-                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, values);
-                }
-                else if (modType == ObjectModificationType.Update)
-                {
-                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, values);
-                }
+            if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
+            {
+                yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, values);
             }
-            else
+            else if (modType == ObjectModificationType.Update)
             {
-                value = this.ConvertToNativeFimFormat(value);
-
-                if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
-                {
-                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
-                }
-                else if (modType == ObjectModificationType.Update)
-                {
-                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
-                }
+                yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, values);
             }
         }
     }

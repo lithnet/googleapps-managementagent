@@ -82,8 +82,8 @@
       <HintPath>..\packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Lithnet.GoogleApps, Version=1.0.6586.17967, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6586.17967\lib\net452\Lithnet.GoogleApps.dll</HintPath>
+    <Reference Include="Lithnet.GoogleApps, Version=1.0.6586.22206, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6586.22206\lib\net452\Lithnet.GoogleApps.dll</HintPath>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>

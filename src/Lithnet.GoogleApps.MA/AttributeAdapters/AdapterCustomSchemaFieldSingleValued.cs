@@ -25,11 +25,7 @@ namespace Lithnet.GoogleApps.MA
             }
 
             AttributeModificationType modType = csentry.AttributeChanges[this.MmsAttributeName].ModificationType;
-            IList<object> valueAdds = csentry.GetValueAdds<object>(this.MmsAttributeName);
-            IList<object> valueDeletes = csentry.GetValueDeletes<object>(this.MmsAttributeName);
-
-            valueAdds = this.ConvertToNativeGoogleFormat(valueAdds);
-            valueDeletes = this.ConvertToNativeGoogleFormat(valueDeletes);
+            object value = csentry.GetValueAdd<object>(this.MmsAttributeName);
 
             User user = obj as User;
 
@@ -38,7 +34,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new NotSupportedException("The provided object was not of a 'user' type");
             }
 
-            if (valueAdds.Count == 0 && !this.HasSchemaField(user))
+            if (value == null && !this.HasSchemaField(user))
             {
                 return false;
             }
@@ -57,68 +53,17 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            IList<object> list = null;
-
-            if (!this.HasSchemaField(user) || modType == AttributeModificationType.Replace || modType == AttributeModificationType.Add)
+            if (value == null)
             {
-                list = new List<object>();
+                value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
             }
             else
             {
-                if (this.IsMultivalued)
-                {
-                    list = this.GetValuesFromArray(schema[this.FieldName]);
-                }
-                else
-                {
-                    list = new List<object>(valueAdds);
-                }
+                value = this.ConvertToNativeGoogleFormat(value);
             }
 
-            if (modType == AttributeModificationType.Update)
-            {
-                foreach (object value in valueDeletes)
-                {
-                    list.Remove(value);
-                    Logger.WriteLine($"Removing value {this.MmsAttributeName} -> {value}");
-                }
-            }
-
-            foreach (object value in valueAdds)
-            {
-                list.Add(value);
-                Logger.WriteLine($"Adding value {this.MmsAttributeName} -> {value}");
-            }
-
-            if (this.IsMultivalued && list.Count > 0)
-            {
-                List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
-
-                foreach (object value in list)
-                {
-                    Dictionary<string, object> item = new Dictionary<string, object>();
-                    item.Add("value", value);
-                    items.Add(item);
-                }
-
-                schema[this.FieldName] = items;
-            }
-            else
-            {
-                object value = null;
-
-                if (list.Count == 0)
-                {
-                    value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
-                    Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
-                }
-                else
-                {
-                    value = list.FirstOrDefault();
-                }
-
-                schema[this.FieldName] = value;
-            }
+            schema[this.FieldName] = value;
+            Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
 
             return true;
         }
@@ -156,32 +101,15 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            if (this.IsMultivalued)
-            {
-                IList<object> values = this.GetValuesFromArray(value);
-                values = this.ConvertToNativeFimFormat(values);
+            value = this.ConvertToNativeFimFormat(value);
 
-                if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
-                {
-                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, values);
-                }
-                else if (modType == ObjectModificationType.Update)
-                {
-                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, values);
-                }
+            if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
+            {
+                yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
             }
-            else
+            else if (modType == ObjectModificationType.Update)
             {
-                value = this.ConvertToNativeFimFormat(value);
-
-                if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)
-                {
-                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
-                }
-                else if (modType == ObjectModificationType.Update)
-                {
-                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
-                }
+                yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
             }
         }
     }

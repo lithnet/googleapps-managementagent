@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
@@ -68,7 +69,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Calendar c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual(cs.DN, c.ResourceId);
                 Assert.AreEqual("name", c.ResourceName);
                 Assert.AreEqual("AU203", c.BuildingId);
@@ -92,7 +93,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void UpdateCalendar()
         {
-            Calendar calendar = new Calendar();
+            CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
             calendar.ResourceName = calendar.ResourceId;
             calendar.BuildingId = "AU205";
@@ -134,7 +135,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Calendar c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual(cs.DN, c.ResourceId);
                 Assert.AreEqual("name", c.ResourceName);
                 Assert.AreEqual("AU203", c.BuildingId);
@@ -157,7 +158,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void UpdateCalendarClearValues()
         {
-            Calendar calendar = new Calendar();
+            CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
             calendar.ResourceName = calendar.ResourceId;
             calendar.BuildingId = "AU205";
@@ -197,7 +198,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Calendar c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual(cs.DN, c.ResourceId);
                 Assert.IsNull(c.BuildingId);
                 Assert.IsNull(c.Capacity);

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
@@ -31,7 +32,7 @@ namespace Lithnet.GoogleApps.MA
 
         public object CreateInstance(CSEntryChange csentry)
         {
-            Calendar calendar = new Calendar();
+            CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = csentry.DN;
             return calendar;
         }
@@ -51,7 +52,7 @@ namespace Lithnet.GoogleApps.MA
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            Calendar calendar = target as Calendar;
+            CalendarResource calendar = target as CalendarResource;
 
             if (calendar == null)
             {
@@ -67,7 +68,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (hasChanged)
             {
-                Calendar result;
+                CalendarResource result;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
@@ -109,7 +110,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            Calendar calendar = source as Calendar;
+            CalendarResource calendar = source as CalendarResource;
 
             if (calendar == null)
             {
@@ -137,7 +138,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAnchorValue(object target)
         {
-            Calendar calendar = target as Calendar;
+            CalendarResource calendar = target as CalendarResource;
 
             if (calendar == null)
             {
@@ -149,7 +150,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetDNValue(object target)
         {
-            Calendar calendar = target as Calendar;
+            CalendarResource calendar = target as CalendarResource;
 
             if (calendar == null)
             {
@@ -179,7 +180,7 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Starting calendar import task");
                 Logger.WriteLine("Requesting calendar fields: " + fields);
 
-                foreach (Calendar calendar in ResourceRequestFactory.GetCalendars(config.CustomerID, fields))
+                foreach (CalendarResource calendar in ResourceRequestFactory.GetCalendars(config.CustomerID, fields))
                 {
                     collection.Add(this.GetCSEntryForCalendar(calendar, schema, config));
                     Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
@@ -195,12 +196,12 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private CSEntryChange GetCSEntryForCalendar(Calendar calendar, Schema schema, IManagementAgentParameters config)
+        private CSEntryChange GetCSEntryForCalendar(CalendarResource calendar, MmsSchema schema, IManagementAgentParameters config)
         {
             return ImportProcessor.GetCSEntryChange(calendar, schema.Types[SchemaConstants.Calendar], config);
         }
 
-        private bool SetDNValue(CSEntryChange csentry, Calendar calendar)
+        private bool SetDNValue(CSEntryChange csentry, CalendarResource calendar)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
             {
