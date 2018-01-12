@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security;
 using System.Runtime.InteropServices;
 using Microsoft.MetadirectoryServices;
+
 namespace Lithnet.GoogleApps.MA
 {
     internal static class GenericExtensions

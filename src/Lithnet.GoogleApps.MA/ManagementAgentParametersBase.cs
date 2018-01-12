@@ -70,17 +70,19 @@ namespace Lithnet.GoogleApps.MA
             DirectoryService.Scope.AdminDirectoryUser,
             DirectoryService.Scope.AdminDirectoryGroup,
             DirectoryService.Scope.AdminDirectoryGroupMember,
-            GroupssettingsService.Scope.AppsGroupsSettings,
             DirectoryService.Scope.AdminDirectoryUserschema,
+            DirectoryService.Scope.AdminDirectoryResourceCalendar,
+            DirectoryService.Scope.AdminDirectoryResourceCalendarReadonly,
+            GroupssettingsService.Scope.AppsGroupsSettings,
             "https://www.googleapis.com/auth/admin.directory.domain",
             "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
             "http://www.google.com/m8/feeds/contacts/"
         };
-
+        
         private X509Certificate2 certificate;
 
         private ServiceAccountCredential credentials;
-        
+
         protected ServiceAccountCredential GetCredentials(string serviceAccountEmailAddress, string userEmailAddress, X509Certificate2 cert)
         {
             if (this.credentials == null)

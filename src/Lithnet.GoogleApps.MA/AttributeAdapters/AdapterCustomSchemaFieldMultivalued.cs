@@ -49,7 +49,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.HasSchemaField(user))
                 {
-                    schema[this.FieldName] = this.UseNullPlaceHolder ? Constants.NullValuePlaceholder : null;
+                    schema[this.FieldName] = Utilities.GetNullRepresentation(this.NullValueRepresentation);
                     Logger.WriteLine($"Deleting {this.MmsAttributeName}");
                     return true;
                 }
@@ -109,11 +109,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (list.Count == 0)
                 {
-                    if (this.UseNullPlaceHolder)
-                    {
-                        value = Constants.NullValuePlaceholder;
-                    }
-
+                    value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
                     Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
                 }
                 else

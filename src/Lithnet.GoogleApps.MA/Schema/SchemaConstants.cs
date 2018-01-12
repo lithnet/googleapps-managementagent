@@ -3,6 +3,7 @@
     internal static class SchemaConstants
     {
         public const string Group = "group";
+        public const string Calendar = "calendar";
         public const string GroupSettings = "groupSettings";
         public const string User = "user";
         public const string AdvancedUser = "advancedUser";
@@ -14,6 +15,7 @@
 
         public const string Delegate = "delegate";
         public const string ID = "id";
+        public const string ResourceID = "resourceId";
         public const string Name = "name";
         public const string Email = "email";
         public const string Description = "description";

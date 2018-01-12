@@ -45,8 +45,8 @@ namespace Lithnet.GoogleApps.MA
         public Func<object, object> CastForImport { get; set; }
 
         public Func<object, object> CastForExport { get; set; }
-        
-        public bool UseNullPlaceHolder { get; set; }
+
+        public NullValueRepresentation NullValueRepresentation { get; set; }
 
         internal string AssignedType { get; set; }
 
@@ -81,19 +81,13 @@ namespace Lithnet.GoogleApps.MA
 
             object value = csentry.GetValueAdd<object>(this.AttributeName);
 
-            if (value == null)
-            {
-                if (this.propInfo.PropertyType == typeof(string) && this.UseNullPlaceHolder)
-                {
-                    value = Constants.NullValuePlaceholder;
-                }
-            }
-
             if (this.CastForExport != null)
             {
                 value = this.CastForExport(value);
             }
 
+            value = Utilities.SetPlaceholderIfNull(value, this.NullValueRepresentation);
+            
             this.propInfo.SetValue(obj, value, null);
 
             Logger.WriteLine($"Updating {this.AttributeName} -> {value ?? "<null>"}");
@@ -147,13 +141,16 @@ namespace Lithnet.GoogleApps.MA
             {
                 throw new InvalidOperationException($"The property {this.PropertyName} was not found on the object of type {obj.GetType().FullName}");
             }
-            
+
             object value = this.propInfo.GetValue(obj);
+
             if (this.CastForImport != null)
             {
                 value = this.CastForImport(value);
             }
-            
+
+            value = Utilities.GetNullIfPlaceholder(value, this.NullValueRepresentation);
+
             if (value == null)
             {
                 if (modType == ObjectModificationType.Update)

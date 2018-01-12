@@ -34,7 +34,7 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
-        public bool UseNullPlaceHolder { get; set; }
+        public NullValueRepresentation NullValueRepresentation { get; set; }
 
         internal string AssignedType { get; set; }
 
