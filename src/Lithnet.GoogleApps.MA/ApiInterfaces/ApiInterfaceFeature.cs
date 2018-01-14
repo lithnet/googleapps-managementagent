@@ -12,39 +12,37 @@ using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ApiInterfaceCalendar : IApiInterfaceObject
+    internal class ApiInterfaceFeature : IApiInterfaceObject
     {
         private string customerID;
 
         protected MASchemaType SchemaType { get; set; }
 
-        public static string DNSuffix => "@calendar.resource";
-
-        public ApiInterfaceCalendar(string customerID, MASchemaType type)
+        public ApiInterfaceFeature(string customerID, MASchemaType type)
         {
             this.SchemaType = type;
             this.customerID = customerID;
         }
 
-        public string Api => "calendar";
+        public string Api => "feature";
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
 
         public object CreateInstance(CSEntryChange csentry)
         {
-            CalendarResource calendar = new CalendarResource();
-            calendar.ResourceId = Guid.NewGuid().ToString("n");
-            return calendar;
+            Feature feature = new Feature();
+            feature.Name = csentry.DN;
+            return feature;
         }
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ResourceRequestFactory.GetCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            return ResourceRequestFactory.GetFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ResourceRequestFactory.DeleteCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            ResourceRequestFactory.DeleteFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
@@ -52,27 +50,27 @@ namespace Lithnet.GoogleApps.MA
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            CalendarResource calendar = target as CalendarResource;
+            Feature feature = target as Feature;
 
-            if (calendar == null)
+            if (feature == null)
             {
                 throw new InvalidOperationException();
             }
 
-            hasChanged |= this.SetDNValue(csentry, calendar);
+            hasChanged |= this.SetDNValue(csentry, feature);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                hasChanged |= typeDef.UpdateField(csentry, calendar);
+                hasChanged |= typeDef.UpdateField(csentry, feature);
             }
 
-            if (hasChanged)
+            if (hasChanged || csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                CalendarResource result;
+                Feature result;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ResourceRequestFactory.AddCalendar(this.customerID, calendar);
+                    result = ResourceRequestFactory.AddFeature(this.customerID, feature);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -80,11 +78,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = ResourceRequestFactory.PatchCalendar(this.customerID, id, calendar);
+                        result = ResourceRequestFactory.PatchFeature(this.customerID, id, feature);
                     }
                     else
                     {
-                        result = ResourceRequestFactory.UpdateCalendar(this.customerID, id, calendar);
+                        result = ResourceRequestFactory.UpdateFeature(this.customerID, id, feature);
                     }
                 }
                 else
@@ -110,9 +108,9 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            CalendarResource calendar = source as CalendarResource;
+            Feature feature = source as Feature;
 
-            if (calendar == null)
+            if (feature == null)
             {
                 throw new InvalidOperationException();
             }
@@ -124,7 +122,7 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-                foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, calendar))
+                foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, feature))
                 {
                     if (type.HasAttribute(change.Name))
                     {
@@ -138,57 +136,56 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAnchorValue(object target)
         {
-            CalendarResource calendar = target as CalendarResource;
+            Feature feature = target as Feature;
 
-            if (calendar == null)
+            if (feature == null)
             {
                 throw new InvalidOperationException();
             }
 
-            return calendar.ResourceId;
+            return feature.Name;
         }
 
         public string GetDNValue(object target)
         {
-            CalendarResource calendar = target as CalendarResource;
+            Feature feature = target as Feature;
 
-            if (calendar == null)
+            if (feature == null)
             {
                 throw new InvalidOperationException();
             }
-            
-            return $"{calendar.ResourceName ?? calendar.ResourceId}{ApiInterfaceCalendar.DNSuffix}";
+
+            return feature.Name;
         }
 
         public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
-                "resourceName",
-                "resourceId"
+                "name"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Calendar].GetFieldNames(schema.Types[SchemaConstants.Calendar], "calendar"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Feature].GetFieldNames(schema.Types[SchemaConstants.Feature], "feature"))
             {
                 fieldList.Add(fieldName);
             }
 
-            string fields = string.Format("items({0}), nextPageToken", string.Join(",", fieldList));
+            string fields = string.Format("features({0}), nextPageToken", string.Join(",", fieldList));
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting calendar import task");
-                Logger.WriteLine("Requesting calendar fields: " + fields);
+                Logger.WriteLine("Starting feature import task");
+                Logger.WriteLine("Requesting feature fields: " + fields);
 
-                foreach (CalendarResource calendar in ResourceRequestFactory.GetCalendars(config.CustomerID, fields))
+                foreach (Feature feature in ResourceRequestFactory.GetFeatures(config.CustomerID, fields))
                 {
-                    collection.Add(this.GetCSEntryForCalendar(calendar, schema, config));
-                    Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
+                    collection.Add(this.GetCSEntryForFeature(feature, schema, config));
+                    Debug.WriteLine($"Created CSEntryChange for feature: {feature.Name}");
 
                     continue;
                 }
 
-                Logger.WriteLine("Calendar import task complete");
+                Logger.WriteLine("Feature import task complete");
             });
 
             t.Start();
@@ -196,12 +193,12 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private CSEntryChange GetCSEntryForCalendar(CalendarResource calendar, MmsSchema schema, IManagementAgentParameters config)
+        private CSEntryChange GetCSEntryForFeature(Feature feature, MmsSchema schema, IManagementAgentParameters config)
         {
-            return ImportProcessor.GetCSEntryChange(calendar, schema.Types[SchemaConstants.Calendar], config);
+            return ImportProcessor.GetCSEntryChange(feature, schema.Types[SchemaConstants.Feature], config);
         }
 
-        private bool SetDNValue(CSEntryChange csentry, CalendarResource calendar)
+        private bool SetDNValue(CSEntryChange csentry, Feature feature)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
             {
@@ -215,9 +212,7 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            calendar.ResourceName = newDN.Replace($"{ApiInterfaceCalendar.DNSuffix}", string.Empty);
-
-            return true;
+            throw new NotSupportedException("Renaming a feature object is not supported");
         }
     }
 }

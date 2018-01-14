@@ -65,7 +65,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                list = this.GetValuesFromArray(schema[this.FieldName]);
+                list = Utilities.GetValuesFromArray(schema[this.FieldName], "value", this.AttributeType);
             }
 
             if (modType == AttributeModificationType.Update)
@@ -142,7 +142,7 @@ namespace Lithnet.GoogleApps.MA
                 yield break;
             }
 
-            IList<object> values = this.GetValuesFromArray(value);
+            IList<object> values = Utilities.GetValuesFromArray(value, "value", this.AttributeType);
             values = this.ConvertToNativeFimFormat(values);
 
             if (modType == ObjectModificationType.Add || modType == ObjectModificationType.Replace)

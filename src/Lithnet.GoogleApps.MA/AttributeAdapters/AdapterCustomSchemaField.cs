@@ -121,67 +121,6 @@ namespace Lithnet.GoogleApps.MA
 
         public abstract IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
 
-        protected IList<object> GetValuesFromArray(object value)
-        {
-            if (value is JArray jarray)
-            {
-                return this.GetValuesFromJArray(jarray);
-            }
-
-            if (value is IList list)
-            {
-                return this.GetValuesFromList(list);
-            }
-
-            throw new NotSupportedException("The array type was unknown");
-
-        }
-
-        protected IList<object> GetValuesFromList(IList list)
-        {
-            List<object> newList = new List<object>();
-
-            if (list is null)
-            {
-                return newList;
-            }
-
-            foreach (object item in list)
-            {
-                if (item is IDictionary<string, object> d)
-                {
-                    if (d.ContainsKey("value"))
-                    {
-                        newList.Add(d["value"]);
-                    }
-                }
-            }
-
-            return newList;
-        }
-
-        protected IList<object> GetValuesFromJArray(JArray jarray)
-        {
-            List<object> newList = new List<object>();
-
-            if (jarray is null)
-            {
-                return newList;
-            }
-
-            foreach (JToken i in jarray.Children())
-            {
-                JEnumerable<JProperty> itemProperties = i.Children<JProperty>();
-
-                foreach (JProperty myElement in itemProperties.Where(x => x.Name == "value"))
-                {
-                    newList.Add(TypeConverter.ConvertData((string)myElement.Value, this.AttributeType));
-                }
-            }
-
-            return newList;
-        }
-
         protected object ConvertToNativeGoogleFormat(object value)
         {
             if (this.FieldSpec.FieldType.Equals("double", StringComparison.OrdinalIgnoreCase))

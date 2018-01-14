@@ -64,14 +64,15 @@ namespace Lithnet.GoogleApps.MA
                 {
                     AttributeType = item.AttributeType,
                     FieldName = item.FieldName,
-                    IsArrayAttribute = true,
                     SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
                     AttributeName = $"{this.AttributeName}_{item.AttributeNamePart}",
                     PropertyName = item.PropertyName,
                     Operation = item.Operation,
                     ParentFieldName = this.FieldName,
-                    NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
+                    NullValueRepresentation = item.NullValueRepresentation,
+                    CastForExport = item.CastForExport,
+                    CastForImport = item.CastForImport
                 };
             }
         }

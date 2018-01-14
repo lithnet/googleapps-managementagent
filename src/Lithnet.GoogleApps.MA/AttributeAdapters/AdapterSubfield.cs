@@ -1,4 +1,5 @@
-﻿using Microsoft.MetadirectoryServices;
+﻿using System;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -15,6 +16,12 @@ namespace Lithnet.GoogleApps.MA
         public AttributeOperation Operation { get; set; }
         
         public bool IsMultivalued { get; set; }
+
+        public Func<object, object> CastForImport { get; set; }
+
+        public Func<object, object> CastForExport { get; set; }
+
+        public NullValueRepresentation NullValueRepresentation { get; set; }
 
         public string GetAttributeName(string prefix)
         {

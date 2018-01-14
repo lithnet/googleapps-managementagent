@@ -139,7 +139,6 @@ namespace Lithnet.GoogleApps.MA
             {
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
             }
-            
 
             ICollection<T> list = this.propInfo.GetValue(obj) as ICollection<T>;
             created = false;
@@ -161,7 +160,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             ICollection<T> childObject = this.propInfo.GetValue(obj) as ICollection<T>;
-            
 
             return childObject;
         }

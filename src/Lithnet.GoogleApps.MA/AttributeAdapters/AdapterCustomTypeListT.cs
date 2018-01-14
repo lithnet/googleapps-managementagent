@@ -89,7 +89,6 @@ namespace Lithnet.GoogleApps.MA
                 {
                     AttributeType = item.AttributeType,
                     FieldName = item.FieldName,
-                    IsArrayAttribute = true,
                     SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
                     AttributeName = item.GetAttributeName($"{this.AttributeName}_{type}"),

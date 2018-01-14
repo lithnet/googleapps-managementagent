@@ -65,6 +65,10 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string LogFilePathParameter = "Log file path";
 
+        protected const string CalendarBuildingAttributeTypeParameter = "Calendar resource building attribute type";
+
+        protected const string CalendarFeatureAttributeTypeParameter = "Calendar resource features attribute type";
+
         protected static string[] RequiredScopes = new string[]
         {
             DirectoryService.Scope.AdminDirectoryUser,

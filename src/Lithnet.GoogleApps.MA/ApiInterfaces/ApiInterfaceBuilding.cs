@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Google.Apis.Admin.Directory.directory_v1.Data;
+using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
@@ -12,39 +14,39 @@ using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ApiInterfaceCalendar : IApiInterfaceObject
+    internal class ApiInterfaceBuilding : IApiInterfaceObject
     {
         private string customerID;
 
         protected MASchemaType SchemaType { get; set; }
 
-        public static string DNSuffix => "@calendar.resource";
+        public static string DNSuffix => "@building.resource";
 
-        public ApiInterfaceCalendar(string customerID, MASchemaType type)
+        public ApiInterfaceBuilding(string customerID, MASchemaType type)
         {
             this.SchemaType = type;
             this.customerID = customerID;
         }
 
-        public string Api => "calendar";
+        public string Api => "building";
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
 
         public object CreateInstance(CSEntryChange csentry)
         {
-            CalendarResource calendar = new CalendarResource();
-            calendar.ResourceId = Guid.NewGuid().ToString("n");
-            return calendar;
+            Building building = new Building();
+            building.BuildingId = csentry.DN.Replace(ApiInterfaceBuilding.DNSuffix, string.Empty);
+            return building;
         }
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ResourceRequestFactory.GetCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            return ResourceRequestFactory.GetBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ResourceRequestFactory.DeleteCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            ResourceRequestFactory.DeleteBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
@@ -52,27 +54,27 @@ namespace Lithnet.GoogleApps.MA
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            CalendarResource calendar = target as CalendarResource;
+            Building building = target as Building;
 
-            if (calendar == null)
+            if (building == null)
             {
                 throw new InvalidOperationException();
             }
 
-            hasChanged |= this.SetDNValue(csentry, calendar);
+            hasChanged |= this.SetDNValue(csentry, building);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                hasChanged |= typeDef.UpdateField(csentry, calendar);
+                hasChanged |= typeDef.UpdateField(csentry, building);
             }
 
             if (hasChanged)
             {
-                CalendarResource result;
+                Building result;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ResourceRequestFactory.AddCalendar(this.customerID, calendar);
+                    result = ResourceRequestFactory.AddBuilding(this.customerID, building);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -80,11 +82,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = ResourceRequestFactory.PatchCalendar(this.customerID, id, calendar);
+                        result = ResourceRequestFactory.PatchBuilding(this.customerID, id, building);
                     }
                     else
                     {
-                        result = ResourceRequestFactory.UpdateCalendar(this.customerID, id, calendar);
+                        result = ResourceRequestFactory.UpdateBuilding(this.customerID, id, building);
                     }
                 }
                 else
@@ -110,9 +112,9 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            CalendarResource calendar = source as CalendarResource;
+            Building building = source as Building;
 
-            if (calendar == null)
+            if (building == null)
             {
                 throw new InvalidOperationException();
             }
@@ -124,7 +126,7 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-                foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, calendar))
+                foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, building))
                 {
                     if (type.HasAttribute(change.Name))
                     {
@@ -138,57 +140,57 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAnchorValue(object target)
         {
-            CalendarResource calendar = target as CalendarResource;
+            Building building = target as Building;
 
-            if (calendar == null)
+            if (building == null)
             {
                 throw new InvalidOperationException();
             }
 
-            return calendar.ResourceId;
+            return building.BuildingId;
         }
 
         public string GetDNValue(object target)
         {
-            CalendarResource calendar = target as CalendarResource;
+            Building building = target as Building;
 
-            if (calendar == null)
+            if (building == null)
             {
                 throw new InvalidOperationException();
             }
-            
-            return $"{calendar.ResourceName ?? calendar.ResourceId}{ApiInterfaceCalendar.DNSuffix}";
+
+            return $"{building.BuildingId}{ApiInterfaceBuilding.DNSuffix}";
         }
 
         public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
-                "resourceName",
-                "resourceId"
+                "buildingName",
+                "buildingId"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Calendar].GetFieldNames(schema.Types[SchemaConstants.Calendar], "calendar"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Building].GetFieldNames(schema.Types[SchemaConstants.Building], "building"))
             {
                 fieldList.Add(fieldName);
             }
 
-            string fields = string.Format("items({0}), nextPageToken", string.Join(",", fieldList));
+            string fields = string.Format("buildings({0}), nextPageToken", string.Join(",", fieldList));
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting calendar import task");
-                Logger.WriteLine("Requesting calendar fields: " + fields);
+                Logger.WriteLine("Starting building import task");
+                Logger.WriteLine("Requesting building fields: " + fields);
 
-                foreach (CalendarResource calendar in ResourceRequestFactory.GetCalendars(config.CustomerID, fields))
+                foreach (Building building in ResourceRequestFactory.GetBuildings(config.CustomerID, fields))
                 {
-                    collection.Add(this.GetCSEntryForCalendar(calendar, schema, config));
-                    Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
+                    collection.Add(this.GetCSEntryForBuilding(building, schema, config));
+                    Debug.WriteLine($"Created CSEntryChange for building: {building.BuildingId}");
 
                     continue;
                 }
 
-                Logger.WriteLine("Calendar import task complete");
+                Logger.WriteLine("Building import task complete");
             });
 
             t.Start();
@@ -196,12 +198,12 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private CSEntryChange GetCSEntryForCalendar(CalendarResource calendar, MmsSchema schema, IManagementAgentParameters config)
+        private CSEntryChange GetCSEntryForBuilding(Building building, MmsSchema schema, IManagementAgentParameters config)
         {
-            return ImportProcessor.GetCSEntryChange(calendar, schema.Types[SchemaConstants.Calendar], config);
+            return ImportProcessor.GetCSEntryChange(building, schema.Types[SchemaConstants.Building], config);
         }
 
-        private bool SetDNValue(CSEntryChange csentry, CalendarResource calendar)
+        private bool SetDNValue(CSEntryChange csentry, Building building)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
             {
@@ -215,9 +217,7 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            calendar.ResourceName = newDN.Replace($"{ApiInterfaceCalendar.DNSuffix}", string.Empty);
-
-            return true;
+            throw new NotSupportedException("Renaming a building object is not supported");
         }
     }
 }

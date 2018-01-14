@@ -7,6 +7,10 @@ namespace Lithnet.GoogleApps.MA
     {
         ServiceAccountCredential Credentials { get; }
 
+        string CalendarBuildingAttributeType { get; }
+
+        string CalendarFeatureAttributeType { get; }
+
         string CustomerID { get; }
 
         string ServiceAccountEmailAddress { get; }

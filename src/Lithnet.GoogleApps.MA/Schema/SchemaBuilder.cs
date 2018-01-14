@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
@@ -8,6 +10,7 @@ using Google.GData.Contacts;
 using Google.GData.Extensions;
 using Lithnet.GoogleApps.ManagedObjects;
 using Microsoft.MetadirectoryServices;
+using Newtonsoft.Json.Linq;
 using Relation = Lithnet.GoogleApps.ManagedObjects.Relation;
 using Website = Lithnet.GoogleApps.ManagedObjects.Website;
 using GDataOrganization = Google.GData.Extensions.Organization;
@@ -27,7 +30,9 @@ namespace Lithnet.GoogleApps.MA
                 SchemaBuilder.GetSchema(SchemaConstants.Group, config),
                 SchemaBuilder.GetSchema(SchemaConstants.Contact, config),
                 SchemaBuilder.GetSchema(SchemaConstants.Calendar, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Domain, config)
+                SchemaBuilder.GetSchema(SchemaConstants.Domain, config),
+                SchemaBuilder.GetSchema(SchemaConstants.Building, config),
+                SchemaBuilder.GetSchema(SchemaConstants.Feature, config)
             };
 
             if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
@@ -59,9 +64,169 @@ namespace Lithnet.GoogleApps.MA
 
                 case SchemaConstants.Calendar:
                     return SchemaBuilder.GetCalendarSchema(config);
+
+                case SchemaConstants.Building:
+                    return SchemaBuilder.GetBuildingSchema(config);
+
+                case SchemaConstants.Feature:
+                    return SchemaBuilder.GetFeatureSchema(config);
             }
 
             throw new InvalidOperationException();
+        }
+
+        public static MASchemaType GetFeatureSchema(IManagementAgentParameters config)
+        {
+            MASchemaType type = new MASchemaType
+            {
+                AttributeAdapters = new List<IAttributeAdapter>(),
+                Name = "feature",
+                AnchorAttributeName = "id",
+                SupportsPatch = true,
+            };
+
+            type.ApiInterface = new ApiInterfaceFeature(config.CustomerID, type);
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "name",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "id",
+                PropertyName = "Name",
+                Api = "feature",
+                SupportsPatch = true,
+                IsAnchor = true
+            });
+
+            return type;
+        }
+
+        public static MASchemaType GetBuildingSchema(IManagementAgentParameters config)
+        {
+            MASchemaType type = new MASchemaType
+            {
+                AttributeAdapters = new List<IAttributeAdapter>(),
+                Name = "building",
+                AnchorAttributeName = "id",
+                SupportsPatch = true,
+            };
+
+            type.ApiInterface = new ApiInterfaceBuilding(config.CustomerID, type);
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "buildingId",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                AttributeName = "id",
+                PropertyName = "BuildingId",
+                Api = "building",
+                SupportsPatch = true,
+                IsAnchor = true
+            });
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "buildingName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "buildingName",
+                PropertyName = "BuildingName",
+                Api = "building",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.EmptyString,
+                IsAnchor = false
+            });
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "description",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "description",
+                PropertyName = "Description",
+                Api = "building",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.EmptyString,
+                IsAnchor = false
+            });
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "floorNames",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "floorNames",
+                PropertyName = "FloorNames",
+                Api = "building",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.EmptyString,
+                CastForExport = i => ((string)i)?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(),
+                CastForImport = i => i == null ? null : string.Join(",", ((IList<string>)i)),
+                IsAnchor = false
+            });
+
+            AdapterSubfield latitude = new AdapterSubfield
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "latitude",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                PropertyName = "Latitude",
+                AttributeNamePart = "latitude",
+                NullValueRepresentation = NullValueRepresentation.DoubleZero,
+                CastForExport = value =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    return double.Parse(value.ToString());
+                },
+                CastForImport = value => ((double?) value)?.ToString("R")
+            };
+
+            AdapterSubfield longitude = new AdapterSubfield
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "longitude",
+                IsMultivalued = false,
+                PropertyName = "Longitude",
+                Operation = AttributeOperation.ImportExport,
+                AttributeNamePart = "longitude",
+                NullValueRepresentation = NullValueRepresentation.DoubleZero,
+                CastForExport = value =>
+                {
+                    if (value == null)
+                    {
+                        return null;
+                    }
+
+                    return double.Parse(value.ToString());
+                },
+                CastForImport = value => ((double?)value)?.ToString("R")
+            };
+
+            AdapterNestedType schemaItem = new AdapterNestedType
+            {
+                Api = "building",
+                AttributeName = "coordinates",
+                Fields = new List<AdapterSubfield>() { latitude, longitude },
+                FieldName = "coordinates",
+                PropertyName = "Coordinates",
+                SupportsPatch = false
+            };
+
+            type.AttributeAdapters.Add(schemaItem);
+
+            return type;
         }
 
         public static MASchemaType GetCalendarSchema(IManagementAgentParameters config)
@@ -86,26 +251,24 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ResourceId",
                 Api = "calendar",
                 SupportsPatch = true,
-                IsArrayAttribute = false,
                 IsAnchor = true
             });
-            
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "resourceName",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "resourceName",
-                PropertyName = "ResourceName",
-                Api = "calendar",
-                SupportsPatch = true,
-                IsArrayAttribute = false
-            });
+
+            //type.AttributeAdapters.Add(new AdapterPropertyValue
+            //{
+            //    AttributeType = AttributeType.String,
+            //    FieldName = "resourceName",
+            //    IsMultivalued = false,
+            //    Operation = AttributeOperation.ImportExport,
+            //    AttributeName = "resourceName",
+            //    PropertyName = "ResourceName",
+            //    Api = "calendar",
+            //    SupportsPatch = true,
+            //});
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
-                AttributeType = AttributeType.Reference,
+                AttributeType = config.CalendarBuildingAttributeType == "Reference" ? AttributeType.Reference: AttributeType.String,
                 FieldName = "buildingId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
@@ -114,7 +277,49 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false,
+                CastForExport = i =>
+                {
+                    if (i == null)
+                    {
+                        return null;
+                    }
+
+                    string s = (string) i;
+
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        return i;
+                    }
+
+                    if (config.CalendarBuildingAttributeType == "Reference")
+                    {
+                        return s.Replace(ApiInterfaceBuilding.DNSuffix, string.Empty);
+                    }
+                    
+                    return i;
+                },
+                CastForImport = i =>
+                {
+                    if (i == null)
+                    {
+                        return null;
+                    }
+
+                    string s = (string)i;
+
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        return i;
+                    }
+
+                    if (config.CalendarBuildingAttributeType == "Reference")
+                    {
+                        return $"{i}{ApiInterfaceBuilding.DNSuffix}";
+                    }
+
+                    return i;
+                }
+
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -128,7 +333,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.IntZero,
-                IsArrayAttribute = false,
                 CastForExport = value =>
                 {
                     if (value == null)
@@ -160,7 +364,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false,
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -174,7 +377,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false
             });
 
             // resourceCategory cannot be deleted. The API ignores requests to delete the value
@@ -189,7 +391,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.Null,
-                IsArrayAttribute = false
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -203,7 +404,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -217,7 +417,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -231,7 +430,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -244,7 +442,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "GeneratedResourceName",
                 Api = "calendar",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -257,8 +454,19 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ResourceEmail",
                 Api = "calendar",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             });
+
+            //type.AttributeAdapters.Add(new AdapterPropertyValue
+            //{
+            //    AttributeType =  config.CalendarFeatureAttributeType == "Reference" ? AttributeType.Reference: AttributeType.String,
+            //    FieldName = "featureInstances",
+            //    IsMultivalued = false,
+            //    Operation = AttributeOperation.ImportExport,
+            //    AttributeName = "features",
+            //    PropertyName = "FeatureInstances",
+            //    Api = "calendar",
+            //    SupportsPatch = false,
+            //});
 
             return type;
         }
@@ -285,7 +493,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "DomainName",
                 Api = "domain",
                 SupportsPatch = false,
-                IsArrayAttribute = false,
                 IsAnchor = true
             };
 
@@ -301,7 +508,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsPrimary",
                 Api = "domain",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(isPrimary);
@@ -316,7 +522,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Verified",
                 Api = "domain",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(verified);
@@ -359,7 +564,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Occupation",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(occupation);
@@ -374,7 +578,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "BillingInformation",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(billingInformation);
@@ -389,7 +592,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Birthday",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(birthday);
@@ -404,7 +606,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "DirectoryServer",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(directoryServer);
@@ -420,7 +621,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Initials",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(initials);
@@ -435,7 +635,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "MaidenName",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(maidenName);
@@ -450,7 +649,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Mileage",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(mileage);
@@ -465,7 +663,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Nickname",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(nickname);
@@ -483,8 +680,7 @@ namespace Lithnet.GoogleApps.MA
             //    PropertyName = "Priority",
             //    Api = "contact",
             //    SupportsPatch = false,
-            //    IsArrayAttribute = false
-            //};
+            //                //};
             //
             //type.Attributes.Add(priority);
 
@@ -498,7 +694,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Sensitivity",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(sensitivity);
@@ -513,7 +708,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ShortName",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(shortName);
@@ -528,7 +722,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Subject",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(subject);
@@ -543,7 +736,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Location",
                 Api = "contact",
                 SupportsPatch = false,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(location);
@@ -559,7 +751,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "contact",
                 SupportsPatch = true,
                 IsAnchor = true,
-                IsArrayAttribute = false,
                 CastForImport = (value) => ((AtomId)value).AbsoluteUri,
             };
 
@@ -834,7 +1025,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(orgUnitPath);
@@ -850,7 +1040,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -867,7 +1056,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -884,7 +1072,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -900,7 +1087,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IpWhitelisted",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -917,7 +1103,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "user",
                 SupportsPatch = true,
                 IsAnchor = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(id);
@@ -932,7 +1117,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "PrimaryEmail",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(primaryEmail);
@@ -948,7 +1132,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "usermakeadmin",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -964,7 +1147,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsDelegatedAdmin",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -980,7 +1162,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "LastLoginTime",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(lastLoginTime);
@@ -995,7 +1176,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "CreationTime",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(creationTime);
@@ -1010,7 +1190,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "DeletionTime",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(deletionTime);
@@ -1025,7 +1204,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "AgreedToTerms",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1041,7 +1219,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "SuspensionReason",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(suspensionReason);
@@ -1056,7 +1233,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "IsMailboxSetup",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1072,7 +1248,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ThumbnailPhotoUrl",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(thumbnailPhotoUrl);
@@ -1087,7 +1262,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ThumbnailPhotoEtag",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(thumbnailPhotoEtag);
@@ -1102,7 +1276,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "CustomerId",
                 Api = "user",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(customerId);
@@ -1167,7 +1340,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "group",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1184,7 +1356,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "group",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsArrayAttribute = false,
             };
 
             type.AttributeAdapters.Add(description);
@@ -1199,7 +1370,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Email",
                 Api = "group",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(email);
@@ -1215,7 +1385,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "group",
                 SupportsPatch = true,
                 IsAnchor = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(id);
@@ -1230,7 +1399,6 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "Name",
                 Api = "group",
                 SupportsPatch = true,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(name);
@@ -1335,7 +1503,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(includeCustomFooter);
@@ -1351,7 +1518,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(customFooterText);
@@ -1367,7 +1533,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanJoin);
@@ -1383,7 +1548,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanViewMembership);
@@ -1399,7 +1563,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanViewGroup);
@@ -1415,7 +1578,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanInvite);
@@ -1431,7 +1593,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanAdd);
@@ -1447,7 +1608,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1464,7 +1624,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanPostMessage);
@@ -1480,7 +1639,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1497,7 +1655,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(primaryLanguage);
@@ -1513,16 +1670,15 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForExport = (value) =>
-                {
-                    if (value == null)
-                    {
-                        return null;
-                    }
+    {
+        if (value == null)
+        {
+            return null;
+        }
 
-                    return Convert.ToInt32((long)value);
-                }
+        return Convert.ToInt32((long)value);
+    }
             };
 
             type.AttributeAdapters.Add(maxMessageBytes);
@@ -1538,7 +1694,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1556,7 +1711,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1573,7 +1727,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(messageModerationLevel);
@@ -1590,7 +1743,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(spamModerationLevel);
@@ -1606,7 +1758,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(replyTo);
@@ -1622,7 +1773,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(customReplyTo);
@@ -1638,7 +1788,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1656,7 +1805,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(defaultMessageDenyNotificationText);
@@ -1672,7 +1820,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1690,7 +1837,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1707,7 +1853,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(membersCanPostAsTheGroup);
@@ -1723,7 +1868,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(messageDisplayFont);
@@ -1739,7 +1883,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false,
                 CastForImport = (i) => i ?? false
             };
 
@@ -1756,7 +1899,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanLeaveGroup);
@@ -1773,7 +1915,6 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                IsArrayAttribute = false
             };
 
             type.AttributeAdapters.Add(whoCanContactOwner);
@@ -1788,7 +1929,8 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
                 PropertyName = "GivenName",
-                AttributeNamePart = "givenName"
+                AttributeNamePart = "givenName",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterSubfield familyName = new AdapterSubfield
@@ -1798,6 +1940,7 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 PropertyName = "FamilyName",
                 Operation = AttributeOperation.ImportExport,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
                 AttributeNamePart = "familyName"
             };
 
@@ -1823,7 +1966,8 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
                 PropertyName = "GivenName",
-                AttributeNamePart = "givenName"
+                AttributeNamePart = "givenName",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterSubfield familyName = new AdapterSubfield
@@ -1833,7 +1977,9 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 PropertyName = "FamilyName",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "familyName"
+                AttributeNamePart = "familyName",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
+
             };
 
             AdapterSubfield fullName = new AdapterSubfield
@@ -1843,7 +1989,8 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 PropertyName = "FullName",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "fullName"
+                AttributeNamePart = "fullName",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterNestedType schemaItem = new AdapterNestedType
@@ -1868,7 +2015,8 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
                 PropertyName = "Value",
-                AttributeNamePart = "value"
+                AttributeNamePart = "value",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterSubfield notesContentType = new AdapterSubfield
@@ -1878,7 +2026,8 @@ namespace Lithnet.GoogleApps.MA
                 IsMultivalued = false,
                 PropertyName = "ContentType",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "contentType"
+                AttributeNamePart = "contentType",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterNestedType notesType = new AdapterNestedType

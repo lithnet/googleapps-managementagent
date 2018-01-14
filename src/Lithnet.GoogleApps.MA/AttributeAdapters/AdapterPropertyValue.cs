@@ -37,9 +37,7 @@ namespace Lithnet.GoogleApps.MA
         public bool SupportsPatch { get; set; }
 
         public bool IsMultivalued { get; set; }
-
-        public bool IsArrayAttribute { get; set; }
-
+        
         public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
         public Func<object, object> CastForImport { get; set; }

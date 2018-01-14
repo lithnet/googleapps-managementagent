@@ -11,6 +11,7 @@ using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -22,7 +23,18 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             foreach (var item in ResourceRequestFactory.GetCalendars("my_customer"))
             {
-                Trace.WriteLine(item.ResourceName);
+                if (item.FeatureInstances != null)
+                {
+                    List<FeatureInstance> items = ((JArray)item.FeatureInstances).ToObject<List<FeatureInstance>>();
+
+                    int x = 1;
+
+                    items.Add(new FeatureInstance() {Feature = new Feature() {Name = "Test"}});
+                    item.FeatureInstances = items;
+
+                    ResourceRequestFactory.UpdateCalendar("my_customer", item.ResourceId, item);
+                    Trace.WriteLine(item.ResourceName);
+                }
             }
         }
 
@@ -34,7 +46,18 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             ApiInterfaceCalendar u = new ApiInterfaceCalendar("my_customer", ff);
 
-            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, new BlockingCollection<object>()).Wait();
+            BlockingCollection<object> items = new BlockingCollection<object>();
+
+            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, items).Wait();
+            HashSet<string> dns = new HashSet<string>();
+
+            foreach (CSEntryChange item in items.OfType<CSEntryChange>())
+            {
+                Assert.AreEqual(MAImportError.Success, item.ErrorCodeImport);
+                Assert.IsTrue(dns.Add(item.DN));
+            }
+
+            Assert.AreNotEqual(0, items.Count);
         }
 
         [TestMethod]
@@ -100,6 +123,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             calendar.Capacity = 9;
             calendar.FloorName = "G";
             calendar.FloorSection = "39b";
+
 
             calendar.ResourceCategory = "OTHER";
             calendar.ResourceDescription = "internal description 1";

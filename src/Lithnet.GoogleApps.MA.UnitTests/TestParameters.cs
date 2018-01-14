@@ -10,7 +10,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     {
         public TestParameters()
         {
+            this.CalendarBuildingAttributeType = "String";
+            this.CalendarFeatureAttributeType = "String";
         }
+
+        public string CalendarFeatureAttributeType { get; set; }
 
         public string CustomerID => "my_customer";
 
@@ -118,6 +122,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             this.ServiceAccountEmailAddress,
             this.UserEmailAddress,
             this.GetCertificate(this.KeyFilePath, this.KeyFilePassword));
+
+        public string CalendarBuildingAttributeType { get; set; }
 
         public string MALogFile => Path.Combine(this.LogFilePath, "ma-operations.log");
 

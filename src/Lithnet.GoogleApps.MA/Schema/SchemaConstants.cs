@@ -8,7 +8,9 @@
         public const string User = "user";
         public const string AdvancedUser = "advancedUser";
         public const string Contact = "contact";
+        public const string Building = "building";
         public const string Domain = "domain";
+        public const string Feature = "feature";
 
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
         public const string CustomSchemaObjectType = "objectType";

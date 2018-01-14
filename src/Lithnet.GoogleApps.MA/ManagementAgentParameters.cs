@@ -34,6 +34,43 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public string CalendarBuildingAttributeType
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter].Value;
+
+                    if (value == "String" || value == "Reference")
+                    {
+                        return value;
+                    }
+                }
+
+                return "String";
+            }
+        }
+
+        public string CalendarFeatureAttributeType
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter].Value;
+
+                    if (value == "String" || value == "Reference")
+                    {
+                        return value;
+                    }
+                }
+
+                return "String";
+            }
+        }
+
+
         public bool InheritGroupRoles
         {
             get
@@ -465,7 +502,7 @@ namespace Lithnet.GoogleApps.MA
         public static IList<ConfigParameterDefinition> GetParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
             List<ConfigParameterDefinition> parameters = new List<ConfigParameterDefinition>();
-
+            
             switch (page)
             {
                 case ConfigParameterPage.Capabilities:
@@ -528,6 +565,11 @@ namespace Lithnet.GoogleApps.MA
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter, new string[] {"String", "Reference"}, false, "String"));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
+
                     break;
                 default:
                     break;
