@@ -19,32 +19,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     public class CalendarTests
     {
         [TestMethod]
-        public void GetCalendars()
-        {
-            foreach (var item in ResourceRequestFactory.GetCalendars("my_customer"))
-            {
-                if (item.FeatureInstances != null)
-                {
-                    List<FeatureInstance> items = ((JArray)item.FeatureInstances).ToObject<List<FeatureInstance>>();
-
-                    int x = 1;
-
-                    items.Add(new FeatureInstance() {Feature = new Feature() {Name = "Test"}});
-                    item.FeatureInstances = items;
-
-                    ResourceRequestFactory.UpdateCalendar("my_customer", item.ResourceId, item);
-                    Trace.WriteLine(item.ResourceName);
-                }
-            }
-        }
-
-        [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
-            var ff = UnitTestControl.Schema[SchemaConstants.Calendar];
-            var s = UnitTestControl.MmsSchema.Types[SchemaConstants.Calendar];
+            MASchemaType maSchemaType = UnitTestControl.Schema[SchemaConstants.Calendar];
 
-            ApiInterfaceCalendar u = new ApiInterfaceCalendar("my_customer", ff);
+            ApiInterfaceCalendar u = new ApiInterfaceCalendar("my_customer", maSchemaType);
 
             BlockingCollection<object> items = new BlockingCollection<object>();
 
@@ -65,10 +44,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = Guid.NewGuid().ToString("n");
+            cs.DN = "test-name@calendar.resource";
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("resourceName", "name"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("floorName", "G"));
@@ -76,6 +54,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("resourceCategory", "CONFERENCE_ROOM"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("resourceDescription", "internal description"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("userVisibleDescription", "user description"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("features", new List<object> { "Test1", "Test2" }));
 
             string id = null;
 
@@ -93,8 +72,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.ResourceId);
-                Assert.AreEqual("name", c.ResourceName);
+                Assert.AreEqual(cs.DN, "test-name@calendar.resource");
+                Assert.AreEqual("test-name", c.ResourceName);
                 Assert.AreEqual("AU203", c.BuildingId);
                 Assert.AreEqual(33, c.Capacity);
                 Assert.AreEqual("G", c.FloorName);
@@ -102,6 +81,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("CONFERENCE_ROOM", c.ResourceCategory);
                 Assert.AreEqual("internal description", c.ResourceDescription);
                 Assert.AreEqual("user description", c.UserVisibleDescription);
+                CollectionAssert.AreEquivalent(new string[] { "Test1", "Test2" }, ApiInterfaceCalendar.GetFeatureNames(c).ToList());
             }
             finally
             {
@@ -118,26 +98,29 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
-            calendar.ResourceName = calendar.ResourceId;
+            calendar.ResourceName = "test-name";
             calendar.BuildingId = "AU205";
             calendar.Capacity = 9;
             calendar.FloorName = "G";
             calendar.FloorSection = "39b";
-
-
             calendar.ResourceCategory = "OTHER";
             calendar.ResourceDescription = "internal description 1";
             calendar.UserVisibleDescription = "my description 2";
+            calendar.FeatureInstances = new List<FeatureInstance>()
+            {
+                new FeatureInstance() {Feature = new Feature() {Name = "Test1"}},
+                new FeatureInstance() {Feature = new Feature() {Name = "Test2"}},
+            };
+
 
             ResourceRequestFactory.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = calendar.ResourceId;
+            cs.DN = "test-name@calendar.resource";
             cs.ObjectType = SchemaConstants.Calendar;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", calendar.ResourceId));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("resourceName", "name"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("buildingId", new List<ValueChange>() { ValueChange.CreateValueAdd("AU203") }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("floorName", "G"));
@@ -145,6 +128,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("resourceCategory", "CONFERENCE_ROOM"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("resourceDescription", "internal description"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("userVisibleDescription", "user description"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("features", new List<ValueChange>()
+            {
+                ValueChange.CreateValueAdd("Test3"),
+                ValueChange.CreateValueDelete("Test1"),
+            }));
 
             string id = calendar.ResourceId;
 
@@ -160,8 +148,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.ResourceId);
-                Assert.AreEqual("name", c.ResourceName);
+                Assert.AreEqual(cs.DN, "test-name@calendar.resource");
+                Assert.AreEqual("test-name", c.ResourceName);
                 Assert.AreEqual("AU203", c.BuildingId);
                 Assert.AreEqual(33, c.Capacity);
                 Assert.AreEqual("G", c.FloorName);
@@ -169,6 +157,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("CONFERENCE_ROOM", c.ResourceCategory);
                 Assert.AreEqual("internal description", c.ResourceDescription);
                 Assert.AreEqual("user description", c.UserVisibleDescription);
+                CollectionAssert.AreEquivalent(new string[] { "Test2", "Test3" }, ApiInterfaceCalendar.GetFeatureNames(c).ToList());
             }
             finally
             {
@@ -184,30 +173,34 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
-            calendar.ResourceName = calendar.ResourceId;
+            calendar.ResourceName = "test-name";
             calendar.BuildingId = "AU205";
             calendar.Capacity = 9;
             calendar.FloorName = "G";
             calendar.FloorSection = "39b";
-
             calendar.ResourceCategory = "OTHER";
             calendar.ResourceDescription = "internal description 1";
             calendar.UserVisibleDescription = "my description 2";
+            calendar.FeatureInstances = new List<FeatureInstance>()
+            {
+                new FeatureInstance() {Feature = new Feature() {Name = "Test1"}},
+                new FeatureInstance() {Feature = new Feature() {Name = "Test2"}},
+            };
 
             ResourceRequestFactory.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = calendar.ResourceId;
+            cs.DN = "test-name@calendar.resource";
             cs.ObjectType = SchemaConstants.Calendar;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", calendar.ResourceId));
-
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("buildingId"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("capacity"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("floorName"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("floorSection"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("resourceDescription"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("userVisibleDescription"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("features"));
 
             string id = calendar.ResourceId;
 
@@ -223,13 +216,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.ResourceId);
+                Assert.AreEqual(cs.DN, "test-name@calendar.resource");
                 Assert.IsNull(c.BuildingId);
                 Assert.IsNull(c.Capacity);
                 Assert.IsNull(c.FloorName);
                 Assert.IsNull(c.FloorSection);
                 Assert.IsNull(c.ResourceDescription);
                 Assert.IsNull(c.UserVisibleDescription);
+                Assert.IsNull(c.FeatureInstances);
             }
             finally
             {

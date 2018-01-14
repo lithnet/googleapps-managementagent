@@ -49,7 +49,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = Guid.NewGuid().ToString("n");
+            cs.DN = "new-building@building.resource";
             cs.ObjectType = SchemaConstants.Building;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingName", "My building"));
@@ -74,7 +74,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.BuildingId);
+                Assert.AreEqual("new-building", c.BuildingId);
                 Assert.AreEqual("My building", c.BuildingName);
                 Assert.AreEqual("my description", c.Description);
                 Assert.AreEqual(1D, c.Coordinates?.Latitude);
@@ -94,7 +94,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public void UpdateBuilding()
         {
             Building building = new Building();
-            building.BuildingId = Guid.NewGuid().ToString("n");
+            building.BuildingId = "test-building";
             building.BuildingName = "My building";
             building.Description = "some description";
             building.FloorNames = new List<string>() { "B1", "B2", "G" };
@@ -104,7 +104,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = building.BuildingId;
+            cs.DN = $"{building.BuildingId}{ApiInterfaceBuilding.DNSuffix}";
             cs.ObjectType = SchemaConstants.Building;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", building.BuildingId));
 
@@ -128,7 +128,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.BuildingId);
+                Assert.AreEqual("test-building", c.BuildingId);
                 Assert.AreEqual("new name", c.BuildingName);
                 Assert.AreEqual("new description", c.Description);
 
@@ -149,7 +149,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public void UpdateBuildingClearValues()
         {
             Building building = new Building();
-            building.BuildingId = Guid.NewGuid().ToString("n");
+            building.BuildingId = "test-building";
             building.BuildingName = "My building";
             building.Description = "some description";
             building.FloorNames = new List<string>() { "B1", "B2", "G" };
@@ -160,7 +160,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
-            cs.DN = building.BuildingId;
+            cs.DN = $"{building.BuildingId}{ApiInterfaceBuilding.DNSuffix}";
             cs.ObjectType = SchemaConstants.Building;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", building.BuildingId));
             
@@ -182,7 +182,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.BuildingId);
+                Assert.AreEqual("test-building", c.BuildingId);
                 Assert.IsTrue(string.IsNullOrEmpty(c.Description));
                 Assert.IsNull(c.Coordinates?.Longitude);
                 Assert.IsNull(c.Coordinates?.Latitude);

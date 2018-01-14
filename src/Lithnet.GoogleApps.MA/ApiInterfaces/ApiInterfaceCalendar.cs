@@ -8,6 +8,7 @@ using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
+using Newtonsoft.Json.Linq;
 using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
@@ -34,7 +35,19 @@ namespace Lithnet.GoogleApps.MA
         {
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
+
+            ApiInterfaceCalendar.ThrowOnInvalidDN(csentry.DN);
+
+            calendar.ResourceName = csentry.DN.Replace(ApiInterfaceCalendar.DNSuffix, string.Empty);
             return calendar;
+        }
+
+        private static void ThrowOnInvalidDN(string dn)
+        {
+            if (dn == null || !dn.EndsWith(ApiInterfaceCalendar.DNSuffix))
+            {
+                throw new InvalidDNException($"The DN must end with '{ApiInterfaceCalendar.DNSuffix}'");
+            }
         }
 
         public object GetInstance(CSEntryChange csentry)
@@ -156,7 +169,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 throw new InvalidOperationException();
             }
-            
+
             return $"{calendar.ResourceName ?? calendar.ResourceId}{ApiInterfaceCalendar.DNSuffix}";
         }
 
@@ -173,7 +186,7 @@ namespace Lithnet.GoogleApps.MA
                 fieldList.Add(fieldName);
             }
 
-            string fields = string.Format("items({0}), nextPageToken", string.Join(",", fieldList));
+            string fields = String.Format("items({0}), nextPageToken", String.Join(",", fieldList));
 
             Task t = new Task(() =>
             {
@@ -215,9 +228,33 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
+            ApiInterfaceCalendar.ThrowOnInvalidDN(csentry.DN);
+
             calendar.ResourceName = newDN.Replace($"{ApiInterfaceCalendar.DNSuffix}", string.Empty);
 
             return true;
+        }
+
+        internal static IEnumerable<string> GetFeatureNames(CalendarResource calendar, string attributeType)
+        {
+            return ApiInterfaceCalendar.GetFeatureNames(calendar, attributeType == "Reference" ? AttributeType.Reference : AttributeType.String);
+        }
+
+        internal static IEnumerable<string> GetFeatureNames(CalendarResource calendar, AttributeType type = AttributeType.String)
+        {
+            List<FeatureInstance> items = ((JArray)calendar?.FeatureInstances)?.ToObject<List<FeatureInstance>>();
+
+            return items?.Select(t =>
+            {
+                string featureName = t.Feature.Name;
+
+                if (type == AttributeType.Reference)
+                {
+                    featureName = $"{featureName}{ApiInterfaceFeature.DNSuffix}";
+                }
+
+                return featureName;
+            });
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = Guid.NewGuid().ToString("n");
+            cs.DN = $"my-feature{ApiInterfaceFeature.DNSuffix}";
             cs.ObjectType = SchemaConstants.Feature;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "My feature"));
@@ -70,8 +70,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 Feature c = ResourceRequestFactory.GetFeature(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, c.Name);
-                Assert.AreEqual(cs.DN, id);
+                Assert.AreEqual("my-feature", c.Name);
             }
             finally
             {

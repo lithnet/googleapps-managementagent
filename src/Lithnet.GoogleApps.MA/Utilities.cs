@@ -12,68 +12,6 @@ namespace Lithnet.GoogleApps.MA
 {
     internal static class Utilities
     {
-
-        public static IList<object> GetValuesFromArray(object value, string key, AttributeType type)
-        {
-            if (value is JArray jarray)
-            {
-                return Utilities.GetValuesFromJArray(jarray, key, type);
-            }
-
-            if (value is IList list)
-            {
-                return Utilities.GetValuesFromList(list, key, type);
-            }
-
-            throw new NotSupportedException("The array type was unknown");
-
-        }
-
-        public static IList<object> GetValuesFromList(IList list, string key, AttributeType type)
-        {
-            List<object> newList = new List<object>();
-
-            if (list is null)
-            {
-                return newList;
-            }
-
-            foreach (object item in list)
-            {
-                if (item is IDictionary<string, object> d)
-                {
-                    if (d.ContainsKey(key))
-                    {
-                        newList.Add(TypeConverter.ConvertData(d[key], type));
-                    }
-                }
-            }
-
-            return newList;
-        }
-
-        public static IList<object> GetValuesFromJArray(JArray jarray, string key, AttributeType type)
-        {
-            List<object> newList = new List<object>();
-
-            if (jarray is null)
-            {
-                return newList;
-            }
-
-            foreach (JToken i in jarray.Children())
-            {
-                JEnumerable<JProperty> itemProperties = i.Children<JProperty>();
-
-                foreach (JProperty myElement in itemProperties.Where(x => x.Name == key))
-                {
-                    newList.Add(TypeConverter.ConvertData((string)myElement.Value, type));
-                }
-            }
-
-            return newList;
-        }
-
         public static object SetPlaceholderIfNull(object value, NullValueRepresentation nullValueRepresentation)
         {
             if (value == null)

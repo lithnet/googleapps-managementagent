@@ -35,8 +35,17 @@ namespace Lithnet.GoogleApps.MA
         public object CreateInstance(CSEntryChange csentry)
         {
             Building building = new Building();
+            ApiInterfaceBuilding.ThrowOnInvalidDN(csentry.DN);
             building.BuildingId = csentry.DN.Replace(ApiInterfaceBuilding.DNSuffix, string.Empty);
             return building;
+        }
+
+        private static void ThrowOnInvalidDN(string dn)
+        {
+            if (dn == null || !dn.EndsWith(ApiInterfaceBuilding.DNSuffix))
+            {
+                throw new InvalidDNException($"The DN must end with '{ApiInterfaceBuilding.DNSuffix}'");
+            }
         }
 
         public object GetInstance(CSEntryChange csentry)

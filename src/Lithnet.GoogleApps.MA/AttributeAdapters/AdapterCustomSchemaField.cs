@@ -12,7 +12,7 @@ using User = Lithnet.GoogleApps.ManagedObjects.User;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal abstract class AdapterCustomSchemaField 
+    internal abstract class AdapterCustomSchemaField
     {
         public string MmsAttributeName { get; set; }
 
@@ -180,5 +180,67 @@ namespace Lithnet.GoogleApps.MA
 
             return value;
         }
+
+        protected IList<object> GetValuesFromArray(object value, string key)
+        {
+            if (value is JArray jarray)
+            {
+                return this.GetValuesFromJArray(jarray, key);
+            }
+
+            if (value is IList list)
+            {
+                return this.GetValuesFromList(list, key);
+            }
+
+            throw new NotSupportedException("The array type was unknown");
+
+        }
+
+        protected IList<object> GetValuesFromList(IList list, string key)
+        {
+            List<object> newList = new List<object>();
+
+            if (list is null)
+            {
+                return newList;
+            }
+
+            foreach (object item in list)
+            {
+                if (item is IDictionary<string, object> d)
+                {
+                    if (d.ContainsKey(key))
+                    {
+                        newList.Add(d[key]);
+                    }
+                }
+            }
+
+            return newList;
+        }
+
+        protected IList<object> GetValuesFromJArray(JArray jarray, string key)
+        {
+            List<object> newList = new List<object>();
+
+            if (jarray is null)
+            {
+                return newList;
+            }
+
+            foreach (JToken i in jarray.Children())
+            {
+                JEnumerable<JProperty> itemProperties = i.Children<JProperty>();
+
+                foreach (JProperty myElement in itemProperties.Where(x => x.Name == key))
+                {
+                    newList.Add((string)myElement.Value);
+                }
+            }
+
+            return newList;
+        }
+
     }
 }

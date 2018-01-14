@@ -11,7 +11,7 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class AdapterCollection<T> : IAttributeAdapter
     {
-        private PropertyInfo propInfo;
+        //private PropertyInfo propInfo;
 
         public IEnumerable<string> MmsAttributeNames
         {
@@ -33,6 +33,12 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsMultivalued => true;
 
+        public Func<object, ICollection<T>> GetList { get; set; }
+
+        public Func<object, ICollection<T>> CreateList { get; set; }
+
+        public Action<object, ICollection<T>> PutList { get; set; }
+
         public AttributeType AttributeType { get; set; }
 
         public AttributeOperation Operation { get; set; }
@@ -50,7 +56,7 @@ namespace Lithnet.GoogleApps.MA
         {
             return this.SupportsPatch;
         }
-        
+
         public bool UpdateField(CSEntryChange csentry, object obj)
         {
             if (this.IsReadOnly)
@@ -65,27 +71,22 @@ namespace Lithnet.GoogleApps.MA
 
             AttributeChange change = csentry.AttributeChanges[this.AttributeName];
 
-            if (this.propInfo == null)
-            {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
-            }
-
             ICollection<T> list;
 
             switch (change.ModificationType)
             {
                 case AttributeModificationType.Add:
                 case AttributeModificationType.Replace:
-                    list = this.CreateList(obj);
+                    list = this.CreateListInternal(obj);
                     break;
 
                 case AttributeModificationType.Update:
                     bool created;
-                    list = this.GetOrCreateList(obj, out created);
+                    list = this.GetOrCreateListInternal(obj, out created);
                     break;
 
                 case AttributeModificationType.Delete:
-                    list = this.CreateList(obj);
+                    list = this.CreateListInternal(obj);
                     break;
 
                 default:
@@ -107,7 +108,7 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine($"Removing value {this.AttributeName} -> {value}");
             }
 
-            this.propInfo.SetValue(obj, list, null);
+            this.PutListInternal(obj, list);
 
             return true;
         }
@@ -133,51 +134,50 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private ICollection<T> GetOrCreateList(object obj, out bool created)
+        private ICollection<T> GetOrCreateListInternal(object obj, out bool created)
         {
-            if (this.propInfo == null)
-            {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
-            }
-
-            ICollection<T> list = this.propInfo.GetValue(obj) as ICollection<T>;
+            ICollection<T> list = this.GetListInternal(obj);
             created = false;
 
             if (list == null)
             {
-                list = this.CreateList(obj);
+                list = this.CreateListInternal(obj);
                 created = true;
             }
 
             return list;
         }
 
-        private ICollection<T> GetList(object obj)
+        private ICollection<T> GetListInternal(object obj)
         {
-            if (this.propInfo == null)
+            if (this.GetList != null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                return this.GetList(obj);
             }
 
-            ICollection<T> childObject = this.propInfo.GetValue(obj) as ICollection<T>;
+            PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+
+            ICollection<T> childObject = propInfo.GetValue(obj) as ICollection<T>;
 
             return childObject;
         }
 
-        private ICollection<T> CreateList(object obj)
+        private ICollection<T> CreateListInternal(object obj)
         {
-            if (this.propInfo == null)
+            if (this.CreateList != null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                return this.CreateList(obj);
             }
 
-            return (ICollection<T>)Activator.CreateInstance(this.propInfo.PropertyType, null, new object[] {});
+            PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+
+            return (ICollection<T>)Activator.CreateInstance(propInfo.PropertyType, null, new object[] { });
         }
 
         public IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj)
         {
-            ICollection<T> list = this.GetList(obj);
-           
+            ICollection<T> list = this.GetListInternal(obj);
+
             if (list == null)
             {
                 if (modType == ObjectModificationType.Update)
@@ -209,6 +209,19 @@ namespace Lithnet.GoogleApps.MA
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(modType), modType, null);
+            }
+        }
+
+        private void PutListInternal(object obj, ICollection<T> list)
+        {
+            if (this.PutList == null)
+            {
+                PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+                propInfo.SetValue(obj, list, null);
+            }
+            else
+            {
+                this.PutList(obj, list);
             }
         }
     }

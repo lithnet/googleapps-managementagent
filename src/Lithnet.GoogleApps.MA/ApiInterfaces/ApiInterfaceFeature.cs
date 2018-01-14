@@ -8,6 +8,7 @@ using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
+using Newtonsoft.Json.Linq;
 using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
@@ -16,8 +17,9 @@ namespace Lithnet.GoogleApps.MA
     {
         private string customerID;
 
-        protected MASchemaType SchemaType { get; set; }
+        public static string DNSuffix => "@feature.resource";
 
+        protected MASchemaType SchemaType { get; set; }
         public ApiInterfaceFeature(string customerID, MASchemaType type)
         {
             this.SchemaType = type;
@@ -31,8 +33,18 @@ namespace Lithnet.GoogleApps.MA
         public object CreateInstance(CSEntryChange csentry)
         {
             Feature feature = new Feature();
-            feature.Name = csentry.DN;
+            ApiInterfaceFeature.ThrowOnInvalidDN(csentry.DN);
+
+            feature.Name = csentry.DN.Replace(ApiInterfaceFeature.DNSuffix, string.Empty);
             return feature;
+        }
+
+        private static void ThrowOnInvalidDN(string dn)
+        {
+            if (dn == null || !dn.EndsWith(ApiInterfaceFeature.DNSuffix))
+            {
+                throw new InvalidDNException($"The DN must end with '{ApiInterfaceFeature.DNSuffix}'");
+            }
         }
 
         public object GetInstance(CSEntryChange csentry)
@@ -155,7 +167,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            return feature.Name;
+            return $"{feature.Name}{ApiInterfaceFeature.DNSuffix}";
         }
 
         public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)

@@ -190,7 +190,7 @@ namespace Lithnet.GoogleApps.MA
 
                     return double.Parse(value.ToString());
                 },
-                CastForImport = value => ((double?) value)?.ToString("R")
+                CastForImport = value => ((double?)value)?.ToString("R")
             };
 
             AdapterSubfield longitude = new AdapterSubfield
@@ -268,7 +268,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
-                AttributeType = config.CalendarBuildingAttributeType == "Reference" ? AttributeType.Reference: AttributeType.String,
+                AttributeType = config.CalendarBuildingAttributeType == "Reference" ? AttributeType.Reference : AttributeType.String,
                 FieldName = "buildingId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
@@ -284,7 +284,7 @@ namespace Lithnet.GoogleApps.MA
                         return null;
                     }
 
-                    string s = (string) i;
+                    string s = (string)i;
 
                     if (string.IsNullOrEmpty(s))
                     {
@@ -295,7 +295,7 @@ namespace Lithnet.GoogleApps.MA
                     {
                         return s.Replace(ApiInterfaceBuilding.DNSuffix, string.Empty);
                     }
-                    
+
                     return i;
                 },
                 CastForImport = i =>
@@ -456,17 +456,46 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             });
 
-            //type.AttributeAdapters.Add(new AdapterPropertyValue
-            //{
-            //    AttributeType =  config.CalendarFeatureAttributeType == "Reference" ? AttributeType.Reference: AttributeType.String,
-            //    FieldName = "featureInstances",
-            //    IsMultivalued = false,
-            //    Operation = AttributeOperation.ImportExport,
-            //    AttributeName = "features",
-            //    PropertyName = "FeatureInstances",
-            //    Api = "calendar",
-            //    SupportsPatch = false,
-            //});
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = config.CalendarFeatureAttributeType == "Reference" ? AttributeType.Reference : AttributeType.String,
+                FieldName = "featureInstances",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "features",
+                PropertyName = "FeatureInstances",
+                Api = "calendar",
+                SupportsPatch = false,
+                GetList = obj => ApiInterfaceCalendar.GetFeatureNames((G.CalendarResource) obj, config.CalendarFeatureAttributeType)?.ToList(),
+                CreateList = obj => new List<string>(),
+                PutList = (obj, list) =>
+                {
+                    G.CalendarResource cal = obj as G.CalendarResource;
+
+                    if (cal == null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    List<G.FeatureInstance> items = new List<G.FeatureInstance>();
+
+                    if (list != null && list.Count > 0)
+                    {
+                        foreach (string name in list)
+                        {
+                            string featureName = name;
+
+                            if (config.CalendarFeatureAttributeType == "Reference")
+                            {
+                                featureName = featureName.Replace(ApiInterfaceFeature.DNSuffix, string.Empty);
+                            }
+
+                            items.Add(new G.FeatureInstance() { Feature = new G.Feature { Name = featureName } });
+                        }
+                    }
+
+                    cal.FeatureInstances = items;
+                }
+            });
 
             return type;
         }
@@ -1671,14 +1700,14 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
                 CastForExport = (value) =>
-    {
-        if (value == null)
         {
-            return null;
-        }
+            if (value == null)
+            {
+                return null;
+            }
 
-        return Convert.ToInt32((long)value);
-    }
+            return Convert.ToInt32((long)value);
+        }
             };
 
             type.AttributeAdapters.Add(maxMessageBytes);
