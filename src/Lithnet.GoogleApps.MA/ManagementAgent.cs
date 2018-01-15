@@ -94,7 +94,7 @@ namespace Lithnet.GoogleApps.MA
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
             this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
-
+            
             Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
             this.SetHttpDebugMode();
@@ -122,13 +122,15 @@ namespace Lithnet.GoogleApps.MA
             ConnectionPools.InitializePools(this.Configuration.Credentials, MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
                 MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize,
                 MAConfigurationSection.Configuration.EmailSettingsApi.PoolSize,
-                MAConfigurationSection.Configuration.ContactsApi.PoolSize);
+                MAConfigurationSection.Configuration.ContactsApi.PoolSize,
+                MAConfigurationSection.Configuration.CalendarApi.PoolSize);
 
             ConnectionPools.SetConcurrentOperationLimitGroupMember(MAConfigurationSection.Configuration.DirectoryApi.ExportThreadsGroupMember);
             ConnectionPools.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
             ConnectionPools.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
             ConnectionPools.SetRateLimitEmailSettingsService(MAConfigurationSection.Configuration.EmailSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
             ConnectionPools.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+            ConnectionPools.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
         }
 
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
@@ -400,7 +402,7 @@ namespace Lithnet.GoogleApps.MA
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
+            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1, 1);
 
             return SchemaBuilder.GetSchema(this.Configuration).GetSchema();
         }
@@ -452,7 +454,7 @@ namespace Lithnet.GoogleApps.MA
             Logger.LogPath = this.Configuration.PasswordOperationLogFile;
             this.SetHttpDebugMode();
 
-            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1);
+            ConnectionPools.InitializePools(this.Configuration.Credentials, 1, 1, 1, 1, 1);
         }
 
         public void SetPassword(CSEntry csentry, System.Security.SecureString newPassword, PasswordOptions options)

@@ -148,6 +148,16 @@ namespace Lithnet.GoogleApps.MA
             return obj == null ? string.Empty : obj.ToSmartString();
         }
 
+        public static void AddIfNotNull<T>(this List<T> list, T item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            list.Add(item);
+        }
+
         public static void AddRange<T>(this HashSet<T> hashset, IEnumerable<T> items)
         {
             if (items == null)

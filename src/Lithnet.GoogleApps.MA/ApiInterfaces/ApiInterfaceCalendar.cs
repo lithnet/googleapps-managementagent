@@ -17,9 +17,19 @@ namespace Lithnet.GoogleApps.MA
     {
         private string customerID;
 
+        private static ApiInterfaceKeyedCollection internalInterfaces;
+
         protected MASchemaType SchemaType { get; set; }
 
         public static string DNSuffix => "@calendar.resource";
+
+        static ApiInterfaceCalendar()
+        {
+            ApiInterfaceCalendar.internalInterfaces = new ApiInterfaceKeyedCollection
+            {
+                new ApiInterfaceCalendarAcl(),
+            };
+        }
 
         public ApiInterfaceCalendar(string customerID, MASchemaType type)
         {
@@ -108,6 +118,13 @@ namespace Lithnet.GoogleApps.MA
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
+            foreach (IApiInterface i in ApiInterfaceCalendar.internalInterfaces)
+            {
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, config, ref target, patch))
+                {
+                    changes.Add(c);
+                }
+            }
 
             return changes;
         }
@@ -115,6 +132,11 @@ namespace Lithnet.GoogleApps.MA
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+
+            foreach (IApiInterface i in ApiInterfaceCalendar.internalInterfaces)
+            {
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
+            }
 
             return attributeChanges;
         }
@@ -193,13 +215,11 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Starting calendar import task");
                 Logger.WriteLine("Requesting calendar fields: " + fields);
 
-                foreach (CalendarResource calendar in ResourceRequestFactory.GetCalendars(config.CustomerID, fields))
+                Parallel.ForEach(ResourceRequestFactory.GetCalendars(config.CustomerID, fields), calendar =>
                 {
                     collection.Add(this.GetCSEntryForCalendar(calendar, schema, config));
                     Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
-
-                    continue;
-                }
+                });
 
                 Logger.WriteLine("Calendar import task complete");
             });

@@ -35,6 +35,8 @@ namespace Lithnet.GoogleApps.MA
 
         bool InheritGroupRoles { get; }
 
+        bool CalendarSendNotificationOnPermissionChange { get; }
+        
         IEnumerable<string> PhonesAttributeFixedTypes { get; }
 
         IEnumerable<string> OrganizationsAttributeFixedTypes { get; }

@@ -27,6 +27,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
         public bool InheritGroupRoles { get; set; }
 
+        public bool CalendarSendNotificationOnPermissionChange { get; set;  }
+
         public string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
         public string Domain => ConfigurationManager.AppSettings["domain"];
 

@@ -271,7 +271,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 int directoryServicePoolSize = 30;
-                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, directoryServicePoolSize, 30, 30, 30);
+                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, directoryServicePoolSize, 30, 30, 30, 30);
                 int threadCount = 0;
                 GroupMemberRequestFactory.BatchSize = 100;
                 ConnectionPools.SetConcurrentOperationLimitGroupMember(5);
@@ -317,7 +317,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             finally
             {
                 UnitTestControl.Cleanup(groups.ToArray<object>());
-                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, 1, 1, 1, 1);
+                ConnectionPools.InitializePools(UnitTestControl.TestParameters.Credentials, 1, 1, 1, 1, 1);
             }
         }
 

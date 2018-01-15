@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
@@ -18,6 +19,32 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     public class CalendarTests
     {
+        [TestMethod]
+        public void GetCalendarAclList()
+        {
+            foreach (var calendar in ResourceRequestFactory.GetCalendars("my_customer"))
+            {
+                try
+                {
+                    foreach (var acl in ResourceRequestFactory.GetCalendarAclRules("my_customer", calendar.ResourceEmail))
+                    {
+                        Trace.WriteLine($"Calendar {calendar.ResourceName} ACL {acl.Id}/{acl.Role}/{acl.Scope}");
+                    }
+                }
+                catch (GoogleApiException ex)
+                {
+                    if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        Trace.WriteLine($"Calendar {calendar.ResourceName} ACL not found");
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+
         [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
@@ -91,7 +118,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-
 
         [TestMethod]
         public void UpdateCalendar()

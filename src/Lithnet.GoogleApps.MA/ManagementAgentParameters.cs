@@ -95,6 +95,30 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public bool CalendarSendNotificationOnPermissionChange
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public string ServiceAccountEmailAddress
         {
             get
@@ -529,6 +553,8 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.InheritGroupRolesParameter, false));
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Inheriting group roles forces the MA to include owners in the managers list, and managers in the members list"));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter, false));
 
                     break;
 

@@ -69,6 +69,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string CalendarFeatureAttributeTypeParameter = "Calendar resource features attribute type";
 
+        protected const string CalendarSendNotificationOnPermissionChangeParameter = "Send notifications when changing calendar permissions";
+
         protected static string[] RequiredScopes = new string[]
         {
             DirectoryService.Scope.AdminDirectoryUser,
@@ -76,11 +78,11 @@ namespace Lithnet.GoogleApps.MA
             DirectoryService.Scope.AdminDirectoryGroupMember,
             DirectoryService.Scope.AdminDirectoryUserschema,
             DirectoryService.Scope.AdminDirectoryResourceCalendar,
-            DirectoryService.Scope.AdminDirectoryResourceCalendarReadonly,
             GroupssettingsService.Scope.AppsGroupsSettings,
             "https://www.googleapis.com/auth/admin.directory.domain",
             "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
-            "http://www.google.com/m8/feeds/contacts/"
+            "http://www.google.com/m8/feeds/contacts/",
+            "https://www.googleapis.com/auth/calendar"
         };
         
         private X509Certificate2 certificate;

@@ -254,18 +254,6 @@ namespace Lithnet.GoogleApps.MA
                 IsAnchor = true
             });
 
-            //type.AttributeAdapters.Add(new AdapterPropertyValue
-            //{
-            //    AttributeType = AttributeType.String,
-            //    FieldName = "resourceName",
-            //    IsMultivalued = false,
-            //    Operation = AttributeOperation.ImportExport,
-            //    AttributeName = "resourceName",
-            //    PropertyName = "ResourceName",
-            //    Api = "calendar",
-            //    SupportsPatch = true,
-            //});
-
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = config.CalendarBuildingAttributeType == "Reference" ? AttributeType.Reference : AttributeType.String,
@@ -465,7 +453,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "FeatureInstances",
                 Api = "calendar",
                 SupportsPatch = false,
-                GetList = obj => ApiInterfaceCalendar.GetFeatureNames((G.CalendarResource) obj, config.CalendarFeatureAttributeType)?.ToList(),
+                GetList = obj => ApiInterfaceCalendar.GetFeatureNames((G.CalendarResource)obj, config.CalendarFeatureAttributeType)?.ToList(),
                 CreateList = obj => new List<string>(),
                 PutList = (obj, list) =>
                 {
@@ -496,6 +484,8 @@ namespace Lithnet.GoogleApps.MA
                     cal.FeatureInstances = items;
                 }
             });
+
+            SchemaBuilder.AddCalendarAcls(type);
 
             return type;
         }
@@ -1436,6 +1426,64 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilder.AddGroupSettings(type);
             SchemaBuilder.AddGroupMembers(type);
             return type;
+        }
+
+        private static void AddCalendarAcls(MASchemaType type)
+        {
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "scope.value",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "freeBusyReaders",
+                PropertyName = "FreeBusyReaders",
+                Api = "calendaracl",
+                SupportsPatch = false,
+            });
+
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "scope.value",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "readers",
+                PropertyName = "readers",
+                Api = "calendaracl",
+                SupportsPatch = false,
+            });
+
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "scope.value",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "writers",
+                PropertyName = "writers",
+                Api = "calendaracl",
+                SupportsPatch = false,
+            });
+
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "scope.value",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "owners",
+                PropertyName = "owners",
+                Api = "calendaracl",
+                SupportsPatch = false,
+            });
+
+            type.AttributeAdapters.Add(new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = "scope.value",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "noAccess",
+                PropertyName = "None",
+                Api = "calendaracl",
+                SupportsPatch = false,
+            });
         }
 
         private static void AddGroupMembers(MASchemaType type)
