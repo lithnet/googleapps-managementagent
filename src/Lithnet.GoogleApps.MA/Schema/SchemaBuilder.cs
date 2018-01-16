@@ -81,7 +81,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "feature",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true,
             };
 
@@ -109,7 +109,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "building",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true,
             };
 
@@ -235,7 +235,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "calendar",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id", "resourceEmail" },
                 SupportsPatch = true,
             };
 
@@ -253,6 +253,18 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
                 IsAnchor = true
             });
+
+            //type.AttributeAdapters.Add(new AdapterPropertyValue
+            //{
+            //    AttributeType = AttributeType.String,
+            //    FieldName = "resourceName",
+            //    IsMultivalued = false,
+            //    Operation = AttributeOperation.ImportOnly,
+            //    AttributeName = "name",
+            //    PropertyName = "ResourceName",
+            //    Api = "calendar",
+            //    SupportsPatch = true,
+            //});
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
@@ -429,7 +441,7 @@ namespace Lithnet.GoogleApps.MA
                 AttributeName = "generatedResourceName",
                 PropertyName = "GeneratedResourceName",
                 Api = "calendar",
-                SupportsPatch = true,
+                SupportsPatch = false,
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
@@ -442,6 +454,7 @@ namespace Lithnet.GoogleApps.MA
                 PropertyName = "ResourceEmail",
                 Api = "calendar",
                 SupportsPatch = true,
+                IsAnchor = true
             });
 
             type.AttributeAdapters.Add(new AdapterCollection<string>
@@ -496,7 +509,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "domain",
-                AnchorAttributeName = SchemaConstants.DomainName,
+                AnchorAttributeNames = new[] { SchemaConstants.DomainName },
                 SupportsPatch = false,
             };
 
@@ -567,7 +580,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "contact",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = false,
             };
 
@@ -1027,7 +1040,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "user",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true,
             };
 
@@ -1342,7 +1355,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
                 Name = "group",
-                AnchorAttributeName = "id",
+                AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true,
             };
 
@@ -1470,17 +1483,6 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "owners",
                 PropertyName = "owners",
-                Api = "calendaracl",
-                SupportsPatch = false,
-            });
-
-            type.AttributeAdapters.Add(new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = "scope.value",
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "noAccess",
-                PropertyName = "None",
                 Api = "calendaracl",
                 SupportsPatch = false,
             });

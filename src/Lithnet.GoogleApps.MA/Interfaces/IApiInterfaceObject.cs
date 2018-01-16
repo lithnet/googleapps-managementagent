@@ -13,7 +13,7 @@ namespace Lithnet.GoogleApps.MA
 
         void DeleteInstance(CSEntryChange csentry);
 
-        string GetAnchorValue(object target);
+        string GetAnchorValue(string name, object target);
 
         string GetDNValue(object target);
 

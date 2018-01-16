@@ -154,7 +154,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(object target)
+        public string GetAnchorValue(string attributeName, object target)
         {
             Domain d = target as Domain;
 

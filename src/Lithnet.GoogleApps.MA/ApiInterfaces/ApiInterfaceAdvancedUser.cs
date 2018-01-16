@@ -37,7 +37,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName)
+                    Id = csentry.GetAnchorValueOrDefault<string>("id")
                 };
             }
         }

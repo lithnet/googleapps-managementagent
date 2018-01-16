@@ -47,7 +47,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 return new User
                 {
-                    Id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName),
+                    Id = csentry.GetAnchorValueOrDefault<string>("id"),
                     PrimaryEmail = csentry.DN
                 };
             }
@@ -100,7 +100,7 @@ namespace Lithnet.GoogleApps.MA
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
-                    string id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName);
+                    string id = csentry.GetAnchorValueOrDefault<string>("id");
 
                     if (patch)
                     {
@@ -173,8 +173,8 @@ namespace Lithnet.GoogleApps.MA
         {
             // This is a workaround for an issue where when we delete the last value from a CustomTypeListT, we do not see the change
             // come in when we parse the updated object from google, as the value is null. There is no way to tell if it is null because
-            // it was deleted, or never present, making it difficult to send an appopriate 'delete' value back to FIM. The workaround is to
-            // replay any 'deletes' from the original CSEntryChange back in the delta, provided that one of the API interfaces hasnt already
+            // it was deleted, or never present, making it difficult to send an appropriate 'delete' value back to FIM. The workaround is to
+            // replay any 'deletes' from the original CSEntryChange back in the delta, provided that one of the API interfaces hasn't already
             // contributed an AttributeChange for it.
 
             foreach (AttributeChange change in csentry.AttributeChanges.Where(t => t.ModificationType == AttributeModificationType.Delete))
@@ -186,7 +186,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string GetAnchorValue(object target)
+        public string GetAnchorValue(string attributeName, object target)
         {
             return ((User)target).Id;
         }

@@ -96,10 +96,12 @@ namespace Lithnet.GoogleApps.MA
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
                     result = ResourceRequestFactory.AddCalendar(this.customerID, calendar);
+                    calendar.ResourceEmail = result.ResourceEmail;
+                    System.Threading.Thread.Sleep(1500);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
-                    string id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName);
+                    string id = csentry.GetAnchorValueOrDefault<string>("id");
 
                     if (patch)
                     {
@@ -171,7 +173,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(object target)
+        public string GetAnchorValue(string attributeName, object target)
         {
             CalendarResource calendar = target as CalendarResource;
 
@@ -180,7 +182,17 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            return calendar.ResourceId;
+            switch (attributeName)
+            {
+                case "id":
+                    return calendar.ResourceId;
+
+                case "resourceEmail":
+                    return calendar.ResourceEmail;
+
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         public string GetDNValue(object target)
@@ -200,6 +212,7 @@ namespace Lithnet.GoogleApps.MA
             HashSet<string> fieldList = new HashSet<string>
             {
                 "resourceName",
+                "resourceEmail",
                 "resourceId"
             };
 

@@ -13,14 +13,18 @@ namespace Lithnet.GoogleApps.MA
             CSEntryChange csentry = CSEntryChange.Create();
             csentry.ObjectModificationType = ObjectModificationType.Add;
             csentry.ObjectType = type.Name;
-            string anchorValue = maType.ApiInterface.GetAnchorValue(source);
 
-            if (anchorValue == null)
+            foreach (string anchorAttributeName in maType.AnchorAttributeNames)
             {
-                throw new AttributeNotPresentException(maType.AnchorAttributeName);
-            }
+                string anchorValue = maType.ApiInterface.GetAnchorValue(anchorAttributeName, source);
 
-            csentry.CreateAttributeAdd(maType.AnchorAttributeName, anchorValue);
+                if (anchorValue == null)
+                {
+                    throw new AttributeNotPresentException(anchorAttributeName);
+                }
+
+                csentry.CreateAttributeAdd(anchorAttributeName, anchorValue);
+            }
 
             try
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Google.Apis.Calendar.v3.Data;
@@ -19,109 +20,7 @@ namespace Lithnet.GoogleApps.MA
             {"readers", "reader"},
             {"writers", "writer"},
             {"owners", "owner"},
-            {"noAccess", "none"},
         };
-
-        private IList<ValueChange> DeleteFromRole(CSEntryChange csentry, IList<AclRule> existingRules, string role, string attributeName, IManagementAgentParameters config, string calendarId)
-        {
-            List<ValueChange> valueChanges = new List<ValueChange>();
-
-            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == attributeName);
-
-            if (change == null)
-            {
-                return null;
-            }
-
-            foreach (string valueToDelete in change.GetValueDeletes<string>())
-            {
-                AclRule matchedRule = existingRules.FirstOrDefault(t => t.Role == role && valueToDelete.Equals(t.Scope.Value, StringComparison.CurrentCultureIgnoreCase));
-
-                if (matchedRule == null)
-                {
-                    Logger.WriteLine($"{valueToDelete} does not have role {role} on calendar {csentry.DN}. The request to delete the value will be ignored");
-                    valueChanges.Add(ValueChange.CreateValueDelete(valueToDelete));
-
-                    continue;
-                }
-
-                if (matchedRule.Role == "owner" && calendarId.Equals(matchedRule.Scope.Value, StringComparison.CurrentCultureIgnoreCase))
-                {
-
-                }
-
-                ResourceRequestFactory.DeleteCalendarAclRule(config.CustomerID, calendarId, matchedRule.Id);
-
-                valueChanges.Add(ValueChange.CreateValueDelete(valueToDelete));
-            }
-
-            return valueChanges;
-        }
-
-        private IList<ValueChange> AddToRole(CSEntryChange csentry, IList<AclRule> existingRules, string role, string attributeName, IManagementAgentParameters config, string calendarId)
-        {
-            List<ValueChange> valueChanges = new List<ValueChange>();
-
-            foreach (string valueToAdd in csentry.GetValueAdds<string>(attributeName))
-            {
-                AclRule matchedRule = existingRules.FirstOrDefault(t => t.Role == role && valueToAdd.Equals(t.Scope.Value, StringComparison.CurrentCultureIgnoreCase));
-
-                if (matchedRule != null)
-                {
-                    Logger.WriteLine($"{valueToAdd} already has role {role} on calendar {csentry.DN}. The request to add the value will be ignored");
-                    valueChanges.Add(ValueChange.CreateValueAdd(valueToAdd));
-                    continue;
-                }
-
-                AclRule rule = new AclRule();
-                rule.Scope = new AclRule.ScopeData();
-                rule.Scope.Value = valueToAdd;
-                rule.Scope.Type = this.GetScopeType(valueToAdd);
-
-                ResourceRequestFactory.AddCalendarAclRule(config.CustomerID, calendarId, rule, config.CalendarSendNotificationOnPermissionChange);
-
-                valueChanges.Add(ValueChange.CreateValueAdd(valueToAdd));
-            }
-
-            return valueChanges;
-        }
-
-        private IEnumerable<string> GetRoleMembers(string role, IList<AclRule> existingRules)
-        {
-            return existingRules.Where(t => t.Role == role).Select(rule => rule.Scope.Value);
-        }
-
-        private IList<AclRule> GetExistingRules(string customerId, string calendarEmail)
-        {
-            return ResourceRequestFactory.GetCalendarAclRules(customerId, calendarEmail).Where(t =>
-                    // Ignore domain objects        
-                    t.Scope?.Type != "domain" &&
-                    // Ignore public permissions
-                    t.Scope?.Type != "default" &&
-                    // Ignore the default owner ACL
-                    !(t.Role == "owner" && calendarEmail.Equals(t.Scope?.Value, StringComparison.CurrentCultureIgnoreCase))
-            ).ToList();
-        }
-
-        private void DeleteExistingRules(string customerId, string calendarEmail, params AclRule[] rules)
-        {
-            foreach (AclRule rule in rules)
-            {
-                ResourceRequestFactory.DeleteCalendarAclRule(customerId, calendarEmail, rule.Id);
-            }
-        }
-
-        private string GetScopeType(string scopeValue)
-        {
-            if (scopeValue.Contains("@"))
-            {
-                return "user";
-            }
-            else
-            {
-                return "domain";
-            }
-        }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
         {
@@ -142,7 +41,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                existingRules = this.GetExistingRules(config.CustomerID, calendarEmail);
+                existingRules = this.GetNonDefaultRules(config.CustomerID, calendarEmail);
             }
 
             Dictionary<string, AttributeChange> keyedAttributeChanges = new Dictionary<string, AttributeChange>();
@@ -156,7 +55,14 @@ namespace Lithnet.GoogleApps.MA
                         continue;
                     }
 
-                    IList<ValueChange> valueChanges = this.DeleteFromRole(csentry, existingRules, kvp.Value, kvp.Key, config, calendarEmail);
+                    AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == kvp.Key);
+
+                    if (change == null)
+                    {
+                        continue;
+                    }
+
+                    IList<ValueChange> valueChanges = this.DeleteFromRole(change, existingRules, kvp.Value, config, calendarEmail);
 
                     if (valueChanges.Count > 0)
                     {
@@ -179,7 +85,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 // If we are replacing, we don't know the existing values, so we can delete and re-add them.
                 // If we are adding, we want to clear out the Google-default ACLs, to avoid exported-change-not-reimported errors.
-                this.DeleteExistingRules(config.CustomerID, calendarEmail, existingRules.ToArray());
+                this.DeleteRules(config.CustomerID, calendarEmail, existingRules.ToArray());
             }
 
             foreach (KeyValuePair<string, string> kvp in this.attributeRoleMapping)
@@ -189,7 +95,15 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-                IList<ValueChange> valueChanges = this.AddToRole(csentry, existingRules, kvp.Value, kvp.Key, config, calendarEmail);
+                AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == kvp.Key);
+
+                if (change == null)
+                {
+                    continue;
+                }
+
+
+                IList<ValueChange> valueChanges = this.AddToRole(change, existingRules, kvp.Value, config, calendarEmail);
 
                 if (valueChanges.Count == 0)
                 {
@@ -241,108 +155,162 @@ namespace Lithnet.GoogleApps.MA
                 if (existingRules == null)
                 {
                     // don't populate in advance. Only get the rules if we have a request for a related attribute
-                    existingRules = this.GetExistingRules(config.CustomerID, calendar.ResourceEmail);
+                    existingRules = this.GetNonDefaultRules(config.CustomerID, calendar.ResourceEmail);
                 }
 
-                IList<string> items = this.GetRoleMembers(kvp.Value, existingRules).ToList();
+                IList<object> items = this.GetRoleMembers(kvp.Value, existingRules).ToList<object>();
+
+                if (items.Count == 0)
+                {
+                    continue;
+                }
 
                 if (modType == ObjectModificationType.Update)
                 {
-                    ApiInterfaceCalendarAcl.AddAttributeChange(kvp.Key, AttributeModificationType.Replace, items.ToValueChangeAdd(), changes);
+                    changes.Add(AttributeChange.CreateAttributeReplace(kvp.Key, items));
                 }
                 else
                 {
-                    ApiInterfaceCalendarAcl.AddAttributeChange(kvp.Key, AttributeModificationType.Add, items.ToValueChangeAdd(), changes);
+                    changes.Add(AttributeChange.CreateAttributeAdd(kvp.Key, items));
                 }
             }
 
             return changes;
         }
 
-        private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)
+        private IList<ValueChange> DeleteFromRole(AttributeChange change, IList<AclRule> existingRules, string role, IManagementAgentParameters config, string calendarId)
         {
-            AttributeChange existingChange = attributeChanges.FirstOrDefault(t => t.Name == attributeName);
+            List<ValueChange> valueChanges = new List<ValueChange>();
 
-            if (modificationType == AttributeModificationType.Delete)
+            IList<string> deletes;
+
+            if (change.ModificationType == AttributeModificationType.Delete || change.ModificationType == AttributeModificationType.Replace)
             {
-                if (existingChange != null)
+                deletes = existingRules.Where(t => t.Role == role).Select(t => t.Scope.Value).ToList();
+            }
+            else
+            {
+                deletes = change.GetValueDeletes<string>();
+            }
+
+            foreach (string valueToDelete in deletes)
+            {
+                AclRule matchedRule = existingRules.FirstOrDefault(t => t.Role == role && valueToDelete.Equals(t.Scope.Value, StringComparison.CurrentCultureIgnoreCase));
+
+                if (matchedRule == null)
                 {
-                    attributeChanges.Remove(existingChange);
+                    Logger.WriteLine($"{valueToDelete} does not have role {role} on calendar {calendarId}. The request to delete the value will be ignored");
+                    valueChanges.Add(ValueChange.CreateValueDelete(valueToDelete));
+
+                    continue;
                 }
 
-                attributeChanges.Add(AttributeChange.CreateAttributeDelete(attributeName));
-                return;
+                if (matchedRule.Role == "owner" && calendarId.Equals(matchedRule.Scope.Value, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Debug.WriteLine($"Ignoring default ACL for {valueToDelete} to role {role} on calendar {calendarId}");
+                    continue;
+                }
+
+                try
+                {
+                    ResourceRequestFactory.DeleteCalendarAclRule(config.CustomerID, calendarId, matchedRule.Id);
+                    Debug.WriteLine($"Removed {valueToDelete} from role {role} on calendar {calendarId}");
+                }
+                catch
+                {
+                    Debug.WriteLine($"Failed to remove {valueToDelete} to role {role} on calendar {calendarId}");
+                    throw;
+                }
+
+                valueChanges.Add(ValueChange.CreateValueDelete(valueToDelete));
             }
 
-            if (changes == null || changes.Count == 0)
+            return valueChanges;
+        }
+
+        private IList<ValueChange> AddToRole(AttributeChange change, IList<AclRule> existingRules, string role, IManagementAgentParameters config, string calendarId)
+        {
+            List<ValueChange> valueChanges = new List<ValueChange>();
+
+            foreach (string valueToAdd in change.GetValueAdds<string>())
             {
-                return;
+                AclRule matchedRule = existingRules.FirstOrDefault(t => t.Role == role && valueToAdd.Equals(t.Scope.Value, StringComparison.CurrentCultureIgnoreCase));
+
+                if (matchedRule != null)
+                {
+                    Logger.WriteLine($"{valueToAdd} already has role {role} on calendar {calendarId}. The request to add the value will be ignored");
+                    valueChanges.Add(ValueChange.CreateValueAdd(valueToAdd));
+                    continue;
+                }
+
+                AclRule rule = new AclRule();
+                rule.Role = role;
+                rule.Scope = new AclRule.ScopeData();
+                rule.Scope.Value = valueToAdd;
+                rule.Scope.Type = this.GetScopeType(valueToAdd);
+
+                try
+                {
+                    ResourceRequestFactory.AddCalendarAclRule(config.CustomerID, calendarId, rule, config.CalendarSendNotificationOnPermissionChange);
+                    Debug.WriteLine($"Added {valueToAdd} to role {role} on calendar {calendarId}");
+                }
+                catch
+                {
+                    Debug.WriteLine($"Failed to add {valueToAdd} to role {role} on calendar {calendarId}");
+                    throw;
+                }
+
+                valueChanges.Add(ValueChange.CreateValueAdd(valueToAdd));
             }
 
-            IList<object> adds;
-            switch (modificationType)
+            return valueChanges;
+        }
+
+        private IEnumerable<string> GetRoleMembers(string role, IList<AclRule> existingRules)
+        {
+            return existingRules.Where(t => t.Role == role).Select(rule => rule.Scope.Value);
+        }
+
+        private IList<AclRule> GetNonDefaultRules(string customerId, string calendarEmail)
+        {
+            return ResourceRequestFactory.GetCalendarAclRules(customerId, calendarEmail).Where(t =>
+                    // Ignore domain objects        
+                    t.Scope?.Type != "domain" &&
+                    // Ignore public permissions
+                    t.Scope?.Type != "default" &&
+                    // Ignore the default owner ACL
+                    !(t.Role == "owner" && calendarEmail.Equals(t.Scope?.Value, StringComparison.CurrentCultureIgnoreCase))
+            ).ToList();
+        }
+
+        private void DeleteRules(string customerId, string calendarEmail, params AclRule[] rules)
+        {
+            foreach (AclRule rule in rules)
             {
-                case AttributeModificationType.Add:
-                    if (existingChange != null)
-                    {
-                        foreach (ValueChange valueChange in changes.Where(t => t.ModificationType == ValueModificationType.Add))
-                        {
-                            existingChange.ValueChanges.Add(valueChange);
-                        }
-                    }
-                    else
-                    {
-                        adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
-
-                        if (adds.Count > 0)
-                        {
-                            attributeChanges.Add(AttributeChange.CreateAttributeAdd(attributeName, adds));
-                        }
-                    }
-                    break;
-
-                case AttributeModificationType.Replace:
-                    if (existingChange != null)
-                    {
-                        attributeChanges.Remove(existingChange);
-                    }
-
-                    adds = changes.Where(t => t.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList();
-                    if (adds.Count > 0)
-                    {
-                        attributeChanges.Add(AttributeChange.CreateAttributeReplace(attributeName, adds));
-                    }
-
-                    break;
-
-                case AttributeModificationType.Update:
-                    if (existingChange != null)
-                    {
-                        if (existingChange.ModificationType != AttributeModificationType.Update)
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        foreach (ValueChange valueChange in changes)
-                        {
-                            existingChange.ValueChanges.Add(valueChange);
-                        }
-                    }
-                    else
-                    {
-                        if (changes.Count > 0)
-                        {
-                            attributeChanges.Add(AttributeChange.CreateAttributeUpdate(attributeName, changes));
-                        }
-                    }
-
-                    break;
-
-                case AttributeModificationType.Delete:
-                case AttributeModificationType.Unconfigured:
-                default:
-                    throw new InvalidOperationException();
+                try
+                {
+                    ResourceRequestFactory.DeleteCalendarAclRule(customerId, calendarEmail, rule.Id);
+                    Debug.WriteLine($"Deleted {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
+                }
+                catch
+                {
+                    Debug.WriteLine($"Failed to delete {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
+                    throw;
+                }
             }
         }
+
+        private string GetScopeType(string scopeValue)
+        {
+            if (scopeValue.Contains("@"))
+            {
+                return "user";
+            }
+            else
+            {
+                return "domain";
+            }
+        }
+
     }
 }

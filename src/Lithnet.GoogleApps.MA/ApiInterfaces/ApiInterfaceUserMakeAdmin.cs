@@ -18,7 +18,7 @@ namespace Lithnet.GoogleApps.MA
             if (change != null)
             {
                 bool makeAdmin = change.GetValueAdd<bool>();
-                string id = csentry.GetAnchorValueOrDefault<string>(ManagementAgent.Schema[SchemaConstants.User].AnchorAttributeName) ?? csentry.DN;
+                string id = csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN;
 
                 if (change.ModificationType == AttributeModificationType.Add)
                 {

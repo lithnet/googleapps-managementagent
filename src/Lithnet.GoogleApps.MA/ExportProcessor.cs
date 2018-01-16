@@ -38,11 +38,14 @@ namespace Lithnet.GoogleApps.MA
 
             CSEntryChangeDetached deltaCSEntry = new CSEntryChangeDetached(Guid.NewGuid(), ObjectModificationType.Unconfigured, MAImportError.Success, null);
 
-            AnchorAttribute anchor = csentry.GetAnchorAttribute(maType.AnchorAttributeName);
-
-            if (anchor != null)
+            foreach (var anchorAttributeName in maType.AnchorAttributeNames)
             {
-                deltaCSEntry.AnchorAttributes.Add(anchor);
+                AnchorAttribute anchor = csentry.GetAnchorAttribute(anchorAttributeName);
+
+                if (anchor != null)
+                {
+                    deltaCSEntry.AnchorAttributes.Add(anchor);
+                }
             }
 
             deltaCSEntry.ObjectType = csentry.ObjectType;
@@ -100,12 +103,14 @@ namespace Lithnet.GoogleApps.MA
                 deltaCSEntry.AttributeChanges.Add(change);
             }
 
-            deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(maType.AnchorAttributeName, primaryInterface.GetAnchorValue(instance)));
+            List<AttributeChange> anchorChanges = new List<AttributeChange>();
 
-            List<AttributeChange> anchorChanges = new List<AttributeChange>
+            foreach (string anchorAttributeName in maType.AnchorAttributeNames)
             {
-                AttributeChange.CreateAttributeAdd(maType.AnchorAttributeName, primaryInterface.GetAnchorValue(instance))
-            };
+                object value = primaryInterface.GetAnchorValue(anchorAttributeName, instance);
+                deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(anchorAttributeName, value));
+                anchorChanges.Add(AttributeChange.CreateAttributeAdd(anchorAttributeName, value));
+            }
 
             return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, MAExportError.Success);
         }
@@ -123,7 +128,7 @@ namespace Lithnet.GoogleApps.MA
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
             deltaCSEntry.ObjectModificationType = primaryInterface.DeltaUpdateType;
-            
+
             object instance;
 
             if (canPatch)

@@ -86,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
-                    string id = csentry.GetAnchorValueOrDefault<string>(this.SchemaType.AnchorAttributeName);
+                    string id = csentry.GetAnchorValueOrDefault<string>("id");
 
                     if (patch)
                     {
@@ -146,7 +146,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(object target)
+        public string GetAnchorValue(string attributeName, object target)
         {
             Feature feature = target as Feature;
 

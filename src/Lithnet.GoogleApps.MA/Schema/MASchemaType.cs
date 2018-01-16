@@ -12,7 +12,7 @@ namespace Lithnet.GoogleApps.MA
 
         public List<IAttributeAdapter> AttributeAdapters { get; set; }
 
-        public string AnchorAttributeName { get; set; }
+        public string[] AnchorAttributeNames { get; set; }
 
         public bool SupportsPatch { get; set; }
 
