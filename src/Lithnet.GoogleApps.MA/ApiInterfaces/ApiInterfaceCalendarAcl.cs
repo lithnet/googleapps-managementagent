@@ -31,8 +31,6 @@ namespace Lithnet.GoogleApps.MA
 
             string calendarEmail = ((CalendarResource)target).ResourceEmail;
 
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             IList<AclRule> existingRules;
 
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
@@ -102,7 +100,6 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-
                 IList<ValueChange> valueChanges = this.AddToRole(change, existingRules, kvp.Value, config, calendarEmail);
 
                 if (valueChanges.Count == 0)
@@ -130,7 +127,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            return attributeChanges;
+            return keyedAttributeChanges.Select( t=>t.Value).ToList();
         }
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)

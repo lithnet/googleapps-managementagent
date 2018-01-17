@@ -254,17 +254,17 @@ namespace Lithnet.GoogleApps.MA
                 IsAnchor = true
             });
 
-            //type.AttributeAdapters.Add(new AdapterPropertyValue
-            //{
-            //    AttributeType = AttributeType.String,
-            //    FieldName = "resourceName",
-            //    IsMultivalued = false,
-            //    Operation = AttributeOperation.ImportOnly,
-            //    AttributeName = "name",
-            //    PropertyName = "ResourceName",
-            //    Api = "calendar",
-            //    SupportsPatch = true,
-            //});
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "resourceName",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "name",
+                PropertyName = "ResourceName",
+                Api = "calendar",
+                SupportsPatch = true,
+            });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {

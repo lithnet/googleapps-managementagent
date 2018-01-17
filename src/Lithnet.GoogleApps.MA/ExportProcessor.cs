@@ -92,7 +92,6 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
             deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
-            deltaCSEntry.DN = csentry.DN;
 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
 
@@ -102,6 +101,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 deltaCSEntry.AttributeChanges.Add(change);
             }
+
+            deltaCSEntry.DN = primaryInterface.GetDNValue(instance);
 
             List<AttributeChange> anchorChanges = new List<AttributeChange>();
 

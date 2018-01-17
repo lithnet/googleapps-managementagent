@@ -20,9 +20,7 @@ namespace Lithnet.GoogleApps.MA
         private static ApiInterfaceKeyedCollection internalInterfaces;
 
         protected MASchemaType SchemaType { get; set; }
-
-        public static string DNSuffix => "@calendar.resource";
-
+        
         static ApiInterfaceCalendar()
         {
             ApiInterfaceCalendar.internalInterfaces = new ApiInterfaceKeyedCollection
@@ -45,19 +43,8 @@ namespace Lithnet.GoogleApps.MA
         {
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
-
-            ApiInterfaceCalendar.ThrowOnInvalidDN(csentry.DN);
-
-            calendar.ResourceName = csentry.DN.Replace(ApiInterfaceCalendar.DNSuffix, string.Empty);
+            
             return calendar;
-        }
-
-        private static void ThrowOnInvalidDN(string dn)
-        {
-            if (dn == null || !dn.EndsWith(ApiInterfaceCalendar.DNSuffix))
-            {
-                throw new InvalidDNException($"The DN must end with '{ApiInterfaceCalendar.DNSuffix}'");
-            }
         }
 
         public object GetInstance(CSEntryChange csentry)
@@ -204,7 +191,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            return $"{calendar.ResourceName ?? calendar.ResourceId}{ApiInterfaceCalendar.DNSuffix}";
+            return calendar.ResourceEmail;
         }
 
         public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
@@ -261,11 +248,7 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            ApiInterfaceCalendar.ThrowOnInvalidDN(csentry.DN);
-
-            calendar.ResourceName = newDN.Replace($"{ApiInterfaceCalendar.DNSuffix}", string.Empty);
-
-            return true;
+            throw new NotSupportedException("Renaming the DN of this object is not supported");
         }
 
         internal static IEnumerable<string> GetFeatureNames(CalendarResource calendar, string attributeType)
