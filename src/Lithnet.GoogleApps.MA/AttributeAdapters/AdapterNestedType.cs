@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.MetadirectoryServices;
-using Lithnet.MetadirectoryServices;
 using System.Reflection;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {

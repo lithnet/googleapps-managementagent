@@ -2,7 +2,6 @@
 
 namespace Lithnet.GoogleApps.MA
 {
-    using System.Runtime.Serialization;
     using Microsoft.MetadirectoryServices;
 
     internal class MASchemaTypes : KeyedCollection<string, MASchemaType>

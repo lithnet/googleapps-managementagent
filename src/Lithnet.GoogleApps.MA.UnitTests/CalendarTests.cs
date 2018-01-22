@@ -20,32 +20,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     public class CalendarTests
     {
-        //[TestMethod]
-        //public void GetCalendarAclList()
-        //{
-        //    foreach (var calendar in ResourceRequestFactory.GetCalendars("my_customer"))
-        //    {
-        //        try
-        //        {
-        //            foreach (var acl in ResourceRequestFactory.GetCalendarAclRules("my_customer", calendar.ResourceEmail))
-        //            {
-        //                Trace.WriteLine($"Calendar {calendar.ResourceName} ACL {acl.Id}/{acl.Role}/{acl.Scope}");
-        //            }
-        //        }
-        //        catch (GoogleApiException ex)
-        //        {
-        //            if (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
-        //            {
-        //                Trace.WriteLine($"Calendar {calendar.ResourceName} ACL not found");
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //    }
-        //}
-
         [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
@@ -87,7 +61,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.DN = "test-name@calendar.resource";
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", "test-calendar-id"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("resourceName", "MyCalendar"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("floorName", "G"));

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Google.Apis.Admin.Directory.directory_v1.Data;
-using Lithnet.Logging;
-using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
-using Newtonsoft.Json.Linq;
-using User = Lithnet.GoogleApps.ManagedObjects.User;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
 
 namespace Lithnet.GoogleApps.MA

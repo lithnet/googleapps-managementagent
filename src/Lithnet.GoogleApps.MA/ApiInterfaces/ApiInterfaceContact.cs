@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Lithnet.Logging;
-using System.Diagnostics.CodeAnalysis;
 using Google.GData.Contacts;
 using Google.GData.Extensions;
+using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 

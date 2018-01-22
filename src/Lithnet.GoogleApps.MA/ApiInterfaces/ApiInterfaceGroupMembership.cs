@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
-using Lithnet.Logging;
 using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 

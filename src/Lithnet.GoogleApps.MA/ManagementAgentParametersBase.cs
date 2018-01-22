@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.Admin.Directory.directory_v1;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Groupssettings.v1;
-using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
 {

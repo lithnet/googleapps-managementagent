@@ -8,7 +8,6 @@ using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
-using Newtonsoft.Json.Linq;
 using MmsSchema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.MetadirectoryServices;
-using Lithnet.MetadirectoryServices;
-using Lithnet.Logging;
 using System.Reflection;
 using Google.GData.Extensions;
+using Lithnet.Logging;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {

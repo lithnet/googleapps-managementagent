@@ -120,6 +120,11 @@
     <Compile Include="Schema\MASchemaTypes.cs" />
     <Compile Include="Schema\MASchemaType.cs" />
     <Compile Include="Schema\SchemaBuilder.cs" />
+    <Compile Include="Schema\SchemaBuilderDomains.cs" />
+    <Compile Include="Schema\SchemaBuilderUsers.cs" />
+    <Compile Include="Schema\SchemaBuilderContacts.cs" />
+    <Compile Include="Schema\SchemaBuilderGroups.cs" />
+    <Compile Include="Schema\SchemaBuilderResources.cs" />
     <Compile Include="Schema\SchemaConstants.cs" />
     <Compile Include="NullValueRepresentation.cs" />
     <Compile Include="Utilities.cs" />
