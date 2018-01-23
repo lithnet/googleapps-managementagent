@@ -4,9 +4,11 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal static class SchemaBuilderGroups
+    internal class SchemaBuilderGroups : ISchemaTypeBuilder
     {
-        public static MASchemaType GetGroupSchema()
+        public string TypeName => "group";
+
+        public MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -205,7 +207,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(externalOwners);
         }
-
         private static void AddGroupSettings(MASchemaType type)
         {
             AdapterPropertyValue includeCustomFooter = new AdapterPropertyValue
@@ -635,6 +636,5 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(whoCanContactOwner);
         }
-
-    }
+        }
 }

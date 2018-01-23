@@ -3,9 +3,11 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal static class SchemaBuilderDomains
+    internal class SchemaBuilderDomains : ISchemaTypeBuilder
     {
-        public static MASchemaType GetDomainSchema(IManagementAgentParameters config)
+        public string TypeName => "domain";
+
+        public MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -75,7 +77,5 @@ namespace Lithnet.GoogleApps.MA
 
             return type;
         }
-
-
     }
 }

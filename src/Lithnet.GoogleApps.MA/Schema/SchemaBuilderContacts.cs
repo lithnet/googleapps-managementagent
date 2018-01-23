@@ -7,10 +7,11 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal static class SchemaBuilderContacts
+    internal class SchemaBuilderContacts : ISchemaTypeBuilder
     {
+        public string TypeName => "contact";
 
-        public static MASchemaType GetContactSchema(IManagementAgentParameters config)
+        public MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -224,17 +225,17 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(id);
 
-            SchemaBuilderContacts.AddContactNames(type);
-            SchemaBuilderContacts.AddContactOrganizationsAttributes(type, config);
-            SchemaBuilderContacts.AddContactExternalIds(type, config);
-            SchemaBuilderContacts.AddContactEmailAttributes(type, config);
-            SchemaBuilderContacts.AddContactIms(type, config);
-            SchemaBuilderContacts.AddContactPhones(type, config);
+            this.AddContactNames(type);
+            this.AddContactOrganizationsAttributes(type, config);
+            this.AddContactExternalIds(type, config);
+            this.AddContactEmailAttributes(type, config);
+            this.AddContactIms(type, config);
+            this.AddContactPhones(type, config);
 
             return type;
         }
 
-        private static void AddContactNames(MASchemaType type)
+        private void AddContactNames(MASchemaType type)
         {
             AdapterSubfield givenName = new AdapterSubfield
             {
@@ -283,7 +284,7 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(schemaItem);
         }
 
-        private static void AddContactEmailAttributes(MASchemaType type, IManagementAgentParameters config)
+        private void AddContactEmailAttributes(MASchemaType type, IManagementAgentParameters config)
         {
             AdapterSubfield address = new AdapterSubfield
             {
@@ -311,7 +312,7 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(customType);
         }
 
-        private static void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
+        private void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
 
             AdapterSubfield name = new AdapterSubfield
@@ -399,7 +400,7 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(customType);
         }
 
-        private static void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
+        private void AddContactExternalIds(MASchemaType type, IManagementAgentParameters config)
         {
             AdapterSubfield value = new AdapterSubfield
             {
@@ -426,7 +427,7 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(customType);
         }
 
-        private static void AddContactPhones(MASchemaType type, IManagementAgentParameters config)
+        private void AddContactPhones(MASchemaType type, IManagementAgentParameters config)
         {
             AdapterSubfield phonesValue = new AdapterSubfield
             {
@@ -474,7 +475,7 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(phonesType);
         }
 
-        private static void AddContactIms(MASchemaType type, IManagementAgentParameters config)
+        private void AddContactIms(MASchemaType type, IManagementAgentParameters config)
         {
             AdapterSubfield im = new AdapterSubfield
             {
@@ -518,6 +519,5 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(customType);
         }
-
     }
 }

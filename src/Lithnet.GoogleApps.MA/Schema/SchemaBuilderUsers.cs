@@ -8,10 +8,11 @@ using Website = Lithnet.GoogleApps.ManagedObjects.Website;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal static class SchemaBuilderUsers
+    internal class SchemaBuilderUsers : ISchemaTypeBuilder
     {
+        public virtual string TypeName => "user";
 
-        public static MASchemaType GetUserSchema(IManagementAgentParameters config)
+        public virtual MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -302,28 +303,6 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilderUsers.AddUserCustomSchema(type, config);
 
             return type;
-        }
-
-        public static MASchemaType GetAdvancedUserSchema(IManagementAgentParameters config)
-        {
-            MASchemaType userType = SchemaBuilderUsers.GetUserSchema(config);
-            userType.Name = SchemaConstants.AdvancedUser;
-            userType.ApiInterface = new ApiInterfaceAdvancedUser(userType);
-
-            AdapterCollection<string> delegates = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = null,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = SchemaConstants.Delegate,
-                PropertyName = "Delegates",
-                Api = "userdelegates",
-                SupportsPatch = true,
-            };
-
-            userType.AttributeAdapters.Add(delegates);
-
-            return userType;
         }
 
         private static void AddUserNames(MASchemaType type)

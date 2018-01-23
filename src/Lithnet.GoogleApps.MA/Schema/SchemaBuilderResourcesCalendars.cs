@@ -6,164 +6,11 @@ using G = Google.Apis.Admin.Directory.directory_v1.Data;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal static class SchemaBuilderResources
+    internal class SchemaBuilderResourcesCalendars : ISchemaTypeBuilder
     {
-
-        public static MASchemaType GetFeatureSchema(IManagementAgentParameters config)
-        {
-            MASchemaType type = new MASchemaType
-            {
-                AttributeAdapters = new List<IAttributeAdapter>(),
-                Name = "feature",
-                AnchorAttributeNames = new[] { "id" },
-                SupportsPatch = true,
-            };
-
-            type.ApiInterface = new ApiInterfaceFeature(config.CustomerID, type);
-
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "name",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Name",
-                Api = "feature",
-                SupportsPatch = true,
-                IsAnchor = true
-            });
-
-            return type;
-        }
-
-        public static MASchemaType GetBuildingSchema(IManagementAgentParameters config)
-        {
-            MASchemaType type = new MASchemaType
-            {
-                AttributeAdapters = new List<IAttributeAdapter>(),
-                Name = "building",
-                AnchorAttributeNames = new[] { "id" },
-                SupportsPatch = true,
-            };
-
-            type.ApiInterface = new ApiInterfaceBuilding(config.CustomerID, type);
-
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "buildingId",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "BuildingId",
-                Api = "building",
-                SupportsPatch = true,
-                IsAnchor = true
-            });
-
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "buildingName",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "buildingName",
-                PropertyName = "BuildingName",
-                Api = "building",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsAnchor = false
-            });
-
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "description",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "description",
-                PropertyName = "Description",
-                Api = "building",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.EmptyString,
-                IsAnchor = false
-            });
-
-            type.AttributeAdapters.Add(new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "floorNames",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "floorNames",
-                PropertyName = "FloorNames",
-                Api = "building",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.EmptyString,
-                CastForExport = i => ((string)i)?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(),
-                CastForImport = i => i == null ? null : string.Join(",", ((IList<string>)i)),
-                IsAnchor = false
-            });
-
-            AdapterSubfield latitude = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "latitude",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                PropertyName = "Latitude",
-                AttributeNamePart = "latitude",
-                NullValueRepresentation = NullValueRepresentation.DoubleZero,
-                CastForExport = value =>
-                {
-                    if (value == null)
-                    {
-                        return null;
-                    }
-
-                    return double.Parse(value.ToString());
-                },
-                CastForImport = value => ((double?)value)?.ToString("R")
-            };
-
-            AdapterSubfield longitude = new AdapterSubfield
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "longitude",
-                IsMultivalued = false,
-                PropertyName = "Longitude",
-                Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "longitude",
-                NullValueRepresentation = NullValueRepresentation.DoubleZero,
-                CastForExport = value =>
-                {
-                    if (value == null)
-                    {
-                        return null;
-                    }
-
-                    return double.Parse(value.ToString());
-                },
-                CastForImport = value => ((double?)value)?.ToString("R")
-            };
-
-            AdapterNestedType schemaItem = new AdapterNestedType
-            {
-                Api = "building",
-                AttributeName = "coordinates",
-                Fields = new List<AdapterSubfield>() { latitude, longitude },
-                FieldName = "coordinates",
-                PropertyName = "Coordinates",
-                SupportsPatch = false
-            };
-
-            type.AttributeAdapters.Add(schemaItem);
-
-            return type;
-        }
-
-        public static MASchemaType GetCalendarSchema(IManagementAgentParameters config)
+        public string TypeName => "calendar";
+       
+        public MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -432,10 +279,11 @@ namespace Lithnet.GoogleApps.MA
                 }
             });
 
-            SchemaBuilderResources.AddCalendarAcls(type);
+            SchemaBuilderResourcesCalendars.AddCalendarAcls(type);
 
             return type;
         }
+
         private static void AddCalendarAcls(MASchemaType type)
         {
             type.AttributeAdapters.Add(new AdapterCollection<string>

@@ -20,6 +20,53 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     public class CalendarTests
     {
+        [TestInitialize]
+        public void InitializeTestElements()
+        {
+            IList<string> featureNames = ResourceRequestFactory.GetFeatures(UnitTestControl.TestParameters.CustomerID).Select(t => t.Name).ToList();
+
+            if (!featureNames.Contains("Test1"))
+            {
+                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test1" });
+            }
+
+            if (!featureNames.Contains("Test2"))
+            {
+                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test2" });
+            }
+
+            if (!featureNames.Contains("Test3"))
+            {
+                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test3" });
+            }
+
+            IList<string> buildingIDs = ResourceRequestFactory.GetBuildings(UnitTestControl.TestParameters.CustomerID).Select(t => t.BuildingId).ToList();
+
+            if (!buildingIDs.Contains("testbuilding1"))
+            {
+                Building b = new Building()
+                {
+                    BuildingId = "testbuilding1",
+                    BuildingName = "Test Building 1",
+                    FloorNames = new List<string> { "B1", "G", "1", "2" }
+                };
+
+                ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
+            }
+
+            if (!buildingIDs.Contains("testbuilding2"))
+            {
+                Building b = new Building()
+                {
+                    BuildingId = "testbuilding2",
+                    BuildingName = "Test Building 2",
+                    FloorNames = new List<string> { "B1", "G", "1", "2" }
+                };
+
+                ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
+            }
+        }
+
         [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
@@ -58,11 +105,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = "test-name@calendar.resource";
+            cs.DN = Guid.NewGuid().ToString();
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("resourceName", "MyCalendar"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("floorName", "G"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("floorSection", "33B"));
@@ -87,10 +134,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, "test-name@calendar.resource");
                 Assert.AreEqual("test-name", c.ResourceName);
                 Assert.IsNotNull(c.ResourceEmail);
-                Assert.AreEqual("AU203", c.BuildingId);
+                Assert.AreEqual("testbuilding1", c.BuildingId);
                 Assert.AreEqual(33, c.Capacity);
                 Assert.AreEqual("G", c.FloorName);
                 Assert.AreEqual("33B", c.FloorSection);
@@ -118,14 +164,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = "test-name@calendar.resource";
+            cs.DN =  Guid.NewGuid().ToString();
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", "test-calendar-id"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> {this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", this.CreateAddress("reader")));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", this.CreateAddress("writer")));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReaders", this.CreateAddress("freebusyreader")));
@@ -170,7 +216,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
             calendar.ResourceName = "test-name";
-            calendar.BuildingId = "AU205";
+            calendar.BuildingId = "testbuilding2";
             calendar.Capacity = 9;
             calendar.FloorName = "G";
             calendar.FloorSection = "39b";
@@ -192,7 +238,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.Calendar;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", calendar.ResourceId));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("buildingId", new List<ValueChange>() { ValueChange.CreateValueAdd("AU203") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("buildingId", new List<ValueChange>() { ValueChange.CreateValueAdd("testbuilding1") }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("floorName", "G"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("floorSection", "33B"));
@@ -221,7 +267,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual(cs.DN, "test-name@calendar.resource");
                 Assert.AreEqual("test-name", c.ResourceName);
-                Assert.AreEqual("AU203", c.BuildingId);
+                Assert.AreEqual("testbuilding1", c.BuildingId);
                 Assert.AreEqual(33, c.Capacity);
                 Assert.AreEqual("G", c.FloorName);
                 Assert.AreEqual("33B", c.FloorSection);
@@ -244,16 +290,16 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = "test-name@calendar.resource";
+            cs.DN = Guid.NewGuid().ToString();
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", "test-calendar-id"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> {this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", new List<object> {this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", new List<object> {this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", new List<object> { this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", new List<object> { this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReaders", this.CreateAddress("freebusyreader")));
 
             string id = null;
@@ -292,7 +338,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("resourceEmail", result.AnchorAttributes["resourceEmail"].GetValueAdd<string>()));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("owners", new List<object> {this.CreateAddress("owner3"), this.CreateAddress("owner4") }));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("owners", new List<object> { this.CreateAddress("owner3"), this.CreateAddress("owner4") }));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("readers", new List<ValueChange> { ValueChange.CreateValueAdd(this.CreateAddress("reader3")) }));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("writers", new List<ValueChange> { ValueChange.CreateValueDelete(this.CreateAddress("writer1")) }));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("freeBusyReaders"));
@@ -307,7 +353,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
-                
+
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner1")));
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner2")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner3")));
@@ -334,11 +380,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = "test-name@calendar.resource";
+            cs.DN = Guid.NewGuid().ToString();
             cs.ObjectType = SchemaConstants.Calendar;
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("id", "test-calendar-id"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "AU203"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
@@ -358,7 +404,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
-
+                
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
@@ -375,7 +421,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
-                cs.DN = "test-name@calendar.resource";
                 cs.ObjectType = SchemaConstants.Calendar;
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
@@ -417,7 +462,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
             calendar.ResourceName = "test-name";
-            calendar.BuildingId = "AU205";
+            calendar.BuildingId = "testbuilding2";
             calendar.Capacity = 9;
             calendar.FloorName = "G";
             calendar.FloorSection = "39b";
@@ -459,7 +504,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
-                Assert.AreEqual(cs.DN, "test-name@calendar.resource");
                 Assert.IsNull(c.BuildingId);
                 Assert.IsNull(c.Capacity);
                 Assert.IsNull(c.FloorName);

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
 
 namespace Lithnet.GoogleApps.MA
@@ -8,57 +10,29 @@ namespace Lithnet.GoogleApps.MA
     {
         public static MASchemaTypes GetSchema(IManagementAgentParameters config)
         {
-            MASchemaTypes types = new MASchemaTypes
-            {
-                SchemaBuilder.GetSchema(SchemaConstants.User, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Group, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Contact, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Calendar, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Domain, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Building, config),
-                SchemaBuilder.GetSchema(SchemaConstants.Feature, config)
-            };
+            MASchemaTypes types = new MASchemaTypes();
 
-            if (SchemaRequestFactory.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            foreach (TypeInfo type in assembly.DefinedTypes)
             {
-                types.Add(SchemaBuilder.GetSchema(SchemaConstants.AdvancedUser, config));
+                if (!type.ImplementedInterfaces.Contains(typeof(ISchemaTypeBuilder)))
+                {
+                    continue;
+                }
+
+                ISchemaTypeBuilder builder = (ISchemaTypeBuilder)Activator.CreateInstance(type);
+                MASchemaType schemaType = builder.GetSchemaType(config);
+
+                if (schemaType != null)
+                {
+                    types.Add(schemaType);
+                }
             }
-
+            
             return types;
         }
-
-        public static MASchemaType GetSchema(string type, IManagementAgentParameters config)
-        {
-            switch (type)
-            {
-                case SchemaConstants.User:
-                    return SchemaBuilderUsers.GetUserSchema(config);
-
-                case SchemaConstants.AdvancedUser:
-                    return SchemaBuilderUsers.GetAdvancedUserSchema(config);
-
-                case SchemaConstants.Group:
-                    return SchemaBuilderGroups.GetGroupSchema();
-
-                case SchemaConstants.Contact:
-                    return SchemaBuilderContacts.GetContactSchema(config);
-
-                case SchemaConstants.Domain:
-                    return SchemaBuilderDomains.GetDomainSchema(config);
-
-                case SchemaConstants.Calendar:
-                    return SchemaBuilderResources.GetCalendarSchema(config);
-
-                case SchemaConstants.Building:
-                    return SchemaBuilderResources.GetBuildingSchema(config);
-
-                case SchemaConstants.Feature:
-                    return SchemaBuilderResources.GetFeatureSchema(config);
-            }
-
-            throw new InvalidOperationException();
-        }
-
+        
         public static void CreateGoogleAppsCustomSchema()
         {
             G.Schema schema = new G.Schema();
