@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -62,11 +63,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 return convertedDateTime.ToString(GenericExtensions.FimServiceDateFormatZeroedMilliseconds);
             }
-            else
-            {
-                return convertedDateTime.ToString(GenericExtensions.FimServiceDateFormat);
 
-            }
+            return convertedDateTime.ToString(GenericExtensions.FimServiceDateFormat);
         }
 
         public static string ConvertToUnsecureString(this SecureString securePassword)
@@ -93,39 +91,27 @@ namespace Lithnet.GoogleApps.MA
         /// <returns>An informative string representation of an object</returns>
         public static string ToSmartString(this object obj)
         {
-            if (obj is byte[])
+            switch (obj)
             {
-                byte[] cast = (byte[])obj;
-                return Convert.ToBase64String(cast);
+                case null:
+                    return "null";
+                case byte[] cast:
+                    return Convert.ToBase64String(cast);
+                case long l:
+                    return l.ToString();
+                case string s:
+                    return s;
+                case bool b:
+                    return b.ToString();
+                case Guid g:
+                    return g.ToString();
+                case DateTime d:
+                    return d.ToString(GenericExtensions.FimServiceDateFormat);
+                case IEnumerable i:
+                    return string.Join(", ", i.Cast<object>().Select(t => t.ToSmartStringOrNull()));
             }
-            else if (obj is long)
-            {
-                return ((long)obj).ToString();
-            }
-            else if (obj is string)
-            {
-                return ((string)obj).ToString();
-            }
-            else if (obj is bool)
-            {
-                return ((bool)obj).ToString();
-            }
-            else if (obj is Guid)
-            {
-                return ((Guid)obj).ToString();
-            }
-            else if (obj is DateTime)
-            {
-                return ((DateTime)obj).ToString(GenericExtensions.FimServiceDateFormat);
-            }
-            else if (obj == null)
-            {
-                return "null";
-            }
-            else
-            {
-                return obj.ToString();
-            }
+
+            return obj.ToString();
         }
 
         /// <summary>

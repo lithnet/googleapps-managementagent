@@ -72,10 +72,7 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                if ((deltaCSEntry.AttributeChanges.Count > 0) || (deltaCSEntry.ObjectModificationType == ObjectModificationType.Delete))
-                {
-                    CSEntryChangeQueue.Add(deltaCSEntry);
-                }
+                CSEntryChangeQueue.Add(deltaCSEntry);
             }
         }
 

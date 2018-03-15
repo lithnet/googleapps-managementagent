@@ -67,6 +67,53 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
+        //[TestMethod]
+        //public void DeleteAllCalendars()
+        //{
+        //    foreach (var calendar in ResourceRequestFactory.GetCalendars(UnitTestControl.TestParameters.CustomerID))
+        //    {
+        //        try
+        //        {
+        //            ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, calendar.ResourceId);
+        //            Debug.WriteLine($"Deleted {calendar.GeneratedResourceName} - {calendar.ResourceEmail} - {calendar.ResourceId}");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine($"Couldn't delete {calendar.GeneratedResourceName} - {calendar.ResourceEmail} - {calendar.ResourceId}");
+        //            Debug.WriteLine(ex);
+        //        }
+        //    }
+
+        //    foreach (var feature in ResourceRequestFactory.GetFeatures(UnitTestControl.TestParameters.CustomerID))
+        //    {
+        //        try
+        //        {
+        //            ResourceRequestFactory.DeleteFeature(UnitTestControl.TestParameters.CustomerID, feature.Name);
+        //            Debug.WriteLine($"Deleted {feature.Name}");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine($"Couldn't delete {feature.Name}");
+        //            Debug.WriteLine(ex);
+        //        }
+        //    }
+
+        //    foreach (var building in ResourceRequestFactory.GetBuildings(UnitTestControl.TestParameters.CustomerID))
+        //    {
+        //        try
+        //        {
+        //            Debug.WriteLine($"Deleted {building.BuildingId}");
+        //            ResourceRequestFactory.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, building.BuildingId);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine($"Couldn't delete {building.BuildingId}");
+        //            Debug.WriteLine(ex);
+        //        }
+        //    }
+        //}
+
+
         [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
@@ -164,7 +211,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN =  Guid.NewGuid().ToString();
+            cs.DN = Guid.NewGuid().ToString();
             cs.ObjectType = SchemaConstants.Calendar;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
@@ -404,7 +451,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
-                
+
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);

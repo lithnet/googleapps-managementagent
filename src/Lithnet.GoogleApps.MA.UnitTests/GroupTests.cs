@@ -118,7 +118,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     GroupRequestFactory.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]

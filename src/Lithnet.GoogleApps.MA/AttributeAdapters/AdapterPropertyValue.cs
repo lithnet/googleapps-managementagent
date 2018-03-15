@@ -88,7 +88,7 @@ namespace Lithnet.GoogleApps.MA
             
             this.propInfo.SetValue(obj, value, null);
 
-            Logger.WriteLine($"Updating {this.AttributeName} -> {value ?? "<null>"}");
+            Logger.WriteLine($"Updating {this.AttributeName} -> {value.ToSmartStringOrNull() ?? "<null>"}");
 
             return true;
         }

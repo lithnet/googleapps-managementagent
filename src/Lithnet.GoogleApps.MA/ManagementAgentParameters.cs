@@ -566,7 +566,7 @@ namespace Lithnet.GoogleApps.MA
 
                     break;
                 case ConfigParameterPage.Schema:
-                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line. For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home"));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line (ctrl-enter for a new line). For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home"));
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
