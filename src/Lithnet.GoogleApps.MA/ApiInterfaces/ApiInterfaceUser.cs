@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -69,9 +70,7 @@ namespace Lithnet.GoogleApps.MA
 
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            User user = target as User;
-
-            if (user == null)
+            if (!(target is User user))
             {
                 throw new InvalidOperationException();
             }
@@ -91,6 +90,8 @@ namespace Lithnet.GoogleApps.MA
             
             if (hasChanged)
             {
+                Trace.WriteLine($"Object {csentry.DN} has one or more changes to commit");
+
                 User result;
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
@@ -119,6 +120,10 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+            }
+            else
+            {
+                Trace.WriteLine($"Object {csentry.DN} has no changes to commit");
             }
 
             foreach (IApiInterface i in this.InternalInterfaces)

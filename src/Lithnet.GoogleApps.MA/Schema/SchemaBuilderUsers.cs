@@ -792,7 +792,7 @@ namespace Lithnet.GoogleApps.MA
                 throw;
             }
 
-            if (schemas == null)
+            if (schemas?.SchemasValue == null)
             {
                 return;
             }

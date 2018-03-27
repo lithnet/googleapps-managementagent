@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
@@ -69,12 +70,18 @@ namespace Lithnet.GoogleApps.MA
 
             if (!csentry.HasAttributeChange(this.AttributeName))
             {
+                Trace.WriteLine($"Skipping update of field {this.FieldName} because attribute {this.AttributeName} is not present in the CSEntryChange");
                 return false;
             }
 
             if (this.propInfo == null)
             {
                 this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+            }
+
+            if (this.propInfo == null)
+            {
+                throw new InvalidOperationException($"The property {this.PropertyName} was not found on the object of type {obj.GetType().FullName}");
             }
 
             object value = csentry.GetValueAdd<object>(this.AttributeName);
@@ -85,7 +92,7 @@ namespace Lithnet.GoogleApps.MA
             }
 
             value = Utilities.SetPlaceholderIfNull(value, this.NullValueRepresentation);
-            
+
             this.propInfo.SetValue(obj, value, null);
 
             Logger.WriteLine($"Updating {this.AttributeName} -> {value.ToSmartStringOrNull() ?? "<null>"}");

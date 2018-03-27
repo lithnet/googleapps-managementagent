@@ -815,7 +815,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(10000);
 
                 CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
             }

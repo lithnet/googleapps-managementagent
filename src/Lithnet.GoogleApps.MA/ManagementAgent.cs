@@ -28,8 +28,6 @@ namespace Lithnet.GoogleApps.MA
 
         private OpenImportConnectionRunStep importRunStep;
 
-        private OpenExportConnectionRunStep exportRunStep;
-
         private Stopwatch timer;
 
         private Task importTask;
@@ -51,8 +49,6 @@ namespace Lithnet.GoogleApps.MA
         public int ImportMaxPageSize => 9999;
 
         public string DeltaPath { get; set; }
-
-        private HashSet<string> seenDNs;
 
         public MACapabilities Capabilities
         {
@@ -106,7 +102,6 @@ namespace Lithnet.GoogleApps.MA
             this.InitializeConnectionPools();
 
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
-            this.exportRunStep = exportRunStep;
             this.operationSchemaTypes = types;
 
             CSEntryChangeQueue.LoadQueue(this.DeltaPath);
@@ -145,7 +140,7 @@ namespace Lithnet.GoogleApps.MA
                     Interlocked.Increment(ref this.opCount);
                     Logger.StartThreadLog();
                     Logger.WriteSeparatorLine('-');
-                    Logger.WriteLine("Starting export {0} for {1}", csentry.ObjectModificationType, csentry.DN);
+                    Logger.WriteLine("Starting export {0} for {1} with {2} attribute changes", csentry.ObjectModificationType, csentry.DN, csentry.AttributeChanges.Count);
                     SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
 
                     CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
@@ -158,7 +153,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
                     Logger.WriteException(ex);
-                    CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException.Message, ex.InnerException.StackTrace);
+                    CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException?.Message ?? ex.Message, ex.InnerException?.StackTrace ?? ex.StackTrace);
                     lock (results)
                     {
                         results.CSEntryChangeResults.Add(result);
@@ -220,7 +215,6 @@ namespace Lithnet.GoogleApps.MA
                 this.importRunStep = importRunStep;
                 this.operationSchemaTypes = types;
                 this.timer = new Stopwatch();
-                this.seenDNs = new HashSet<string>();
 
                 this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
 
@@ -321,7 +315,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.importTask.IsFaulted)
                 {
-                    throw this.importTask.Exception;
+                    throw this.importTask.Exception ?? new Exception("The task was faulted, but an exception was not provided"); 
                 }
 
                 if (this.importCollection.IsCompleted)
@@ -329,9 +323,7 @@ namespace Lithnet.GoogleApps.MA
                     break;
                 }
 
-                object item;
-
-                if (!this.importCollection.TryTake(out item))
+                if (!this.importCollection.TryTake(out object item))
                 {
                     Thread.Sleep(25);
                     continue;
@@ -339,15 +331,12 @@ namespace Lithnet.GoogleApps.MA
 
                 Interlocked.Increment(ref this.opCount);
 
-                CSEntryChange csentry = item as CSEntryChange;
-
-                if (csentry != null)
+                if (item is CSEntryChange csentry)
                 {
                     results.CSEntries.Add(csentry);
                     continue;
                 }
-
-
+                
                 throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
             }
 
@@ -383,7 +372,7 @@ namespace Lithnet.GoogleApps.MA
             }
             catch (Exception ex)
             {
-                Logger.WriteLine("An unexpected error occured");
+                Logger.WriteLine("An unexpected error occurred");
                 Logger.WriteException(ex);
                 throw;
             }

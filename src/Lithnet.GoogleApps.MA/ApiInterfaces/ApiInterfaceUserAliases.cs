@@ -129,7 +129,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string alias in aliasDeletes)
                     {
-                        if (!user.PrimaryEmail.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
+                        if (user.PrimaryEmail == null || !user.PrimaryEmail.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
                         {
                             Logger.WriteLine($"Removing alias {alias}", LogLevel.Debug);
 

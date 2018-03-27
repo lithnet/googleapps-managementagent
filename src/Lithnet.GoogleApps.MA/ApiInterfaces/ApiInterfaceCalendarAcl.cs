@@ -132,9 +132,7 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
         {
-            CalendarResource calendar = source as CalendarResource;
-
-            if (calendar == null)
+            if (!(source is CalendarResource calendar))
             {
                 throw new InvalidOperationException();
             }
@@ -211,11 +209,11 @@ namespace Lithnet.GoogleApps.MA
                 try
                 {
                     ResourceRequestFactory.DeleteCalendarAclRule(config.CustomerID, calendarId, matchedRule.Id);
-                    Debug.WriteLine($"Removed {valueToDelete} from role {role} on calendar {calendarId}");
+                    Logger.WriteLine($"Removed {valueToDelete} from role {role} on calendar {calendarId}");
                 }
                 catch
                 {
-                    Debug.WriteLine($"Failed to remove {valueToDelete} to role {role} on calendar {calendarId}");
+                    Logger.WriteLine($"Failed to remove {valueToDelete} to role {role} on calendar {calendarId}");
                     throw;
                 }
 
@@ -249,11 +247,11 @@ namespace Lithnet.GoogleApps.MA
                 try
                 {
                     ResourceRequestFactory.AddCalendarAclRule(config.CustomerID, calendarId, rule, config.CalendarSendNotificationOnPermissionChange);
-                    Debug.WriteLine($"Added {valueToAdd} to role {role} on calendar {calendarId}");
+                    Logger.WriteLine($"Added {valueToAdd} to role {role} on calendar {calendarId}");
                 }
                 catch
                 {
-                    Debug.WriteLine($"Failed to add {valueToAdd} to role {role} on calendar {calendarId}");
+                    Logger.WriteLine($"Failed to add {valueToAdd} to role {role} on calendar {calendarId}");
                     throw;
                 }
 
@@ -287,11 +285,11 @@ namespace Lithnet.GoogleApps.MA
                 try
                 {
                     ResourceRequestFactory.DeleteCalendarAclRule(customerId, calendarEmail, rule.Id);
-                    Debug.WriteLine($"Deleted {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
+                    Logger.WriteLine($"Deleted {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
                 }
                 catch
                 {
-                    Debug.WriteLine($"Failed to delete {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
+                    Logger.WriteLine($"Failed to delete {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
                     throw;
                 }
             }
