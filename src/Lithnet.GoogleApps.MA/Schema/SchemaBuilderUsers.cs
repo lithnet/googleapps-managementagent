@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Lithnet.GoogleApps.ManagedObjects;
@@ -786,6 +787,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
                 {
+                    Trace.WriteLine("Permission to read the user custom schema was denied");
                     return;
                 }
 

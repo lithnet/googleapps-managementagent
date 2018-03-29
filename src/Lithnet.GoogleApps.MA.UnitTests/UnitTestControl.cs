@@ -43,7 +43,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             ConnectionPools.DisableGzip = true;
 
             UnitTestControl.TestParameters = new TestParameters();
-            ConnectionPools.InitializePools(TestParameters.Credentials, 1, 1, 1, 1, 1);
+            ConnectionPools.InitializePools(TestParameters.GetCredentials(TestParameters.TestScopes), 1, 1, 1, 1, 1);
             UnitTestControl.Schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
             ManagementAgent.Schema = UnitTestControl.Schema;
             UnitTestControl.MmsSchema = UnitTestControl.Schema.GetSchema();

@@ -5,7 +5,7 @@ namespace Lithnet.GoogleApps.MA
 {
     internal interface IManagementAgentParameters
     {
-        ServiceAccountCredential Credentials { get; }
+        ServiceAccountCredential GetCredentials(string[] scopes);
 
         string CalendarBuildingAttributeType { get; }
 
@@ -18,6 +18,8 @@ namespace Lithnet.GoogleApps.MA
         string GroupRegexFilter { get; }
 
         string UserRegexFilter { get; }
+
+        string UserQueryFilter { get; }
 
         string ContactRegexFilter { get; }
         

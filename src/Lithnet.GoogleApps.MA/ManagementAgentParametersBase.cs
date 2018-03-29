@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Google.Apis.Admin.Directory.directory_v1;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Groupssettings.v1;
+using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -26,6 +29,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string UserRegexFilterParameter = "User regex email address filter";
 
+        protected const string UserQueryFilterParameter = "User API query parameter";
+        
         protected const string GroupRegexFilterParameter = "Group regex email address filter";
 
         protected const string ContactRegexFilterParameter = "Contact regex email address filter";
@@ -70,7 +75,7 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string CalendarSendNotificationOnPermissionChangeParameter = "Send notifications when changing calendar permissions";
 
-        protected static string[] RequiredScopes = new string[]
+        protected static string[] AllScopes = new string[]
         {
             DirectoryService.Scope.AdminDirectoryUser,
             DirectoryService.Scope.AdminDirectoryGroup,
@@ -83,19 +88,83 @@ namespace Lithnet.GoogleApps.MA
             "http://www.google.com/m8/feeds/contacts/",
             "https://www.googleapis.com/auth/calendar"
         };
-        
+
+        internal static string[] PasswordChangeScopes = new string[]
+        {
+            DirectoryService.Scope.AdminDirectoryUser,
+        };
+
+        internal static string[] SchemaDiscoveryScopes = new string[]
+        {
+            DirectoryService.Scope.AdminDirectoryUserschema,
+        };
+
+        internal static string[] GetRequiredScopes(Schema types)
+        {
+            HashSet<string> requiredScopes = new HashSet<string>();
+
+            if (types.Types.Contains(SchemaConstants.User))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschema);
+            }
+
+            if (types.Types.Contains(SchemaConstants.AdvancedUser))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschema);
+                requiredScopes.Add("https://apps-apis.google.com/a/feeds/emailsettings/2.0/");
+            }
+
+            if (types.Types.Contains(SchemaConstants.Group))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroup);
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroupMember);
+                requiredScopes.Add(GroupssettingsService.Scope.AppsGroupsSettings);
+                requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
+            }
+
+            if (types.Types.Contains(SchemaConstants.Contact))
+            {
+                requiredScopes.Add("http://www.google.com/m8/feeds/contacts/");
+            }
+
+            if (types.Types.Contains(SchemaConstants.Calendar))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+                requiredScopes.Add("https://www.googleapis.com/auth/calendar");
+            }
+
+            if (types.Types.Contains(SchemaConstants.Feature))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+            }
+
+            if (types.Types.Contains(SchemaConstants.Building))
+            {
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+            }
+
+            if (types.Types.Contains(SchemaConstants.Domain))
+            {
+                requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
+            }
+
+            return requiredScopes.ToArray();
+        }
+
         private X509Certificate2 certificate;
 
         private ServiceAccountCredential credentials;
 
-        protected ServiceAccountCredential GetCredentials(string serviceAccountEmailAddress, string userEmailAddress, X509Certificate2 cert)
+        protected ServiceAccountCredential GetCredentials(string serviceAccountEmailAddress, string userEmailAddress, X509Certificate2 cert, string[] scopes)
         {
             if (this.credentials == null)
             {
                 this.credentials = new ServiceAccountCredential(
                     new ServiceAccountCredential.Initializer(serviceAccountEmailAddress)
                     {
-                        Scopes = ManagementAgentParametersBase.RequiredScopes,
+                        Scopes = scopes,
                         User = userEmailAddress
                     }
                         .FromCertificate(cert));

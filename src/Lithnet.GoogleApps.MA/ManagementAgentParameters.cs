@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Google.Apis.Auth.OAuth2;
+using Lithnet.Logging;
 using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
@@ -156,6 +158,21 @@ namespace Lithnet.GoogleApps.MA
                 if (this.configParameters.Contains(ManagementAgentParametersBase.UserRegexFilterParameter))
                 {
                     return this.configParameters[ManagementAgentParametersBase.UserRegexFilterParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string UserQueryFilter
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.UserQueryFilterParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.UserQueryFilterParameter].Value;
                 }
                 else
                 {
@@ -407,8 +424,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-
-
+        
         public IEnumerable<string> RelationsAttributeFixedTypes
         {
             get
@@ -526,7 +542,7 @@ namespace Lithnet.GoogleApps.MA
         public static IList<ConfigParameterDefinition> GetParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
             List<ConfigParameterDefinition> parameters = new List<ConfigParameterDefinition>();
-            
+
             switch (page)
             {
                 case ConfigParameterPage.Capabilities:
@@ -550,6 +566,10 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.GroupRegexFilterParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactRegexFilterParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.ExcludeUserCreatedGroupsParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The Google API supports filtering users based on query parameters. For example, to filter on org unit, type 'orgUnitPath=/MyOrgUnit'. Refer to the API documentation at https://developers.google.com/admin-sdk/directory/v1/guides/search-users for more information"));
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.UserQueryFilterParameter, null, null));
+
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.InheritGroupRolesParameter, false));
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Inheriting group roles forces the MA to include owners in the managers list, and managers in the members list"));
@@ -593,7 +613,7 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
-                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter, new string[] {"String", "Reference"}, false, "String"));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
 
                     break;
@@ -810,15 +830,14 @@ namespace Lithnet.GoogleApps.MA
             return result;
         }
 
-        public ServiceAccountCredential Credentials
+        public ServiceAccountCredential GetCredentials(string[] scopes)
         {
-            get
-            {
-                return this.GetCredentials(
-                    this.ServiceAccountEmailAddress,
-                    this.UserEmailAddress,
-                    this.GetCertificate(this.KeyFilePath, this.KeyFilePassword));
-            }
+            Trace.WriteLine($"Creating credential set for service account {this.ServiceAccountEmailAddress} on behalf of user {this.UserEmailAddress} with scopes {scopes.ToSmartString()}");
+            return this.GetCredentials(
+                this.ServiceAccountEmailAddress,
+                this.UserEmailAddress,
+                this.GetCertificate(this.KeyFilePath, this.KeyFilePassword),
+                scopes);
         }
     }
 }

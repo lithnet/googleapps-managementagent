@@ -207,7 +207,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (schema.Types.Contains(SchemaConstants.User))
                 {
-                    // This function doesnt need to run for advanced users, if the user class will be called.
+                    // This function doesn't need to run for advanced users, if the user class will be called.
                     return null;
                 }
             }
@@ -218,9 +218,17 @@ namespace Lithnet.GoogleApps.MA
                 SchemaConstants.ID
             };
 
-            if (schema.Types.Contains(SchemaConstants.User) || schema.Types.Contains(SchemaConstants.AdvancedUser))
+            if (schema.Types.Contains(SchemaConstants.User))
             {
                 foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(schema.Types[SchemaConstants.User]))
+                {
+                    fieldNames.Add(field);
+                }
+            }
+
+            if (schema.Types.Contains(SchemaConstants.AdvancedUser))
+            {
+                foreach (string field in ManagementAgent.Schema[SchemaConstants.AdvancedUser].GetFieldNames(schema.Types[SchemaConstants.AdvancedUser]))
                 {
                     fieldNames.Add(field);
                 }
@@ -237,8 +245,9 @@ namespace Lithnet.GoogleApps.MA
             {
                 Logger.WriteLine("Starting user import task");
                 Logger.WriteLine("Requesting fields: " + fields);
+                Logger.WriteLine("Query filter: " + (config.UserQueryFilter ?? "<none>"));
 
-                foreach (User user in UserRequestFactory.GetUsers(config.CustomerID, fields))
+                foreach (User user in UserRequestFactory.GetUsers(config.CustomerID, fields, config.UserQueryFilter))
                 {
                     if (!string.IsNullOrWhiteSpace(config.UserRegexFilter))
                     {
