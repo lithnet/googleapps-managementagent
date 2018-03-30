@@ -16,10 +16,10 @@ namespace Lithnet.GoogleApps.MA
 
         private Dictionary<string, string> attributeRoleMapping = new Dictionary<string, string>()
         {
-            {"freeBusyReaders", "freeBusyReader"},
-            {"readers", "reader"},
-            {"writers", "writer"},
-            {"owners", "owner"},
+            {"freeBusyReader", "freeBusyReader"},
+            {"reader", "reader"},
+            {"writer", "writer"},
+            {"owner", "owner"},
         };
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)

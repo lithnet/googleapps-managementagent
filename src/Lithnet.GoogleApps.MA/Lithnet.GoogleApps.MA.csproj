@@ -76,6 +76,7 @@
     <Compile Include="ApiInterfaces\ApiInterfaceCalendar.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceCalendarAcl.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceUserDelegates.cs" />
+    <Compile Include="AttributeAdapters\AdapterPlaceholder.cs" />
     <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldMultivalued.cs" />
     <Compile Include="AttributeAdapters\AdapterCustomSchemaField.cs" />
     <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldSingleValued.cs" />

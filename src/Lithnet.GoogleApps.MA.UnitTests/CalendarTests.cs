@@ -3,17 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Google.Apis.Calendar.v3.Data;
-using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -218,10 +213,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", this.CreateAddress("reader")));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", this.CreateAddress("writer")));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReaders", this.CreateAddress("freebusyreader")));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("reader", this.CreateAddress("reader")));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writer", this.CreateAddress("writer")));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReader", this.CreateAddress("freebusyreader")));
 
             string id = null;
 
@@ -344,10 +339,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "test-name"));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", new List<object> { this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", new List<object> { this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReaders", this.CreateAddress("freebusyreader")));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("reader", new List<object> { this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writer", new List<object> { this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReader", this.CreateAddress("freebusyreader")));
 
             string id = null;
 
@@ -385,10 +380,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("resourceEmail", result.AnchorAttributes["resourceEmail"].GetValueAdd<string>()));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("owners", new List<object> { this.CreateAddress("owner3"), this.CreateAddress("owner4") }));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("readers", new List<ValueChange> { ValueChange.CreateValueAdd(this.CreateAddress("reader3")) }));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("writers", new List<ValueChange> { ValueChange.CreateValueDelete(this.CreateAddress("writer1")) }));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("freeBusyReaders"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("owner", new List<object> { this.CreateAddress("owner3"), this.CreateAddress("owner4") }));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("reader", new List<ValueChange> { ValueChange.CreateValueAdd(this.CreateAddress("reader3")) }));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("writer", new List<ValueChange> { ValueChange.CreateValueDelete(this.CreateAddress("writer1")) }));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("freeBusyReader"));
 
                 result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Calendar], UnitTestControl.TestParameters);
 
@@ -434,10 +429,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("buildingId", "testbuilding1"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("capacity", 33L));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owners", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("readers", new List<object> { this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writers", new List<object> { this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReaders", this.CreateAddress("freebusyreader")));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("owner", new List<object> { this.CreateAddress("owner1"), this.CreateAddress("owner2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("reader", new List<object> { this.CreateAddress("reader1"), this.CreateAddress("reader2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("writer", new List<object> { this.CreateAddress("writer1"), this.CreateAddress("writer2") }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("freeBusyReader", this.CreateAddress("freebusyreader")));
 
             string id = null;
 
@@ -473,10 +468,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("resourceEmail", result.AnchorAttributes["resourceEmail"].GetValueAdd<string>()));
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("owners"));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("readers"));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("writers"));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("freeBusyReaders"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("owner"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("reader"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("writer"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("freeBusyReader"));
 
                 result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Calendar], UnitTestControl.TestParameters);
 

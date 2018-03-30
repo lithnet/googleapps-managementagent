@@ -9,7 +9,7 @@ namespace Lithnet.GoogleApps.MA
     internal class SchemaBuilderResourcesCalendars : ISchemaTypeBuilder
     {
         public string TypeName => "calendar";
-       
+
         public MASchemaType GetSchemaType(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
@@ -286,48 +286,44 @@ namespace Lithnet.GoogleApps.MA
 
         private static void AddCalendarAcls(MASchemaType type)
         {
-            type.AttributeAdapters.Add(new AdapterCollection<string>
+            type.AttributeAdapters.Add(new AdapterPlaceholder
             {
                 AttributeType = AttributeType.Reference,
+                IsMultivalued = true,
                 FieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "freeBusyReaders",
-                PropertyName = "FreeBusyReaders",
+                AttributeName = "freeBusyReader",
                 Api = "calendaracl",
-                SupportsPatch = false,
             });
 
-            type.AttributeAdapters.Add(new AdapterCollection<string>
+            type.AttributeAdapters.Add(new AdapterPlaceholder
             {
                 AttributeType = AttributeType.Reference,
+                IsMultivalued = true,
                 FieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "readers",
-                PropertyName = "readers",
+                AttributeName = "reader",
                 Api = "calendaracl",
-                SupportsPatch = false,
             });
 
-            type.AttributeAdapters.Add(new AdapterCollection<string>
+            type.AttributeAdapters.Add(new AdapterPlaceholder
             {
                 AttributeType = AttributeType.Reference,
+                IsMultivalued = true,
                 FieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "writers",
-                PropertyName = "writers",
+                AttributeName = "writer",
                 Api = "calendaracl",
-                SupportsPatch = false,
             });
 
-            type.AttributeAdapters.Add(new AdapterCollection<string>
+            type.AttributeAdapters.Add(new AdapterPlaceholder
             {
                 AttributeType = AttributeType.Reference,
+                IsMultivalued = true,
                 FieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "owners",
-                PropertyName = "owners",
+                AttributeName = "owner",
                 Api = "calendaracl",
-                SupportsPatch = false,
             });
         }
     }
