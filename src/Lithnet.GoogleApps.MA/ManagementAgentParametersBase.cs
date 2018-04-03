@@ -80,7 +80,7 @@ namespace Lithnet.GoogleApps.MA
             DirectoryService.Scope.AdminDirectoryUser,
             DirectoryService.Scope.AdminDirectoryGroup,
             DirectoryService.Scope.AdminDirectoryGroupMember,
-            DirectoryService.Scope.AdminDirectoryUserschema,
+            DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
             DirectoryService.Scope.AdminDirectoryResourceCalendar,
             GroupssettingsService.Scope.AppsGroupsSettings,
             "https://www.googleapis.com/auth/admin.directory.domain",
@@ -96,7 +96,7 @@ namespace Lithnet.GoogleApps.MA
 
         internal static string[] SchemaDiscoveryScopes = new string[]
         {
-            DirectoryService.Scope.AdminDirectoryUserschema,
+            DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
         };
 
         internal static string[] GetRequiredScopes(Schema types)
@@ -106,13 +106,13 @@ namespace Lithnet.GoogleApps.MA
             if (types.Types.Contains(SchemaConstants.User))
             {
                 requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschema);
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
             }
 
             if (types.Types.Contains(SchemaConstants.AdvancedUser))
             {
                 requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschema);
+                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
                 requiredScopes.Add("https://apps-apis.google.com/a/feeds/emailsettings/2.0/");
             }
 
