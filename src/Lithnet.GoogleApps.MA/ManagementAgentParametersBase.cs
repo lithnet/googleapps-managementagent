@@ -83,7 +83,7 @@ namespace Lithnet.GoogleApps.MA
             DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
             DirectoryService.Scope.AdminDirectoryResourceCalendar,
             GroupssettingsService.Scope.AppsGroupsSettings,
-            "https://www.googleapis.com/auth/admin.directory.domain",
+            "https://www.googleapis.com/auth/admin.directory.domain.readonly",
             "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
             "http://www.google.com/m8/feeds/contacts/",
             "https://www.googleapis.com/auth/calendar"
