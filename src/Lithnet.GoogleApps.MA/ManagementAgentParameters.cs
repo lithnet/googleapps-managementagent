@@ -72,6 +72,20 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public override bool MembersAsNonReference
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.GroupMemberAttributeTypeParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.GroupMemberAttributeTypeParameter].Value;
+
+                    return value == "String";
+                }
+
+                return false;
+            }
+        }
 
         public bool InheritGroupRoles
         {
@@ -203,6 +217,21 @@ namespace Lithnet.GoogleApps.MA
                 if (this.configParameters.Contains(ManagementAgentParametersBase.DomainParameter))
                 {
                     return this.configParameters[ManagementAgentParametersBase.DomainParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string ContactDNPrefix
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.ContactsPrefixParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.ContactsPrefixParameter].Value;
                 }
                 else
                 {
@@ -424,7 +453,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-        
+
         public IEnumerable<string> RelationsAttributeFixedTypes
         {
             get
@@ -575,6 +604,8 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Inheriting group roles forces the MA to include owners in the managers list, and managers in the members list"));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactsPrefixParameter, null, "contact:"));
 
                     break;
 
@@ -615,6 +646,7 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
+                    parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.GroupMemberAttributeTypeParameter, new string[] { "String", "Reference" }, false, "Reference"));
 
                     break;
                 default:

@@ -249,6 +249,11 @@ namespace Lithnet.GoogleApps.MA
 
         private void LoadInternalDomainsIfRequired(Schema schema)
         {
+            if (this.Configuration.MembersAsNonReference)
+            {
+                return;
+            }
+
             if (schema.Types.Contains(SchemaConstants.Group))
             {
                 GroupMembership.GetInternalDomains(this.Configuration.CustomerID);

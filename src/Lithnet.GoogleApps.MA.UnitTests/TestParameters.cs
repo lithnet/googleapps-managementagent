@@ -8,6 +8,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 {
     internal class TestParameters : ManagementAgentParametersBase, IManagementAgentParameters
     {
+        public bool GroupMembersAsString { get; set; } = false;
+
         public TestParameters()
         {
             this.CalendarBuildingAttributeType = "String";
@@ -33,6 +35,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public bool CalendarSendNotificationOnPermissionChange { get; set; }
 
         public string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
+
+        public string ContactDNPrefix => "contact:";
 
         public string Domain => ConfigurationManager.AppSettings["domain"];
 
@@ -140,5 +144,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public string MALogFile => Path.Combine(this.LogFilePath, "ma-operations.log");
 
         public string PasswordOperationLogFile => Path.Combine(this.LogFilePath, "password-operations.log");
+
+        public override bool MembersAsNonReference  => this.GroupMembersAsString;
     }
 }

@@ -24,15 +24,17 @@ namespace Lithnet.GoogleApps.MA
 
         protected MASchemaType SchemaType { get; set; }
 
+        private string dnPrefix;
         static ApiInterfaceContact()
         {
             ApiInterfaceContact.internalInterfaces = new ApiInterfaceKeyedCollection();
         }
 
-        public ApiInterfaceContact(string domain, MASchemaType type)
+        public ApiInterfaceContact(string domain, string dnPrefix, MASchemaType type)
         {
             this.domain = domain;
             this.SchemaType = type;
+            this.dnPrefix = dnPrefix;
         }
 
         public string Api => "contact";
@@ -201,7 +203,7 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            return contactEntry.PrimaryEmail == null ? null : "contact:" + contactEntry.PrimaryEmail.Address;
+            return contactEntry.PrimaryEmail == null ? null : this.dnPrefix + contactEntry.PrimaryEmail.Address;
         }
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Replace;

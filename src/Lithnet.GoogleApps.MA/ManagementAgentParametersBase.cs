@@ -69,9 +69,13 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string LogFilePathParameter = "Log file path";
 
+        protected const string ContactsPrefixParameter = "Contact DN prefix";
+
         protected const string CalendarBuildingAttributeTypeParameter = "Calendar resource building attribute type";
 
         protected const string CalendarFeatureAttributeTypeParameter = "Calendar resource features attribute type";
+
+        protected const string GroupMemberAttributeTypeParameter = "Group member attributes type";
 
         protected const string CalendarSendNotificationOnPermissionChangeParameter = "Send notifications when changing calendar permissions";
 
@@ -152,6 +156,14 @@ namespace Lithnet.GoogleApps.MA
 
             return requiredScopes.ToArray();
         }
+
+        public abstract bool MembersAsNonReference { get; }
+
+        public string GroupMemberAttributeName => this.MembersAsNonReference ? "member_raw" : "member";
+
+        public string GroupManagerAttributeName => this.MembersAsNonReference ? "manager_raw" : "manager";
+
+        public string GroupOwnerAttributeName => this.MembersAsNonReference ? "owner_raw" : "owner";
 
         private X509Certificate2 certificate;
 

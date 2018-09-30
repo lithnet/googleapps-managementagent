@@ -21,7 +21,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false,
             };
 
-            type.ApiInterface = new ApiInterfaceContact(config.Domain, type);
+            type.ApiInterface = new ApiInterfaceContact(config.Domain, config.ContactDNPrefix, type);
 
             AdapterPropertyValue occupation = new AdapterPropertyValue
             {

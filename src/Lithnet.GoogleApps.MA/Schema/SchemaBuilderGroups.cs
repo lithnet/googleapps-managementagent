@@ -96,7 +96,16 @@ namespace Lithnet.GoogleApps.MA
 
             SchemaBuilderGroups.AddGroupAliases(type);
             SchemaBuilderGroups.AddGroupSettings(type);
-            SchemaBuilderGroups.AddGroupMembers(type);
+
+            if (config.MembersAsNonReference)
+            {
+                SchemaBuilderGroups.AddGroupMembersRaw(type);
+            }
+            else
+            {
+                SchemaBuilderGroups.AddGroupMembers(type);
+            }
+
             return type;
         }
         
@@ -126,7 +135,50 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(nonEditableAliasesList);
         }
-        
+
+
+        private static void AddGroupMembersRaw(MASchemaType type)
+        {
+            AdapterCollection<string> members = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "member_raw",
+                PropertyName = "Members",
+                Api = "groupmembership",
+                SupportsPatch = true,
+            };
+
+            type.AttributeAdapters.Add(members);
+
+            AdapterCollection<string> managers = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "manager_raw",
+                PropertyName = "Managers",
+                Api = "groupmembership",
+                SupportsPatch = true,
+            };
+
+            type.AttributeAdapters.Add(managers);
+
+            AdapterCollection<string> owners = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "email",
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "owner_raw",
+                PropertyName = "Owners",
+                Api = "groupmembership",
+                SupportsPatch = true,
+            };
+
+            type.AttributeAdapters.Add(owners);
+        }
+
         private static void AddGroupMembers(MASchemaType type)
         {
             AdapterCollection<string> members = new AdapterCollection<string>
@@ -207,6 +259,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(externalOwners);
         }
+
         private static void AddGroupSettings(MASchemaType type)
         {
             AdapterPropertyValue includeCustomFooter = new AdapterPropertyValue
