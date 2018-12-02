@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Google.GData.Contacts;
@@ -14,22 +13,17 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceDomain : IApiInterfaceObject
     {
-        [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
-        private static ApiInterfaceKeyedCollection internalInterfaces;
-
         protected MASchemaType SchemaType { get; set; }
 
         private string customerID;
 
-        static ApiInterfaceDomain()
-        {
-            ApiInterfaceDomain.internalInterfaces = new ApiInterfaceKeyedCollection();
-        }
+        private IManagementAgentParameters config;
 
-        public ApiInterfaceDomain(string customerID, MASchemaType type)
+        public ApiInterfaceDomain(string customerID, MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
             this.customerID = customerID;
+            this.config = config;
         }
 
         public string Api => "domain";
@@ -50,7 +44,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new AttributeNotPresentException("domainName");
             }
 
-            return DomainsRequestFactory.Get(this.customerID, id);
+            return this.config.DomainsService.Get(this.customerID, id);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
@@ -62,10 +56,10 @@ namespace Lithnet.GoogleApps.MA
                 throw new AttributeNotPresentException("domainName");
             }
 
-            DomainsRequestFactory.Delete(this.customerID, id);
+            this.config.DomainsService.Delete(this.customerID, id);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -90,7 +84,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = DomainsRequestFactory.Insert(this.customerID, obj);
+                    result = this.config.DomainsService.Insert(this.customerID, obj);
                     target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
@@ -105,23 +99,13 @@ namespace Lithnet.GoogleApps.MA
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
-            foreach (IApiInterface i in ApiInterfaceDomain.internalInterfaces)
-            {
-                changes.AddRange(i.ApplyChanges(csentry, type, config, ref target, patch));
-            }
-
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            foreach (IApiInterface i in ApiInterfaceDomain.internalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
-            }
-
+            
             return attributeChanges;
         }
 
@@ -156,9 +140,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAnchorValue(string attributeName, object target)
         {
-            Domain d = target as Domain;
-
-            if (d != null)
+            if (target is Domain d)
             {
                 return d.DomainName;
             }
@@ -168,9 +150,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetDNValue(object target)
         {
-            Domain d = target as Domain;
-
-            if (d == null)
+            if (!(target is Domain d))
             {
                 throw new InvalidOperationException();
             }
@@ -178,13 +158,13 @@ namespace Lithnet.GoogleApps.MA
             return d.DomainName;
         }
 
-        public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
+        public Task GetItems(Schema schema, BlockingCollection<object> collection)
         {
             Task t = new Task(() =>
             {
                 Logger.WriteLine("Starting domains import task");
 
-                DomainList list = DomainsRequestFactory.List(config.CustomerID);
+                DomainList list = this.config.DomainsService.List(this.config.CustomerID);
 
                 foreach (Domain d in list.Domains)
                 {
@@ -196,7 +176,7 @@ namespace Lithnet.GoogleApps.MA
                         continue;
                     }
 
-                    collection.Add(ImportProcessor.GetCSEntryChange(d, schema.Types[SchemaConstants.Domain], config));
+                    collection.Add(ImportProcessor.GetCSEntryChange(d, schema.Types[SchemaConstants.Domain], this.config));
                 }
 
                 Logger.WriteLine("Domains import task complete");

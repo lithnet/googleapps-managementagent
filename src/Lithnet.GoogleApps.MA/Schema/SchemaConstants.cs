@@ -16,6 +16,7 @@
         public const string CustomSchemaObjectType = "objectType";
 
         public const string Delegate = "delegate";
+        public const string SendAs = "sendAs";
         public const string ID = "id";
         public const string ResourceID = "resourceId";
         public const string Name = "name";

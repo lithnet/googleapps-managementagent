@@ -11,7 +11,7 @@ using User = Lithnet.GoogleApps.ManagedObjects.User;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
-    
+
     [TestClass]
     internal static class UnitTestControl
     {
@@ -24,7 +24,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         public static MASchemaTypes Schema { get; private set; }
-       
+
         public static Schema MmsSchema { get; private set; }
 
         public static TestParameters TestParameters { get; private set; }
@@ -33,17 +33,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public static void Initialize(TestContext c)
         {
             BuildSchema();
-            GroupMembership.GetInternalDomains(TestParameters.CustomerID);
-            var x = MAConfigurationSection.Configuration;
+            GroupMembership.GetInternalDomains(UnitTestControl.TestParameters.DomainsService, TestParameters.CustomerID);
         }
 
         private static void BuildSchema()
         {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-            ConnectionPools.DisableGzip = true;
+            Settings.DisableGzip = true;
 
             UnitTestControl.TestParameters = new TestParameters();
-            ConnectionPools.InitializePools(TestParameters.GetCredentials(TestParameters.TestScopes), 1, 1, 1, 1, 1);
             UnitTestControl.Schema = SchemaBuilder.GetSchema(UnitTestControl.TestParameters);
             ManagementAgent.Schema = UnitTestControl.Schema;
             UnitTestControl.MmsSchema = UnitTestControl.Schema.GetSchema();
@@ -58,20 +56,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             foreach (Group g in objects.OfType<Group>())
             {
-                if (g != null)
-                {
-                    GroupRequestFactory.Delete(g.Id);
-                }
+                UnitTestControl.TestParameters.GroupsService.Delete(g.Id);
             }
 
             foreach (User u in objects.OfType<User>())
             {
-                if (u != null)
-                {
-                    UserRequestFactory.Delete(u.Id);
-                }
+                UnitTestControl.TestParameters.UsersService.Delete(u.Id);
             }
         }
+
         public static Group CreateGroup()
         {
             string dn = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -81,7 +74,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Name = Guid.NewGuid().ToString()
             };
 
-            e = GroupRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.GroupsService.Add(e);
 
             Thread.Sleep(1000);
             return e;

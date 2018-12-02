@@ -10,12 +10,19 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceUserAliases : IApiInterface
     {
+        private IManagementAgentParameters config;
+
         public string Api => "useraliases";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public ApiInterfaceUserAliases(IManagementAgentParameters config)
+        {
+            this.config = config;
+        }
+
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             User user = (User)target;
-            Func<AttributeChange> x = () => ApiInterfaceUserAliases.ApplyUserAliasChanges(csentry, user);
+            Func<AttributeChange> x = () => this.ApplyUserAliasChanges(csentry, user);
             AttributeChange change = x.ExecuteWithRetryOnNotFound();
 
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -28,7 +35,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
@@ -46,7 +53,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        private static void GetUserAliasChanges(CSEntryChange csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll)
+        private void GetUserAliasChanges(CSEntryChange csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll)
         {
             aliasAdds = new List<string>();
             aliasDeletes = new List<string>();
@@ -60,7 +67,7 @@ namespace Lithnet.GoogleApps.MA
                     aliasAdds = change.GetValueAdds<string>();
                 }
 
-                foreach (string alias in UserRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
+                foreach (string alias in this.config.UsersService.GetAliases(csentry.DN).Except(aliasAdds))
                 {
                     aliasDeletes.Add(alias);
                 }
@@ -79,7 +86,7 @@ namespace Lithnet.GoogleApps.MA
                         break;
 
                     case AttributeModificationType.Delete:
-                        foreach (string alias in UserRequestFactory.GetAliases(csentry.DN))
+                        foreach (string alias in this.config.UsersService.GetAliases(csentry.DN))
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -89,7 +96,7 @@ namespace Lithnet.GoogleApps.MA
 
                     case AttributeModificationType.Replace:
                         aliasAdds = change.GetValueAdds<string>();
-                        foreach (string alias in UserRequestFactory.GetAliases(csentry.DN).Except(aliasAdds))
+                        foreach (string alias in this.config.UsersService.GetAliases(csentry.DN).Except(aliasAdds))
                         {
                             aliasDeletes.Add(alias);
                         }
@@ -107,13 +114,9 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private static AttributeChange ApplyUserAliasChanges(CSEntryChange csentry, User user)
+        private AttributeChange ApplyUserAliasChanges(CSEntryChange csentry, User user)
         {
-            IList<string> aliasAdds;
-            IList<string> aliasDeletes;
-            bool deletingAll;
-
-            ApiInterfaceUserAliases.GetUserAliasChanges(csentry, out aliasAdds, out aliasDeletes, out deletingAll);
+            this.GetUserAliasChanges(csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll);
 
             if (aliasAdds.Count == 0 && aliasDeletes.Count == 0)
             {
@@ -135,7 +138,7 @@ namespace Lithnet.GoogleApps.MA
 
                             try
                             {
-                                UserRequestFactory.RemoveAlias(csentry.DN, alias);
+                                this.config.UsersService.RemoveAlias(csentry.DN, alias);
                             }
                             catch (Google.GoogleApiException ex)
                             {
@@ -160,7 +163,7 @@ namespace Lithnet.GoogleApps.MA
                     if (!csentry.DN.Equals(alias, StringComparison.CurrentCultureIgnoreCase))
                     {
                         Logger.WriteLine($"Adding alias {alias}", LogLevel.Debug);
-                        UserRequestFactory.AddAlias(csentry.DN, alias);
+                        this.config.UsersService.AddAlias(csentry.DN, alias);
                     }
 
                     valueChanges.Add(ValueChange.CreateValueAdd(alias));

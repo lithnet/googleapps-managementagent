@@ -30,7 +30,7 @@ namespace Lithnet.GoogleApps.MA
         protected const string UserRegexFilterParameter = "User regex email address filter";
 
         protected const string UserQueryFilterParameter = "User API query parameter";
-        
+
         protected const string GroupRegexFilterParameter = "Group regex email address filter";
 
         protected const string ContactRegexFilterParameter = "Contact regex email address filter";
@@ -79,83 +79,98 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string CalendarSendNotificationOnPermissionChangeParameter = "Send notifications when changing calendar permissions";
 
-        protected static string[] AllScopes = new string[]
-        {
-            DirectoryService.Scope.AdminDirectoryUser,
-            DirectoryService.Scope.AdminDirectoryGroup,
-            DirectoryService.Scope.AdminDirectoryGroupMember,
-            DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
-            DirectoryService.Scope.AdminDirectoryResourceCalendar,
-            GroupssettingsService.Scope.AppsGroupsSettings,
-            "https://www.googleapis.com/auth/admin.directory.domain.readonly",
-            "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
-            "http://www.google.com/m8/feeds/contacts/",
-            "https://www.googleapis.com/auth/calendar"
-        };
+        //protected static string[] AllScopes = new string[]
+        //{
+        //    DirectoryService.Scope.AdminDirectoryUser,
+        //    DirectoryService.Scope.AdminDirectoryGroup,
+        //    DirectoryService.Scope.AdminDirectoryGroupMember,
+        //    DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
+        //    DirectoryService.Scope.AdminDirectoryResourceCalendar,
+        //    GroupssettingsService.Scope.AppsGroupsSettings,
+        //    "https://www.googleapis.com/auth/admin.directory.domain.readonly",
+        //    "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
+        //    "http://www.google.com/m8/feeds/contacts/",
+        //    "https://www.googleapis.com/auth/calendar",
+        //    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic,
+        //    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing
+        //};
 
-        internal static string[] PasswordChangeScopes = new string[]
-        {
-            DirectoryService.Scope.AdminDirectoryUser,
-        };
+        //internal static string[] PasswordChangeScopes = new string[]
+        //{
+        //    DirectoryService.Scope.AdminDirectoryUser,
+        //};
 
-        internal static string[] SchemaDiscoveryScopes = new string[]
-        {
-            DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
-        };
+        //internal static string[] SchemaDiscoveryScopes = new string[]
+        //{
+        //    DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
+        //};
 
-        internal static string[] GetRequiredScopes(Schema types)
-        {
-            HashSet<string> requiredScopes = new HashSet<string>();
+        //internal static string[] GetRequiredScopes(Schema types)
+        //{
+        //    HashSet<string> requiredScopes = new HashSet<string>();
 
-            if (types.Types.Contains(SchemaConstants.User))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
-            }
+        //    if (types.Types.Contains(SchemaConstants.User))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
 
-            if (types.Types.Contains(SchemaConstants.AdvancedUser))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
-                requiredScopes.Add("https://apps-apis.google.com/a/feeds/emailsettings/2.0/");
-            }
+        //        if (types.Types[SchemaConstants.User].Attributes.Contains(SchemaConstants.Delegate)
+        //            || types.Types[SchemaConstants.User].Attributes.Contains(SchemaConstants.SendAs))
+        //        {
+        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic);
+        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing);
+        //        }
+        //    }
 
-            if (types.Types.Contains(SchemaConstants.Group))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroup);
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroupMember);
-                requiredScopes.Add(GroupssettingsService.Scope.AppsGroupsSettings);
-                requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
-            }
+        //    if (types.Types.Contains(SchemaConstants.AdvancedUser))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
 
-            if (types.Types.Contains(SchemaConstants.Contact))
-            {
-                requiredScopes.Add("http://www.google.com/m8/feeds/contacts/");
-            }
+        //        if (types.Types[SchemaConstants.AdvancedUser].Attributes.Contains(SchemaConstants.Delegate)
+        //            || types.Types[SchemaConstants.AdvancedUser].Attributes.Contains(SchemaConstants.SendAs))
+        //        {
+        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic);
+        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing);
+        //        }
+        //    }
 
-            if (types.Types.Contains(SchemaConstants.Calendar))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-                requiredScopes.Add("https://www.googleapis.com/auth/calendar");
-            }
+        //    if (types.Types.Contains(SchemaConstants.Group))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroup);
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroupMember);
+        //        requiredScopes.Add(GroupssettingsService.Scope.AppsGroupsSettings);
+        //        requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
+        //    }
 
-            if (types.Types.Contains(SchemaConstants.Feature))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-            }
+        //    if (types.Types.Contains(SchemaConstants.Contact))
+        //    {
+        //        requiredScopes.Add("http://www.google.com/m8/feeds/contacts/");
+        //    }
 
-            if (types.Types.Contains(SchemaConstants.Building))
-            {
-                requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-            }
+        //    if (types.Types.Contains(SchemaConstants.Calendar))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+        //        requiredScopes.Add("https://www.googleapis.com/auth/calendar");
+        //    }
 
-            if (types.Types.Contains(SchemaConstants.Domain))
-            {
-                requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
-            }
+        //    if (types.Types.Contains(SchemaConstants.Feature))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+        //    }
 
-            return requiredScopes.ToArray();
-        }
+        //    if (types.Types.Contains(SchemaConstants.Building))
+        //    {
+        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
+        //    }
+
+        //    if (types.Types.Contains(SchemaConstants.Domain))
+        //    {
+        //        requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
+        //    }
+
+        //    return requiredScopes.ToArray();
+        //}
 
         public abstract bool MembersAsNonReference { get; }
 
@@ -182,17 +197,180 @@ namespace Lithnet.GoogleApps.MA
                         .FromCertificate(cert));
             }
 
+            new ServiceAccountCredential.Initializer(serviceAccountEmailAddress)
+            {
+                Scopes = scopes,
+                User = userEmailAddress
+            }
+                .FromCertificate(cert);
+
             return this.credentials;
         }
 
-        protected X509Certificate2 GetCertificate(string path, string password)
-        {
-            if (this.certificate == null)
-            {
-                this.certificate = new X509Certificate2(Environment.ExpandEnvironmentVariables(path), password, X509KeyStorageFlags.Exportable);
-            }
+        public abstract string ServiceAccountEmailAddress { get; }
 
-            return this.certificate;
+        public abstract string UserEmailAddress { get; }
+
+        public abstract string KeyFilePath { get; }
+
+        public abstract string KeyFilePassword { get; }
+
+        private GmailServiceRequestFactory gmailService;
+
+        private DomainsRequestFactory domainsService;
+
+        private UserRequestFactory usersService;
+
+        private ContactRequestFactory contactsService;
+
+        private GroupRequestFactory groupsService;
+
+        private ResourceRequestFactory resourcesService;
+
+        private SchemaRequestFactory schemaService;
+
+        public GmailServiceRequestFactory GmailService
+        {
+            get
+            {
+                if (this.gmailService == null)
+                {
+                    this.gmailService = new GmailServiceRequestFactory(
+                        this.ServiceAccountEmailAddress,
+                        this.Certificate,
+                        new string[]
+                        {
+                            Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing,
+                            Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic
+                        }
+                    );
+                }
+
+                return this.gmailService;
+            }
+        }
+
+        public DomainsRequestFactory DomainsService
+        {
+            get
+            {
+                if (this.domainsService == null)
+                {
+                    this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { "https://www.googleapis.com/auth/admin.directory.domain.readonly" }, 1);
+                }
+
+                return this.domainsService;
+            }
+        }
+
+        public UserRequestFactory UsersService
+        {
+            get
+            {
+                if (this.usersService == null)
+                {
+                    this.usersService = new UserRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[] {
+                            DirectoryService.Scope.AdminDirectoryUser,
+                            DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
+                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+                }
+
+                return this.usersService;
+            }
+        }
+
+        public ContactRequestFactory ContactsService
+        {
+            get
+            {
+                if (this.contactsService == null)
+                {
+                    this.contactsService = new ContactRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[] { "http://www.google.com/m8/feeds/contacts/" },
+                        MAConfigurationSection.Configuration.ContactsApi.PoolSize);
+                }
+
+                return this.contactsService;
+            }
+        }
+
+        public GroupRequestFactory GroupsService
+        {
+            get
+            {
+                if (this.groupsService == null)
+                {
+                    this.groupsService = new GroupRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[]
+                        {
+                            DirectoryService.Scope.AdminDirectoryGroup,
+                            DirectoryService.Scope.AdminDirectoryGroupMember,
+                        },
+                        new[]
+                        {
+                            GroupssettingsService.Scope.AppsGroupsSettings
+                        },
+                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+                        MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize
+                        );
+
+                    GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
+                    GroupMemberRequestFactory.ConcurrentOperationLimitDefault = MAConfigurationSection.Configuration.DirectoryApi.ConcurrentOperationGroupMember;
+                }
+
+                return this.groupsService;
+            }
+        }
+
+        public ResourceRequestFactory ResourcesService
+        {
+            get
+            {
+                if (this.resourcesService == null)
+                {
+                    this.resourcesService = new ResourceRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[] { DirectoryService.Scope.AdminDirectoryResourceCalendar },
+                        new[] { "https://www.googleapis.com/auth/calendar" },
+                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+                        MAConfigurationSection.Configuration.CalendarApi.PoolSize);
+                }
+
+                return this.resourcesService;
+            }
+        }
+
+        public SchemaRequestFactory SchemaService
+        {
+            get
+            {
+                if (this.schemaService == null)
+                {
+                    this.schemaService = new SchemaRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[] { DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
+                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+                }
+
+                return this.schemaService;
+            }
+        }
+
+        public X509Certificate2 Certificate
+        {
+            get
+            {
+                if (this.certificate == null)
+                {
+                    this.certificate = new X509Certificate2(Environment.ExpandEnvironmentVariables(this.KeyFilePath), this.KeyFilePassword, X509KeyStorageFlags.Exportable);
+                }
+
+                return this.certificate;
+            }
         }
     }
 }

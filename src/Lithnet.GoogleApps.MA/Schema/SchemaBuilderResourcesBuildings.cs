@@ -19,7 +19,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.ApiInterface = new ApiInterfaceBuilding(config.CustomerID, type);
+            type.ApiInterface = new ApiInterfaceBuilding(config.CustomerID, type, config);
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {

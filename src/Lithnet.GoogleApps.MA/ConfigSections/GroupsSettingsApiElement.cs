@@ -6,8 +6,10 @@ namespace Lithnet.GoogleApps.MA
     {
         private const string PropRateLimit = "rate-limit";
         private const string PropPoolSize = "pool-size";
+        private const string PropImportThreadsGroupSettings = "import-threads-group-settings";
 
-        [ConfigurationProperty(GroupsSettingsApiElement.PropRateLimit, IsRequired = false, DefaultValue = 1500)]
+
+        [ConfigurationProperty(GroupsSettingsApiElement.PropRateLimit, IsRequired = false, DefaultValue = 500)]
         public int RateLimit
         {
             get
@@ -30,6 +32,19 @@ namespace Lithnet.GoogleApps.MA
             set
             {
                 this[GroupsSettingsApiElement.PropPoolSize] = value;
+            }
+        }
+
+        [ConfigurationProperty(PropImportThreadsGroupSettings, IsRequired = false, DefaultValue = 30)]
+        public int ImportThreadsGroupSettings
+        {
+            get
+            {
+                return (int)this[GroupsSettingsApiElement.PropImportThreadsGroupSettings];
+            }
+            set
+            {
+                this[GroupsSettingsApiElement.PropImportThreadsGroupSettings] = value;
             }
         }
     }

@@ -1,11 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Google.Apis.Auth.OAuth2;
 
 namespace Lithnet.GoogleApps.MA
 {
     internal interface IManagementAgentParameters
     {
-        ServiceAccountCredential GetCredentials(string[] scopes);
+        GmailServiceRequestFactory GmailService { get; }
+
+        DomainsRequestFactory DomainsService { get; }
+
+        UserRequestFactory UsersService { get; }
+
+        ContactRequestFactory ContactsService { get; }
+
+        GroupRequestFactory GroupsService { get; }
+
+        ResourceRequestFactory ResourcesService { get; }
+
+        SchemaRequestFactory SchemaService { get; }
 
         string CalendarBuildingAttributeType { get; }
 
@@ -42,7 +55,7 @@ namespace Lithnet.GoogleApps.MA
         string GroupOwnerAttributeName { get; }
 
         string ContactDNPrefix { get; }
-        
+
         string Domain { get; }
 
         bool InheritGroupRoles { get; }

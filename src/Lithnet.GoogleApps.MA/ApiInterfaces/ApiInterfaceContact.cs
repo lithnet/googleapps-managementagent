@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,28 +16,23 @@ namespace Lithnet.GoogleApps.MA
     {
         internal const string DNAttributeName = "lithnet-google-ma-dn";
 
-        [SuppressMessage("ReSharper", "CollectionNeverUpdated.Local")]
-        private static ApiInterfaceKeyedCollection internalInterfaces;
-
         private string domain;
 
         protected MASchemaType SchemaType { get; set; }
 
         private string dnPrefix;
-        static ApiInterfaceContact()
-        {
-            ApiInterfaceContact.internalInterfaces = new ApiInterfaceKeyedCollection();
-        }
 
-        public ApiInterfaceContact(string domain, string dnPrefix, MASchemaType type)
+        private IManagementAgentParameters config;
+
+        public ApiInterfaceContact(string domain, string dnPrefix, MASchemaType type, IManagementAgentParameters config)
         {
             this.domain = domain;
             this.SchemaType = type;
             this.dnPrefix = dnPrefix;
+            this.config = config;
         }
 
         public string Api => "contact";
-
 
         public object CreateInstance(CSEntryChange csentry)
         {
@@ -54,7 +48,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new AttributeNotPresentException("id");
             }
 
-            return ContactRequestFactory.GetContact(id);
+            return this.config.ContactsService.GetContact(id);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
@@ -66,10 +60,10 @@ namespace Lithnet.GoogleApps.MA
                 throw new AttributeNotPresentException("id");
             }
 
-            ContactRequestFactory.Delete(id);
+            this.config.ContactsService.Delete(id);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -95,7 +89,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ContactRequestFactory.Add(obj, this.domain);
+                    result = this.config.ContactsService.Add(obj, this.domain);
                     target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
@@ -106,7 +100,7 @@ namespace Lithnet.GoogleApps.MA
                     }
                     else
                     {
-                        result = ContactRequestFactory.Update(obj);
+                        result = this.config.ContactsService.Update(obj);
                         target = result;
                     }
 
@@ -120,25 +114,15 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, deltaModType, type, result, config));
-            }
-
-            foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
-            {
-                changes.AddRange(i.ApplyChanges(csentry, type, config, ref target, patch));
+                changes.AddRange(this.GetChanges(csentry.DN, deltaModType, type, result));
             }
 
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            foreach (IApiInterface i in ApiInterfaceContact.internalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
-            }
 
             return attributeChanges;
         }
@@ -172,11 +156,9 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(string attributeName, object target)
+        public string GetAnchorValue(string name, object target)
         {
-            ContactEntry contactEntry = target as ContactEntry;
-
-            if (contactEntry != null)
+            if (target is ContactEntry contactEntry)
             {
                 return contactEntry.SelfUri.Content;
             }
@@ -186,9 +168,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetDNValue(object target)
         {
-            ContactEntry contactEntry = target as ContactEntry;
-
-            if (contactEntry == null)
+            if (!(target is ContactEntry contactEntry))
             {
                 throw new InvalidOperationException();
             }
@@ -208,7 +188,7 @@ namespace Lithnet.GoogleApps.MA
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Replace;
 
-        public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
+        public Task GetItems(Schema schema, BlockingCollection<object> collection)
         {
             Task t = new Task(() =>
             {
@@ -216,13 +196,13 @@ namespace Lithnet.GoogleApps.MA
 
                 HashSet<string> seenDNs = new HashSet<string>();
 
-                foreach (ContactEntry contact in ContactRequestFactory.GetContacts(config.Domain))
+                foreach (ContactEntry contact in this.config.ContactsService.GetContacts(this.config.Domain))
                 {
-                    if (!string.IsNullOrWhiteSpace(config.ContactRegexFilter))
+                    if (!string.IsNullOrWhiteSpace(this.config.ContactRegexFilter))
                     {
                         if (contact.PrimaryEmail != null)
                         {
-                            if (!Regex.IsMatch(contact.PrimaryEmail.Address, config.ContactRegexFilter, RegexOptions.IgnoreCase))
+                            if (!Regex.IsMatch(contact.PrimaryEmail.Address, this.config.ContactRegexFilter, RegexOptions.IgnoreCase))
                             {
                                 continue;
                             }
@@ -244,7 +224,7 @@ namespace Lithnet.GoogleApps.MA
                     }
 
 
-                    collection.Add(ImportProcessor.GetCSEntryChange(contact, schema.Types[SchemaConstants.Contact], config));
+                    collection.Add(ImportProcessor.GetCSEntryChange(contact, schema.Types[SchemaConstants.Contact], this.config));
                 }
 
                 Logger.WriteLine("Contacts import task complete");

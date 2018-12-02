@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void GetFeatures()
         {
-            foreach (Feature item in ResourceRequestFactory.GetFeatures("my_customer"))
+            foreach (Feature item in UnitTestControl.TestParameters.ResourcesService.GetFeatures("my_customer"))
             {
                 {
                     Trace.WriteLine(item.Name);
@@ -30,11 +30,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             MASchemaType s = UnitTestControl.Schema[SchemaConstants.Feature];
 
-            ApiInterfaceFeature u = new ApiInterfaceFeature("my_customer", s);
+            ApiInterfaceFeature u = new ApiInterfaceFeature("my_customer", s, UnitTestControl.TestParameters);
 
             BlockingCollection<object> items = new BlockingCollection<object>();
 
-            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, items).Wait();
+            u.GetItems(UnitTestControl.MmsSchema, items).Wait();
 
             foreach (CSEntryChange item in items.OfType<CSEntryChange>())
             {
@@ -71,14 +71,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Feature c = ResourceRequestFactory.GetFeature(UnitTestControl.TestParameters.CustomerID, id);
+                Feature c = UnitTestControl.TestParameters.ResourcesService.GetFeature(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual($"my-feature{g:N}", c.Name);
             }
             finally
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteFeature(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteFeature(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }

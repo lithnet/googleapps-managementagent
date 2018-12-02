@@ -30,11 +30,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                GroupMemberRequestFactory.AddMember(e.Id, "test@test.com", "MEMBER");
-                GroupMemberRequestFactory.RemoveMember(e.Id, "test@test.com");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@test.com", "MEMBER");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.RemoveMember(e.Id, "test@test.com");
                 Thread.Sleep(500);
 
-                GroupMemberRequestFactory.AddMember(e.Id, "test@test.com", "MEMBER");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@test.com", "MEMBER");
 
             }
             finally
@@ -78,7 +78,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
@@ -118,7 +118,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
@@ -139,7 +139,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 member1 = UnitTestControl.CreateGroup();
                 member2 = UnitTestControl.CreateGroup();
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member1.Email });
 
                 Thread.Sleep(1000);
 
@@ -161,7 +161,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
@@ -206,7 +206,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(addresses.ToArray(), GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.ToArray());
+                CollectionAssert.AreEquivalent(addresses.ToArray(), UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.ToArray());
 
                 cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -226,12 +226,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Members.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Managers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Owners.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalOwners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Managers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
                 
 
             }
@@ -271,10 +271,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 int directoryServicePoolSize = 30;
-                ConnectionPools.InitializePools(UnitTestControl.TestParameters.GetCredentials(UnitTestControl.TestParameters.TestScopes), directoryServicePoolSize, 30, 30, 30, 30);
                 int threadCount = 0;
-                GroupMemberRequestFactory.BatchSize = 100;
-                ConnectionPools.SetConcurrentOperationLimitGroupMember(5);
                 
                 Task q = new Task(() =>
                 {
@@ -282,7 +279,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     {
                         User x = UserTests.CreateUser();
                         Trace.WriteLine($"Created user {x.PrimaryEmail}");
-                        UserRequestFactory.Delete(x.Id);
+                        UnitTestControl.TestParameters.UsersService.Delete(x.Id);
                     });
 
                 });
@@ -317,7 +314,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             finally
             {
                 UnitTestControl.Cleanup(groups.ToArray<object>());
-                ConnectionPools.InitializePools(UnitTestControl.TestParameters.GetCredentials(UnitTestControl.TestParameters.TestScopes), 1, 1, 1, 1, 1);
             }
         }
 
@@ -344,8 +340,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.CreateGroup();
                 member1 = UnitTestControl.CreateGroup();
                 member2 = UnitTestControl.CreateGroup();
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2.Email });
 
                 Thread.Sleep(1000);
 
@@ -367,7 +363,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                CollectionAssert.AreEquivalent(new string[] { member1.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member1.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {
@@ -388,8 +384,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 member1 = UnitTestControl.CreateGroup();
                 member2 = UnitTestControl.CreateGroup();
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2.Email });
 
                 Thread.Sleep(1000);
 
@@ -410,12 +406,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Members.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Managers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Owners.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalOwners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Managers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
 
             }
             finally
@@ -435,8 +431,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string member1 = "user1@lithnet.io";
                 string member2 = "user2@lithnet.io";
 
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1 });
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2 });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member1 });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2 });
 
                 Thread.Sleep(1000);
 
@@ -457,12 +453,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Members.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalMembers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Managers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalManagers.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).Owners.Count);
-                Assert.AreEqual(0, GroupMemberRequestFactory.GetMembership(cs.DN).ExternalOwners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Managers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
+                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
             }
             finally
             {
@@ -493,8 +489,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 member2 = UnitTestControl.CreateGroup();
                 member3 = UnitTestControl.CreateGroup();
                 member4 = UnitTestControl.CreateGroup();
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member1.Email });
-                GroupMemberRequestFactory.AddMember(e.Email, new Member() { Email = member2.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member1.Email });
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2.Email });
 
                 Thread.Sleep(1000);
 
@@ -509,9 +505,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
-                CollectionAssert.AreEquivalent(new string[] { member3.Email, member4.Email }, GroupMemberRequestFactory.GetMembership(cs.DN).Members.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { member3.Email, member4.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
             finally
             {

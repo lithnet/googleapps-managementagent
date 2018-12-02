@@ -8,9 +8,16 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceGroupSettings : IApiInterface
     {
+        private IManagementAgentParameters config;
+
         public string Api => "groupsettings";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public ApiInterfaceGroupSettings(IManagementAgentParameters config)
+        {
+            this.config = config;
+        }
+
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
 
@@ -22,7 +29,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                settings = GroupSettingsRequestFactory.Get(this.GetDNValue(target));
+                settings = this.config.GroupsService.SettingsFactory.Get(this.GetDNValue(target));
             }
 
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(t => t.Api == this.Api))
@@ -62,17 +69,17 @@ namespace Lithnet.GoogleApps.MA
 
             if (patch)
             {
-                result = GroupSettingsRequestFactory.Patch(this.GetDNValue(target), settings);
+                result = this.config.GroupsService.SettingsFactory.Patch(this.GetDNValue(target), settings);
             }
             else
             {
-                result = GroupSettingsRequestFactory.Update(this.GetDNValue(target), settings);
+                result = this.config.GroupsService.SettingsFactory.Update(this.GetDNValue(target), settings);
             }
 
-            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result, config);
+            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result);
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 

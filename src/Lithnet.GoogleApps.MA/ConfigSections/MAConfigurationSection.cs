@@ -10,6 +10,7 @@ namespace Lithnet.GoogleApps.MA
         private const string PropEmailSettingsApi = "emailsettings-api";
         private const string PropContactApi = "contacts-api";
         private const string PropCalendarApi = "calendar-api";
+        private const string PropGmailApi = "gmail-api";
         private const string PropHttpDebugEnabled = "http-debug-enabled";
         private const string PropExportThreads = "export-threads";
 
@@ -52,5 +53,8 @@ namespace Lithnet.GoogleApps.MA
 
         [ConfigurationProperty(MAConfigurationSection.PropCalendarApi, IsRequired = false)]
         public CalendarApiElement CalendarApi => (CalendarApiElement)this[MAConfigurationSection.PropCalendarApi];
+        
+        [ConfigurationProperty(MAConfigurationSection.PropGmailApi, IsRequired = false)]
+        public GmailApiElement GmailApi => (GmailApiElement)this[MAConfigurationSection.PropGmailApi];
     }
 }

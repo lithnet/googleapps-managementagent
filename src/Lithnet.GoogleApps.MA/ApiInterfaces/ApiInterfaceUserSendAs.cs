@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using Google.Apis.Gmail.v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
@@ -8,21 +10,21 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ApiInterfaceUserDelegates : IApiInterface
+    internal class ApiInterfaceUserSendAs : IApiInterface
     {
         private IManagementAgentParameters config;
 
-        public string Api => "userdelegates";
+        public string Api => "usersendas";
 
-        public ApiInterfaceUserDelegates(IManagementAgentParameters config)
+        public ApiInterfaceUserSendAs(IManagementAgentParameters config)
         {
             this.config = config;
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
-            Func<AttributeChange> x = () => this.ApplyDelegateChanges(csentry);
-            AttributeChange change = x.ExecuteWithRetryOnNotFound(10000);
+            Func<AttributeChange> x = () => this.ApplySendAsChanges(csentry);
+            AttributeChange change = x.ExecuteWithRetryOnNotFound();
 
             List<AttributeChange> changes = new List<AttributeChange>();
 
@@ -38,25 +40,41 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            if (!type.HasAttribute(SchemaConstants.Delegate))
+            if (!type.HasAttribute(SchemaConstants.SendAs))
             {
                 return attributeChanges;
             }
 
             IAttributeAdapter typeDef = ManagementAgent.Schema[SchemaConstants.User].AttributeAdapters.First(t => t.Api == this.Api);
 
-            List<string> delegates = this.config.GmailService.GetDelegates(((User)source).PrimaryEmail).ToList();
-            attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }));
+            IList<string> sendAsAddresses = this.GetNonPrimarySendAsFormattedAddresses(((User)source).PrimaryEmail);
+
+            attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { SendAs = sendAsAddresses }));
 
             return attributeChanges;
         }
 
-        private void GetUserDelegateChanges(CSEntryChange csentry, out IList<string> adds, out IList<string> deletes)
+        private IList<SendAs> GetNonPrimarySendAs(string dn)
+        {
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).ToList();
+        }
+
+        private IList<string> GetNonPrimarySendAsAddresses(string dn)
+        {
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).Select(t => t.SendAsEmail).ToList();
+        }
+
+        private IList<string> GetNonPrimarySendAsFormattedAddresses(string dn)
+        {
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToList();
+        }
+
+        private void GetUserSendAsChanges(CSEntryChange csentry, out IList<string> adds, out IList<string> deletes)
         {
             adds = new List<string>();
             deletes = new List<string>();
 
-            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == SchemaConstants.Delegate);
+            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == SchemaConstants.SendAs);
 
             if (csentry.ObjectModificationType == ObjectModificationType.Replace)
             {
@@ -65,9 +83,9 @@ namespace Lithnet.GoogleApps.MA
                     adds = change.GetValueAdds<string>();
                 }
 
-                foreach (string @delegate in this.config.GmailService.GetDelegates(csentry.DN).Except(adds))
+                foreach (string sendAsAddress in this.GetNonPrimarySendAsFormattedAddresses(csentry.DN).Except(adds))
                 {
-                    deletes.Add(@delegate);
+                    deletes.Add(sendAsAddress);
                 }
             }
             else
@@ -84,17 +102,18 @@ namespace Lithnet.GoogleApps.MA
                         break;
 
                     case AttributeModificationType.Delete:
-                        foreach (string @delegate in this.config.GmailService.GetDelegates(csentry.DN))
+                        foreach (string sendAsAddress in this.GetNonPrimarySendAsFormattedAddresses(csentry.DN))
                         {
-                            deletes.Add(@delegate);
+                            deletes.Add(sendAsAddress);
                         }
                         break;
 
                     case AttributeModificationType.Replace:
                         adds = change.GetValueAdds<string>();
-                        foreach (string @delegate in this.config.GmailService.GetDelegates(csentry.DN).Except(adds))
+
+                        foreach (string sendAsAddress in this.GetNonPrimarySendAsFormattedAddresses(csentry.DN).Except(adds))
                         {
-                            deletes.Add(@delegate);
+                            deletes.Add(sendAsAddress);
                         }
                         break;
 
@@ -110,9 +129,9 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private AttributeChange ApplyDelegateChanges(CSEntryChange csentry)
+        private AttributeChange ApplySendAsChanges(CSEntryChange csentry)
         {
-            this.GetUserDelegateChanges(csentry, out IList<string> adds, out IList<string> deletes);
+            this.GetUserSendAsChanges(csentry, out IList<string> adds, out IList<string> deletes);
 
             if (adds.Count == 0 && deletes.Count == 0)
             {
@@ -128,16 +147,25 @@ namespace Lithnet.GoogleApps.MA
                 {
                     foreach (string delete in deletes)
                     {
-                        Logger.WriteLine($"Removing delegate {delete}");
-                        this.config.GmailService.RemoveDelegate(csentry.DN, delete);
+                        Logger.WriteLine($"Removing send as address {delete}");
+                        MailAddress address = new MailAddress(delete);
+                        this.config.GmailService.RemoveSendAs(csentry.DN, address.Address);
                         valueChanges.Add(ValueChange.CreateValueDelete(delete));
                     }
                 }
 
                 foreach (string add in adds)
                 {
-                    Logger.WriteLine($"Adding delegate {add}");
-                    this.config.GmailService.AddDelegate(csentry.DN, add);
+                    Logger.WriteLine($"Adding send as address {add}");
+
+                    MailAddress address = new MailAddress(add);
+                    SendAs sendAs = new SendAs
+                    {
+                        DisplayName = address.DisplayName,
+                        SendAsEmail = address.Address
+                    };
+
+                    this.config.GmailService.AddSendAs(csentry.DN, sendAs);
                     valueChanges.Add(ValueChange.CreateValueAdd(add));
                 }
             }
@@ -147,11 +175,11 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (csentry.ObjectModificationType == ObjectModificationType.Update)
                     {
-                        change = AttributeChange.CreateAttributeUpdate(SchemaConstants.Delegate, valueChanges);
+                        change = AttributeChange.CreateAttributeUpdate(SchemaConstants.SendAs, valueChanges);
                     }
                     else
                     {
-                        change = AttributeChange.CreateAttributeAdd(SchemaConstants.Delegate, valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
+                        change = AttributeChange.CreateAttributeAdd(SchemaConstants.SendAs, valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
                     }
                 }
             }

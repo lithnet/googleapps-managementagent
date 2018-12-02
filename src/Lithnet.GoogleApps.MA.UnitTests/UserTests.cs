@@ -16,13 +16,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void GetUsers()
         {
-            var ff = UnitTestControl.Schema[SchemaConstants.User];
-            var s = UnitTestControl.MmsSchema.Types[SchemaConstants.User];
+            return;
+            var userSchemaType = UnitTestControl.Schema[SchemaConstants.User];
+            var mmsUserSchemaType = UnitTestControl.MmsSchema.Types[SchemaConstants.User];
 
-            ApiInterfaceUser u = new ApiInterfaceUser(ff);
+            ApiInterfaceUser u = new ApiInterfaceUser(userSchemaType, UnitTestControl.TestParameters);
 
-            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, new BlockingCollection<object>()).Wait();
-
+            u.GetItems(UnitTestControl.MmsSchema, new BlockingCollection<object>()).Wait();
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.AreEqual("/", e.OrgUnitPath);
                 Assert.AreEqual("gn", e.Name.GivenName);
@@ -122,7 +122,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -147,7 +147,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     }
                 };
 
-                e = UserRequestFactory.Add(e);
+                e = UnitTestControl.TestParameters.UsersService.Add(e);
                 id = e.Id;
 
                 CSEntryChange cs = CSEntryChange.Create();
@@ -165,7 +165,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 try
                 {
                     System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
-                    e = UserRequestFactory.Get(id);
+                    e = UnitTestControl.TestParameters.UsersService.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
                 catch (GoogleApiException ex)
@@ -184,7 +184,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -209,7 +209,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     }
                 };
 
-                e = UserRequestFactory.Add(e);
+                e = UnitTestControl.TestParameters.UsersService.Add(e);
                 id = e.Id;
                 System.Threading.Thread.Sleep(2000);
 
@@ -232,14 +232,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 System.Threading.Thread.Sleep(2000);
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -279,7 +279,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
 
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -339,7 +339,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.AreEqual("/", e.OrgUnitPath);
                 Assert.AreEqual("gn", e.Name.GivenName);
@@ -375,7 +375,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -411,7 +411,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
 
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -433,7 +433,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.IsNull(e.Organizations);
             }
@@ -441,7 +441,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -467,7 +467,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.ExternalIds.Add(new ExternalID() { Type = "work", Value = "test1" });
             e.ExternalIds.Add(new ExternalID() { Type = "home", Value = "test2" });
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -490,7 +490,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.AreEqual(2, e.ExternalIds.Count);
                 Assert.AreEqual("eidwork", e.ExternalIds[0].Value);
@@ -500,7 +500,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -522,7 +522,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -548,7 +548,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
             }
@@ -556,7 +556,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -578,14 +578,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -607,7 +607,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.IsNull(e.Aliases);
             }
@@ -615,7 +615,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -637,15 +637,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -670,7 +670,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2, alias3 }, e.Aliases);
 
@@ -679,7 +679,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -701,14 +701,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -733,7 +733,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases);
 
@@ -742,7 +742,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -764,14 +764,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -796,7 +796,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
 
@@ -805,7 +805,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -827,7 +827,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -835,8 +835,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias4 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -861,7 +861,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias3, alias4 }, e.Aliases);
             }
@@ -869,7 +869,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -890,7 +890,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -913,7 +913,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.AreEqual(true, e.IsAdmin);
             }
@@ -921,7 +921,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -934,7 +934,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             try
             {
-                UserRequestFactory.MakeAdmin(true, e.Id);
+                UnitTestControl.TestParameters.UsersService.MakeAdmin(true, e.Id);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -954,7 +954,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = UserRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(e.Id);
 
                 Assert.AreEqual(false, e.IsAdmin);
             }
@@ -962,7 +962,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (e.Id != null)
                 {
-                    UserRequestFactory.Delete(e.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(e.Id);
                 }
             }
 
@@ -982,7 +982,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
             return e;
         }

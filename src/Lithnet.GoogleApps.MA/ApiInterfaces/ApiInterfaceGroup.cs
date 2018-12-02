@@ -15,23 +15,23 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceGroup : IApiInterfaceObject
     {
-        private static ApiInterfaceKeyedCollection internalInterfaces;
+        private ApiInterfaceKeyedCollection internalInterfaces;
+
+        private IManagementAgentParameters config;
 
         protected MASchemaType SchemaType { get; set; }
 
-        static ApiInterfaceGroup()
-        {
-            ApiInterfaceGroup.internalInterfaces = new ApiInterfaceKeyedCollection
-            {
-                new ApiInterfaceGroupAliases(),
-                new ApiInterfaceGroupMembership(),
-                new ApiInterfaceGroupSettings()
-            };
-        }
-
-        public ApiInterfaceGroup(MASchemaType type)
+        public ApiInterfaceGroup(MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
+            this.config = config;
+
+            this.internalInterfaces = new ApiInterfaceKeyedCollection
+            {
+                new ApiInterfaceGroupAliases(config),
+                new ApiInterfaceGroupMembership(config),
+                new ApiInterfaceGroupSettings(config)
+            };
         }
 
         public string Api => "group";
@@ -49,23 +49,21 @@ namespace Lithnet.GoogleApps.MA
         {
             return new GoogleGroup()
             {
-                Group = GroupRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN)
+                Group = this.config.GroupsService.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN)
             };
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            GroupRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            this.config.GroupsService.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            GoogleGroup group = target as GoogleGroup;
-
-            if (group == null)
+            if (!(target is GoogleGroup group))
             {
                 throw new InvalidOperationException();
             }
@@ -89,7 +87,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result.Group = GroupRequestFactory.Add(group.Group);
+                    result.Group = this.config.GroupsService.Add(group.Group);
                     group.Group = result.Group;
 
                     // Group membership operations fail on newly created groups if processed too quickly
@@ -101,12 +99,12 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result.Group = GroupRequestFactory.Patch(id, group.Group);
+                        result.Group = this.config.GroupsService.Patch(id, group.Group);
                         group.Group = result.Group;
                     }
                     else
                     {
-                        result.Group = GroupRequestFactory.Update(id, group.Group);
+                        result.Group = this.config.GroupsService.Update(id, group.Group);
                         group.Group = result.Group;
                     }
                 }
@@ -118,9 +116,9 @@ namespace Lithnet.GoogleApps.MA
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
-            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
+            foreach (IApiInterface i in this.internalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, config, ref target, patch))
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
                 {
                     //changes.RemoveAll(t => t.Name == c.Name);
                     changes.Add(c);
@@ -130,13 +128,13 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
-            foreach (IApiInterface i in ApiInterfaceGroup.internalInterfaces)
+            foreach (IApiInterface i in this.internalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
             }
 
             return attributeChanges;
@@ -146,9 +144,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            GoogleGroup googleGroup = source as GoogleGroup;
-
-            if (googleGroup == null)
+            if (!(source is GoogleGroup googleGroup))
             {
                 throw new InvalidOperationException();
             }
@@ -171,13 +167,11 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(string attributeName, object target)
+        public string GetAnchorValue(string name, object target)
         {
             Group group;
 
-            GoogleGroup googleGroup = target as GoogleGroup;
-
-            if (googleGroup != null)
+            if (target is GoogleGroup googleGroup)
             {
                 group = googleGroup.Group;
             }
@@ -198,9 +192,7 @@ namespace Lithnet.GoogleApps.MA
         {
             Group group;
 
-            GoogleGroup googleGroup = target as GoogleGroup;
-
-            if (googleGroup != null)
+            if (target is GoogleGroup googleGroup)
             {
                 group = googleGroup.Group;
             }
@@ -217,7 +209,7 @@ namespace Lithnet.GoogleApps.MA
             return group.Email;
         }
 
-        public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> groupFieldList = new HashSet<string>
             {
@@ -247,13 +239,13 @@ namespace Lithnet.GoogleApps.MA
             bool settingsRequired = groupSettingList.Count > 0;
 
             string groupSettingsFields = string.Join(",", groupSettingList);
-            
+
             bool membersRequired =
                 ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(u => u.Api == "groupmembership").Any(v =>
                 {
                     return v.MmsAttributeNames.Any(attributeName => schema.Types[SchemaConstants.Group].Attributes.Contains(attributeName));
                 });
-            
+
             Task t = new Task(() =>
             {
                 Logger.WriteLine("Starting group import task");
@@ -265,14 +257,14 @@ namespace Lithnet.GoogleApps.MA
 
                 Regex filter = null;
 
-                if (config.GroupRegexFilter != null)
+                if (this.config.GroupRegexFilter != null)
                 {
-                    filter = new Regex(config.GroupRegexFilter);
+                    filter = new Regex(this.config.GroupRegexFilter);
                 }
 
-                foreach (GoogleGroup group in GroupRequestFactory.GetGroups(config.CustomerID, membersRequired, settingsRequired, groupFields, groupSettingsFields, config.ExcludeUserCreated, filter))
+                foreach (GoogleGroup group in this.config.GroupsService.GetGroups(this.config.CustomerID, membersRequired, settingsRequired, groupFields, MAConfigurationSection.Configuration.GroupSettingsApi.ImportThreadsGroupSettings, MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember, this.config.ExcludeUserCreated, filter))
                 {
-                    collection.Add(this.GetCSEntryForGroup(group, schema, config));
+                    collection.Add(this.GetCSEntryForGroup(group, schema));
                     Debug.WriteLine($"Created CSEntryChange for group: {group.Group.Email}");
 
                     continue;
@@ -286,7 +278,7 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private CSEntryChange GetCSEntryForGroup(GoogleGroup group, Schema schema, IManagementAgentParameters config)
+        private CSEntryChange GetCSEntryForGroup(GoogleGroup group, Schema schema)
         {
             CSEntryChange csentry;
 
@@ -302,7 +294,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                csentry = ImportProcessor.GetCSEntryChange(group, schema.Types[SchemaConstants.Group], config);
+                csentry = ImportProcessor.GetCSEntryChange(group, schema.Types[SchemaConstants.Group], this.config);
             }
 
             return csentry;

@@ -17,22 +17,22 @@ namespace Lithnet.GoogleApps.MA
     {
         private string customerID;
 
-        private static ApiInterfaceKeyedCollection internalInterfaces;
+        private IManagementAgentParameters config;
+
+        private ApiInterfaceKeyedCollection internalInterfaces;
 
         protected MASchemaType SchemaType { get; set; }
-        
-        static ApiInterfaceCalendar()
-        {
-            ApiInterfaceCalendar.internalInterfaces = new ApiInterfaceKeyedCollection
-            {
-                new ApiInterfaceCalendarAcl(),
-            };
-        }
-
-        public ApiInterfaceCalendar(string customerID, MASchemaType type)
+     
+        public ApiInterfaceCalendar(string customerID, MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
             this.customerID = customerID;
+            this.config = config;
+
+            this.internalInterfaces = new ApiInterfaceKeyedCollection
+            {
+                new ApiInterfaceCalendarAcl(config),
+            };
         }
 
         public string Api => "calendar";
@@ -49,15 +49,15 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ResourceRequestFactory.GetCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            return this.config.ResourcesService.GetCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ResourceRequestFactory.DeleteCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            this.config.ResourcesService.DeleteCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -82,7 +82,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ResourceRequestFactory.AddCalendar(this.customerID, calendar);
+                    result = this.config.ResourcesService.AddCalendar(this.customerID, calendar);
                     calendar.ResourceEmail = result.ResourceEmail;
                     System.Threading.Thread.Sleep(1500);
                 }
@@ -92,11 +92,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = ResourceRequestFactory.PatchCalendar(this.customerID, id, calendar);
+                        result = this.config.ResourcesService.PatchCalendar(this.customerID, id, calendar);
                     }
                     else
                     {
-                        result = ResourceRequestFactory.UpdateCalendar(this.customerID, id, calendar);
+                        result = this.config.ResourcesService.UpdateCalendar(this.customerID, id, calendar);
                     }
                 }
                 else
@@ -107,9 +107,9 @@ namespace Lithnet.GoogleApps.MA
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
-            foreach (IApiInterface i in ApiInterfaceCalendar.internalInterfaces)
+            foreach (IApiInterface i in this.internalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, config, ref target, patch))
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
                 {
                     changes.Add(c);
                 }
@@ -118,13 +118,13 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
-            foreach (IApiInterface i in ApiInterfaceCalendar.internalInterfaces)
+            foreach (IApiInterface i in this.internalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
             }
 
             return attributeChanges;
@@ -160,7 +160,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(string attributeName, object target)
+        public string GetAnchorValue(string name, object target)
         {
             CalendarResource calendar = target as CalendarResource;
 
@@ -169,7 +169,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException();
             }
 
-            switch (attributeName)
+            switch (name)
             {
                 case "id":
                     return calendar.ResourceId;
@@ -194,7 +194,7 @@ namespace Lithnet.GoogleApps.MA
             return calendar.ResourceEmail;
         }
 
-        public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
@@ -215,9 +215,9 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Starting calendar import task");
                 Logger.WriteLine("Requesting calendar fields: " + fields);
 
-                Parallel.ForEach(ResourceRequestFactory.GetCalendars(config.CustomerID, fields), calendar =>
+                Parallel.ForEach(this.config.ResourcesService.GetCalendars(this.config.CustomerID, fields), calendar =>
                 {
-                    collection.Add(this.GetCSEntryForCalendar(calendar, schema, config));
+                    collection.Add(this.GetCSEntryForCalendar(calendar, schema, this.config));
                     Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
                 });
 

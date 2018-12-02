@@ -8,8 +8,8 @@ namespace Lithnet.GoogleApps.MA
     {
         string Api { get; }
 
-        IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false);
+        IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false);
 
-        IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config);
+        IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source);
     }
 }

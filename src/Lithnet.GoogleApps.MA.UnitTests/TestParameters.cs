@@ -20,31 +20,31 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
         public string CustomerID => "my_customer";
 
-        public string ServiceAccountEmailAddress => ConfigurationManager.AppSettings["serviceAccountEmailAddress"];
+        public override string ServiceAccountEmailAddress => ConfigurationManager.AppSettings["serviceAccountEmailAddress"];
 
-        public string GroupRegexFilter { get; set; }
+        public string GroupRegexFilter { get; set; } = "^(?!(abuse|postmaster)).+@?(.+).idmdev1.+$";
 
-        public string UserRegexFilter { get; set; }
+        public string UserRegexFilter { get; set; } = "^(?!(abuse|postmaster)).+@?(.+).idmdev1.+$";
 
         public string UserQueryFilter { get; set; }
 
-        public string ContactRegexFilter { get; set; }
+        public string ContactRegexFilter { get; set; } = "^(?!(abuse|postmaster)).+@?(.+).idmdev1.+$";
 
         public bool InheritGroupRoles { get; set; }
 
         public bool CalendarSendNotificationOnPermissionChange { get; set; }
 
-        public string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
+        public override string UserEmailAddress => ConfigurationManager.AppSettings["userEmailAddress"];
 
         public string ContactDNPrefix => "contact:";
 
         public string Domain => ConfigurationManager.AppSettings["domain"];
 
-        public string KeyFilePath => ConfigurationManager.AppSettings["keyFilePath"];
+        public override string KeyFilePath => ConfigurationManager.AppSettings["keyFilePath"];
 
         public string LogFilePath => ConfigurationManager.AppSettings["logFilePath"];
 
-        public string KeyFilePassword => ConfigurationManager.AppSettings["keyFilePassword"];
+        public override string KeyFilePassword => ConfigurationManager.AppSettings["keyFilePassword"];
 
         public bool DoNotGenerateDelta { get; set; }
 
@@ -126,18 +126,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
-        internal string[] TestScopes => AllScopes;
 
         public bool ExcludeUserCreated { get; set; }
-
-        public ServiceAccountCredential GetCredentials(string[] requiredScopes)
-        {
-            return this.GetCredentials(
-                this.ServiceAccountEmailAddress,
-                this.UserEmailAddress,
-                this.GetCertificate(this.KeyFilePath, this.KeyFilePassword),
-                requiredScopes);
-        }
 
         public string CalendarBuildingAttributeType { get; set; }
 

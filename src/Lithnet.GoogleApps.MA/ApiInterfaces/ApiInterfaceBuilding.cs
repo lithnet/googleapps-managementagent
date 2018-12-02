@@ -20,10 +20,13 @@ namespace Lithnet.GoogleApps.MA
 
         public static string DNSuffix => "@building.resource";
 
-        public ApiInterfaceBuilding(string customerID, MASchemaType type)
+        private IManagementAgentParameters config;
+
+        public ApiInterfaceBuilding(string customerID, MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
             this.customerID = customerID;
+            this.config = config;
         }
 
         public string Api => "building";
@@ -48,15 +51,15 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ResourceRequestFactory.GetBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            return this.config.ResourcesService.GetBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ResourceRequestFactory.DeleteBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
+            this.config.ResourcesService.DeleteBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -81,7 +84,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ResourceRequestFactory.AddBuilding(this.customerID, building);
+                    result = this.config.ResourcesService.AddBuilding(this.customerID, building);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -89,11 +92,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = ResourceRequestFactory.PatchBuilding(this.customerID, id, building);
+                        result = this.config.ResourcesService.PatchBuilding(this.customerID, id, building);
                     }
                     else
                     {
-                        result = ResourceRequestFactory.UpdateBuilding(this.customerID, id, building);
+                        result = this.config.ResourcesService.UpdateBuilding(this.customerID, id, building);
                     }
                 }
                 else
@@ -108,7 +111,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
@@ -169,7 +172,7 @@ namespace Lithnet.GoogleApps.MA
             return $"{building.BuildingId}{ApiInterfaceBuilding.DNSuffix}";
         }
 
-        public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
@@ -189,9 +192,9 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Starting building import task");
                 Logger.WriteLine("Requesting building fields: " + fields);
 
-                foreach (Building building in ResourceRequestFactory.GetBuildings(config.CustomerID, fields))
+                foreach (Building building in this.config.ResourcesService.GetBuildings(this.config.CustomerID, fields))
                 {
-                    collection.Add(this.GetCSEntryForBuilding(building, schema, config));
+                    collection.Add(this.GetCSEntryForBuilding(building, schema, this.config));
                     Debug.WriteLine($"Created CSEntryChange for building: {building.BuildingId}");
 
                     continue;

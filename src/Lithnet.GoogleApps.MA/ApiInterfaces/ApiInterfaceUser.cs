@@ -21,19 +21,29 @@ namespace Lithnet.GoogleApps.MA
 
         protected string ObjectClass;
 
-        protected MASchemaType SchemaType { get; set; }
+        protected internal MASchemaType SchemaType { get; set; }
 
-        public ApiInterfaceUser(MASchemaType type)
+        protected internal IManagementAgentParameters config;
+
+        public ApiInterfaceUser(MASchemaType type, IManagementAgentParameters config)
         {
-            this.InternalInterfaces = new ApiInterfaceKeyedCollection { new ApiInterfaceUserAliases(), new ApiInterfaceUserMakeAdmin() };
+            this.InternalInterfaces = new ApiInterfaceKeyedCollection
+            {
+                new ApiInterfaceUserAliases(config),
+                new ApiInterfaceUserMakeAdmin(config),
+                new ApiInterfaceUserDelegates(config),
+                new ApiInterfaceUserSendAs(config)
+            };
+
             this.ObjectClass = SchemaConstants.User;
             this.SchemaType = type;
+            this.config = config;
         }
 
         public virtual string Api => "user";
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Update;
-        
+
         public virtual object CreateInstance(CSEntryChange csentry)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
@@ -56,15 +66,15 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return UserRequestFactory.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            return this.config.UsersService.Get(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            UserRequestFactory.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            this.config.UsersService.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
 
@@ -87,7 +97,7 @@ namespace Lithnet.GoogleApps.MA
                     hasChanged = true;
                 }
             }
-            
+
             if (hasChanged)
             {
                 Trace.WriteLine($"Object {csentry.DN} has one or more changes to commit");
@@ -96,7 +106,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = UserRequestFactory.Add(user);
+                    result = this.config.UsersService.Add(user);
                     target = result;
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
@@ -105,11 +115,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = UserRequestFactory.Patch(user, id);
+                        result = this.config.UsersService.Patch(user, id);
                     }
                     else
                     {
-                        result = UserRequestFactory.Update(user, id);
+                        result = this.config.UsersService.Update(user, id);
                     }
 
                     target = result;
@@ -128,7 +138,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, config, ref target, patch))
+                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
                 {
                     changes.Add(c);
                 }
@@ -139,13 +149,13 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source, config));
+                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
             }
 
             return attributeChanges;
@@ -191,7 +201,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string GetAnchorValue(string attributeName, object target)
+        public string GetAnchorValue(string name, object target)
         {
             return ((User)target).Id;
         }
@@ -201,7 +211,7 @@ namespace Lithnet.GoogleApps.MA
             return ((User)target).PrimaryEmail;
         }
 
-        public Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection)
+        public Task GetItems(Schema schema, BlockingCollection<object> collection)
         {
             if (this.GetType() == typeof(ApiInterfaceAdvancedUser))
             {
@@ -245,19 +255,18 @@ namespace Lithnet.GoogleApps.MA
             {
                 Logger.WriteLine("Starting user import task");
                 Logger.WriteLine("Requesting fields: " + fields);
-                Logger.WriteLine("Query filter: " + (config.UserQueryFilter ?? "<none>"));
+                Logger.WriteLine("Query filter: " + (this.config.UserQueryFilter ?? "<none>"));
+                SchemaType type = schema.Types[SchemaConstants.User];
 
-                foreach (User user in UserRequestFactory.GetUsers(config.CustomerID, fields, config.UserQueryFilter))
+                foreach (User user in this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter))
                 {
-                    if (!string.IsNullOrWhiteSpace(config.UserRegexFilter))
+                    if (!string.IsNullOrWhiteSpace(this.config.UserRegexFilter))
                     {
-                        if (!Regex.IsMatch(user.PrimaryEmail, config.UserRegexFilter, RegexOptions.IgnoreCase))
+                        if (!Regex.IsMatch(user.PrimaryEmail, this.config.UserRegexFilter, RegexOptions.IgnoreCase))
                         {
                             continue;
                         }
                     }
-                    
-                    SchemaType type = schema.Types[SchemaConstants.User];
 
                     if (user.CustomSchemas != null)
                     {
@@ -274,7 +283,7 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
-                    collection.Add(ImportProcessor.GetCSEntryChange(user, type, config));
+                    collection.Add(ImportProcessor.GetCSEntryChange(user, type, this.config));
                     continue;
                 }
 

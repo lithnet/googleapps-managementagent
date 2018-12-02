@@ -18,7 +18,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.ApiInterface = new ApiInterfaceGroup(type);
+            type.ApiInterface = new ApiInterfaceGroup(type, config);
 
             AdapterPropertyValue adminCreated = new AdapterPropertyValue
             {
@@ -108,7 +108,7 @@ namespace Lithnet.GoogleApps.MA
 
             return type;
         }
-        
+
         private static void AddGroupAliases(MASchemaType type)
         {
             AdapterCollection<string> aliasesList = new AdapterCollection<string>
@@ -689,5 +689,5 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(whoCanContactOwner);
         }
-        }
+    }
 }

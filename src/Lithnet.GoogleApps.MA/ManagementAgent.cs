@@ -38,8 +38,6 @@ namespace Lithnet.GoogleApps.MA
 
         private BlockingCollection<object> importCollection;
 
-        private static bool initializedConnectionPools;
-
         internal static MASchemaTypes Schema { get; set; }
 
         public int ExportDefaultPageSize => 100;
@@ -83,7 +81,7 @@ namespace Lithnet.GoogleApps.MA
             if (MAConfigurationSection.Configuration.HttpDebugEnabled)
             {
                 ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                ConnectionPools.DisableGzip = true;
+                Lithnet.GoogleApps.Settings.DisableGzip = true;
                 Logger.WriteLine("WARNING: HTTPS Debugging enabled. Service certificate validation and GZIP compression are both disabled");
             }
         }
@@ -96,12 +94,8 @@ namespace Lithnet.GoogleApps.MA
             Logger.LogPath = this.Configuration.MALogFile;
             Logger.WriteLine("Opening export connection");
             this.SetHttpDebugMode();
-            GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
-            GroupRequestFactory.MemberThreads = MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember;
 
             this.timer = new Stopwatch();
-
-            this.InitializeConnectionPools(types);
 
             ManagementAgent.Schema = SchemaBuilder.GetSchema(this.Configuration);
             this.operationSchemaTypes = types;
@@ -112,26 +106,26 @@ namespace Lithnet.GoogleApps.MA
             this.timer.Start();
         }
 
-        private void InitializeConnectionPools(Schema types)
-        {
-            string[] requiredScopes = ManagementAgentParametersBase.GetRequiredScopes(types);
+       // private void InitializeConnectionPools(Schema types)
+        //{
+            //string[] requiredScopes = ManagementAgentParametersBase.GetRequiredScopes(types);
 
-            ConnectionPools.InitializePools(this.Configuration.GetCredentials(requiredScopes),
-                MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
-                MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize,
-                MAConfigurationSection.Configuration.EmailSettingsApi.PoolSize,
-                MAConfigurationSection.Configuration.ContactsApi.PoolSize,
-                MAConfigurationSection.Configuration.CalendarApi.PoolSize);
+            //ConnectionPools.InitializePools(this.Configuration.GetCredentials(requiredScopes),
+            //    MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+            //    MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize,
+            //    MAConfigurationSection.Configuration.EmailSettingsApi.PoolSize,
+            //    MAConfigurationSection.Configuration.ContactsApi.PoolSize,
+            //    MAConfigurationSection.Configuration.CalendarApi.PoolSize);
 
-            ConnectionPools.SetConcurrentOperationLimitGroupMember(MAConfigurationSection.Configuration.DirectoryApi.ExportThreadsGroupMember);
-            ConnectionPools.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
-            ConnectionPools.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
-            ConnectionPools.SetRateLimitEmailSettingsService(MAConfigurationSection.Configuration.EmailSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
-            ConnectionPools.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
-            ConnectionPools.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
+            //ConnectionPools.SetConcurrentOperationLimitGroupMember(MAConfigurationSection.Configuration.DirectoryApi.ExportThreadsGroupMember);
+            //ConnectionPools.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
+            //ConnectionPools.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+            //ConnectionPools.SetRateLimitGmailService(MAConfigurationSection.Configuration.EmailSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+            //ConnectionPools.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+            //ConnectionPools.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
 
-            ManagementAgent.initializedConnectionPools = true;
-        }
+            //ManagementAgent.initializedConnectionPools = true;
+       // }
         
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
@@ -221,6 +215,8 @@ namespace Lithnet.GoogleApps.MA
                 this.operationSchemaTypes = types;
                 this.timer = new Stopwatch();
 
+                //this.Configuration.GroupsService.MemberThreads = MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember;
+
                 this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
 
                 Logger.WriteLine("Opening import connection. Page size {0}", this.importRunStep.PageSize);
@@ -256,7 +252,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (schema.Types.Contains(SchemaConstants.Group))
             {
-                GroupMembership.GetInternalDomains(this.Configuration.CustomerID);
+                GroupMembership.GetInternalDomains(this.Configuration.DomainsService, this.Configuration.CustomerID);
             }
         }
 
@@ -264,8 +260,6 @@ namespace Lithnet.GoogleApps.MA
         {
             this.importCollection = new BlockingCollection<object>();
             this.SetHttpDebugMode();
-
-            this.InitializeConnectionPools(types);
 
             this.LoadInternalDomainsIfRequired(types);
 
@@ -275,7 +269,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (MASchemaType item in ManagementAgent.Schema.Where(t => types.Types.Contains(t.Name)))
             {
-                Task t = item.ApiInterface.GetItems(this.Configuration, types, this.importCollection);
+                Task t = item.ApiInterface.GetItems(types, this.importCollection);
 
                 if (t != null)
                 {
@@ -409,12 +403,7 @@ namespace Lithnet.GoogleApps.MA
         public Schema GetSchema(KeyedCollection<string, ConfigParameter> configParameters)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
-
-            if (!ManagementAgent.initializedConnectionPools)
-            {
-                ConnectionPools.InitializePools(this.Configuration.GetCredentials(ManagementAgentParametersBase.SchemaDiscoveryScopes), 1, 1, 1, 1, 1);
-            }
-
+            
             return SchemaBuilder.GetSchema(this.Configuration).GetSchema();
         }
 
@@ -464,18 +453,13 @@ namespace Lithnet.GoogleApps.MA
             this.Configuration = new ManagementAgentParameters(configParameters);
             Logger.LogPath = this.Configuration.PasswordOperationLogFile;
             this.SetHttpDebugMode();
-
-            if (!ManagementAgent.initializedConnectionPools)
-            {
-                ConnectionPools.InitializePools(this.Configuration.GetCredentials(ManagementAgentParametersBase.PasswordChangeScopes), 1, 1, 1, 1, 1);
-            }
         }
 
         public void SetPassword(CSEntry csentry, System.Security.SecureString newPassword, PasswordOptions options)
         {
             try
             {
-                UserRequestFactory.SetPassword(csentry.DN.ToString(), newPassword);
+                this.Configuration.UsersService.SetPassword(csentry.DN.ToString(), newPassword);
                 Logger.WriteLine("Set password for {0}", csentry.DN.ToString());
             }
             catch (Exception ex)

@@ -72,14 +72,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
-                Group e = GroupRequestFactory.Get(id);
+                Group e = UnitTestControl.TestParameters.GroupsService.Get(id);
                 Assert.AreEqual(cs.DN, e.Email);
 
                 Assert.AreEqual(true, e.AdminCreated);
                 Assert.AreEqual("description", e.Description);
                 Assert.AreEqual("name", e.Name);
 
-                GroupSettings s = GroupSettingsRequestFactory.Get(cs.DN);
+                GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
                 Assert.AreEqual(true, s.AllowExternalMembers);
                 Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
@@ -115,7 +115,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    GroupRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.GroupsService.Delete(id);
                 }
             }
         }
@@ -179,14 +179,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(cs.DN, e.Email);
 
                 Assert.AreEqual(true, e.AdminCreated);
                 Assert.AreEqual("description", e.Description);
                 Assert.AreEqual("name", e.Name);
 
-                GroupSettings s = GroupSettingsRequestFactory.Get(cs.DN);
+                GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
                 Assert.AreEqual(true, s.AllowExternalMembers);
                 Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
@@ -249,7 +249,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(cs.DN, e.Email);
                 Assert.AreEqual(true, e.AdminCreated);
                 Assert.AreEqual(string.Empty, e.Description);
@@ -286,10 +286,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(cs.DN, e.Email);
 
-                GroupSettings s = GroupSettingsRequestFactory.Get(cs.DN);
+                GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
 
                 Assert.AreEqual(true, s.ArchiveOnly);
 
@@ -312,10 +312,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(cs.DN, e.Email);
 
-                s = GroupSettingsRequestFactory.Get(cs.DN);
+                s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
 
                 Assert.AreEqual(false, s.ArchiveOnly);
 
@@ -352,7 +352,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 try
                 {
                     System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
-                    e = GroupRequestFactory.Get(e.Id);
+                    e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                     Assert.Fail("The object did not get deleted");
                 }
                 catch (GoogleApiException ex)
@@ -401,7 +401,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(newDN, e.Email);
             }
             finally
@@ -440,7 +440,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
             }
@@ -462,8 +462,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                GroupRequestFactory.AddAlias(e.Id, alias1);
-                GroupRequestFactory.AddAlias(e.Id, alias2);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias1);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias2);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -483,7 +483,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 Assert.IsNull(e.Aliases);
             }
@@ -506,8 +506,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                GroupRequestFactory.AddAlias(e.Id, alias1);
-                GroupRequestFactory.AddAlias(e.Id, alias2);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias1);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias2);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -531,7 +531,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2, alias3}, e.Aliases.ToArray());
 
@@ -554,8 +554,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                GroupRequestFactory.AddAlias(e.Id, alias1);
-                GroupRequestFactory.AddAlias(e.Id, alias2);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias1);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias2);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -579,7 +579,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1}, e.Aliases.ToArray());
 
@@ -604,8 +604,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias4 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                GroupRequestFactory.AddAlias(e.Id, alias1);
-                GroupRequestFactory.AddAlias(e.Id, alias2);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias1);
+                UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias2);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -629,7 +629,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = GroupRequestFactory.Get(e.Id);
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias3, alias4}, e.Aliases.ToArray());
             }

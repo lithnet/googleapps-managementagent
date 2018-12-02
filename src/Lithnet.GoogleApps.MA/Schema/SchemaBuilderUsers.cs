@@ -23,7 +23,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.ApiInterface = new ApiInterfaceUser(type);
+            type.ApiInterface = new ApiInterfaceUser(type, config);
 
             AdapterPropertyValue orgUnitPath = new AdapterPropertyValue
             {
@@ -290,6 +290,32 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(customerId);
+            
+            AdapterCollection<string> delegates = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = null,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = SchemaConstants.Delegate,
+                PropertyName = "Delegates",
+                Api = "userdelegates",
+                SupportsPatch = true,
+            };
+
+            type.AttributeAdapters.Add(delegates);
+
+            AdapterCollection<string> sendas = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.Reference,
+                FieldName = null,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = SchemaConstants.SendAs,
+                PropertyName = "SendAs",
+                Api = "usersendas",
+                SupportsPatch = true,
+            };
+
+            type.AttributeAdapters.Add(sendas);
 
             SchemaBuilderUsers.AddUserNames(type);
             SchemaBuilderUsers.AddUserNotes(type);
@@ -781,7 +807,7 @@ namespace Lithnet.GoogleApps.MA
 
             try
             {
-                schemas = SchemaRequestFactory.ListSchemas(config.CustomerID);
+                schemas = config.SchemaService.ListSchemas(config.CustomerID);
             }
             catch (Google.GoogleApiException ex)
             {

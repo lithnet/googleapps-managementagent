@@ -30,7 +30,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 csentry.DN = maType.ApiInterface.GetDNValue(source);
 
-                foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.DN, csentry.ObjectModificationType, type, source, config))
+                foreach (AttributeChange change in maType.ApiInterface.GetChanges(csentry.DN, csentry.ObjectModificationType, type, source))
                 {
                     csentry.AttributeChanges.Add(change);
                 }

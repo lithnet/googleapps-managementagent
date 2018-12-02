@@ -33,21 +33,21 @@ namespace Lithnet.GoogleApps.MA
             return types;
         }
         
-        public static void CreateGoogleAppsCustomSchema()
-        {
-            G.Schema schema = new G.Schema();
+        //public static void CreateGoogleAppsCustomSchema()
+        //{
+        //    G.Schema schema = new G.Schema();
 
-            schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
-            schema.Fields = new List<G.SchemaFieldSpec>();
-            schema.Fields.Add(new G.SchemaFieldSpec()
-            {
-                FieldName = SchemaConstants.CustomSchemaObjectType,
-                FieldType = "STRING",
-                MultiValued = false,
-                ReadAccessType = "ADMINS_AND_SELF"
-            });
+        //    schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
+        //    schema.Fields = new List<G.SchemaFieldSpec>();
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = SchemaConstants.CustomSchemaObjectType,
+        //        FieldType = "STRING",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
 
-            SchemaRequestFactory.CreateSchema("my_customer", schema);
-        }
+        //    SchemaRequestFactory.CreateSchema("my_customer", schema);
+        //}
     }
 }

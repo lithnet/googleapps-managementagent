@@ -12,7 +12,14 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceCalendarAcl : IApiInterface
     {
+        private IManagementAgentParameters config;
+
         public string Api => "calendaracl";
+
+        public ApiInterfaceCalendarAcl(IManagementAgentParameters config)
+        {
+            this.config = config;
+        }
 
         private Dictionary<string, string> attributeRoleMapping = new Dictionary<string, string>()
         {
@@ -22,7 +29,7 @@ namespace Lithnet.GoogleApps.MA
             {"owner", "owner"},
         };
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             if (!this.attributeRoleMapping.Keys.Any(type.HasAttribute))
             {
@@ -39,7 +46,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                existingRules = this.GetNonDefaultRules(config.CustomerID, calendarEmail);
+                existingRules = this.GetNonDefaultRules(this.config.CustomerID, calendarEmail);
             }
 
             Dictionary<string, AttributeChange> keyedAttributeChanges = new Dictionary<string, AttributeChange>();
@@ -60,7 +67,7 @@ namespace Lithnet.GoogleApps.MA
                         continue;
                     }
 
-                    IList<ValueChange> valueChanges = this.DeleteFromRole(change, existingRules, kvp.Value, config, calendarEmail);
+                    IList<ValueChange> valueChanges = this.DeleteFromRole(change, existingRules, kvp.Value, calendarEmail);
 
                     if (valueChanges.Count > 0)
                     {
@@ -83,7 +90,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 // If we are replacing, we don't know the existing values, so we can delete and re-add them.
                 // If we are adding, we want to clear out the Google-default ACLs, to avoid exported-change-not-reimported errors.
-                this.DeleteRules(config.CustomerID, calendarEmail, existingRules.ToArray());
+                this.DeleteRules(this.config.CustomerID, calendarEmail, existingRules.ToArray());
             }
 
             foreach (KeyValuePair<string, string> kvp in this.attributeRoleMapping)
@@ -100,7 +107,7 @@ namespace Lithnet.GoogleApps.MA
                     continue;
                 }
 
-                IList<ValueChange> valueChanges = this.AddToRole(change, existingRules, kvp.Value, config, calendarEmail);
+                IList<ValueChange> valueChanges = this.AddToRole(change, existingRules, kvp.Value, calendarEmail);
 
                 if (valueChanges.Count == 0)
                 {
@@ -130,7 +137,7 @@ namespace Lithnet.GoogleApps.MA
             return keyedAttributeChanges.Select( t=>t.Value).ToList();
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             if (!(source is CalendarResource calendar))
             {
@@ -150,7 +157,7 @@ namespace Lithnet.GoogleApps.MA
                 if (existingRules == null)
                 {
                     // don't populate in advance. Only get the rules if we have a request for a related attribute
-                    existingRules = this.GetNonDefaultRules(config.CustomerID, calendar.ResourceEmail);
+                    existingRules = this.GetNonDefaultRules(this.config.CustomerID, calendar.ResourceEmail);
                 }
 
                 IList<object> items = this.GetRoleMembers(kvp.Value, existingRules).ToList<object>();
@@ -173,7 +180,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        private IList<ValueChange> DeleteFromRole(AttributeChange change, IList<AclRule> existingRules, string role, IManagementAgentParameters config, string calendarId)
+        private IList<ValueChange> DeleteFromRole(AttributeChange change, IList<AclRule> existingRules, string role, string calendarId)
         {
             List<ValueChange> valueChanges = new List<ValueChange>();
 
@@ -208,7 +215,7 @@ namespace Lithnet.GoogleApps.MA
 
                 try
                 {
-                    ResourceRequestFactory.DeleteCalendarAclRule(config.CustomerID, calendarId, matchedRule.Id);
+                    this.config.ResourcesService.DeleteCalendarAclRule(this.config.CustomerID, calendarId, matchedRule.Id);
                     Logger.WriteLine($"Removed {valueToDelete} from role {role} on calendar {calendarId}");
                 }
                 catch
@@ -223,7 +230,7 @@ namespace Lithnet.GoogleApps.MA
             return valueChanges;
         }
 
-        private IList<ValueChange> AddToRole(AttributeChange change, IList<AclRule> existingRules, string role, IManagementAgentParameters config, string calendarId)
+        private IList<ValueChange> AddToRole(AttributeChange change, IList<AclRule> existingRules, string role, string calendarId)
         {
             List<ValueChange> valueChanges = new List<ValueChange>();
 
@@ -246,7 +253,7 @@ namespace Lithnet.GoogleApps.MA
 
                 try
                 {
-                    ResourceRequestFactory.AddCalendarAclRule(config.CustomerID, calendarId, rule, config.CalendarSendNotificationOnPermissionChange);
+                    this.config.ResourcesService.AddCalendarAclRule(this.config.CustomerID, calendarId, rule, this.config.CalendarSendNotificationOnPermissionChange);
                     Logger.WriteLine($"Added {valueToAdd} to role {role} on calendar {calendarId}");
                 }
                 catch
@@ -268,7 +275,7 @@ namespace Lithnet.GoogleApps.MA
 
         private IList<AclRule> GetNonDefaultRules(string customerId, string calendarEmail)
         {
-            return ResourceRequestFactory.GetCalendarAclRules(customerId, calendarEmail).Where(t =>
+            return this.config.ResourcesService.GetCalendarAclRules(customerId, calendarEmail).Where(t =>
                     // Ignore domain objects        
                     t.Scope?.Type != "domain" &&
                     // Ignore public permissions
@@ -284,7 +291,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 try
                 {
-                    ResourceRequestFactory.DeleteCalendarAclRule(customerId, calendarEmail, rule.Id);
+                    this.config.ResourcesService.DeleteCalendarAclRule(customerId, calendarEmail, rule.Id);
                     Logger.WriteLine($"Deleted {rule.Scope.Value} from role {rule.Role} on calendar {calendarEmail}");
                 }
                 catch

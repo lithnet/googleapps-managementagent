@@ -1,17 +1,17 @@
-﻿namespace Lithnet.GoogleApps.MA.UnitTests
-{
-    using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Net;
-    using Google;
-    using Lithnet.GoogleApps;
-    using ManagedObjects;
-    using MetadirectoryServices;
-    using Microsoft.MetadirectoryServices;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using Google;
+using Google.Apis.Gmail.v1.Data;
+using Lithnet.GoogleApps.ManagedObjects;
+using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
 
+namespace Lithnet.GoogleApps.MA.UnitTests
+{
     [TestClass]
     public class AdvancedUserTests
     {
@@ -77,7 +77,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.AreEqual("/", e.OrgUnitPath);
                 Assert.AreEqual("gn", e.Name.GivenName);
@@ -113,7 +113,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -138,7 +138,7 @@
                     }
                 };
 
-                e = UserRequestFactory.Add(e);
+                e = UnitTestControl.TestParameters.UsersService.Add(e);
                 id = e.Id;
 
                 CSEntryChange cs = CSEntryChange.Create();
@@ -156,7 +156,7 @@
                 try
                 {
                     System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
-                    e = UserRequestFactory.Get(id);
+                    e = UnitTestControl.TestParameters.UsersService.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
                 catch (GoogleApiException ex)
@@ -175,7 +175,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -200,7 +200,7 @@
                     }
                 };
 
-                e = UserRequestFactory.Add(e);
+                e = UnitTestControl.TestParameters.UsersService.Add(e);
                 id = e.Id;
                 System.Threading.Thread.Sleep(2000);
 
@@ -223,14 +223,14 @@
                 }
 
                 System.Threading.Thread.Sleep(2000);
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -270,7 +270,7 @@
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
 
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -330,7 +330,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.AreEqual("/", e.OrgUnitPath);
                 Assert.AreEqual("gn", e.Name.GivenName);
@@ -366,7 +366,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -388,7 +388,7 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -414,7 +414,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
             }
@@ -422,7 +422,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -444,14 +444,14 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -473,7 +473,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.IsNull(e.Aliases);
             }
@@ -481,7 +481,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -503,15 +503,15 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -536,7 +536,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2, alias3 }, e.Aliases);
 
@@ -545,7 +545,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -567,14 +567,14 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -599,7 +599,7 @@
 
                 System.Threading.Thread.Sleep(2000);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases);
 
@@ -608,7 +608,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -630,7 +630,7 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -638,8 +638,8 @@
             string alias3 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias4 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            UserRequestFactory.AddAlias(id, alias1);
-            UserRequestFactory.AddAlias(id, alias2);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
+            UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -664,7 +664,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias3, alias4 }, e.Aliases);
             }
@@ -672,7 +672,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -693,7 +693,7 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -716,7 +716,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.AreEqual(true, e.IsAdmin);
             }
@@ -724,7 +724,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -746,10 +746,10 @@
                 }
             };
 
-            e = UserRequestFactory.Add(e);
+            e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
             System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
-            UserRequestFactory.MakeAdmin(true, id);
+            UnitTestControl.TestParameters.UsersService.MakeAdmin(true, id);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -771,7 +771,7 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(id);
+                e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 Assert.AreEqual(false, e.IsAdmin);
             }
@@ -779,7 +779,7 @@
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -789,8 +789,7 @@
         public void AddDelegates()
         {
             string id = null;
-            User e;
-            string dn = this.CreateAdvUser(out e);
+            string dn = this.CreateAdvUser(out User e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -799,9 +798,9 @@
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            User x;
-            string delegate1 = this.CreateUser(out x);
+            string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
+            System.Threading.Thread.Sleep(20000);
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("delegate", new List<object>() { delegate1, delegate2 }));
 
@@ -817,13 +816,13 @@
 
                 System.Threading.Thread.Sleep(10000);
 
-                CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UnitTestControl.TestParameters.GmailService.GetDelegates(cs.DN).ToArray());
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -833,14 +832,15 @@
         public void AddDelegate()
         {
             string id = null;
-            User e;
-            string dn = this.CreateAdvUser(out e);
+            string dn = this.CreateAdvUser(out User e);
             id = e.Id;
-            User x;
-            string delegate1 = this.CreateUser(out x);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate1);
+            string delegate1 = this.CreateUser(out User x);
 
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(30000);
+
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
+
+            //System.Threading.Thread.Sleep(10000);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -864,13 +864,13 @@
 
                 System.Threading.Thread.Sleep(10000);
 
-                CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { delegate1, delegate2 }, UnitTestControl.TestParameters.GmailService.GetDelegates(cs.DN).ToArray());
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -880,14 +880,14 @@
         public void RemoveDelegate()
         {
             string id = null;
-            User e;
-            string dn = this.CreateAdvUser(out e);
+            string dn = this.CreateAdvUser(out User e);
             id = e.Id;
-            User x;
-            string delegate1 = this.CreateUser(out x);
+            string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate1);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate2);
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
 
             System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
@@ -911,13 +911,13 @@
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CollectionAssert.AreEquivalent(new string[] { delegate1 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { delegate1 }, UnitTestControl.TestParameters.GmailService.GetDelegates(cs.DN).ToArray());
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -927,14 +927,14 @@
         public void RemoveDelegates()
         {
             string id = null;
-            User e;
-            string dn = this.CreateAdvUser(out e);
+            string dn = this.CreateAdvUser(out User e);
             id = e.Id;
-            User x;
-            string delegate1 = this.CreateUser(out x);
+            string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate1);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate2);
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
 
             System.Threading.Thread.Sleep(5000);
 
@@ -956,26 +956,24 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(20000);
 
-                CollectionAssert.AreEquivalent(new string[] { }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { }, UnitTestControl.TestParameters.GmailService.GetDelegates(cs.DN)?.ToArray() ?? new string[] { });
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
         public void ReplaceDelegates()
         {
             string id = null;
-            User e;
-            string dn = this.CreateAdvUser(out e);
+            string dn = this.CreateAdvUser(out User e);
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -984,13 +982,15 @@
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            User x;
-            string delegate1 = this.CreateUser(out x);
+            string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
             string delegate3 = this.CreateUser(out x);
             string delegate4 = this.CreateUser(out x);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate1);
-            UserSettingsRequestFactory.AddDelegate(dn, delegate2);
+
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
+            UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
             System.Threading.Thread.Sleep(10000);
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("delegate", new List<object>() { delegate3, delegate4 }));
@@ -1007,13 +1007,248 @@
 
                 System.Threading.Thread.Sleep(10000);
 
-                CollectionAssert.AreEquivalent(new string[] { delegate3, delegate4 }, UserSettingsRequestFactory.GetDelegates(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { delegate3, delegate4 }, UnitTestControl.TestParameters.GmailService.GetDelegates(cs.DN).ToArray());
             }
             finally
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
+                }
+            }
+
+        }
+
+
+
+        [TestMethod]
+        public void AddSendAsAddresses()
+        {
+            string id = null;
+            string dn = this.CreateAdvUser(out User e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            string sendAs1 = this.CreateUser(out User x);
+            string sendAs2 = this.CreateUser(out x);
+            System.Threading.Thread.Sleep(20000);
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendAs", new List<object>() { sendAs1, sendAs2 }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                CollectionAssert.AreEquivalent(new string[] { sendAs1, sendAs2 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void AddSendAsAddress()
+        {
+            string id = null;
+            string dn = this.CreateAdvUser(out User e);
+            id = e.Id;
+            string sendAs1 = this.CreateUser(out User x);
+
+            System.Threading.Thread.Sleep(30000);
+
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { DisplayName = "TEst User", SendAsEmail = sendAs1 });
+
+            //System.Threading.Thread.Sleep(10000);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            string sendAs2 = this.CreateUser(out x);
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendAs", new List<object>() { $"\"TEST user\" <{sendAs2}>" }));
+
+            try
+            {
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                var results = UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).Where(t => !(t.IsPrimary ?? false)).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToArray();
+                CollectionAssert.AreEquivalent(new string[] { $"\"TEst User\" <{sendAs1}>", $"\"TEST user\" <{sendAs2}>" }, results);
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void RemoveSendAsAddress()
+        {
+            string id = null;
+            string dn = this.CreateAdvUser(out User e);
+            id = e.Id;
+            string sendAs1 = this.CreateUser(out User x);
+            string sendAs2 = this.CreateUser(out x);
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
+
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("sendAs", new List<ValueChange>() { new ValueChange(sendAs2, ValueModificationType.Delete) }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
+                CollectionAssert.AreEquivalent(new string[] { sendAs1 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
+                }
+            }
+
+        }
+
+        [TestMethod]
+        public void RemoveSendAsAddresses()
+        {
+            string id = null;
+            string dn = this.CreateAdvUser(out User e);
+            id = e.Id;
+            string sendAs1 = this.CreateUser(out User x);
+            string sendAs2 = this.CreateUser(out x);
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
+
+            System.Threading.Thread.Sleep(5000);
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("sendAs"));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(20000);
+
+                CollectionAssert.AreEquivalent(new string[] { }, UnitTestControl.TestParameters.GmailService.GetSendAsAddresses(cs.DN)?.ToArray() ?? new string[] { });
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ReplaceSendAsAddresses()
+        {
+            string id = null;
+            string dn = this.CreateAdvUser(out User e);
+            id = e.Id;
+
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Update;
+            cs.DN = dn;
+            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
+
+            string sendAs1 = this.CreateUser(out User x);
+            string sendAs2 = this.CreateUser(out x);
+            string sendAs3 = this.CreateUser(out x);
+            string sendAs4 = this.CreateUser(out x);
+
+            System.Threading.Thread.Sleep(20000);
+
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
+            System.Threading.Thread.Sleep(10000);
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("sendAs", new List<object>() { sendAs3, sendAs4 }));
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail(result.ErrorName);
+                }
+
+                System.Threading.Thread.Sleep(10000);
+
+                CollectionAssert.AreEquivalent(new string[] { sendAs3, sendAs4 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -1040,7 +1275,7 @@
                 }
             };
 
-            UserRequestFactory.Add(e);
+            UnitTestControl.TestParameters.UsersService.Add(e);
 
             return dn;
         }
@@ -1059,8 +1294,8 @@
                 }
             };
 
-            UserRequestFactory.Add(e);
-
+            UnitTestControl.TestParameters.UsersService.Add(e);
+            System.Threading.Thread.Sleep(1000);
             return dn;
         }
     }

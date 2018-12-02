@@ -19,6 +19,6 @@ namespace Lithnet.GoogleApps.MA
 
         ObjectModificationType DeltaUpdateType { get; }
 
-        Task GetItems(IManagementAgentParameters config, Schema schema, BlockingCollection<object> collection);
+        Task GetItems(Schema schema, BlockingCollection<object> collection);
     }
 }

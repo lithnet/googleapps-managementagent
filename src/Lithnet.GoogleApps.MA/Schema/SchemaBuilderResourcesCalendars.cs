@@ -20,7 +20,7 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
-            type.ApiInterface = new ApiInterfaceCalendar(config.CustomerID, type);
+            type.ApiInterface = new ApiInterfaceCalendar(config.CustomerID, type, config);
 
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {

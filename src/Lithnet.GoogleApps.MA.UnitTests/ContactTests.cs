@@ -68,7 +68,7 @@
                     Assert.Fail(result.ErrorName);
                 }
 
-                ContactEntry e = ContactRequestFactory.GetContact(id);
+                ContactEntry e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                 Assert.AreEqual("billingInformation", e.BillingInformation);
                 Assert.AreEqual("2000-01-01", e.Birthday);
                 Assert.AreEqual("directoryServer", e.DirectoryServer);
@@ -111,7 +111,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 
@@ -132,7 +132,7 @@
 
                 e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
-                e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+                e = UnitTestControl.TestParameters.ContactsService.Add(e, UnitTestControl.TestParameters.Domain);
                 id = e.SelfUri.Content;
 
                 CSEntryChange cs = CSEntryChange.Create();
@@ -150,7 +150,7 @@
                 try
                 {
                     System.Threading.Thread.Sleep(5000);
-                    e = ContactRequestFactory.GetContact(id);
+                    e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                     Assert.Fail("The object did not get deleted");
                 }
                 catch (GDataRequestException ex)
@@ -169,7 +169,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 
@@ -189,7 +189,7 @@
 
                 e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
-                e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+                e = UnitTestControl.TestParameters.ContactsService.Add(e, UnitTestControl.TestParameters.Domain);
                 id = e.SelfUri.Content;
 
                 CSEntryChange cs = CSEntryChange.Create();
@@ -210,7 +210,7 @@
                 }
 
                 System.Threading.Thread.Sleep(5000);
-                e = ContactRequestFactory.GetContact(id);
+                e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                 Assert.AreEqual(newDN, e.ExtendedProperties.Single(t => t.Name == ApiInterfaceContact.DNAttributeName).Value);
                 var x = CSEntryChangeQueue.Take();
             }
@@ -218,7 +218,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 
@@ -261,7 +261,7 @@
 
             e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
-            e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+            e = UnitTestControl.TestParameters.ContactsService.Add(e, UnitTestControl.TestParameters.Domain);
             id = e.SelfUri.Content;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -314,7 +314,7 @@
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = ContactRequestFactory.GetContact(id);
+                e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                 Assert.AreEqual("billingInformation", e.BillingInformation);
                 Assert.AreEqual("2000-01-01", e.Birthday);
                 Assert.AreEqual("directoryServer", e.DirectoryServer);
@@ -358,7 +358,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 
@@ -401,7 +401,7 @@
 
             e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
-            e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+            e = UnitTestControl.TestParameters.ContactsService.Add(e, UnitTestControl.TestParameters.Domain);
             id = e.SelfUri.Content;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -423,7 +423,7 @@
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = ContactRequestFactory.GetContact(id);
+                e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                
 
                 Assert.AreEqual(0, e.Phonenumbers.Count);
@@ -433,7 +433,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 
@@ -476,7 +476,7 @@
 
             e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
-            e = ContactRequestFactory.Add(e, UnitTestControl.TestParameters.Domain);
+            e = UnitTestControl.TestParameters.ContactsService.Add(e, UnitTestControl.TestParameters.Domain);
             id = e.SelfUri.Content;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -498,7 +498,7 @@
 
                 System.Threading.Thread.Sleep(5000);
 
-                e = ContactRequestFactory.GetContact(id);
+                e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
 
 
                 Assert.AreEqual(0, e.ExternalIds.Count);
@@ -508,7 +508,7 @@
             {
                 if (id != null)
                 {
-                    ContactRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
 

@@ -134,7 +134,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -156,7 +156,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    UserRequestFactory.Delete(id);
+                    UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
 
@@ -199,7 +199,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -221,7 +221,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
 
@@ -253,7 +253,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -279,7 +279,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(u.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string9", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -289,7 +289,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
         }
@@ -320,7 +320,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -346,7 +346,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(u.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string9", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -356,7 +356,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
         }
@@ -387,7 +387,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -414,7 +414,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(u.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.IsFalse(e.CustomSchemas[TestSchemaName].ContainsKey("TestSVString"));
@@ -424,7 +424,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
         }
@@ -455,7 +455,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -481,7 +481,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(u.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 if (e.CustomSchemas != null && e.CustomSchemas.ContainsKey(TestSchemaName))
@@ -494,7 +494,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
         }
@@ -526,7 +526,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                User e = UserRequestFactory.Get(u.Id);
+                User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 Assert.AreEqual("string1", (string)e.CustomSchemas[TestSchemaName]["TestSVString"]);
@@ -552,7 +552,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                e = UserRequestFactory.Get(u.Id);
+                e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
 
                 if (e.CustomSchemas != null && e.CustomSchemas.ContainsKey(TestSchemaName))
@@ -565,7 +565,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (u?.Id != null)
                 {
-                    UserRequestFactory.Delete(u.Id);
+                    UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
         }

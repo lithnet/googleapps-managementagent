@@ -8,9 +8,16 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceUserMakeAdmin : IApiInterface
     {
+        private IManagementAgentParameters config;
+
         public string Api => "usermakeadmin";
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public ApiInterfaceUserMakeAdmin(IManagementAgentParameters config)
+        {
+            this.config = config;
+        }
+
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
             List<AttributeChange> changes = new List<AttributeChange>();
@@ -24,7 +31,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (makeAdmin)
                     {
-                        Action x = () => UserRequestFactory.MakeAdmin(true, id);
+                        Action x = () => this.config.UsersService.MakeAdmin(true, id);
                         x.ExecuteWithRetryOnNotFound();
                     }
 
@@ -33,7 +40,7 @@ namespace Lithnet.GoogleApps.MA
                 else if (change.ModificationType == AttributeModificationType.Replace ||
                          change.ModificationType == AttributeModificationType.Update)
                 {
-                    Action x = () => UserRequestFactory.MakeAdmin(makeAdmin, id);
+                    Action x = () => this.config.UsersService.MakeAdmin(makeAdmin, id);
                     x.ExecuteWithRetryOnNotFound();
 
                     if (change.ModificationType == AttributeModificationType.Replace)
@@ -50,7 +57,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 

@@ -9,6 +9,7 @@ namespace Lithnet.GoogleApps.MA
         private const string PropExportThreadsGroupMember = "export-threads-group-member";
         private const string PropImportThreadsGroupMember = "import-threads-group-member";
         private const string PropBatchSizeGroupMember = "batch-size-group-member";
+        private const string PropConcurrentOperaionGroupMember = "concurrent-operations-group-member";
 
         [ConfigurationProperty(DirectoryApiElement.PropRateLimit, IsRequired = false, DefaultValue = 1500)]
         public int RateLimit
@@ -72,6 +73,19 @@ namespace Lithnet.GoogleApps.MA
             set
             {
                 this[DirectoryApiElement.PropBatchSizeGroupMember] = value;
+            }
+        }
+
+        [ConfigurationProperty(PropConcurrentOperaionGroupMember, IsRequired = false, DefaultValue = 10)]
+        public int ConcurrentOperationGroupMember
+        {
+            get
+            {
+                return (int)this[DirectoryApiElement.PropConcurrentOperaionGroupMember];
+            }
+            set
+            {
+                this[DirectoryApiElement.PropConcurrentOperaionGroupMember] = value;
             }
         }
     }

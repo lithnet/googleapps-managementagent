@@ -135,7 +135,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string ServiceAccountEmailAddress
+        public override string ServiceAccountEmailAddress
         {
             get
             {
@@ -240,7 +240,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string UserEmailAddress
+        public override string UserEmailAddress
         {
             get
             {
@@ -255,7 +255,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string KeyFilePath
+        public override string KeyFilePath
         {
             get
             {
@@ -553,7 +553,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string KeyFilePassword
+        public override string KeyFilePassword
         {
             get
             {
@@ -710,7 +710,7 @@ namespace Lithnet.GoogleApps.MA
                         {
                             try
                             {
-                                X509Certificate2 cert = this.GetCertificate(this.KeyFilePath, this.KeyFilePassword);
+                                X509Certificate2 cert = this.Certificate;
                             }
                             catch (Exception ex)
                             {
@@ -860,16 +860,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return result;
-        }
-
-        public ServiceAccountCredential GetCredentials(string[] scopes)
-        {
-            Trace.WriteLine($"Creating credential set for service account {this.ServiceAccountEmailAddress} on behalf of user {this.UserEmailAddress} with scopes {scopes.ToSmartString()}");
-            return this.GetCredentials(
-                this.ServiceAccountEmailAddress,
-                this.UserEmailAddress,
-                this.GetCertificate(this.KeyFilePath, this.KeyFilePassword),
-                scopes);
         }
     }
 }

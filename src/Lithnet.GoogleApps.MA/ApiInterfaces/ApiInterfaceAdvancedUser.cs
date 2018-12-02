@@ -7,10 +7,9 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceAdvancedUser : ApiInterfaceUser
     {
-        public ApiInterfaceAdvancedUser(MASchemaType type)
-            :base (type)
+        public ApiInterfaceAdvancedUser(MASchemaType type, IManagementAgentParameters config)
+            : base(type, config)
         {
-            this.InternalInterfaces.Add(new ApiInterfaceUserDelegates());
             this.ObjectClass = SchemaConstants.AdvancedUser;
         }
 

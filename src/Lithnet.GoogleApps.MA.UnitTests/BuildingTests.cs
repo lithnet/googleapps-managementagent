@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void GetBuildings()
         {
-            foreach (Building item in ResourceRequestFactory.GetBuildings("my_customer"))
+            foreach (Building item in UnitTestControl.TestParameters.ResourcesService.GetBuildings("my_customer"))
             {
                 {
                     Trace.WriteLine(item.BuildingName);
@@ -30,11 +30,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             MASchemaType s = UnitTestControl.Schema[SchemaConstants.Building];
 
-            ApiInterfaceBuilding u = new ApiInterfaceBuilding("my_customer", s);
+            ApiInterfaceBuilding u = new ApiInterfaceBuilding("my_customer", s, UnitTestControl.TestParameters);
 
             BlockingCollection<object> items = new BlockingCollection<object>();
 
-            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, items).Wait();
+            u.GetItems(UnitTestControl.MmsSchema, items).Wait();
 
             foreach (CSEntryChange item in items.OfType<CSEntryChange>())
             {
@@ -73,7 +73,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                Building c = UnitTestControl.TestParameters.ResourcesService.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual("new-building", c.BuildingId);
                 Assert.AreEqual("My building", c.BuildingName);
                 Assert.AreEqual("my description", c.Description);
@@ -85,7 +85,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             building.FloorNames = new List<string>() { "B1", "B2", "G" };
             building.Coordinates = new BuildingCoordinates() { Latitude = -66, Longitude = 44 };
 
-            ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, building);
+            UnitTestControl.TestParameters.ResourcesService.AddBuilding(UnitTestControl.TestParameters.CustomerID, building);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -127,7 +127,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                Building c = UnitTestControl.TestParameters.ResourcesService.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual("test-building", c.BuildingId);
                 Assert.AreEqual("new name", c.BuildingName);
                 Assert.AreEqual("new description", c.Description);
@@ -140,7 +140,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             building.Coordinates = new BuildingCoordinates() { Latitude = -66, Longitude = 44 };
 
 
-            ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, building);
+            UnitTestControl.TestParameters.ResourcesService.AddBuilding(UnitTestControl.TestParameters.CustomerID, building);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -181,7 +181,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                Building c = ResourceRequestFactory.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                Building c = UnitTestControl.TestParameters.ResourcesService.GetBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual("test-building", c.BuildingId);
                 Assert.IsTrue(string.IsNullOrEmpty(c.Description));
                 Assert.IsNull(c.Coordinates?.Longitude);
@@ -191,7 +191,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }

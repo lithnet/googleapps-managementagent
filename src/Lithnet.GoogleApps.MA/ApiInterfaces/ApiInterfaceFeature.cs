@@ -16,13 +16,16 @@ namespace Lithnet.GoogleApps.MA
     {
         private string customerID;
 
+        private IManagementAgentParameters config;
+
         public static string DNSuffix => "@feature.resource";
 
         protected MASchemaType SchemaType { get; set; }
-        public ApiInterfaceFeature(string customerID, MASchemaType type)
+        public ApiInterfaceFeature(string customerID, MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
             this.customerID = customerID;
+            this.config = config;
         }
 
         public string Api => "feature";
@@ -48,22 +51,20 @@ namespace Lithnet.GoogleApps.MA
 
         public object GetInstance(CSEntryChange csentry)
         {
-            return ResourceRequestFactory.GetFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            return this.config.ResourcesService.GetFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
         public void DeleteInstance(CSEntryChange csentry)
         {
-            ResourceRequestFactory.DeleteFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
+            this.config.ResourcesService.DeleteFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config, ref object target, bool patch = false)
+        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
 
-            Feature feature = target as Feature;
-
-            if (feature == null)
+            if (!(target is Feature feature))
             {
                 throw new InvalidOperationException();
             }
@@ -81,7 +82,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (csentry.ObjectModificationType == ObjectModificationType.Add)
                 {
-                    result = ResourceRequestFactory.AddFeature(this.customerID, feature);
+                    result = this.config.ResourcesService.AddFeature(this.customerID, feature);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -89,11 +90,11 @@ namespace Lithnet.GoogleApps.MA
 
                     if (patch)
                     {
-                        result = ResourceRequestFactory.PatchFeature(this.customerID, id, feature);
+                        result = this.config.ResourcesService.PatchFeature(this.customerID, id, feature);
                     }
                     else
                     {
-                        result = ResourceRequestFactory.UpdateFeature(this.customerID, id, feature);
+                        result = this.config.ResourcesService.UpdateFeature(this.customerID, id, feature);
                     }
                 }
                 else
@@ -108,7 +109,7 @@ namespace Lithnet.GoogleApps.MA
             return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source, IManagementAgentParameters config)
+        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
 
@@ -119,9 +120,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            Feature feature = source as Feature;
-
-            if (feature == null)
+            if (!(source is Feature feature))
             {
                 throw new InvalidOperationException();
             }
@@ -145,7 +144,7 @@ namespace Lithnet.GoogleApps.MA
             return attributeChanges;
         }
 
-        public string GetAnchorValue(string attributeName, object target)
+        public string GetAnchorValue(string name, object target)
         {
             Feature feature = target as Feature;
 
@@ -159,9 +158,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetDNValue(object target)
         {
-            Feature feature = target as Feature;
-
-            if (feature == null)
+            if (!(target is Feature feature))
             {
                 throw new InvalidOperationException();
             }
@@ -169,7 +166,7 @@ namespace Lithnet.GoogleApps.MA
             return $"{feature.Name}{ApiInterfaceFeature.DNSuffix}";
         }
 
-        public Task GetItems(IManagementAgentParameters config, MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
@@ -188,9 +185,9 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Starting feature import task");
                 Logger.WriteLine("Requesting feature fields: " + fields);
 
-                foreach (Feature feature in ResourceRequestFactory.GetFeatures(config.CustomerID, fields))
+                foreach (Feature feature in this.config.ResourcesService.GetFeatures(this.config.CustomerID, fields))
                 {
-                    collection.Add(this.GetCSEntryForFeature(feature, schema, config));
+                    collection.Add(this.GetCSEntryForFeature(feature, schema));
                     Debug.WriteLine($"Created CSEntryChange for feature: {feature.Name}");
 
                     continue;
@@ -204,9 +201,9 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        private CSEntryChange GetCSEntryForFeature(Feature feature, MmsSchema schema, IManagementAgentParameters config)
+        private CSEntryChange GetCSEntryForFeature(Feature feature, MmsSchema schema)
         {
-            return ImportProcessor.GetCSEntryChange(feature, schema.Types[SchemaConstants.Feature], config);
+            return ImportProcessor.GetCSEntryChange(feature, schema.Types[SchemaConstants.Feature], this.config);
         }
 
         private bool SetDNValue(CSEntryChange csentry, Feature feature)

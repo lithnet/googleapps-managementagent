@@ -18,24 +18,24 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestInitialize]
         public void InitializeTestElements()
         {
-            IList<string> featureNames = ResourceRequestFactory.GetFeatures(UnitTestControl.TestParameters.CustomerID).Select(t => t.Name).ToList();
+            IList<string> featureNames = UnitTestControl.TestParameters.ResourcesService.GetFeatures(UnitTestControl.TestParameters.CustomerID).Select(t => t.Name).ToList();
 
             if (!featureNames.Contains("Test1"))
             {
-                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test1" });
+                UnitTestControl.TestParameters.ResourcesService.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test1" });
             }
 
             if (!featureNames.Contains("Test2"))
             {
-                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test2" });
+                UnitTestControl.TestParameters.ResourcesService.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test2" });
             }
 
             if (!featureNames.Contains("Test3"))
             {
-                ResourceRequestFactory.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test3" });
+                UnitTestControl.TestParameters.ResourcesService.AddFeature(UnitTestControl.TestParameters.CustomerID, new Feature() { Name = "Test3" });
             }
 
-            IList<string> buildingIDs = ResourceRequestFactory.GetBuildings(UnitTestControl.TestParameters.CustomerID).Select(t => t.BuildingId).ToList();
+            IList<string> buildingIDs = UnitTestControl.TestParameters.ResourcesService.GetBuildings(UnitTestControl.TestParameters.CustomerID).Select(t => t.BuildingId).ToList();
 
             if (!buildingIDs.Contains("testbuilding1"))
             {
@@ -46,7 +46,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     FloorNames = new List<string> { "B1", "G", "1", "2" }
                 };
 
-                ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
+                UnitTestControl.TestParameters.ResourcesService.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
             }
 
             if (!buildingIDs.Contains("testbuilding2"))
@@ -58,18 +58,18 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     FloorNames = new List<string> { "B1", "G", "1", "2" }
                 };
 
-                ResourceRequestFactory.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
+                UnitTestControl.TestParameters.ResourcesService.AddBuilding(UnitTestControl.TestParameters.CustomerID, b);
             }
         }
 
         //[TestMethod]
         //public void DeleteAllCalendars()
         //{
-        //    foreach (var calendar in ResourceRequestFactory.GetCalendars(UnitTestControl.TestParameters.CustomerID))
+        //    foreach (var calendar in UnitTestControl.TestParameters.ResourcesService.GetCalendars(UnitTestControl.TestParameters.CustomerID))
         //    {
         //        try
         //        {
-        //            ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, calendar.ResourceId);
+        //            UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, calendar.ResourceId);
         //            Debug.WriteLine($"Deleted {calendar.GeneratedResourceName} - {calendar.ResourceEmail} - {calendar.ResourceId}");
         //        }
         //        catch (Exception ex)
@@ -79,11 +79,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         //        }
         //    }
 
-        //    foreach (var feature in ResourceRequestFactory.GetFeatures(UnitTestControl.TestParameters.CustomerID))
+        //    foreach (var feature in UnitTestControl.TestParameters.ResourcesService.GetFeatures(UnitTestControl.TestParameters.CustomerID))
         //    {
         //        try
         //        {
-        //            ResourceRequestFactory.DeleteFeature(UnitTestControl.TestParameters.CustomerID, feature.Name);
+        //            UnitTestControl.TestParameters.ResourcesService.DeleteFeature(UnitTestControl.TestParameters.CustomerID, feature.Name);
         //            Debug.WriteLine($"Deleted {feature.Name}");
         //        }
         //        catch (Exception ex)
@@ -93,12 +93,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         //        }
         //    }
 
-        //    foreach (var building in ResourceRequestFactory.GetBuildings(UnitTestControl.TestParameters.CustomerID))
+        //    foreach (var building in UnitTestControl.TestParameters.ResourcesService.GetBuildings(UnitTestControl.TestParameters.CustomerID))
         //    {
         //        try
         //        {
         //            Debug.WriteLine($"Deleted {building.BuildingId}");
-        //            ResourceRequestFactory.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, building.BuildingId);
+        //            UnitTestControl.TestParameters.ResourcesService.DeleteBuilding(UnitTestControl.TestParameters.CustomerID, building.BuildingId);
         //        }
         //        catch (Exception ex)
         //        {
@@ -114,11 +114,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             MASchemaType maSchemaType = UnitTestControl.Schema[SchemaConstants.Calendar];
 
-            ApiInterfaceCalendar u = new ApiInterfaceCalendar("my_customer", maSchemaType);
+            ApiInterfaceCalendar u = new ApiInterfaceCalendar("my_customer", maSchemaType, UnitTestControl.TestParameters);
 
             BlockingCollection<object> items = new BlockingCollection<object>();
 
-            u.GetItems(UnitTestControl.TestParameters, UnitTestControl.MmsSchema, items).Wait();
+            u.GetItems(UnitTestControl.MmsSchema, items).Wait();
             HashSet<string> dns = new HashSet<string>();
 
             foreach (CSEntryChange item in items.OfType<CSEntryChange>())
@@ -175,7 +175,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual("test-name", c.ResourceName);
                 Assert.IsNotNull(c.ResourceEmail);
                 Assert.AreEqual("testbuilding1", c.BuildingId);
@@ -191,7 +191,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -233,9 +233,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
 
-                List<AclRule> acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
+                List<AclRule> acls = UnitTestControl.TestParameters.ResourcesService.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
 
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner1")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner2")));
@@ -247,7 +247,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -272,7 +272,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             };
 
 
-            ResourceRequestFactory.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
+            UnitTestControl.TestParameters.ResourcesService.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -306,7 +306,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.AreEqual(cs.DN, "test-name@calendar.resource");
                 Assert.AreEqual("test-name", c.ResourceName);
                 Assert.AreEqual("testbuilding1", c.BuildingId);
@@ -322,7 +322,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -359,9 +359,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
 
-                List<AclRule> acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
+                List<AclRule> acls = UnitTestControl.TestParameters.ResourcesService.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
 
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner1")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner2")));
@@ -394,7 +394,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
+                acls = UnitTestControl.TestParameters.ResourcesService.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
 
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner1")));
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner2")));
@@ -412,7 +412,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -449,9 +449,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
 
-                List<AclRule> acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
+                List<AclRule> acls = UnitTestControl.TestParameters.ResourcesService.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
 
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner1")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("owner2")));
@@ -482,7 +482,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                acls = ResourceRequestFactory.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
+                acls = UnitTestControl.TestParameters.ResourcesService.GetCalendarAclRules(UnitTestControl.TestParameters.CustomerID, c.ResourceEmail).ToList();
 
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value != c.ResourceEmail));
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "freeBusyReader" && t.Scope.Type != "domain"));
@@ -493,7 +493,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
@@ -517,7 +517,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 new FeatureInstance() {Feature = new Feature() {Name = "Test2"}},
             };
 
-            ResourceRequestFactory.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
+            UnitTestControl.TestParameters.ResourcesService.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -545,7 +545,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CalendarResource c = ResourceRequestFactory.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                CalendarResource c = UnitTestControl.TestParameters.ResourcesService.GetCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 Assert.IsNull(c.BuildingId);
                 Assert.IsNull(c.Capacity);
                 Assert.IsNull(c.FloorName);
@@ -558,7 +558,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 if (id != null)
                 {
-                    ResourceRequestFactory.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
+                    UnitTestControl.TestParameters.ResourcesService.DeleteCalendar(UnitTestControl.TestParameters.CustomerID, id);
                 }
             }
         }
