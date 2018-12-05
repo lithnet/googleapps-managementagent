@@ -329,6 +329,30 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public bool EnableAdvancedUserAttributes
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public IEnumerable<string> PhonesAttributeFixedTypes
         {
             get
@@ -647,6 +671,10 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarBuildingAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.CalendarFeatureAttributeTypeParameter, new string[] { "String", "Reference" }, false, "String"));
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.GroupMemberAttributeTypeParameter, new string[] { "String", "Reference" }, false, "Reference"));
+
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Enabling advanced user attributes enables managing delegate and send-as settings, however this can significantly slow down the speed of full imports. A separate API call must be made for every user during the import process for each of these selected attributes."));
 
                     break;
                 default:

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using Google;
 using Lithnet.GoogleApps.ManagedObjects;
 using Microsoft.MetadirectoryServices;
@@ -22,7 +23,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             ApiInterfaceUser u = new ApiInterfaceUser(userSchemaType, UnitTestControl.TestParameters);
 
-            u.GetItems(UnitTestControl.MmsSchema, new BlockingCollection<object>()).Wait();
+            u.GetObjectImportTask(UnitTestControl.MmsSchema, new BlockingCollection<object>(), CancellationToken.None).Wait();
         }
 
         [TestMethod]

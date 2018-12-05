@@ -16,15 +16,20 @@ namespace Lithnet.GoogleApps.MA
 
         public string Api => "usersendas";
 
-        public ApiInterfaceUserSendAs(IManagementAgentParameters config)
+        private string attributeName;
+
+        private string typeName;
+
+        public ApiInterfaceUserSendAs(IManagementAgentParameters config, string typeName)
         {
             this.config = config;
+            this.attributeName = $"{typeName}_{SchemaConstants.SendAs}";
+            this.typeName = typeName;
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
-            Func<AttributeChange> x = () => this.ApplySendAsChanges(csentry);
-            AttributeChange change = x.ExecuteWithRetryOnNotFound();
+            AttributeChange change = this.ApplySendAsChanges(csentry);
 
             List<AttributeChange> changes = new List<AttributeChange>();
 
@@ -40,12 +45,12 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            if (!type.HasAttribute(SchemaConstants.SendAs))
+            if (!type.HasAttribute(this.attributeName))
             {
                 return attributeChanges;
             }
 
-            IAttributeAdapter typeDef = ManagementAgent.Schema[SchemaConstants.User].AttributeAdapters.First(t => t.Api == this.Api);
+            IAttributeAdapter typeDef = ManagementAgent.Schema[this.typeName].AttributeAdapters.First(t => t.Api == this.Api);
 
             IList<string> sendAsAddresses = this.GetNonPrimarySendAsFormattedAddresses(((User)source).PrimaryEmail);
 
@@ -74,7 +79,7 @@ namespace Lithnet.GoogleApps.MA
             adds = new List<string>();
             deletes = new List<string>();
 
-            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == SchemaConstants.SendAs);
+            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name == this.attributeName);
 
             if (csentry.ObjectModificationType == ObjectModificationType.Replace)
             {
@@ -175,11 +180,11 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (csentry.ObjectModificationType == ObjectModificationType.Update)
                     {
-                        change = AttributeChange.CreateAttributeUpdate(SchemaConstants.SendAs, valueChanges);
+                        change = AttributeChange.CreateAttributeUpdate(this.attributeName, valueChanges);
                     }
                     else
                     {
-                        change = AttributeChange.CreateAttributeAdd(SchemaConstants.SendAs, valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
+                        change = AttributeChange.CreateAttributeAdd(this.attributeName, valueChanges.Where(u => u.ModificationType == ValueModificationType.Add).Select(t => t.Value).ToList());
                     }
                 }
             }

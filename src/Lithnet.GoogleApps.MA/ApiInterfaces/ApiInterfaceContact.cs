@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.GData.Contacts;
 using Google.GData.Extensions;
@@ -188,7 +189,7 @@ namespace Lithnet.GoogleApps.MA
 
         public ObjectModificationType DeltaUpdateType => ObjectModificationType.Replace;
 
-        public Task GetItems(Schema schema, BlockingCollection<object> collection)
+        public Task GetObjectImportTask(Schema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
             Task t = new Task(() =>
             {
@@ -228,7 +229,7 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 Logger.WriteLine("Contacts import task complete");
-            });
+            }, cancellationToken);
 
             t.Start();
 

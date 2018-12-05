@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
@@ -209,7 +210,7 @@ namespace Lithnet.GoogleApps.MA
             return group.Email;
         }
 
-        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetObjectImportTask(MmsSchema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
             HashSet<string> groupFieldList = new HashSet<string>
             {
@@ -271,7 +272,7 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 Logger.WriteLine("Groups import task complete");
-            });
+            }, cancellationToken);
 
             t.Start();
 

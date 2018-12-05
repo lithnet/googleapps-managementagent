@@ -800,9 +800,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("delegate", new List<object>() { delegate1, delegate2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUserDelegate", new List<object>() { delegate1, delegate2 }));
 
             try
             {
@@ -836,11 +835,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             id = e.Id;
             string delegate1 = this.CreateUser(out User x);
 
-            System.Threading.Thread.Sleep(30000);
-
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
-
-            //System.Threading.Thread.Sleep(10000);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -850,7 +845,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             string delegate2 = this.CreateUser(out x);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("delegate", new List<object>() { delegate2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUserDelegate", new List<object>() { delegate2 }));
 
             try
             {
@@ -884,12 +879,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             id = e.Id;
             string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
 
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
-
-            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -897,7 +889,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("delegate", new List<ValueChange>() { new ValueChange(delegate2, ValueModificationType.Delete) }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("advancedUserDelegate", new List<ValueChange>() { new ValueChange(delegate2, ValueModificationType.Delete) }));
 
             try
             {
@@ -931,12 +923,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             id = e.Id;
             string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
 
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
-
-            System.Threading.Thread.Sleep(5000);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -944,7 +933,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("delegate"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("advancedUserDelegate"));
 
             try
             {
@@ -987,13 +976,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             string delegate3 = this.CreateUser(out x);
             string delegate4 = this.CreateUser(out x);
 
-            System.Threading.Thread.Sleep(20000);
-
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
-            System.Threading.Thread.Sleep(10000);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("delegate", new List<object>() { delegate3, delegate4 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("advancedUserDelegate", new List<object>() { delegate3, delegate4 }));
 
             try
             {
@@ -1036,9 +1022,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             string sendAs1 = this.CreateUser(out User x);
             string sendAs2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
+            MailAddress user1MailAddress = new MailAddress(sendAs1, "Test User");
+            MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendAs", new List<object>() { sendAs1, sendAs2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUserSendAs", new List<object>() { user1MailAddress.ToString(), user2MailAddress.ToString() }));
 
             try
             {
@@ -1052,7 +1039,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(10000);
 
-                CollectionAssert.AreEquivalent(new string[] { sendAs1, sendAs2 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { user1MailAddress.ToString(), user2MailAddress.ToString() }, this.GetFormattedSendAsResults(cs.DN));
             }
             finally
             {
@@ -1061,7 +1048,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
+        }
 
+        private string[] GetFormattedSendAsResults(string dn)
+        {
+            return UnitTestControl.TestParameters.GmailService.GetSendAs(dn).Where(t => !(t.IsPrimary ?? false)).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToArray();
         }
 
         [TestMethod]
@@ -1070,13 +1061,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             string id = null;
             string dn = this.CreateAdvUser(out User e);
             id = e.Id;
-            string sendAs1 = this.CreateUser(out User x);
+            string sendAs1 = this.CreateUser(out User _);
 
-            System.Threading.Thread.Sleep(30000);
+            MailAddress user1MailAddress = new MailAddress(sendAs1, "Test User");
 
-            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { DisplayName = "TEst User", SendAsEmail = sendAs1 });
-
-            //System.Threading.Thread.Sleep(10000);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { DisplayName = user1MailAddress.DisplayName, SendAsEmail = user1MailAddress.Address });
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -1084,9 +1073,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            string sendAs2 = this.CreateUser(out x);
+            string sendAs2 = this.CreateUser(out User _);
+            MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendAs", new List<object>() { $"\"TEST user\" <{sendAs2}>" }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUserSendAs", new List<object>() { user2MailAddress.ToString() }));
 
             try
             {
@@ -1099,8 +1089,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(10000);
 
-                var results = UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).Where(t => !(t.IsPrimary ?? false)).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToArray();
-                CollectionAssert.AreEquivalent(new string[] { $"\"TEst User\" <{sendAs1}>", $"\"TEST user\" <{sendAs2}>" }, results);
+                CollectionAssert.AreEquivalent(new string[] { user1MailAddress.ToString(), user2MailAddress.ToString() }, this.GetFormattedSendAsResults(cs.DN));
             }
             finally
             {
@@ -1119,12 +1108,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             id = e.Id;
             string sendAs1 = this.CreateUser(out User x);
             string sendAs2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
 
-            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
-            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
+            MailAddress user1MailAddress = new MailAddress(sendAs1, "Test User 1");
+            MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { SendAsEmail = user1MailAddress.Address, DisplayName = user1MailAddress.DisplayName });
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { SendAsEmail = user2MailAddress.Address, DisplayName = user2MailAddress.DisplayName });
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -1132,7 +1121,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("sendAs", new List<ValueChange>() { new ValueChange(sendAs2, ValueModificationType.Delete) }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("advancedUserSendAs", new List<ValueChange>()
+            {
+                new ValueChange(user2MailAddress.ToString(), ValueModificationType.Delete)
+            }));
 
             try
             {
@@ -1146,7 +1138,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
-                CollectionAssert.AreEquivalent(new string[] { sendAs1 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
+                CollectionAssert.AreEquivalent(new string[] { user1MailAddress.ToString() }, this.GetFormattedSendAsResults(cs.DN));
             }
             finally
             {
@@ -1166,12 +1158,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             id = e.Id;
             string sendAs1 = this.CreateUser(out User x);
             string sendAs2 = this.CreateUser(out x);
-            System.Threading.Thread.Sleep(20000);
 
-            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
-            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
+            MailAddress user1MailAddress = new MailAddress(sendAs1, "Test User 1");
+            MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            System.Threading.Thread.Sleep(5000);
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { SendAsEmail = user1MailAddress.Address, DisplayName = user1MailAddress.DisplayName });
+            UnitTestControl.TestParameters.GmailService.AddSendAs(dn, new SendAs() { SendAsEmail = user2MailAddress.Address, DisplayName = user2MailAddress.DisplayName });
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -1179,21 +1171,22 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.AdvancedUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("sendAs"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("advancedUserSendAs"));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser],
+                        UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(20000);
+                System.Threading.Thread.Sleep(60000);
 
-                CollectionAssert.AreEquivalent(new string[] { }, UnitTestControl.TestParameters.GmailService.GetSendAsAddresses(cs.DN)?.ToArray() ?? new string[] { });
+                CollectionAssert.AreEquivalent(new string[] { }, this.GetFormattedSendAsResults(cs.DN) ?? new string[] { });
             }
             finally
             {
@@ -1222,13 +1215,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             string sendAs3 = this.CreateUser(out x);
             string sendAs4 = this.CreateUser(out x);
 
-            System.Threading.Thread.Sleep(20000);
-
             UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
             UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
-            System.Threading.Thread.Sleep(10000);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("sendAs", new List<object>() { sendAs3, sendAs4 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("advancedUserSendAs", new List<object>() { sendAs3, sendAs4 }));
 
             try
             {
@@ -1240,7 +1230,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(30000);
 
                 CollectionAssert.AreEquivalent(new string[] { sendAs3, sendAs4 }, UnitTestControl.TestParameters.GmailService.GetSendAs(cs.DN).ToArray());
             }

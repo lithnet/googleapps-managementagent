@@ -244,7 +244,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TriggerBackOff()
         {
-            return;
+            //return;
 
             List<Group> groups = new List<Group>();
 
@@ -361,7 +361,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { member1.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
@@ -451,7 +451,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
 
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
@@ -505,7 +505,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(5000);
+                Thread.Sleep(10000);
 
                 CollectionAssert.AreEquivalent(new string[] { member3.Email, member4.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }

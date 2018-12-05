@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
@@ -166,7 +167,7 @@ namespace Lithnet.GoogleApps.MA
             return $"{feature.Name}{ApiInterfaceFeature.DNSuffix}";
         }
 
-        public Task GetItems(MmsSchema schema, BlockingCollection<object> collection)
+        public Task GetObjectImportTask(MmsSchema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
             HashSet<string> fieldList = new HashSet<string>
             {
@@ -194,7 +195,7 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 Logger.WriteLine("Feature import task complete");
-            });
+            }, cancellationToken);
 
             t.Start();
 

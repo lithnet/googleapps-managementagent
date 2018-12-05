@@ -48,6 +48,8 @@ namespace Lithnet.GoogleApps.MA
 
         bool MembersAsNonReference { get; }
 
+        bool EnableAdvancedUserAttributes { get; }
+
         string GroupMemberAttributeName { get; }
 
         string GroupManagerAttributeName { get; }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.Logging;
@@ -31,8 +32,8 @@ namespace Lithnet.GoogleApps.MA
             {
                 new ApiInterfaceUserAliases(config),
                 new ApiInterfaceUserMakeAdmin(config),
-                new ApiInterfaceUserDelegates(config),
-                new ApiInterfaceUserSendAs(config)
+                new ApiInterfaceUserDelegates(config, type.Name),
+                new ApiInterfaceUserSendAs(config, type.Name)
             };
 
             this.ObjectClass = SchemaConstants.User;
@@ -211,7 +212,7 @@ namespace Lithnet.GoogleApps.MA
             return ((User)target).PrimaryEmail;
         }
 
-        public Task GetItems(Schema schema, BlockingCollection<object> collection)
+        public Task GetObjectImportTask(Schema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
             if (this.GetType() == typeof(ApiInterfaceAdvancedUser))
             {
@@ -253,43 +254,61 @@ namespace Lithnet.GoogleApps.MA
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting user import task");
-                Logger.WriteLine("Requesting fields: " + fields);
-                Logger.WriteLine("Query filter: " + (this.config.UserQueryFilter ?? "<none>"));
-                SchemaType type = schema.Types[SchemaConstants.User];
-
-                foreach (User user in this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter))
+                try
                 {
-                    if (!string.IsNullOrWhiteSpace(this.config.UserRegexFilter))
+                    Logger.WriteLine("Starting user import task");
+                    Logger.WriteLine("Requesting fields: " + fields);
+                    Logger.WriteLine("Query filter: " + (this.config.UserQueryFilter ?? "<none>"));
+                    SchemaType type = schema.Types[SchemaConstants.User];
+                    ParallelOptions op = new ParallelOptions()
                     {
-                        if (!Regex.IsMatch(user.PrimaryEmail, this.config.UserRegexFilter, RegexOptions.IgnoreCase))
-                        {
-                            continue;
-                        }
-                    }
+                        MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ImportThreads,
+                        CancellationToken = cancellationToken
+                    };
 
-                    if (user.CustomSchemas != null)
+                    Parallel.ForEach(this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter), op, user =>
+                        //foreach (User user in this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter))
                     {
-                        if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
+                        if (!string.IsNullOrWhiteSpace(this.config.UserRegexFilter))
                         {
-                            if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
+                            if (!Regex.IsMatch(user.PrimaryEmail, this.config.UserRegexFilter, RegexOptions.IgnoreCase))
                             {
-                                string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
-                                if (schema.Types.Contains(objectType))
+                                return;
+                            }
+                        }
+
+                        if (user.CustomSchemas != null)
+                        {
+                            if (user.CustomSchemas.ContainsKey(SchemaConstants.CustomGoogleAppsSchemaName))
+                            {
+                                if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
                                 {
-                                    type = schema.Types[objectType];
+                                    string objectType = (string) user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                                    if (schema.Types.Contains(objectType))
+                                    {
+                                        type = schema.Types[objectType];
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    collection.Add(ImportProcessor.GetCSEntryChange(user, type, this.config));
-                    continue;
+                        collection.Add(ImportProcessor.GetCSEntryChange(user, type, this.config), cancellationToken);
+                        return;
+                    });
+
+                    Logger.WriteLine("User import task complete");
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine("Error in user import task");
+                    Logger.WriteException(ex);
+                    throw;
                 }
 
-                Logger.WriteLine("User import task complete");
-
-            });
+            }, cancellationToken);
 
             t.Start();
 

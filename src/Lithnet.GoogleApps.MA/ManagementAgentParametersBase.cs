@@ -79,6 +79,9 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string CalendarSendNotificationOnPermissionChangeParameter = "Send notifications when changing calendar permissions";
 
+        protected const string EnableAdvancedUserAttributesParameter = "Enable advanced user attributes";
+
+
         //protected static string[] AllScopes = new string[]
         //{
         //    DirectoryService.Scope.AdminDirectoryUser,

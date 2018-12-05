@@ -23,8 +23,7 @@ namespace Lithnet.GoogleApps.MA
         {
             GoogleGroup g = (GoogleGroup)target;
 
-            Func<AttributeChange> x = () => this.ApplyGroupAliasChanges(csentry, g.Group);
-            AttributeChange change = x.ExecuteWithRetryOnNotFound();
+            AttributeChange change = this.ApplyGroupAliasChanges(csentry, g.Group);
 
             List<AttributeChange> changes = new List<AttributeChange>();
 
@@ -122,7 +121,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        private  AttributeChange ApplyGroupAliasChanges(CSEntryChange csentry, Group group)
+        private AttributeChange ApplyGroupAliasChanges(CSEntryChange csentry, Group group)
         {
             this.GetGroupAliasChanges(csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll);
 

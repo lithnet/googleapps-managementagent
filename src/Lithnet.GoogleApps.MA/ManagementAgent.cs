@@ -38,6 +38,8 @@ namespace Lithnet.GoogleApps.MA
 
         private BlockingCollection<object> importCollection;
 
+        private CancellationTokenSource cancellationToken;
+
         internal static MASchemaTypes Schema { get; set; }
 
         public int ExportDefaultPageSize => 100;
@@ -88,6 +90,7 @@ namespace Lithnet.GoogleApps.MA
 
         public void OpenExportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenExportConnectionRunStep exportRunStep)
         {
+            this.cancellationToken = new CancellationTokenSource();
             this.Configuration = new ManagementAgentParameters(configParameters);
             this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
 
@@ -106,74 +109,64 @@ namespace Lithnet.GoogleApps.MA
             this.timer.Start();
         }
 
-       // private void InitializeConnectionPools(Schema types)
-        //{
-            //string[] requiredScopes = ManagementAgentParametersBase.GetRequiredScopes(types);
-
-            //ConnectionPools.InitializePools(this.Configuration.GetCredentials(requiredScopes),
-            //    MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
-            //    MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize,
-            //    MAConfigurationSection.Configuration.EmailSettingsApi.PoolSize,
-            //    MAConfigurationSection.Configuration.ContactsApi.PoolSize,
-            //    MAConfigurationSection.Configuration.CalendarApi.PoolSize);
-
-            //ConnectionPools.SetConcurrentOperationLimitGroupMember(MAConfigurationSection.Configuration.DirectoryApi.ExportThreadsGroupMember);
-            //ConnectionPools.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
-            //ConnectionPools.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
-            //ConnectionPools.SetRateLimitGmailService(MAConfigurationSection.Configuration.EmailSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
-            //ConnectionPools.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
-            //ConnectionPools.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
-
-            //ManagementAgent.initializedConnectionPools = true;
-       // }
-        
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
-            ParallelOptions po = new ParallelOptions { MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ExportThreads };
+            ParallelOptions po = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ExportThreads,
+                CancellationToken = this.cancellationToken.Token
+            };
+
             PutExportEntriesResults results = new PutExportEntriesResults();
 
-            Parallel.ForEach(csentries, po, (csentry) =>
+            try
             {
-                try
+                Parallel.ForEach(csentries, po, (csentry) =>
                 {
-                    Interlocked.Increment(ref this.opCount);
-                    Logger.StartThreadLog();
-                    Logger.WriteSeparatorLine('-');
-                    Logger.WriteLine("Starting export {0} for {1} with {2} attribute changes", csentry.ObjectModificationType, csentry.DN, csentry.AttributeChanges.Count);
-                    SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
+                    try
+                    {
+                        Interlocked.Increment(ref this.opCount);
+                        Logger.StartThreadLog();
+                        Logger.WriteSeparatorLine('-');
+                        Logger.WriteLine("Starting export {0} for {1} with {2} attribute changes", csentry.ObjectModificationType, csentry.DN, csentry.AttributeChanges.Count);
+                        SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
 
-                    CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
-                    lock (results)
-                    {
-                        results.CSEntryChangeResults.Add(result);
+                        CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
+                        lock (results)
+                        {
+                            results.CSEntryChangeResults.Add(result);
+                        }
                     }
-                }
-                catch (AggregateException ex)
-                {
-                    Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
-                    Logger.WriteException(ex);
-                    CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException?.Message ?? ex.Message, ex.InnerException?.StackTrace ?? ex.StackTrace);
-                    lock (results)
+                    catch (AggregateException ex)
                     {
-                        results.CSEntryChangeResults.Add(result);
+                        Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
+                        Logger.WriteException(ex);
+                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException?.Message ?? ex.Message, ex.InnerException?.StackTrace ?? ex.StackTrace);
+                        lock (results)
+                        {
+                            results.CSEntryChangeResults.Add(result);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
-                    Logger.WriteException(ex);
-                    CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.Message, ex.StackTrace);
-                    lock (results)
+                    catch (Exception ex)
                     {
-                        results.CSEntryChangeResults.Add(result);
+                        Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
+                        Logger.WriteException(ex);
+                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.Message, ex.StackTrace);
+                        lock (results)
+                        {
+                            results.CSEntryChangeResults.Add(result);
+                        }
                     }
-                }
-                finally
-                {
-                    Logger.WriteSeparatorLine('-');
-                    Logger.EndThreadLog();
-                }
-            });
+                    finally
+                    {
+                        Logger.WriteSeparatorLine('-');
+                        Logger.EndThreadLog();
+                    }
+                });
+            }
+            catch (OperationCanceledException)
+            {
+            }
 
             return results;
         }
@@ -182,6 +175,11 @@ namespace Lithnet.GoogleApps.MA
         {
             Logger.WriteLine("Closing export connection: {0}", exportRunStep.Reason);
             this.timer.Stop();
+
+            if (exportRunStep.Reason != CloseReason.Normal)
+            {
+                this.cancellationToken?.Cancel();
+            }
 
             try
             {
@@ -208,14 +206,13 @@ namespace Lithnet.GoogleApps.MA
         {
             try
             {
+                this.cancellationToken = new CancellationTokenSource();
                 this.Configuration = new ManagementAgentParameters(configParameters);
                 Logger.LogPath = this.Configuration.MALogFile;
 
                 this.importRunStep = importRunStep;
                 this.operationSchemaTypes = types;
                 this.timer = new Stopwatch();
-
-                //this.Configuration.GroupsService.MemberThreads = MAConfigurationSection.Configuration.DirectoryApi.ImportThreadsGroupMember;
 
                 this.DeltaPath = Path.Combine(MAUtils.MAFolder, ManagementAgent.DeltaFile);
 
@@ -269,7 +266,7 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (MASchemaType item in ManagementAgent.Schema.Where(t => types.Types.Contains(t.Name)))
             {
-                Task t = item.ApiInterface.GetItems(types, this.importCollection);
+                Task t = item.ApiInterface.GetObjectImportTask(types, this.importCollection, this.cancellationToken.Token);
 
                 if (t != null)
                 {
@@ -277,8 +274,39 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            this.importTask = Task.WhenAll(tasks.ToArray());
-            this.importTask.ContinueWith(z => this.importCollection.CompleteAdding());
+            this.importTask = Task.WhenAny(Task.WhenAll(tasks.ToArray()), Task.Delay(Timeout.Infinite, this.cancellationToken.Token));
+            this.importTask.ContinueWith(z =>
+            {
+                this.importCollection.CompleteAdding();
+
+                Exception e = null;
+
+                foreach (Task t in tasks)
+                {
+                    if (t.IsFaulted)
+                    {
+                        if (t.Exception != null)
+                        {
+                            Logger.WriteException(t.Exception);
+                            e = t.Exception;
+                        }
+                        else
+                        {
+                            if (e == null)
+                            {
+                                e = new Exception("A task faulted but did not return an exception");
+                            }
+                        }
+                    }
+                }
+
+                if (e != null)
+                {
+                    throw e;
+                }
+
+            }, this.cancellationToken.Token);
+            
         }
 
         public GetImportEntriesResults GetImportEntries(GetImportEntriesRunStep importRunStep)
@@ -324,40 +352,51 @@ namespace Lithnet.GoogleApps.MA
         {
             GetImportEntriesResults results = new GetImportEntriesResults { CSEntries = new List<CSEntryChange>() };
 
-            for (int i = 0; i < this.importRunStep.PageSize; i++)
+            try
             {
-                if (this.importTask.IsFaulted)
+                for (int i = 0; i < this.importRunStep.PageSize; i++)
                 {
-                    throw this.importTask.Exception ?? new Exception("The task was faulted, but an exception was not provided");
+                    if (this.importTask.IsFaulted)
+                    {
+                        throw this.importTask.Exception ?? new Exception("The task was faulted, but an exception was not provided");
+                    }
+
+                    if (this.importTask.IsCanceled || this.cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    if (this.importCollection.IsCompleted)
+                    {
+                        break;
+                    }
+
+                    if (!this.importCollection.TryTake(out object item, -1, this.cancellationToken.Token))
+                    {
+                        Thread.Sleep(25);
+                        continue;
+                    }
+
+                    Interlocked.Increment(ref this.opCount);
+
+                    if (item is CSEntryChange csentry)
+                    {
+                        results.CSEntries.Add(csentry);
+                        continue;
+                    }
+
+                    throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
                 }
 
-                if (this.importCollection.IsCompleted)
+                results.MoreToImport = !this.importCollection.IsCompleted;
+
+                if (results.MoreToImport && results.CSEntries.Count == 0)
                 {
-                    break;
+                    Thread.Sleep(1000);
                 }
-
-                if (!this.importCollection.TryTake(out object item))
-                {
-                    Thread.Sleep(25);
-                    continue;
-                }
-
-                Interlocked.Increment(ref this.opCount);
-
-                if (item is CSEntryChange csentry)
-                {
-                    results.CSEntries.Add(csentry);
-                    continue;
-                }
-
-                throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
             }
-
-            results.MoreToImport = !this.importCollection.IsCompleted;
-
-            if (results.MoreToImport && results.CSEntries.Count == 0)
+            catch (OperationCanceledException)
             {
-                Thread.Sleep(1000);
             }
 
             return results;
@@ -370,6 +409,11 @@ namespace Lithnet.GoogleApps.MA
 
             try
             {
+                if (importRunStep.Reason != CloseReason.Normal)
+                {
+                    this.cancellationToken?.Cancel();
+                }
+
                 if (this.importRunStep.ImportType == OperationType.Full)
                 {
                     CSEntryChangeQueue.Clear();
@@ -403,7 +447,7 @@ namespace Lithnet.GoogleApps.MA
         public Schema GetSchema(KeyedCollection<string, ConfigParameter> configParameters)
         {
             this.Configuration = new ManagementAgentParameters(configParameters);
-            
+
             return SchemaBuilder.GetSchema(this.Configuration).GetSchema();
         }
 

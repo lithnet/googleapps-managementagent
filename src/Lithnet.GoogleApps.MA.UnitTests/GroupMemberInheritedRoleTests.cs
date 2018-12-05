@@ -77,7 +77,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string member2 = "test@test.com";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
@@ -110,7 +110,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = user.PrimaryEmail, Role = "MANAGER" });
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
@@ -141,7 +141,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string member2 = "test@test.com";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "OWNER" });
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
@@ -210,7 +210,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, member2, "MANAGER");
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -228,7 +228,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
                 GroupMembership membership = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN);
 
                 Assert.AreEqual(0, membership.ExternalManagers.Count);

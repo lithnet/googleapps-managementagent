@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.GData.Contacts;
 using Lithnet.GoogleApps.ManagedObjects;
@@ -158,7 +159,7 @@ namespace Lithnet.GoogleApps.MA
             return d.DomainName;
         }
 
-        public Task GetItems(Schema schema, BlockingCollection<object> collection)
+        public Task GetObjectImportTask(Schema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
             Task t = new Task(() =>
             {
@@ -180,7 +181,7 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 Logger.WriteLine("Domains import task complete");
-            });
+            }, cancellationToken);
 
             t.Start();
 

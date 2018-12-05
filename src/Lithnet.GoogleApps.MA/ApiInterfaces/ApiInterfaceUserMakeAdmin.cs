@@ -31,8 +31,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (makeAdmin)
                     {
-                        Action x = () => this.config.UsersService.MakeAdmin(true, id);
-                        x.ExecuteWithRetryOnNotFound();
+                        this.config.UsersService.MakeAdmin(true, id);
                     }
 
                     changes.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
@@ -40,8 +39,7 @@ namespace Lithnet.GoogleApps.MA
                 else if (change.ModificationType == AttributeModificationType.Replace ||
                          change.ModificationType == AttributeModificationType.Update)
                 {
-                    Action x = () => this.config.UsersService.MakeAdmin(makeAdmin, id);
-                    x.ExecuteWithRetryOnNotFound();
+                    this.config.UsersService.MakeAdmin(makeAdmin, id);
 
                     if (change.ModificationType == AttributeModificationType.Replace)
                     {

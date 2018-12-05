@@ -118,7 +118,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             BlockingCollection<object> items = new BlockingCollection<object>();
 
-            u.GetItems(UnitTestControl.MmsSchema, items).Wait();
+            u.GetObjectImportTask(UnitTestControl.MmsSchema, items, CancellationToken.None).Wait();
             HashSet<string> dns = new HashSet<string>();
 
             foreach (CSEntryChange item in items.OfType<CSEntryChange>())

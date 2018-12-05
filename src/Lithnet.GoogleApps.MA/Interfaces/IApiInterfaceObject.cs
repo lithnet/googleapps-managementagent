@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.MetadirectoryServices;
 
@@ -19,6 +20,6 @@ namespace Lithnet.GoogleApps.MA
 
         ObjectModificationType DeltaUpdateType { get; }
 
-        Task GetItems(Schema schema, BlockingCollection<object> collection);
+        Task GetObjectImportTask(Schema schema, BlockingCollection<object> collection, CancellationToken cancellationToken);
     }
 }

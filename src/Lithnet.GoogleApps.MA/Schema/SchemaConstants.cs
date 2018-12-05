@@ -15,8 +15,8 @@
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
         public const string CustomSchemaObjectType = "objectType";
 
-        public const string Delegate = "delegate";
-        public const string SendAs = "sendAs";
+        public const string Delegate = "Delegate";
+        public const string SendAs = "SendAs";
         public const string ID = "id";
         public const string ResourceID = "resourceId";
         public const string Name = "name";

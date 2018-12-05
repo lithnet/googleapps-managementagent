@@ -135,6 +135,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
         public string PasswordOperationLogFile => Path.Combine(this.LogFilePath, "password-operations.log");
 
-        public override bool MembersAsNonReference  => this.GroupMembersAsString;
+        public override bool MembersAsNonReference => this.GroupMembersAsString;
+        public bool EnableAdvancedUserAttributes => true;
     }
 }

@@ -23,6 +23,14 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = true,
             };
 
+            this.BuildBaseSchema(type, config);
+            SchemaBuilderUsers.AddAdvancedAttributes(type, config);
+
+            return type;
+        }
+
+        protected MASchemaType BuildBaseSchema(MASchemaType type, IManagementAgentParameters config)
+        {
             type.ApiInterface = new ApiInterfaceUser(type, config);
 
             AdapterPropertyValue orgUnitPath = new AdapterPropertyValue
@@ -290,32 +298,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(customerId);
-            
-            AdapterCollection<string> delegates = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = null,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = SchemaConstants.Delegate,
-                PropertyName = "Delegates",
-                Api = "userdelegates",
-                SupportsPatch = true,
-            };
-
-            type.AttributeAdapters.Add(delegates);
-
-            AdapterCollection<string> sendas = new AdapterCollection<string>
-            {
-                AttributeType = AttributeType.Reference,
-                FieldName = null,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = SchemaConstants.SendAs,
-                PropertyName = "SendAs",
-                Api = "usersendas",
-                SupportsPatch = true,
-            };
-
-            type.AttributeAdapters.Add(sendas);
 
             SchemaBuilderUsers.AddUserNames(type);
             SchemaBuilderUsers.AddUserNotes(type);
@@ -330,6 +312,38 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilderUsers.AddUserCustomSchema(type, config);
 
             return type;
+        }
+
+        private static void AddAdvancedAttributes(MASchemaType type, IManagementAgentParameters config)
+        {
+            if (config.EnableAdvancedUserAttributes)
+            {
+                AdapterCollection<string> delegates = new AdapterCollection<string>
+                {
+                    AttributeType = AttributeType.Reference,
+                    FieldName = null,
+                    Operation = AttributeOperation.ImportExport,
+                    AttributeName = $"user_{SchemaConstants.Delegate}",
+                    PropertyName = "Delegates",
+                    Api = "userdelegates",
+                    SupportsPatch = true,
+                };
+
+                type.AttributeAdapters.Add(delegates);
+
+                AdapterCollection<string> sendas = new AdapterCollection<string>
+                {
+                    AttributeType = AttributeType.String,
+                    FieldName = null,
+                    Operation = AttributeOperation.ImportExport,
+                    AttributeName = $"user_{SchemaConstants.SendAs}",
+                    PropertyName = "SendAs",
+                    Api = "usersendas",
+                    SupportsPatch = true,
+                };
+
+                type.AttributeAdapters.Add(sendas);
+            }
         }
 
         private static void AddUserNames(MASchemaType type)

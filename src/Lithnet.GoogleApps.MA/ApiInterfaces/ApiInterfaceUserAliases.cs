@@ -22,8 +22,7 @@ namespace Lithnet.GoogleApps.MA
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             User user = (User)target;
-            Func<AttributeChange> x = () => this.ApplyUserAliasChanges(csentry, user);
-            AttributeChange change = x.ExecuteWithRetryOnNotFound();
+            AttributeChange change = this.ApplyUserAliasChanges(csentry, user);
 
             List<AttributeChange> changes = new List<AttributeChange>();
 

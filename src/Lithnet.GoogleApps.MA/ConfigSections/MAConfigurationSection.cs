@@ -13,6 +13,7 @@ namespace Lithnet.GoogleApps.MA
         private const string PropGmailApi = "gmail-api";
         private const string PropHttpDebugEnabled = "http-debug-enabled";
         private const string PropExportThreads = "export-threads";
+        private const string PropImportThreads = "import-threads";
 
         internal static MAConfigurationSection GetConfiguration()
         {
@@ -38,7 +39,11 @@ namespace Lithnet.GoogleApps.MA
 
         [ConfigurationProperty(MAConfigurationSection.PropExportThreads, IsRequired = false, DefaultValue = 30)]
         public int ExportThreads => (int)this[MAConfigurationSection.PropExportThreads];
-        
+
+        [ConfigurationProperty(MAConfigurationSection.PropImportThreads, IsRequired = false, DefaultValue = 50)]
+        public int ImportThreads => (int)this[MAConfigurationSection.PropImportThreads];
+
+
         [ConfigurationProperty(MAConfigurationSection.PropDirectoryApi, IsRequired = false)]
         public DirectoryApiElement DirectoryApi => (DirectoryApiElement) this[MAConfigurationSection.PropDirectoryApi];
 
