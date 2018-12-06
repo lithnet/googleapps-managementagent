@@ -22,11 +22,12 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 ISchemaTypeBuilder builder = (ISchemaTypeBuilder)Activator.CreateInstance(type);
-                MASchemaType schemaType = builder.GetSchemaType(config);
-
-                if (schemaType != null)
+                foreach (MASchemaType schemaType in builder.GetSchemaTypes(config))
                 {
-                    types.Add(schemaType);
+                    if (schemaType != null)
+                    {
+                        types.Add(schemaType);
+                    }
                 }
             }
             

@@ -8,7 +8,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string TypeName => "group";
 
-        public MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -106,7 +106,7 @@ namespace Lithnet.GoogleApps.MA
                 SchemaBuilderGroups.AddGroupMembers(type);
             }
 
-            return type;
+            yield return type;
         }
 
         private static void AddGroupAliases(MASchemaType type)

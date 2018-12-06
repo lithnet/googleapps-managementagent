@@ -6,7 +6,6 @@
         public const string Calendar = "calendar";
         public const string GroupSettings = "groupSettings";
         public const string User = "user";
-        public const string AdvancedUser = "advancedUser";
         public const string Contact = "contact";
         public const string Building = "building";
         public const string Domain = "domain";

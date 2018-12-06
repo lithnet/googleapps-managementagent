@@ -9,7 +9,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string TypeName => "building";
 
-        public MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -132,7 +132,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(schemaItem);
 
-            return type;
+            yield return type;
         }
     }
 }

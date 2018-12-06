@@ -7,7 +7,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string TypeName => "feature";
 
-        public MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -32,7 +32,7 @@ namespace Lithnet.GoogleApps.MA
                 IsAnchor = true
             });
 
-            return type;
+            yield return type;
         }
     }
 }

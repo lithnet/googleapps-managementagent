@@ -36,7 +36,7 @@ namespace Lithnet.GoogleApps.MA
                 new ApiInterfaceUserSendAs(config, type.Name)
             };
 
-            this.ObjectClass = SchemaConstants.User;
+            this.ObjectClass = type.Name;
             this.SchemaType = type;
             this.config = config;
         }
@@ -49,11 +49,31 @@ namespace Lithnet.GoogleApps.MA
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                return new User
+                if (csentry.ObjectType == SchemaConstants.User)
                 {
-                    Password = ApiInterfaceUser.GenerateSecureString(60),
-                    PrimaryEmail = csentry.DN
-                };
+                    return new User
+                    {
+                        Password = ApiInterfaceUser.GenerateSecureString(60),
+                        PrimaryEmail = csentry.DN
+                    };
+                }
+                else
+                {
+                    User u = new User
+                    {
+                        Password = ApiInterfaceUser.GenerateSecureString(60),
+                        PrimaryEmail = csentry.DN,
+                        CustomSchemas = new Dictionary<string, IDictionary<string, object>>
+                        {
+                            {
+                                SchemaConstants.CustomGoogleAppsSchemaName, new Dictionary<string, object>()
+                            }
+                        }
+                    };
+
+                    u.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].Add(SchemaConstants.CustomSchemaObjectType, csentry.ObjectType);
+                    return u;
+                }
             }
             else
             {
@@ -214,7 +234,7 @@ namespace Lithnet.GoogleApps.MA
 
         public Task GetObjectImportTask(Schema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
-            if (this.GetType() == typeof(ApiInterfaceAdvancedUser))
+            if (this.ObjectClass != SchemaConstants.User)
             {
                 if (schema.Types.Contains(SchemaConstants.User))
                 {
@@ -229,24 +249,24 @@ namespace Lithnet.GoogleApps.MA
                 SchemaConstants.ID
             };
 
+            foreach (var type in this.config.CustomUserObjectClasses)
+            {
+                if (schema.Types.Contains(type))
+                {
+                    foreach (string field in ManagementAgent.Schema[type].GetFieldNames(schema.Types[type]))
+                    {
+                        fieldNames.Add(field);
+                    }
+                }
+            }
+
             if (schema.Types.Contains(SchemaConstants.User))
             {
                 foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(schema.Types[SchemaConstants.User]))
                 {
                     fieldNames.Add(field);
                 }
-            }
 
-            if (schema.Types.Contains(SchemaConstants.AdvancedUser))
-            {
-                foreach (string field in ManagementAgent.Schema[SchemaConstants.AdvancedUser].GetFieldNames(schema.Types[SchemaConstants.AdvancedUser]))
-                {
-                    fieldNames.Add(field);
-                }
-            }
-
-            if (schema.Types.Contains(SchemaConstants.AdvancedUser))
-            {
                 fieldNames.Add($"customSchemas/{SchemaConstants.CustomGoogleAppsSchemaName}");
             }
 
@@ -267,7 +287,6 @@ namespace Lithnet.GoogleApps.MA
                     };
 
                     Parallel.ForEach(this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter), op, user =>
-                        //foreach (User user in this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter))
                     {
                         if (!string.IsNullOrWhiteSpace(this.config.UserRegexFilter))
                         {

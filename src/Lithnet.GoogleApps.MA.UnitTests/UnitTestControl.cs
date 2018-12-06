@@ -15,6 +15,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     [TestClass]
     internal static class UnitTestControl
     {
+        internal const string TestUser = "testUser";
+
         internal const int PostGoogleOperationSleepInterval = 5000;
 
         [AssemblyCleanup()]

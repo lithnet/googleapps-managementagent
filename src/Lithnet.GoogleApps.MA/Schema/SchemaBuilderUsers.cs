@@ -13,20 +13,45 @@ namespace Lithnet.GoogleApps.MA
     {
         public virtual string TypeName => "user";
 
-        public virtual MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
-                Name = "user",
+                Name = SchemaConstants.User,
                 AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true,
             };
 
             this.BuildBaseSchema(type, config);
-            SchemaBuilderUsers.AddAdvancedAttributes(type, config);
 
-            return type;
+            if (config.EnableAdvancedUserAttributes)
+            {
+                SchemaBuilderUsers.AddGmailSettingsAttributes(type, config);
+            }
+
+            yield return type;
+
+            if (!config.SchemaService.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
+            {
+                yield break;
+            }
+
+            foreach (string objectType in config.CustomUserObjectClasses)
+            {
+                type = new MASchemaType
+                {
+                    AttributeAdapters = new List<IAttributeAdapter>(),
+                    Name = objectType,
+                    AnchorAttributeNames = new[] { "id" },
+                    SupportsPatch = true,
+                };
+
+                this.BuildBaseSchema(type, config);
+                SchemaBuilderUsers.AddGmailSettingsAttributes(type, config);
+
+                yield return type;
+            }
         }
 
         protected MASchemaType BuildBaseSchema(MASchemaType type, IManagementAgentParameters config)
@@ -314,36 +339,33 @@ namespace Lithnet.GoogleApps.MA
             return type;
         }
 
-        private static void AddAdvancedAttributes(MASchemaType type, IManagementAgentParameters config)
+        private static void AddGmailSettingsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-            if (config.EnableAdvancedUserAttributes)
+            AdapterCollection<string> delegates = new AdapterCollection<string>
             {
-                AdapterCollection<string> delegates = new AdapterCollection<string>
-                {
-                    AttributeType = AttributeType.Reference,
-                    FieldName = null,
-                    Operation = AttributeOperation.ImportExport,
-                    AttributeName = $"user_{SchemaConstants.Delegate}",
-                    PropertyName = "Delegates",
-                    Api = "userdelegates",
-                    SupportsPatch = true,
-                };
+                AttributeType = AttributeType.Reference,
+                FieldName = null,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = $"{type.Name}_{SchemaConstants.Delegate}",
+                PropertyName = "Delegates",
+                Api = "userdelegates",
+                SupportsPatch = true,
+            };
 
-                type.AttributeAdapters.Add(delegates);
+            type.AttributeAdapters.Add(delegates);
 
-                AdapterCollection<string> sendas = new AdapterCollection<string>
-                {
-                    AttributeType = AttributeType.String,
-                    FieldName = null,
-                    Operation = AttributeOperation.ImportExport,
-                    AttributeName = $"user_{SchemaConstants.SendAs}",
-                    PropertyName = "SendAs",
-                    Api = "usersendas",
-                    SupportsPatch = true,
-                };
+            AdapterCollection<string> sendas = new AdapterCollection<string>
+            {
+                AttributeType = AttributeType.String,
+                FieldName = null,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = $"{type.Name}_{SchemaConstants.SendAs}",
+                PropertyName = "SendAs",
+                Api = "usersendas",
+                SupportsPatch = true,
+            };
 
-                type.AttributeAdapters.Add(sendas);
-            }
+            type.AttributeAdapters.Add(sendas);
         }
 
         private static void AddUserNames(MASchemaType type)

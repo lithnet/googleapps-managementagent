@@ -11,7 +11,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string TypeName => "contact";
 
-        public MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -232,7 +232,7 @@ namespace Lithnet.GoogleApps.MA
             this.AddContactIms(type, config);
             this.AddContactPhones(type, config);
 
-            return type;
+            yield return type;
         }
 
         private void AddContactNames(MASchemaType type)

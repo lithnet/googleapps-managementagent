@@ -80,6 +80,8 @@ namespace Lithnet.GoogleApps.MA
 
         IEnumerable<string> WebsitesAttributeFixedTypes { get; }
 
+        IEnumerable<string> CustomUserObjectClasses { get; }
+        
         bool ExcludeUserCreated { get; }
 
         string KeyFilePassword { get; }

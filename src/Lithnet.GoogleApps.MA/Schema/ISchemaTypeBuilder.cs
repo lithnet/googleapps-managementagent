@@ -1,9 +1,11 @@
-﻿namespace Lithnet.GoogleApps.MA
+﻿using System.Collections.Generic;
+
+namespace Lithnet.GoogleApps.MA
 {
     internal interface ISchemaTypeBuilder
     {
         string TypeName { get; }
 
-        MASchemaType GetSchemaType(IManagementAgentParameters config);
+        IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config);
     }
 }

@@ -131,7 +131,7 @@
   <ItemGroup>
     <Compile Include="AdapterTests\AdapterGDataSimpleAttributeListTTests.cs" />
     <Compile Include="AdapterTests\AdapterGDataCommonAttributeListTTests.cs" />
-    <Compile Include="AdvancedUserTests.cs" />
+    <Compile Include="CustomUserTests.cs" />
     <Compile Include="FeatureTests.cs" />
     <Compile Include="BuildingTests.cs" />
     <Compile Include="GroupMemberInheritedRoleTests.cs" />

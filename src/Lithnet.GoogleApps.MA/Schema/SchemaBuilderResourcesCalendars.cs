@@ -10,7 +10,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string TypeName => "calendar";
 
-        public MASchemaType GetSchemaType(IManagementAgentParameters config)
+        public IEnumerable<MASchemaType> GetSchemaTypes(IManagementAgentParameters config)
         {
             MASchemaType type = new MASchemaType
             {
@@ -281,7 +281,7 @@ namespace Lithnet.GoogleApps.MA
 
             SchemaBuilderResourcesCalendars.AddCalendarAcls(type);
 
-            return type;
+            yield return type;
         }
 
         private static void AddCalendarAcls(MASchemaType type)

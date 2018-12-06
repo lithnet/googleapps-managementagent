@@ -13,15 +13,16 @@ using Microsoft.MetadirectoryServices;
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
     [TestClass]
-    public class AdvancedUserTests
+    public class CustomUserTests
     {
+
         [TestMethod]
         public void Add()
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
             cs.DN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name_givenName", "gn"));
@@ -66,7 +67,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             try
             {
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
 
@@ -144,9 +145,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Delete;
                 cs.DN = dn;
-                cs.ObjectType = SchemaConstants.AdvancedUser;
+                cs.ObjectType = UnitTestControl.TestUser;
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -206,7 +207,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
-                cs.ObjectType = SchemaConstants.AdvancedUser;
+                cs.ObjectType = UnitTestControl.TestUser;
                 cs.DN = dn;
 
                 string newDN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -215,7 +216,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -276,7 +277,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
@@ -321,7 +322,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -394,7 +395,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -405,7 +406,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -456,7 +457,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("aliases"));
@@ -464,7 +465,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -516,7 +517,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
@@ -527,7 +528,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -579,7 +580,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("aliases", new List<ValueChange>
@@ -590,7 +591,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -644,7 +645,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("aliases", new List<object>
@@ -655,7 +656,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -699,7 +700,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isAdmin", true));
@@ -707,7 +708,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -754,7 +755,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("isAdmin", false));
@@ -762,7 +763,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -795,18 +796,18 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string delegate1 = this.CreateUser(out User x);
             string delegate2 = this.CreateUser(out x);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUser_Delegate", new List<object>() { delegate1, delegate2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd($"{UnitTestControl.TestUser}_Delegate", new List<object>() { delegate1, delegate2 }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -840,17 +841,17 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string delegate2 = this.CreateUser(out x);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUser_Delegate", new List<object>() { delegate2 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd($"{UnitTestControl.TestUser}_Delegate", new List<object>() { delegate2 }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -886,15 +887,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("advancedUser_Delegate", new List<ValueChange>() { new ValueChange(delegate2, ValueModificationType.Delete) }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate($"{UnitTestControl.TestUser}_Delegate", new List<ValueChange>() { new ValueChange(delegate2, ValueModificationType.Delete) }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -930,15 +931,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("advancedUser_Delegate"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete($"{UnitTestControl.TestUser}_Delegate"));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -968,7 +969,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string delegate1 = this.CreateUser(out User x);
@@ -979,12 +980,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
             UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate2);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("advancedUser_Delegate", new List<object>() { delegate3, delegate4 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace($"{UnitTestControl.TestUser}_Delegate", new List<object>() { delegate3, delegate4 }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -1017,7 +1018,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string sendAs1 = this.CreateUser(out User x);
@@ -1025,12 +1026,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             MailAddress user1MailAddress = new MailAddress(sendAs1, "Test User");
             MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUser_SendAs", new List<object>() { user1MailAddress.ToString(), user2MailAddress.ToString() }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd($"{UnitTestControl.TestUser}_SendAs", new List<object>() { user1MailAddress.ToString(), user2MailAddress.ToString() }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -1070,17 +1071,17 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string sendAs2 = this.CreateUser(out User _);
             MailAddress user2MailAddress = new MailAddress(sendAs2, "Test User 2");
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("advancedUser_SendAs", new List<object>() { user2MailAddress.ToString() }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd($"{UnitTestControl.TestUser}_SendAs", new List<object>() { user2MailAddress.ToString() }));
 
             try
             {
-                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -1118,10 +1119,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("advancedUser_SendAs", new List<ValueChange>()
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate($"{UnitTestControl.TestUser}_SendAs", new List<ValueChange>()
             {
                 new ValueChange(user2MailAddress.ToString(), ValueModificationType.Delete)
             }));
@@ -1129,7 +1130,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -1168,15 +1169,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete("advancedUser_SendAs"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeDelete($"{UnitTestControl.TestUser}_SendAs"));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser],
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser],
                         UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
@@ -1207,7 +1208,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
-            cs.ObjectType = SchemaConstants.AdvancedUser;
+            cs.ObjectType = UnitTestControl.TestUser;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             string sendAs1 = this.CreateUser(out User x);
@@ -1218,12 +1219,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs1);
             UnitTestControl.TestParameters.GmailService.AddSendAs(dn, sendAs2);
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("advancedUser_SendAs", new List<object>() { sendAs3, sendAs4 }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace($"{UnitTestControl.TestUser}_SendAs", new List<object>() { sendAs3, sendAs4 }));
 
             try
             {
                 CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.AdvancedUser], UnitTestControl.TestParameters);
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -1255,7 +1256,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     {
                         SchemaConstants.CustomGoogleAppsSchemaName, new Dictionary<string, object>
-                        {{SchemaConstants.CustomSchemaObjectType, SchemaConstants.AdvancedUser}}
+                        {{SchemaConstants.CustomSchemaObjectType, UnitTestControl.TestUser}}
                     }
                 },
                 Name = new UserName

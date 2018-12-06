@@ -11,6 +11,22 @@ namespace Lithnet.GoogleApps.MA
 {
     internal abstract class ManagementAgentParametersBase
     {
+        private X509Certificate2 certificate;
+
+        private GmailServiceRequestFactory gmailService;
+
+        private DomainsRequestFactory domainsService;
+
+        private UserRequestFactory usersService;
+
+        private ContactRequestFactory contactsService;
+
+        private GroupRequestFactory groupsService;
+
+        private ResourceRequestFactory resourcesService;
+
+        private SchemaRequestFactory schemaService;
+
         protected const string CustomerIDParameter = "Customer ID";
 
         protected const string InheritGroupRolesParameter = "Inherit group roles";
@@ -63,6 +79,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string EmailsFixedTypeFormatParameter = "Email fixed types";
 
+        protected const string CustomUserObjectClassesParameter = "Custom user object classes";
+
         protected const string WebsitesFormatParameter = "Websites attribute format";
 
         protected const string WebsitesFixedTypeFormatParameter = "Websites fixed types";
@@ -81,100 +99,6 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string EnableAdvancedUserAttributesParameter = "Enable advanced user attributes";
 
-
-        //protected static string[] AllScopes = new string[]
-        //{
-        //    DirectoryService.Scope.AdminDirectoryUser,
-        //    DirectoryService.Scope.AdminDirectoryGroup,
-        //    DirectoryService.Scope.AdminDirectoryGroupMember,
-        //    DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
-        //    DirectoryService.Scope.AdminDirectoryResourceCalendar,
-        //    GroupssettingsService.Scope.AppsGroupsSettings,
-        //    "https://www.googleapis.com/auth/admin.directory.domain.readonly",
-        //    "https://apps-apis.google.com/a/feeds/emailsettings/2.0/",
-        //    "http://www.google.com/m8/feeds/contacts/",
-        //    "https://www.googleapis.com/auth/calendar",
-        //    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic,
-        //    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing
-        //};
-
-        //internal static string[] PasswordChangeScopes = new string[]
-        //{
-        //    DirectoryService.Scope.AdminDirectoryUser,
-        //};
-
-        //internal static string[] SchemaDiscoveryScopes = new string[]
-        //{
-        //    DirectoryService.Scope.AdminDirectoryUserschemaReadonly,
-        //};
-
-        //internal static string[] GetRequiredScopes(Schema types)
-        //{
-        //    HashSet<string> requiredScopes = new HashSet<string>();
-
-        //    if (types.Types.Contains(SchemaConstants.User))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
-
-        //        if (types.Types[SchemaConstants.User].Attributes.Contains(SchemaConstants.Delegate)
-        //            || types.Types[SchemaConstants.User].Attributes.Contains(SchemaConstants.SendAs))
-        //        {
-        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic);
-        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing);
-        //        }
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.AdvancedUser))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUser);
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryUserschemaReadonly);
-
-        //        if (types.Types[SchemaConstants.AdvancedUser].Attributes.Contains(SchemaConstants.Delegate)
-        //            || types.Types[SchemaConstants.AdvancedUser].Attributes.Contains(SchemaConstants.SendAs))
-        //        {
-        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic);
-        //            requiredScopes.Add(Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing);
-        //        }
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Group))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroup);
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryGroupMember);
-        //        requiredScopes.Add(GroupssettingsService.Scope.AppsGroupsSettings);
-        //        requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Contact))
-        //    {
-        //        requiredScopes.Add("http://www.google.com/m8/feeds/contacts/");
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Calendar))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-        //        requiredScopes.Add("https://www.googleapis.com/auth/calendar");
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Feature))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Building))
-        //    {
-        //        requiredScopes.Add(DirectoryService.Scope.AdminDirectoryResourceCalendar);
-        //    }
-
-        //    if (types.Types.Contains(SchemaConstants.Domain))
-        //    {
-        //        requiredScopes.Add("https://www.googleapis.com/auth/admin.directory.domain.readonly");
-        //    }
-
-        //    return requiredScopes.ToArray();
-        //}
-
         public abstract bool MembersAsNonReference { get; }
 
         public string GroupMemberAttributeName => this.MembersAsNonReference ? "member_raw" : "member";
@@ -183,33 +107,6 @@ namespace Lithnet.GoogleApps.MA
 
         public string GroupOwnerAttributeName => this.MembersAsNonReference ? "owner_raw" : "owner";
 
-        private X509Certificate2 certificate;
-
-        private ServiceAccountCredential credentials;
-
-        protected ServiceAccountCredential GetCredentials(string serviceAccountEmailAddress, string userEmailAddress, X509Certificate2 cert, string[] scopes)
-        {
-            if (this.credentials == null)
-            {
-                this.credentials = new ServiceAccountCredential(
-                    new ServiceAccountCredential.Initializer(serviceAccountEmailAddress)
-                    {
-                        Scopes = scopes,
-                        User = userEmailAddress
-                    }
-                        .FromCertificate(cert));
-            }
-
-            new ServiceAccountCredential.Initializer(serviceAccountEmailAddress)
-            {
-                Scopes = scopes,
-                User = userEmailAddress
-            }
-                .FromCertificate(cert);
-
-            return this.credentials;
-        }
-
         public abstract string ServiceAccountEmailAddress { get; }
 
         public abstract string UserEmailAddress { get; }
@@ -217,20 +114,6 @@ namespace Lithnet.GoogleApps.MA
         public abstract string KeyFilePath { get; }
 
         public abstract string KeyFilePassword { get; }
-
-        private GmailServiceRequestFactory gmailService;
-
-        private DomainsRequestFactory domainsService;
-
-        private UserRequestFactory usersService;
-
-        private ContactRequestFactory contactsService;
-
-        private GroupRequestFactory groupsService;
-
-        private ResourceRequestFactory resourcesService;
-
-        private SchemaRequestFactory schemaService;
 
         public GmailServiceRequestFactory GmailService
         {

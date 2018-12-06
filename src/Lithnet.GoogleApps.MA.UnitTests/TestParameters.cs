@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using Google.Apis.Auth.OAuth2;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
     internal class TestParameters : ManagementAgentParametersBase, IManagementAgentParameters
     {
+
         public bool GroupMembersAsString { get; set; } = false;
 
         public TestParameters()
@@ -126,6 +126,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
+        public IEnumerable<string> CustomUserObjectClasses
+        {
+            get
+            {
+                yield return UnitTestControl.TestUser;
+            }
+        }
 
         public bool ExcludeUserCreated { get; set; }
 

@@ -68,7 +68,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ApiInterfaces\ApiInterfaceAdvancedUser.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceFeature.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceBuilding.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceDomain.cs" />
@@ -127,7 +126,6 @@
     <Compile Include="Schema\SchemaBuilderDomains.cs" />
     <Compile Include="Schema\SchemaBuilderResourcesCalendars.cs" />
     <Compile Include="Schema\SchemaBuilderResourcesBuildings.cs" />
-    <Compile Include="Schema\SchemaBuilderAdvancedUsers.cs" />
     <Compile Include="Schema\SchemaBuilderUsers.cs" />
     <Compile Include="Schema\SchemaBuilderContacts.cs" />
     <Compile Include="Schema\SchemaBuilderGroups.cs" />

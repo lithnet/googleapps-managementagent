@@ -353,6 +353,31 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public IEnumerable<string> CustomUserObjectClasses
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.CustomUserObjectClassesParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.CustomUserObjectClassesParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        yield break;
+                    }
+
+                    foreach (string name in value.Split('\n'))
+                    {
+                        yield return name;
+                    }
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+        }
+
         public IEnumerable<string> PhonesAttributeFixedTypes
         {
             get
@@ -611,7 +636,6 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.LogFilePathParameter, null));
-
                     break;
 
                 case ConfigParameterPage.Global:
@@ -630,7 +654,6 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter, false));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactsPrefixParameter, null, "contact:"));
-
                     break;
 
                 case ConfigParameterPage.Partition:
@@ -642,7 +665,6 @@ namespace Lithnet.GoogleApps.MA
                     break;
                 case ConfigParameterPage.Schema:
                     parameters.Add(ConfigParameterDefinition.CreateLabelParameter("The values from the following objects are flattened based on the type of object specified. Enter the types you wish to expose, each on a separate line (ctrl-enter for a new line). For example, entering 'work' and 'home' in the phone numbers text box will expose the attributes phones_work and phones_home"));
-
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.PhonesFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
@@ -673,8 +695,17 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDropDownParameter(ManagementAgentParametersBase.GroupMemberAttributeTypeParameter, new string[] { "String", "Reference" }, false, "Reference"));
 
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
-                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter, false));
-                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Enabling advanced user attributes enables managing delegate and send-as settings, however this can significantly slow down the speed of full imports. A separate API call must be made for every user during the import process for each of these selected attributes."));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Specify additional custom user object classes to expose. (Press ctrl+enter for each new line)"));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.CustomUserObjectClassesParameter, null));
+
+                    var config = new ManagementAgentParameters(configParameters);
+
+                    if (config.SchemaService.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
+                    {
+                        parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                        parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter, false));
+                        parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Enabling advanced user attributes enables managing delegate and send-as settings, however this can significantly slow down the speed of full imports. A separate API call must be made for every user during the import process for each of these selected attributes."));
+                    }
 
                     break;
                 default:
