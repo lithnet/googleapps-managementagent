@@ -30,11 +30,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(1000);
 
-                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@test.com", "MEMBER");
-                UnitTestControl.TestParameters.GroupsService.MemberFactory.RemoveMember(e.Id, "test@test.com");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@lithnet.io", "MEMBER");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.RemoveMember(e.Id, "test@lithnet.io");
                 Thread.Sleep(500);
 
-                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@test.com", "MEMBER");
+                UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@lithnet.io", "MEMBER");
 
             }
             finally
@@ -76,7 +76,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
@@ -116,7 +116,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
@@ -159,7 +159,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { member1.Email, member2.Email }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.ToArray());
             }
@@ -204,7 +204,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(addresses.ToArray(), UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.ToArray());
 
@@ -224,7 +224,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
@@ -244,7 +244,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TriggerBackOff()
         {
-            //return;
+            return;
 
             List<Group> groups = new List<Group>();
 
@@ -453,12 +453,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 Thread.Sleep(10000);
 
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Managers.Count);
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
-                Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
+                var membership = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN);
+                Assert.AreEqual(0, membership.Members.Count);
+                Assert.AreEqual(0, membership.ExternalMembers.Count);
+                Assert.AreEqual(0, membership.Managers.Count);
+                Assert.AreEqual(0, membership.ExternalManagers.Count);
+                Assert.AreEqual(0, membership.Owners.Count);
+                Assert.AreEqual(0, membership.ExternalOwners.Count);
             }
             finally
             {

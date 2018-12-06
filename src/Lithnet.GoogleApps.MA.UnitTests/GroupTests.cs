@@ -29,7 +29,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@test.com"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@lithnet.io"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customFooterText", "custom footer"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("defaultMessageDenyNotificationText", "occupation"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
@@ -84,7 +84,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
-                Assert.AreEqual("test@test.com", s.CustomReplyTo);
+                Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
                 Assert.AreEqual("custom footer", s.CustomFooterText);
                 Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);
@@ -141,7 +141,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@test.com"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@lithnet.io"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customFooterText", "custom footer"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("defaultMessageDenyNotificationText", "occupation"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
@@ -191,7 +191,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
-                Assert.AreEqual("test@test.com", s.CustomReplyTo);
+                Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
                 Assert.AreEqual("custom footer", s.CustomFooterText);
                 Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);

@@ -61,17 +61,17 @@ namespace Lithnet.GoogleApps.MA
 
         private IList<SendAs> GetNonPrimarySendAs(string dn)
         {
-            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).ToList();
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary.HasValue || !t.IsPrimary.Value).ToList();
         }
 
         private IList<string> GetNonPrimarySendAsAddresses(string dn)
         {
-            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).Select(t => t.SendAsEmail).ToList();
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary.HasValue || !t.IsPrimary.Value).Select(t => t.SendAsEmail).ToList();
         }
 
         private IList<string> GetNonPrimarySendAsFormattedAddresses(string dn)
         {
-            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary ?? false).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToList();
+            return this.config.GmailService.GetSendAs(dn).Where(t => !t.IsPrimary.HasValue || !t.IsPrimary.Value).Select(t => new MailAddress(t.SendAsEmail, t.DisplayName).ToString()).ToList();
         }
 
         private void GetUserSendAsChanges(CSEntryChange csentry, out IList<string> adds, out IList<string> deletes)

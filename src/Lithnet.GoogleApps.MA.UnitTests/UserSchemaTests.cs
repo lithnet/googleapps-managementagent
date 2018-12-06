@@ -208,7 +208,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 ChangePasswordAtNextLogin = true,
                 IpWhitelisted = true,
                 CustomerId = "mytest",
-                PrimaryEmail = "test@test.com",
+                PrimaryEmail = "test@lithnet.io",
                 Id = "testid"
             };
 
@@ -254,7 +254,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             result = primaryEmail.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();
             change = result.FirstOrDefault(t => t.Name == "primaryEmail");
             Assert.IsNotNull(change);
-            Assert.AreEqual("test@test.com", change.GetValueAdd<string>());
+            Assert.AreEqual("test@lithnet.io", change.GetValueAdd<string>());
             x.AttributeChanges.Add(result.First());
 
             result = id.CreateAttributeChanges(x.DN, ObjectModificationType.Add, u).ToList();

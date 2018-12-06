@@ -49,7 +49,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Members.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalMembers.Count);
@@ -74,7 +74,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.CreateGroup();
                 Thread.Sleep(1000);
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
                 Thread.Sleep(5000);
@@ -138,7 +138,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.CreateGroup();
                 Thread.Sleep(1000);
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "OWNER" });
 
                 Thread.Sleep(5000);
@@ -176,7 +176,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = user.PrimaryEmail, Role = "OWNER" });
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
@@ -205,7 +205,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 e = UnitTestControl.CreateGroup();
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 Thread.Sleep(1000);
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, member2, "MANAGER");
@@ -306,7 +306,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 e = UnitTestControl.CreateGroup();
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 Thread.Sleep(1000);
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, member2, "OWNER");
@@ -354,10 +354,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.CreateGroup();
                 Thread.Sleep(1000);
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2 });
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -375,7 +375,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
 
                 CollectionAssert.AreEquivalent(new string[] { member2 }, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.ToArray());
             }
@@ -395,7 +395,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.CreateGroup();
                 Thread.Sleep(1000);
 
-                string member2 = "test@test.com";
+                string member2 = "test@lithnet.io";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
                 Thread.Sleep(1000);

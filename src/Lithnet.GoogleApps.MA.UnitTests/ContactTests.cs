@@ -185,7 +185,7 @@
                 string dn = Guid.NewGuid().ToString();
                 ContactEntry e = new ContactEntry();
 
-                e.Emails.Add(new EMail() { Address = "test@test.com", Label = "work" });
+                e.Emails.Add(new EMail() { Address = "test@lithnet.io", Label = "work" });
 
                 e.ExtendedProperties.Add(new ExtendedProperty(dn, ApiInterfaceContact.DNAttributeName));
 
