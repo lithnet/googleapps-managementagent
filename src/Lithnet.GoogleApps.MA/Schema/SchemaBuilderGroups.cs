@@ -543,6 +543,7 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
             };
 
             type.AttributeAdapters.Add(customReplyTo);
@@ -575,6 +576,7 @@ namespace Lithnet.GoogleApps.MA
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
             };
 
             type.AttributeAdapters.Add(defaultMessageDenyNotificationText);

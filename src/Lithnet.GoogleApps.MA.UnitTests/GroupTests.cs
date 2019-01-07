@@ -276,6 +276,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "NONE_CAN_POST"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
 
 
                 CSEntryChangeResult result =
