@@ -279,7 +279,6 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteLine("Starting user import task");
                     Logger.WriteLine("Requesting fields: " + fields);
                     Logger.WriteLine("Query filter: " + (this.config.UserQueryFilter ?? "<none>"));
-                    SchemaType type = schema.Types[SchemaConstants.User];
                     ParallelOptions op = new ParallelOptions()
                     {
                         MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ImportThreads,
@@ -288,6 +287,8 @@ namespace Lithnet.GoogleApps.MA
 
                     Parallel.ForEach(this.config.UsersService.GetUsers(this.config.CustomerID, fields, this.config.UserQueryFilter), op, user =>
                     {
+                        SchemaType type = schema.Types[SchemaConstants.User];
+
                         if (!string.IsNullOrWhiteSpace(this.config.UserRegexFilter))
                         {
                             if (!Regex.IsMatch(user.PrimaryEmail, this.config.UserRegexFilter, RegexOptions.IgnoreCase))

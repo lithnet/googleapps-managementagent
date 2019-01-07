@@ -90,6 +90,5 @@
         public const string DomainName = "domainName";
         public const string Verified = "verified";
         public const string IsPrimary = "isPrimary";
-
     }
 }
