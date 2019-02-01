@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+﻿    using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -10,6 +10,7 @@ namespace Lithnet.GoogleApps.MA
         private const string PropEmailSettingsApi = "emailsettings-api";
         private const string PropContactApi = "contacts-api";
         private const string PropCalendarApi = "calendar-api";
+        private const string PropClassroomApi = "classroom-api";
         private const string PropGmailApi = "gmail-api";
         private const string PropHttpDebugEnabled = "http-debug-enabled";
         private const string PropExportThreads = "export-threads";
@@ -61,5 +62,8 @@ namespace Lithnet.GoogleApps.MA
         
         [ConfigurationProperty(MAConfigurationSection.PropGmailApi, IsRequired = false)]
         public GmailApiElement GmailApi => (GmailApiElement)this[MAConfigurationSection.PropGmailApi];
+
+        [ConfigurationProperty(MAConfigurationSection.PropClassroomApi, IsRequired = false)]
+        public ClassroomApiElement ClassroomApi => (ClassroomApiElement)this[MAConfigurationSection.PropClassroomApi];
     }
 }

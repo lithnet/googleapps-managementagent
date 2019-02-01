@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Google.Apis.Auth.OAuth2.Responses;
 using Lithnet.GoogleApps.ManagedObjects;
 using Microsoft.MetadirectoryServices;
 using G = Google.Apis.Admin.Directory.directory_v1.Data;
@@ -854,6 +855,15 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 throw;
+            }
+            catch (TokenResponseException ex)
+            {
+                if (ex.StatusCode == System.Net.HttpStatusCode.Forbidden || ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Trace.WriteLine("Permission related TokenResponseException while reading the user custom schema");
+                    return;
+                }
+                
             }
 
             if (schemas?.SchemasValue == null)

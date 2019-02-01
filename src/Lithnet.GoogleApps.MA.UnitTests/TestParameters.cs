@@ -144,5 +144,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
         public override bool MembersAsNonReference => this.GroupMembersAsString;
         public bool EnableAdvancedUserAttributes => true;
+
+        public bool MakeNewSendAsAddressesDefault => true;
+
+        public bool SkipMemberImportOnArchivedCourses => false;
     }
 }

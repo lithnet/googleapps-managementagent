@@ -36,7 +36,7 @@ namespace Lithnet.GoogleApps.MA
                     csentry.AttributeChanges.Add(change);
                 }
 
-                //Trace.WriteLine($"Created CSEntryChange for {csentry.ObjectType} {csentry.DN}");
+                Trace.WriteLine($"Created CSEntryChange for {csentry.ObjectType} {csentry.DN}");
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace Lithnet.GoogleApps.MA
                 csentry.ErrorCodeImport = MAImportError.ImportErrorCustomContinueRun;
                 csentry.ErrorDetail = ex.StackTrace;
                 csentry.ErrorName = ex.Message;
-               // Trace.WriteLine($"Error creating CSEntryChange for {csentry.ObjectType} {csentry.DN} - {ex.Message}");
+                Trace.WriteLine($"Error creating CSEntryChange for {csentry.ObjectType} {csentry.DN} - {ex.Message}");
             }
 
             return csentry;

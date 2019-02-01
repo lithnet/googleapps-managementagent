@@ -167,9 +167,12 @@ namespace Lithnet.GoogleApps.MA
                     SendAs sendAs = new SendAs
                     {
                         DisplayName = address.DisplayName,
-                        SendAsEmail = address.Address
+                        SendAsEmail = address.Address,
                     };
 
+                    if (this.config.MakeNewSendAsAddressesDefault)
+                        sendAs.IsDefault = true;
+                        
                     this.config.GmailService.AddSendAs(csentry.DN, sendAs);
                     valueChanges.Add(ValueChange.CreateValueAdd(add));
                 }
