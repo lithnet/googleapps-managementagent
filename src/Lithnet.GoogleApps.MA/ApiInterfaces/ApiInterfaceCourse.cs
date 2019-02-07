@@ -136,7 +136,7 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteLine($"Added course {csentry.DN} (Id: {result.Id})");
 
                     // Get Id and result
-                    //csentry.DN = result.Id;
+                    csentry.DN = result.Id;
                     course = result;
                     googleCourse.Course = course;
 

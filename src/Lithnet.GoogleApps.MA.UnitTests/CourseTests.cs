@@ -40,11 +40,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             User t2 = UserTests.CreateUser();
             User s1 = UserTests.CreateUser();
             User s2 = UserTests.CreateUser();
-
+    
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ownerId", new List<object>() { t1.Id }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("teachers", new List<object>() { t1.Id, t2.Id }));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("students", new List<object>() { s1.Id, s2.Id }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ownerId", new List<object>() { t1.PrimaryEmail }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("teachers", new List<object>() { t1.PrimaryEmail, t2.PrimaryEmail }));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("students", new List<object>() { s1.PrimaryEmail, s2.PrimaryEmail }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("courseState", "ACTIVE"));
 
             string id = null;
@@ -65,10 +65,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("name", e.Name);
                 Assert.AreEqual("ACTIVE", e.CourseState);
 
-                CollectionAssert.AreEquivalent(new string[] { s1.PrimaryEmail, s2.PrimaryEmail },
+                CollectionAssert.AreEquivalent(new string[] { s1.Id, s2.Id },
                     UnitTestControl.TestParameters.ClassroomService.StudentFactory.GetCourseStudents(id).GetAllStudents().ToArray());
 
-                CollectionAssert.AreEquivalent(new string[] { t1.PrimaryEmail, t2.PrimaryEmail },
+                CollectionAssert.AreEquivalent(new string[] { t1.Id, t2.Id },
                     UnitTestControl.TestParameters.ClassroomService.TeacherFactory.GetCourseTeachers(id).GetAllTeachers().ToArray());
             }
             finally
