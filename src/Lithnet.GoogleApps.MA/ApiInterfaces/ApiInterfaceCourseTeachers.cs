@@ -16,11 +16,14 @@ namespace Lithnet.GoogleApps.MA
     {
         private IManagementAgentParameters config;
 
+        private ApiInterfaceCourse CourseApiInterface;
+
         public string Api => "courseteachers";
 
-        public ApiInterfaceCourseTeachers(IManagementAgentParameters config)
+        public ApiInterfaceCourseTeachers(IManagementAgentParameters config, ApiInterfaceCourse courseApiInterface)
         {
             this.config = config;
+            this.CourseApiInterface = courseApiInterface;
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
@@ -251,8 +254,8 @@ namespace Lithnet.GoogleApps.MA
 
             if (replacing)
             {
-                // TODO: Get existing teachers? Is it needed?
-                existingTeachers = new CourseTeachers();
+                // Translate existing teachers from Id to PrimaryEmail
+                existingTeachers = new CourseTeachers(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.TeacherFactory.GetCourseTeachers(csentry.DN).GetAllTeachers()));
             }
             else
             {

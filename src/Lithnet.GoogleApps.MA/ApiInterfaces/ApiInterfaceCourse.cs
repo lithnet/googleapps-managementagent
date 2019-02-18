@@ -28,7 +28,9 @@ namespace Lithnet.GoogleApps.MA
 
         protected MASchemaType SchemaType { get; set; }
 
-        protected Dictionary<string, string> UserMappingCache { get; set; }
+        protected ConcurrentDictionary<string, string> UserMappingCache { get; set; }
+
+        protected readonly string UserCacheFieldNames = string.Join(",", new string[] { "primaryEmail", "id" });
 
         public ApiInterfaceCourse(MASchemaType type, IManagementAgentParameters config)
         {
@@ -37,12 +39,12 @@ namespace Lithnet.GoogleApps.MA
 
             this.internalInterfaces = new ApiInterfaceKeyedCollection
             {
-                new ApiInterfaceCourseStudents(config),
-                new ApiInterfaceCourseTeachers(config)
+                new ApiInterfaceCourseStudents(config, this),
+                new ApiInterfaceCourseTeachers(config, this)
 
             };
 
-            this.UserMappingCache = new Dictionary<string, string>();
+            this.UserMappingCache = new ConcurrentDictionary<string, string>();
         }
 
         public string Api => "classroom";
@@ -299,24 +301,15 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Requesting teachers: " + teachersRequired);
                 Logger.WriteLine("Skip members for ARCHIVED Courses: " + this.config.SkipMemberImportOnArchivedCourses);
 
-                Logger.WriteLine("Fetching all users for Course member mapping");
-                string[] fieldNames = new string[] { "primaryEmail", "id" };
-                string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
-                IList<User> users = this.config.UsersService.GetUsers(this.config.CustomerID, fields).ToList();
-                UserMappingCache = users.ToDictionary(u => u.Id, u => u.PrimaryEmail);
-                Logger.WriteLine($"Done fetching all users for User Course Membership Mapping (count: {users.Count}). Importing courses.");
+                // Fetch all users and cache for performance translation of id to PrimaryEmail
+                InitializeUserMappingCache();
 
                 foreach (GoogleCourse course in this.config.ClassroomService.GetCourses(this.config.CustomerID, studentsRequired, teachersRequired, this.config.SkipMemberImportOnArchivedCourses, MAConfigurationSection.Configuration.ClassroomApi.ImportThreadsCourseMember))
                 {
 
                     // Translate OwnerId to Email. Use cache.
-                    string ownerPrimaryEmail;
-                    string ownerId = course.Course.OwnerId;
-                    if (this.UserMappingCache.TryGetValue(ownerId, out ownerPrimaryEmail))
-                    {
-                        course.Course.OwnerId = ownerPrimaryEmail;
-                    }
-
+                    course.Course.OwnerId = GetUserPrimaryEmailForId(course.Course.OwnerId);
+                    
                     // Translate students and teachers
                     course.Students = new CourseStudents(TranslateMembers(course.Students.GetAllStudents()));
                     course.Teachers = new CourseTeachers(TranslateMembers(course.Teachers.GetAllTeachers()));
@@ -336,9 +329,42 @@ namespace Lithnet.GoogleApps.MA
 
         }
 
-        private HashSet<string> TranslateMembers(HashSet<string> members)
+        public string GetUserPrimaryEmailForId(string numericId)
         {
-            return new HashSet<string>(members.Select(m => UserMappingCache.TryGetValue(m, out string translated) ? translated : m),
+            string primaryEmail;
+            if (!this.UserMappingCache.TryGetValue(numericId, out primaryEmail))
+            {
+                try
+                {
+                    primaryEmail = this.config.UsersService.Get(numericId, UserCacheFieldNames).PrimaryEmail;
+                    this.UserMappingCache.TryAdd(numericId, primaryEmail);
+                }
+                catch (GoogleApiException ex)
+                {
+                    Logger.WriteLine($"Error fetching primary email for id {numericId} for user translation.");
+                    Logger.WriteException(ex);
+                    return numericId;
+                }
+                
+            }
+
+            return primaryEmail;
+        }
+
+        protected void InitializeUserMappingCache()
+        {
+
+            Logger.WriteLine("Fetching all users for Course member mapping");
+            string[] fieldNames = new string[] { "primaryEmail", "id" };
+            string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
+            IList<User> users = this.config.UsersService.GetUsers(this.config.CustomerID, fields).ToList();
+            UserMappingCache = new ConcurrentDictionary<string, string>(users.ToDictionary(u => u.Id, u => u.PrimaryEmail));
+            Logger.WriteLine($"Done fetching all users for User Course Membership Mapping (count: {users.Count}). Importing courses.");
+
+        }
+        public HashSet<string> TranslateMembers(HashSet<string> members)
+        {
+            return new HashSet<string>(members.Select(m => GetUserPrimaryEmailForId(m)),
                 StringComparer.CurrentCultureIgnoreCase);
         }
 

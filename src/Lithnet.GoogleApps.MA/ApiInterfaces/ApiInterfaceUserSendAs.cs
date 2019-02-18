@@ -30,7 +30,6 @@ namespace Lithnet.GoogleApps.MA
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
         {
             AttributeChange change = this.ApplySendAsChanges(csentry);
-
             List<AttributeChange> changes = new List<AttributeChange>();
 
             if (change != null)
@@ -171,8 +170,10 @@ namespace Lithnet.GoogleApps.MA
                     };
 
                     if (this.config.MakeNewSendAsAddressesDefault)
+                    {
                         sendAs.IsDefault = true;
-                        
+                    }
+
                     this.config.GmailService.AddSendAs(csentry.DN, sendAs);
                     valueChanges.Add(ValueChange.CreateValueAdd(add));
                 }
