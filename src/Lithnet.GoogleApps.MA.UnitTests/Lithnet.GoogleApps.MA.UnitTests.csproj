@@ -59,6 +59,9 @@
     <Reference Include="Google.Apis.Calendar.v3, Version=1.36.1.1424, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Calendar.v3.1.36.1.1424\lib\net45\Google.Apis.Calendar.v3.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Apis.Classroom.v1, Version=1.36.1.1431, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Classroom.v1.1.36.1.1431\lib\net45\Google.Apis.Classroom.v1.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Apis.Core, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.36.1\lib\net45\Google.Apis.Core.dll</HintPath>
     </Reference>
@@ -138,6 +141,7 @@
     <Compile Include="GroupMemberTests.cs" />
     <Compile Include="CalendarTests.cs" />
     <Compile Include="UserCustomSchemaTests.cs" />
+    <Compile Include="CourseTests.cs" />
     <Compile Include="UserTests.cs" />
     <Compile Include="GroupTests.cs" />
     <Compile Include="AdapterTests\AdapterCollectionTTests.cs" />

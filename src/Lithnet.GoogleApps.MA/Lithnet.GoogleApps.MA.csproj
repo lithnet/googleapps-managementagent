@@ -68,12 +68,15 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ApiInterfaces\ApiInterfaceCourse.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceCourseTeachers.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceFeature.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceBuilding.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceDomain.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceContact.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceCalendar.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceCalendarAcl.cs" />
+    <Compile Include="ApiInterfaces\ApiInterfaceCourseStudents.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceUserSendAs.cs" />
     <Compile Include="ApiInterfaces\ApiInterfaceUserDelegates.cs" />
     <Compile Include="AttributeAdapters\AdapterPlaceholder.cs" />
@@ -82,7 +85,9 @@
     <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldSingleValued.cs" />
     <Compile Include="AttributeAdapters\AdapterCustomSchema.cs" />
     <Compile Include="AttributeAdapters\AdapterCustomSchemas.cs" />
+    <Compile Include="AttributeAdapters\PatchableAdapterPropertyValue.cs" />
     <Compile Include="ConfigSections\CalendarApiElement.cs" />
+    <Compile Include="ConfigSections\ClassroomApiElement.cs" />
     <Compile Include="ConfigSections\GmailApiElement.cs" />
     <Compile Include="ConfigSections\EmailSettingsApiElement.cs" />
     <Compile Include="ConfigSections\ContactsApiElement.cs" />
@@ -123,6 +128,7 @@
     <Compile Include="Schema\MASchemaTypes.cs" />
     <Compile Include="Schema\MASchemaType.cs" />
     <Compile Include="Schema\SchemaBuilder.cs" />
+    <Compile Include="Schema\SchemaBuilderCourses.cs" />
     <Compile Include="Schema\SchemaBuilderDomains.cs" />
     <Compile Include="Schema\SchemaBuilderResourcesCalendars.cs" />
     <Compile Include="Schema\SchemaBuilderResourcesBuildings.cs" />
@@ -160,6 +166,9 @@
     </Reference>
     <Reference Include="Google.Apis.Calendar.v3, Version=1.36.1.1424, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Calendar.v3.1.36.1.1424\lib\net45\Google.Apis.Calendar.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Classroom.v1, Version=1.36.1.1441, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Classroom.v1.1.36.1.1441\lib\net45\Google.Apis.Classroom.v1.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Core, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.36.1\lib\net45\Google.Apis.Core.dll</HintPath>
@@ -232,7 +241,7 @@
     <PostBuildEvent>"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 "$(CSCERTTHUMBPRINT)" /t http://timestamp.digicert.com /fd sha256 /v "$(TargetFileName)"
 
 "C:\Program Files\Debugging Tools for Windows (x64)\symstore" add /f "$(TargetDir)*.pdb" /s \\localhost\symbols /t "$(ProjectName)" /v "@(VersionNumber)"
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

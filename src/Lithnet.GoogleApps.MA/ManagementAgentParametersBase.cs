@@ -27,6 +27,8 @@ namespace Lithnet.GoogleApps.MA
 
         private SchemaRequestFactory schemaService;
 
+        private ClassroomRequestFactory classroomService;
+
         protected const string CustomerIDParameter = "Customer ID";
 
         protected const string InheritGroupRolesParameter = "Inherit group roles";
@@ -99,6 +101,10 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string EnableAdvancedUserAttributesParameter = "Enable advanced user attributes";
 
+        protected const string MakeNewSendAsAddressesDefaultParameter = "Make new SendAs addresses default";
+
+        protected const string SkipMemberImportOnArchivedCoursesParameter = "Skip Member import on ARCHIVED Courses";
+
         public abstract bool MembersAsNonReference { get; }
 
         public string GroupMemberAttributeName => this.MembersAsNonReference ? "member_raw" : "member";
@@ -155,6 +161,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.usersService == null)
                 {
+
                     this.usersService = new UserRequestFactory(
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] {
@@ -243,6 +250,26 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 return this.schemaService;
+            }
+        }
+
+        public ClassroomRequestFactory ClassroomService
+        {
+            get
+            {
+
+                if (this.classroomService == null)
+                {
+                    this.classroomService = new ClassroomRequestFactory(
+                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                        new[] { Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourses,
+                        //Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomProfileEmails,
+                        Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRosters},
+                        MAConfigurationSection.Configuration.ClassroomApi.PoolSize);
+                }
+
+                return this.classroomService;
+
             }
         }
 

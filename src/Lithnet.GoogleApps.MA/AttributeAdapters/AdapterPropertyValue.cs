@@ -56,7 +56,7 @@ namespace Lithnet.GoogleApps.MA
             return this.AttributeName == attribute;
         }
 
-        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        public virtual bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
             return this.SupportsPatch;
         }

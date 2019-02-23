@@ -10,6 +10,7 @@
         public const string Building = "building";
         public const string Domain = "domain";
         public const string Feature = "feature";
+        public const string Course = "course";
 
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";
         public const string CustomSchemaObjectType = "objectType";
@@ -90,5 +91,10 @@
         public const string DomainName = "domainName";
         public const string Verified = "verified";
         public const string IsPrimary = "isPrimary";
+
+        public const string Students = "students";
+        public const string Teachers = "teachers";
+        public const string OwnerId = "ownerId";
+
     }
 }

@@ -8,6 +8,7 @@ using Lithnet.MetadirectoryServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Schema = Microsoft.MetadirectoryServices.Schema;
 using User = Lithnet.GoogleApps.ManagedObjects.User;
+using System.IO;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -22,7 +23,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [AssemblyCleanup()]
         public static void AssemblyCleanup()
         {
-            CSEntryChangeQueue.SaveQueue("D:\\temp\\test-run.xml", UnitTestControl.MmsSchema);
+            CSEntryChangeQueue.SaveQueue(Path.Combine(Path.GetTempPath(),"test-run.xml"), UnitTestControl.MmsSchema);
         }
 
         public static MASchemaTypes Schema { get; private set; }

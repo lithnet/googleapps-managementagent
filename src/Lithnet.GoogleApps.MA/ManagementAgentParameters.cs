@@ -353,6 +353,54 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public bool MakeNewSendAsAddressesDefault
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.MakeNewSendAsAddressesDefaultParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.MakeNewSendAsAddressesDefaultParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool SkipMemberImportOnArchivedCourses
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.SkipMemberImportOnArchivedCoursesParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.SkipMemberImportOnArchivedCoursesParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public IEnumerable<string> CustomUserObjectClasses
         {
             get
@@ -654,6 +702,10 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.CalendarSendNotificationOnPermissionChangeParameter, false));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.ContactsPrefixParameter, null, "contact:"));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.SkipMemberImportOnArchivedCoursesParameter, false));
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Skipping import of students and teachers on ARCHIVED Courses can speed up import if you have many Archived course objects."));
+
                     break;
 
                 case ConfigParameterPage.Partition:
@@ -700,11 +752,12 @@ namespace Lithnet.GoogleApps.MA
 
                     var config = new ManagementAgentParameters(configParameters);
 
-                    if (config.SchemaService.HasSchema(config.CustomerID, SchemaConstants.CustomGoogleAppsSchemaName))
+                    if (config.KeyFilePath != null && !string.IsNullOrEmpty(config.KeyFilePassword) && config.Certificate != null)
                     {
                         parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                         parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.EnableAdvancedUserAttributesParameter, false));
                         parameters.Add(ConfigParameterDefinition.CreateLabelParameter("Enabling advanced user attributes enables managing delegate and send-as settings, however this can significantly slow down the speed of full imports. A separate API call must be made for every user during the import process for each of these selected attributes."));
+                        parameters.Add(ConfigParameterDefinition.CreateCheckBoxParameter(ManagementAgentParametersBase.MakeNewSendAsAddressesDefaultParameter, false));
                     }
 
                     break;

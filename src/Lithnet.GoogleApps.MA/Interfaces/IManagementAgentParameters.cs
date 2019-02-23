@@ -18,6 +18,8 @@ namespace Lithnet.GoogleApps.MA
 
         ResourceRequestFactory ResourcesService { get; }
 
+        ClassroomRequestFactory ClassroomService { get; }
+
         SchemaRequestFactory SchemaService { get; }
 
         string CalendarBuildingAttributeType { get; }
@@ -49,6 +51,10 @@ namespace Lithnet.GoogleApps.MA
         bool MembersAsNonReference { get; }
 
         bool EnableAdvancedUserAttributes { get; }
+
+        bool MakeNewSendAsAddressesDefault { get; }
+
+        bool SkipMemberImportOnArchivedCourses { get; }
 
         string GroupMemberAttributeName { get; }
 
