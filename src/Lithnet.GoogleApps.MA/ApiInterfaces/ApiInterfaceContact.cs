@@ -193,8 +193,6 @@ namespace Lithnet.GoogleApps.MA
         {
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting contacts import task");
-
                 HashSet<string> seenDNs = new HashSet<string>();
 
                 foreach (ContactEntry contact in this.config.ContactsService.GetContacts(this.config.Domain))
@@ -227,8 +225,6 @@ namespace Lithnet.GoogleApps.MA
 
                     collection.Add(ImportProcessor.GetCSEntryChange(contact, schema.Types[SchemaConstants.Contact], this.config));
                 }
-
-                Logger.WriteLine("Contacts import task complete");
             }, cancellationToken);
 
             t.Start();

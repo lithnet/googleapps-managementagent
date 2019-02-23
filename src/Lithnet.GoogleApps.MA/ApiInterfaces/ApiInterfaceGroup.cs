@@ -249,7 +249,6 @@ namespace Lithnet.GoogleApps.MA
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting group import task");
                 Logger.WriteLine("Requesting group fields: " + groupFields);
                 Logger.WriteLine("Requesting group settings fields: " + groupSettingsFields);
 
@@ -270,8 +269,6 @@ namespace Lithnet.GoogleApps.MA
 
                     continue;
                 }
-
-                Logger.WriteLine("Groups import task complete");
             }, cancellationToken);
 
             t.Start();

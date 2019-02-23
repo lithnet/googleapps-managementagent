@@ -213,7 +213,6 @@ namespace Lithnet.GoogleApps.MA
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting calendar import task");
                 Logger.WriteLine("Requesting calendar fields: " + fields);
 
                 Parallel.ForEach(this.config.ResourcesService.GetCalendars(this.config.CustomerID, fields), calendar =>
@@ -221,8 +220,6 @@ namespace Lithnet.GoogleApps.MA
                     collection.Add(this.GetCSEntryForCalendar(calendar, schema, this.config));
                     Debug.WriteLine($"Created CSEntryChange for calendar: {calendar.ResourceEmail}");
                 });
-
-                Logger.WriteLine("Calendar import task complete");
             }, cancellationToken);
 
             t.Start();
