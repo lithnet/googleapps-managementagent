@@ -69,7 +69,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
-
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
@@ -265,7 +264,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones = new List<Phone>();
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
-
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
@@ -987,8 +985,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-
-
 
         [TestMethod]
         public void AddSendAsAddresses()

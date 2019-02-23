@@ -276,7 +276,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
 
-
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
@@ -406,7 +405,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones = new List<Phone>();
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
-
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;

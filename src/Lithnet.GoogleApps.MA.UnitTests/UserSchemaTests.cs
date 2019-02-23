@@ -16,7 +16,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         static UserSchemaTests()
         {
         }
-        
+
         [TestMethod]
         public void TestWebSites()
         {
@@ -62,7 +62,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             Assert.AreEqual(true, ux.Websites.First(t => t.Type == "work").IsPrimary);
             Assert.AreEqual("http://home.com", ux.Websites.First(t => t.Type == "home").Value);
             Assert.AreEqual(false, ux.Websites.First(t => t.Type == "home").IsPrimary);
-
 
             x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Update;
@@ -171,7 +170,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             Assert.IsNotNull(change);
             CollectionAssert.AreEqual(new string[] {   "alias1@test.com",
                     "alias2@test.com" }, change.GetValueAdds<string>().ToArray());
-            
+
 
             CSEntryChange x = CSEntryChange.Create();
             x.ObjectModificationType = ObjectModificationType.Add;
@@ -261,8 +260,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             Assert.IsNotNull(change);
             Assert.AreEqual("testid", change.GetValueAdd<string>());
             x.AttributeChanges.Add(result.First());
-
-
 
             User ux = new User();
             changePasswordAtNextLogin.UpdateField(x, ux);

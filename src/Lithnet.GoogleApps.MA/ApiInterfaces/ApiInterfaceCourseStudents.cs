@@ -246,7 +246,7 @@ namespace Lithnet.GoogleApps.MA
             if (replacing)
             {
                 // Translate existing students from Id to PrimaryEmail
-                existingStudents = new CourseStudents(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents())); 
+                existingStudents = new CourseStudents(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents()));
             }
             else
             {

@@ -2,13 +2,13 @@
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ClassroomApiElement : ConfigurationElement 
+    internal class ClassroomApiElement : ConfigurationElement
     {
         private const string PropRateLimit = "rate-limit";
         private const string PropPoolSize = "pool-size";
         private const string PropImportThreadsCourseMember = "import-threads-course-member";
 
-        [ConfigurationProperty(ClassroomApiElement.PropRateLimit, IsRequired = false, DefaultValue = 500)]
+        [ConfigurationProperty(ClassroomApiElement.PropRateLimit, IsRequired = false, DefaultValue = 50)]
         public int RateLimit
         {
             get

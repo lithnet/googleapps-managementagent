@@ -35,12 +35,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.DN = $"{Guid.NewGuid()}";
             cs.ObjectType = SchemaConstants.Course;
 
-
             User t1 = UserTests.CreateUser();
             User t2 = UserTests.CreateUser();
             User s1 = UserTests.CreateUser();
             User s2 = UserTests.CreateUser();
-    
+
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ownerId", new List<object>() { t1.PrimaryEmail }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("teachers", new List<object>() { t1.PrimaryEmail, t2.PrimaryEmail }));
@@ -81,8 +80,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-
-
 
         [TestMethod]
         public void Delete()
@@ -142,10 +139,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
 
-
             }
         }
-
 
         [TestMethod]
         public void Update()
@@ -155,13 +150,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 owner = UserTests.CreateUser();
-                
+
                 Course e = new Course
                 {
                     Name = "name",
                     OwnerId = owner.Id
                 };
-
 
                 e = UnitTestControl.TestParameters.ClassroomService.Add(e);
                 id = e.Id;
@@ -173,7 +167,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name2"));
-         
+
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Course], UnitTestControl.TestParameters);
@@ -198,6 +192,5 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-
     }
 }

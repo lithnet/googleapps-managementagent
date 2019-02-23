@@ -2,7 +2,7 @@
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ContactsApiElement : ConfigurationElement 
+    internal class ContactsApiElement : ConfigurationElement
     {
         private const string PropRateLimit = "rate-limit";
         private const string PropPoolSize = "pool-size";

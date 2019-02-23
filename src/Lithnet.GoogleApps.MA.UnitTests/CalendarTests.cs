@@ -108,7 +108,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         //    }
         //}
 
-
         [TestMethod]
         public void GetCalendarsViaApiInterface()
         {
@@ -271,7 +270,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 new FeatureInstance() {Feature = new Feature() {Name = "Test2"}},
             };
 
-
             UnitTestControl.TestParameters.ResourcesService.AddCalendar(UnitTestControl.TestParameters.CustomerID, calendar);
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -370,7 +368,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "writer" && t.Scope.Value == this.CreateAddress("writer1")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "writer" && t.Scope.Value == this.CreateAddress("writer2")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "freeBusyReader" && t.Scope.Value == this.CreateAddress("freebusyreader")));
-
 
                 cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;

@@ -2,7 +2,7 @@
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class GmailApiElement : ConfigurationElement 
+    internal class GmailApiElement : ConfigurationElement
     {
         private const string PropRateLimit = "rate-limit";
 

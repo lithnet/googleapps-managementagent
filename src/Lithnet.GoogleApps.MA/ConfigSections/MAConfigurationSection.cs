@@ -1,4 +1,5 @@
-﻿    using System.Configuration;
+﻿    using System;
+    using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -7,7 +8,6 @@ namespace Lithnet.GoogleApps.MA
         private const string SectionName = "lithnet-google-ma";
         private const string PropDirectoryApi = "directory-api";
         private const string PropGroupsSettingsApi = "groupssettings-api";
-        private const string PropEmailSettingsApi = "emailsettings-api";
         private const string PropContactApi = "contacts-api";
         private const string PropCalendarApi = "calendar-api";
         private const string PropClassroomApi = "classroom-api";
@@ -44,7 +44,6 @@ namespace Lithnet.GoogleApps.MA
         [ConfigurationProperty(MAConfigurationSection.PropImportThreads, IsRequired = false, DefaultValue = 50)]
         public int ImportThreads => (int)this[MAConfigurationSection.PropImportThreads];
 
-
         [ConfigurationProperty(MAConfigurationSection.PropDirectoryApi, IsRequired = false)]
         public DirectoryApiElement DirectoryApi => (DirectoryApiElement) this[MAConfigurationSection.PropDirectoryApi];
 
@@ -54,12 +53,9 @@ namespace Lithnet.GoogleApps.MA
         [ConfigurationProperty(MAConfigurationSection.PropContactApi, IsRequired = false)]
         public ContactsApiElement ContactsApi => (ContactsApiElement)this[MAConfigurationSection.PropContactApi];
 
-        [ConfigurationProperty(MAConfigurationSection.PropEmailSettingsApi, IsRequired = false)]
-        public EmailSettingsApiElement EmailSettingsApi => (EmailSettingsApiElement)this[MAConfigurationSection.PropEmailSettingsApi];
-
         [ConfigurationProperty(MAConfigurationSection.PropCalendarApi, IsRequired = false)]
         public CalendarApiElement CalendarApi => (CalendarApiElement)this[MAConfigurationSection.PropCalendarApi];
-        
+
         [ConfigurationProperty(MAConfigurationSection.PropGmailApi, IsRequired = false)]
         public GmailApiElement GmailApi => (GmailApiElement)this[MAConfigurationSection.PropGmailApi];
 

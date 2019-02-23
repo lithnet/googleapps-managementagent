@@ -402,7 +402,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate($"{TestSchemaName}_TestSVString", new List<ValueChange> { ValueChange.CreateValueDelete("string1") }));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate($"{TestSchemaName}_TestMVString", new List<ValueChange> { ValueChange.CreateValueDelete("test3") }));
 
-
                 result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
 
                 if (result.ErrorCode != MAExportError.Success)
@@ -497,7 +496,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
-
         [TestMethod]
         public void DeleteStringValuesAsAttributeDeleteOnObjectUpdate()
         {
@@ -567,7 +565,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
             }
         }
-
 
         private static void TestSingleValueRoundTrip<T1>(string fieldName, T1 expectedValue, T1 valueForUpdateTest)
         {
@@ -661,7 +658,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             List<T1> returnedValues = UserCustomSchemaTests.GetReturnedValues<T1>(fieldName, ux);
 
             CollectionAssert.AreEquivalent(expectedGoogleValue.ToArray(), returnedValues);
-
 
             // Add a value
             ValueChange add1 = ValueChange.CreateValueAdd(valueToAdd);

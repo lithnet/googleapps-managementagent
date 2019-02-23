@@ -299,7 +299,7 @@ namespace Lithnet.GoogleApps.MA
                 {
                     // Translate OwnerId to Email. Use cache.
                     course.Course.OwnerId = this.GetUserPrimaryEmailForId(course.Course.OwnerId);
-                    
+
                     // Translate students and teachers
                     course.Students = new CourseStudents(this.TranslateMembers(course.Students.GetAllStudents()));
                     course.Teachers = new CourseTeachers(this.TranslateMembers(course.Teachers.GetAllTeachers()));

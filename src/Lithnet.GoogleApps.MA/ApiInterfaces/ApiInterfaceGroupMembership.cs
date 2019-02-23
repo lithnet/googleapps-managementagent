@@ -189,7 +189,7 @@ namespace Lithnet.GoogleApps.MA
 
             return attributeChanges;
         }
-        
+
         private List<Member> NormalizeMembershipList(List<Member> members)
         {
             if (!this.config.InheritGroupRoles)
@@ -320,7 +320,7 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
             }
         }
-        
+
         private void ApplyRoleInheritance(GroupMembership membership)
         {
             if (this.config.InheritGroupRoles && membership != null)
@@ -419,7 +419,7 @@ namespace Lithnet.GoogleApps.MA
                 deletes.ExternalOwners.Remove(member);
                 reportedDeletes.ExternalOwners.Add(member);
             }
-            
+
             // Upgrades to manager
             foreach (var member in adds.Managers.Except(adds.Members).ToList())
             {
