@@ -79,7 +79,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             x.AttributeChanges.Remove(change);
             x.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("websites_other", "http://other.com"));
             schemaItem.UpdateField(x, ux);
-
         }
 
         [TestMethod]

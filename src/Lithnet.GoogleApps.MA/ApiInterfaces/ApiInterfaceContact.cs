@@ -222,7 +222,6 @@ namespace Lithnet.GoogleApps.MA
                         continue;
                     }
 
-
                     collection.Add(ImportProcessor.GetCSEntryChange(contact, schema.Types[SchemaConstants.Contact], this.config));
                 }
             }, cancellationToken);
@@ -249,7 +248,6 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-
                 if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
                 {
                     return false;

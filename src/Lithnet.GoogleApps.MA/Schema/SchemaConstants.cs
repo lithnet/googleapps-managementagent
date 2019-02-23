@@ -95,6 +95,5 @@
         public const string Students = "students";
         public const string Teachers = "teachers";
         public const string OwnerId = "ownerId";
-
     }
 }

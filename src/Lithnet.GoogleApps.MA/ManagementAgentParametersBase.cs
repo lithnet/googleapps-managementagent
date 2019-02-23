@@ -161,7 +161,6 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.usersService == null)
                 {
-
                     this.usersService = new UserRequestFactory(
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] {
@@ -257,7 +256,6 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-
                 if (this.classroomService == null)
                 {
                     this.classroomService = new ClassroomRequestFactory(
@@ -269,7 +267,6 @@ namespace Lithnet.GoogleApps.MA
                 }
 
                 return this.classroomService;
-
             }
         }
 

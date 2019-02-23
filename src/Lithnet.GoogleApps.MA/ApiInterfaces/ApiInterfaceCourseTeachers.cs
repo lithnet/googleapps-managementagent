@@ -9,7 +9,6 @@ using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 
-
 namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceCourseTeachers : IApiInterface
@@ -110,7 +109,6 @@ namespace Lithnet.GoogleApps.MA
             {
                 ApiInterfaceCourseTeachers.AddAttributeChange(SchemaConstants.Teachers, modificationType, reportedDeletes.Teachers.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceCourseTeachers.AddAttributeChange(SchemaConstants.Teachers, modificationType, reportedAdds.Teachers.ToValueChange(ValueModificationType.Add), changes);
-
             }
 
             Logger.WriteLine($"Processed teachers for course {csentry.DN}");
@@ -119,7 +117,6 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
             CourseTeachers teachers = source as CourseTeachers;
@@ -138,7 +135,6 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Course].AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 foreach (string attributeName in typeDef.MmsAttributeNames)
@@ -151,9 +147,7 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return attributeChanges;
-
         }
-
 
         private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)
         {
@@ -241,7 +235,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-
         private void GetTeacherChangesFromCSEntryChange(CSEntryChange csentry, out CourseTeachers adds, out CourseTeachers deletes, out CourseTeachers reportedAdds, out CourseTeachers reportedDeletes, bool replacing)
         {
             adds = new CourseTeachers();
@@ -250,7 +243,6 @@ namespace Lithnet.GoogleApps.MA
             reportedDeletes = new CourseTeachers();
 
             CourseTeachers existingTeachers;
-
 
             if (replacing)
             {
@@ -267,8 +259,6 @@ namespace Lithnet.GoogleApps.MA
             reportedAdds.MergeTeachers(adds);
             reportedDeletes.MergeTeachers(deletes);
         }
-
-
 
         private void GetTeacherChangesFromCSEntryChange(CSEntryChange csentry, HashSet<string> adds, HashSet<string> deletes, HashSet<string> existingMembers, string attributeName, bool replacing)
         {
@@ -345,6 +335,5 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-
     }
 }

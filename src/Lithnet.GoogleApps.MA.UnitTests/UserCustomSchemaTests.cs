@@ -159,7 +159,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -224,7 +223,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(u.Id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -702,7 +700,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             schemaItem.UpdateField(x, ux);
             Assert.AreEqual(Constants.NullValuePlaceholder, (string)ux.CustomSchemas[TestSchemaName][fieldName]);
-
         }
 
         private static User DeserializeTestUser()

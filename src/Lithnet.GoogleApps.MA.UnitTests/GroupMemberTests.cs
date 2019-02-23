@@ -35,7 +35,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(500);
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@lithnet.io", "MEMBER");
-
             }
             finally
             {
@@ -232,7 +231,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
-                
 
             }
             finally
@@ -281,7 +279,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                         Trace.WriteLine($"Created user {x.PrimaryEmail}");
                         UnitTestControl.TestParameters.UsersService.Delete(x.Id);
                     });
-
                 });
 
                 q.Start();
@@ -412,7 +409,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
-
             }
             finally
             {
@@ -514,7 +510,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 UnitTestControl.Cleanup(e, member1, member2, member3, member4);
             }
-
         }
     }
 }

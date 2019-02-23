@@ -314,7 +314,6 @@ namespace Lithnet.GoogleApps.MA
                         collection.Add(ImportProcessor.GetCSEntryChange(user, type, this.config), cancellationToken);
                         return;
                     });
-
                 }
                 catch (OperationCanceledException)
                 {

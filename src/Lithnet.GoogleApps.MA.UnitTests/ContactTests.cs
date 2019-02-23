@@ -114,7 +114,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -172,7 +171,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -221,7 +219,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -361,7 +358,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -427,7 +423,6 @@
                
 
                 Assert.AreEqual(0, e.Phonenumbers.Count);
-               
             }
             finally
             {
@@ -436,7 +431,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -502,7 +496,6 @@
 
 
                 Assert.AreEqual(0, e.ExternalIds.Count);
-
             }
             finally
             {
@@ -511,7 +504,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
     }
 }

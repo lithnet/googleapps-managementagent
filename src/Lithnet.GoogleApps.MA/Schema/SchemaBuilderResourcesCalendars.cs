@@ -100,7 +100,6 @@ namespace Lithnet.GoogleApps.MA
 
                     return i;
                 }
-
             });
 
             type.AttributeAdapters.Add(new AdapterPropertyValue

@@ -406,7 +406,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "owner" && t.Scope.Value == this.CreateAddress("writer1")));
                 Assert.IsNotNull(acls.FirstOrDefault(t => t.Role == "writer" && t.Scope.Value == this.CreateAddress("writer2")));
                 Assert.IsNull(acls.FirstOrDefault(t => t.Role == "freeBusyReader" && t.Scope.Value == this.CreateAddress("freebusyreader")));
-
             }
             finally
             {

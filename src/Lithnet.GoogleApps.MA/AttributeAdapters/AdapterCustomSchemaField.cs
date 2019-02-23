@@ -192,7 +192,6 @@ namespace Lithnet.GoogleApps.MA
             }
 
             throw new NotSupportedException("The array type was unknown");
-
         }
 
         protected IList<object> GetValuesFromList(IList list, string key)
@@ -239,6 +238,5 @@ namespace Lithnet.GoogleApps.MA
 
             return newList;
         }
-
     }
 }

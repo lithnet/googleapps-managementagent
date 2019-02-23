@@ -79,7 +79,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(directoryServer);
 
-
             AdapterPropertyValue initials = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -257,7 +256,6 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "familyName",
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
-
             };
 
             AdapterSubfield fullName = new AdapterSubfield
@@ -314,7 +312,6 @@ namespace Lithnet.GoogleApps.MA
 
         private void AddContactOrganizationsAttributes(MASchemaType type, IManagementAgentParameters config)
         {
-
             AdapterSubfield name = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
@@ -364,7 +361,6 @@ namespace Lithnet.GoogleApps.MA
                 Operation = AttributeOperation.ImportExport,
                 AttributeNamePart = "jobDescription"
             };
-
 
             AdapterSubfield location = new AdapterSubfield
             {
@@ -514,7 +510,6 @@ namespace Lithnet.GoogleApps.MA
                     { "http://schemas.google.com/g/2005#netmeeting", "netmeeting" },
                     { "http://schemas.google.com/g/2005#home", "home" }
                 }
-
             };
 
             type.AttributeAdapters.Add(customType);

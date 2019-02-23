@@ -199,7 +199,6 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
             Logger.WriteLine("Ops/sec: {0:N3}", this.opCount / this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
-
         }
 
         public OpenImportConnectionResults OpenImportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenImportConnectionRunStep importRunStep)
@@ -437,7 +436,6 @@ namespace Lithnet.GoogleApps.MA
             return results;
         }
 
-
         public CloseImportConnectionResults CloseImportConnection(CloseImportConnectionRunStep importRunStep)
         {
             Logger.WriteLine("Closing import connection: {0}", importRunStep.Reason);
@@ -454,7 +452,6 @@ namespace Lithnet.GoogleApps.MA
                     CSEntryChangeQueue.Clear();
                     CSEntryChangeQueue.SaveQueue(this.DeltaPath, this.operationSchemaTypes);
                     Logger.WriteLine("Cleared delta file");
-
                 }
                 else
                 {

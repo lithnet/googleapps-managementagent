@@ -87,7 +87,6 @@ namespace Lithnet.GoogleApps.MA
                                 throw;
                             }
                         }
-                        
                     }
                     catch (AggregateGroupUpdateException ex)
                     {
@@ -137,7 +136,6 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-
                 ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedDeletes.Members.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedDeletes.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedDeletes.Managers.ToValueChange(ValueModificationType.Delete), changes);

@@ -18,7 +18,6 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceCourse : IApiInterfaceObject
     {
-
         private const string DomainPrefix = "d:";
         private const string ProjectPrefix = "p";
 
@@ -41,7 +40,6 @@ namespace Lithnet.GoogleApps.MA
             {
                 new ApiInterfaceCourseStudents(config, this),
                 new ApiInterfaceCourseTeachers(config, this)
-
             };
 
             this.UserMappingCache = new ConcurrentDictionary<string, string>();
@@ -74,7 +72,6 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteException(ex);
             }
             return googleCourse;
-
         }
 
         public void DeleteInstance(CSEntryChange csentry)
@@ -86,7 +83,6 @@ namespace Lithnet.GoogleApps.MA
         {
             bool hasChanged = false;
             List<AttributeChange> changes = new List<AttributeChange>();
-
 
             GoogleCourse googleCourse = target as GoogleCourse;
             Course course = null;
@@ -116,7 +112,6 @@ namespace Lithnet.GoogleApps.MA
                     hasChanged = true;
                     updateMask.Add(typeDef.FieldName);
                 }
-
             }
 
             if (hasChanged)
@@ -141,7 +136,6 @@ namespace Lithnet.GoogleApps.MA
                     csentry.DN = result.Id;
                     course = result;
                     googleCourse.Course = course;
-
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -155,8 +149,6 @@ namespace Lithnet.GoogleApps.MA
                     {
                         result = this.config.ClassroomService.Update(course);
                     }
-
-
                 }
                 else
                 {
@@ -281,7 +273,6 @@ namespace Lithnet.GoogleApps.MA
 
         public Task GetObjectImportTask(MmsSchema schema, BlockingCollection<object> collection, CancellationToken cancellationToken)
         {
-
             bool studentsRequired =
               ManagementAgent.Schema[SchemaConstants.Course].AttributeAdapters.Where(u => u.Api == "coursestudents").Any(v =>
               {
@@ -302,17 +293,16 @@ namespace Lithnet.GoogleApps.MA
                 Logger.WriteLine("Skip members for ARCHIVED Courses: " + this.config.SkipMemberImportOnArchivedCourses);
 
                 // Fetch all users and cache for performance translation of id to PrimaryEmail
-                InitializeUserMappingCache();
+                this.InitializeUserMappingCache();
 
                 foreach (GoogleCourse course in this.config.ClassroomService.GetCourses(this.config.CustomerID, studentsRequired, teachersRequired, this.config.SkipMemberImportOnArchivedCourses, MAConfigurationSection.Configuration.ClassroomApi.ImportThreadsCourseMember))
                 {
-
                     // Translate OwnerId to Email. Use cache.
-                    course.Course.OwnerId = GetUserPrimaryEmailForId(course.Course.OwnerId);
+                    course.Course.OwnerId = this.GetUserPrimaryEmailForId(course.Course.OwnerId);
                     
                     // Translate students and teachers
-                    course.Students = new CourseStudents(TranslateMembers(course.Students.GetAllStudents()));
-                    course.Teachers = new CourseTeachers(TranslateMembers(course.Teachers.GetAllTeachers()));
+                    course.Students = new CourseStudents(this.TranslateMembers(course.Students.GetAllStudents()));
+                    course.Teachers = new CourseTeachers(this.TranslateMembers(course.Teachers.GetAllTeachers()));
 
                     collection.Add(this.GetCSEntryForCourse(course, schema));
                     Debug.WriteLine($"Created CSEntryChange for course: {course.Course.Id}");
@@ -326,7 +316,6 @@ namespace Lithnet.GoogleApps.MA
             t.Start();
 
             return t;
-
         }
 
         public string GetUserPrimaryEmailForId(string numericId)
@@ -336,7 +325,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 try
                 {
-                    primaryEmail = this.config.UsersService.Get(numericId, UserCacheFieldNames).PrimaryEmail;
+                    primaryEmail = this.config.UsersService.Get(numericId, this.UserCacheFieldNames).PrimaryEmail;
                     this.UserMappingCache.TryAdd(numericId, primaryEmail);
                 }
                 catch (GoogleApiException ex)
@@ -345,7 +334,6 @@ namespace Lithnet.GoogleApps.MA
                     Logger.WriteException(ex);
                     return numericId;
                 }
-                
             }
 
             return primaryEmail;
@@ -353,18 +341,16 @@ namespace Lithnet.GoogleApps.MA
 
         protected void InitializeUserMappingCache()
         {
-
             Logger.WriteLine("Fetching all users for Course member mapping");
             string[] fieldNames = new string[] { "primaryEmail", "id" };
             string fields = $"users({string.Join(",", fieldNames)}),nextPageToken";
             IList<User> users = this.config.UsersService.GetUsers(this.config.CustomerID, fields).ToList();
-            UserMappingCache = new ConcurrentDictionary<string, string>(users.ToDictionary(u => u.Id, u => u.PrimaryEmail));
+            this.UserMappingCache = new ConcurrentDictionary<string, string>(users.ToDictionary(u => u.Id, u => u.PrimaryEmail));
             Logger.WriteLine($"Done fetching all users for User Course Membership Mapping (count: {users.Count}). Importing courses.");
-
         }
         public HashSet<string> TranslateMembers(HashSet<string> members)
         {
-            return new HashSet<string>(members.Select(m => GetUserPrimaryEmailForId(m)),
+            return new HashSet<string>(members.Select(m => this.GetUserPrimaryEmailForId(m)),
                 StringComparer.CurrentCultureIgnoreCase);
         }
 
@@ -390,7 +376,6 @@ namespace Lithnet.GoogleApps.MA
             return csentry;
         }
 
-
         private bool SetDNValue(CSEntryChange csentry, GoogleCourse course)
         {
             if (csentry.ObjectModificationType != ObjectModificationType.Replace && csentry.ObjectModificationType != ObjectModificationType.Update)
@@ -407,8 +392,6 @@ namespace Lithnet.GoogleApps.MA
 
             throw new NotSupportedException("Renaming the DN of this object is not supported");
         }
-
-
     }
 }
 

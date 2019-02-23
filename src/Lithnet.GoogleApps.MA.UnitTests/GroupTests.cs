@@ -217,7 +217,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
-
             }
             finally
             {
@@ -535,7 +534,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2, alias3}, e.Aliases.ToArray());
-
             }
             finally
             {
@@ -583,7 +581,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1}, e.Aliases.ToArray());
-
             }
             finally
             {

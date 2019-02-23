@@ -46,6 +46,5 @@ namespace Lithnet.GoogleApps.MA
                 this[ClassroomApiElement.PropImportThreadsCourseMember] = value;
             }
         }
-
     }
 }

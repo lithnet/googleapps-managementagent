@@ -5,7 +5,6 @@ using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-
     internal interface IApiInterfaceObject : IApiInterface
     {
         object CreateInstance(CSEntryChange csentry);

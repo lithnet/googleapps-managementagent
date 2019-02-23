@@ -73,7 +73,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
             finally
             {
-
                 UnitTestControl.Cleanup(t1, t2, s1, s2);
 
                 if (id != null)
@@ -81,7 +80,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
             }
-
         }
 
 
@@ -100,7 +98,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     Name = "name",
                     OwnerId = owner.Id
-
                 };
 
                 e = UnitTestControl.TestParameters.ClassroomService.Add(e);
@@ -146,16 +143,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
 
-
             }
-
         }
 
 
         [TestMethod]
         public void Update()
         {
-
             User owner = null;
             string id = null;
             try
@@ -166,7 +160,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     Name = "name",
                     OwnerId = owner.Id
-
                 };
 
 
@@ -194,7 +187,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.ClassroomService.GetCourse(id);
                 Assert.AreEqual("name2", e.Name);
-
             }
             finally
             {
@@ -205,10 +197,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
             }
-
         }
 
-
     }
-
 }
