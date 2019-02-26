@@ -8,7 +8,7 @@ namespace Lithnet.GoogleApps.MA
         private const string PropPoolSize = "pool-size";
         private const string PropImportThreadsCourseMember = "import-threads-course-member";
 
-        [ConfigurationProperty(ClassroomApiElement.PropRateLimit, IsRequired = false, DefaultValue = 50)]
+        [ConfigurationProperty(ClassroomApiElement.PropRateLimit, IsRequired = false, DefaultValue = 5)]
         public int RateLimit
         {
             get
