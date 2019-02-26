@@ -8,6 +8,7 @@ The Lithnet Google Apps Management Agent provides support for managing Google Ap
 * Supports the import and export of group objects including group settings
 * Supports the import and export of resources (calendars, buildings, features)
 * Supports the import of domains and aliases (read only)
+* Supports the import and export of course objects (Google Classroom)
 * High performance import and export through the use of multithreading and batch updates
 * Confirming (delta) import support for all object types
 
