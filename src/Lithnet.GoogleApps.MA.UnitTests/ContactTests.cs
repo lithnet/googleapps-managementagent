@@ -59,9 +59,8 @@
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
-                
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
@@ -114,7 +113,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -172,7 +170,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -221,7 +218,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -302,7 +298,6 @@
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_address", "work@ims.com"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_protocol", "proto"));
 
-
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
@@ -361,7 +356,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -424,10 +418,9 @@
                 System.Threading.Thread.Sleep(5000);
 
                 e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
-               
+
 
                 Assert.AreEqual(0, e.Phonenumbers.Count);
-               
             }
             finally
             {
@@ -436,7 +429,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -500,9 +492,7 @@
 
                 e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
 
-
                 Assert.AreEqual(0, e.ExternalIds.Count);
-
             }
             finally
             {
@@ -511,7 +501,6 @@
                     UnitTestControl.TestParameters.ContactsService.Delete(id);
                 }
             }
-
         }
     }
 }

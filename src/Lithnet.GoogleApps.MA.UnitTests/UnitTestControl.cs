@@ -12,7 +12,6 @@ using System.IO;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
-
     [TestClass]
     internal static class UnitTestControl
     {

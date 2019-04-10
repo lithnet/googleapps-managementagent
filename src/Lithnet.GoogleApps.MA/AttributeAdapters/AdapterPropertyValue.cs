@@ -38,7 +38,7 @@ namespace Lithnet.GoogleApps.MA
         public bool SupportsPatch { get; set; }
 
         public bool IsMultivalued { get; set; }
-        
+
         public bool IsReadOnly => this.Operation == AttributeOperation.ImportOnly;
 
         public Func<object, object> CastForImport { get; set; }
@@ -56,9 +56,9 @@ namespace Lithnet.GoogleApps.MA
             return this.AttributeName == attribute;
         }
 
-        public virtual bool CanPatch(KeyedCollection<string, AttributeChange> changes)
+        public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
+            return this.SupportsPatch || !changes.Contains(this.AttributeName);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)

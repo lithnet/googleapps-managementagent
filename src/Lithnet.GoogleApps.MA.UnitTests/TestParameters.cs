@@ -7,7 +7,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 {
     internal class TestParameters : ManagementAgentParametersBase, IManagementAgentParameters
     {
-
         public bool GroupMembersAsString { get; set; } = false;
 
         public TestParameters()

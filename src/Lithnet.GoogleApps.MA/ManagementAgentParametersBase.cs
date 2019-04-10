@@ -136,6 +136,8 @@ namespace Lithnet.GoogleApps.MA
                             Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic
                         }
                     );
+
+                    RateLimiter.SetRateLimitGmailService(MAConfigurationSection.Configuration.GmailApi.RateLimit, new TimeSpan(0, 0, 1));
                 }
 
                 return this.gmailService;
@@ -149,6 +151,7 @@ namespace Lithnet.GoogleApps.MA
                 if (this.domainsService == null)
                 {
                     this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { "https://www.googleapis.com/auth/admin.directory.domain.readonly" }, 1);
+                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.domainsService;
@@ -161,13 +164,14 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.usersService == null)
                 {
-
                     this.usersService = new UserRequestFactory(
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] {
                             DirectoryService.Scope.AdminDirectoryUser,
                             DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
                         MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+
+                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.usersService;
@@ -184,6 +188,8 @@ namespace Lithnet.GoogleApps.MA
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] { "http://www.google.com/m8/feeds/contacts/" },
                         MAConfigurationSection.Configuration.ContactsApi.PoolSize);
+
+                    RateLimiter.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.contactsService;
@@ -213,6 +219,9 @@ namespace Lithnet.GoogleApps.MA
 
                     GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
                     GroupMemberRequestFactory.ConcurrentOperationLimitDefault = MAConfigurationSection.Configuration.DirectoryApi.ConcurrentOperationGroupMember;
+
+                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                    RateLimiter.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.groupsService;
@@ -231,6 +240,9 @@ namespace Lithnet.GoogleApps.MA
                         new[] { "https://www.googleapis.com/auth/calendar" },
                         MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
                         MAConfigurationSection.Configuration.CalendarApi.PoolSize);
+
+                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                    RateLimiter.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.resourcesService;
@@ -247,6 +259,8 @@ namespace Lithnet.GoogleApps.MA
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] { DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
                         MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+
+                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
                 }
 
                 return this.schemaService;
@@ -257,19 +271,18 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-
                 if (this.classroomService == null)
                 {
                     this.classroomService = new ClassroomRequestFactory(
                         new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
                         new[] { Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourses,
-                        //Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomProfileEmails,
                         Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRosters},
                         MAConfigurationSection.Configuration.ClassroomApi.PoolSize);
+
+                    RateLimiter.SetRateLimitClassroomService(MAConfigurationSection.Configuration.ClassroomApi.RateLimit, new TimeSpan(0, 0, 1));
                 }
 
                 return this.classroomService;
-
             }
         }
 

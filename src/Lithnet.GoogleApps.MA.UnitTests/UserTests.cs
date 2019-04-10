@@ -126,7 +126,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -188,7 +187,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -243,7 +241,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -278,7 +275,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones = new List<Phone>();
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
-
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
@@ -379,7 +375,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -410,7 +405,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones = new List<Phone>();
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
-
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
@@ -445,7 +439,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -504,7 +497,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -560,7 +552,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -619,7 +610,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -674,7 +664,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2, alias3 }, e.Aliases);
-
             }
             finally
             {
@@ -683,7 +672,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -737,7 +725,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases);
-
             }
             finally
             {
@@ -746,7 +733,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -800,7 +786,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
                 CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
-
             }
             finally
             {
@@ -809,7 +794,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -873,7 +857,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
         [TestMethod]
         public void MakeAdmin()
@@ -925,7 +908,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(id);
                 }
             }
-
         }
 
         [TestMethod]
@@ -966,7 +948,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.UsersService.Delete(e.Id);
                 }
             }
-
         }
 
         internal static User CreateUser()

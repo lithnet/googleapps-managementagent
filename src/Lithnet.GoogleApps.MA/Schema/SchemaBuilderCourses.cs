@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lithnet.GoogleApps.MA.AttributeAdapters;
 using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
@@ -14,15 +13,14 @@ namespace Lithnet.GoogleApps.MA
             MASchemaType type = new MASchemaType
             {
                 AttributeAdapters = new List<IAttributeAdapter>(),
-                Name = TypeName,
+                Name = this.TypeName,
                 AnchorAttributeNames = new[] { "id" },
                 SupportsPatch = true
-
             };
 
             type.ApiInterface = new ApiInterfaceCourse(type, config);
 
-            PatchableAdapterPropertyValue alternateLink = new PatchableAdapterPropertyValue
+            AdapterPropertyValue alternateLink = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "alternateLink",
@@ -36,8 +34,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(alternateLink);
 
-
-            PatchableAdapterPropertyValue courseGroupEmail = new PatchableAdapterPropertyValue
+            AdapterPropertyValue courseGroupEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "courseGroupEmail",
@@ -51,7 +48,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(courseGroupEmail);
 
-            PatchableAdapterPropertyValue courseState = new PatchableAdapterPropertyValue
+            AdapterPropertyValue courseState = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "courseState",
@@ -65,7 +62,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(courseState);
 
-            PatchableAdapterPropertyValue calendarId = new PatchableAdapterPropertyValue
+            AdapterPropertyValue calendarId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "calendarId",
@@ -77,10 +74,9 @@ namespace Lithnet.GoogleApps.MA
                 SupportsPatch = false
             };
 
-
             type.AttributeAdapters.Add(calendarId);
 
-            PatchableAdapterPropertyValue creationTime = new PatchableAdapterPropertyValue
+            AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "creationTime",
@@ -94,7 +90,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(creationTime);
 
-            PatchableAdapterPropertyValue descriptionHeading = new PatchableAdapterPropertyValue
+            AdapterPropertyValue descriptionHeading = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "descriptionHeading",
@@ -108,8 +104,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(descriptionHeading);
 
-
-            PatchableAdapterPropertyValue description = new PatchableAdapterPropertyValue
+            AdapterPropertyValue description = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "description",
@@ -123,8 +118,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(description);
 
-
-            PatchableAdapterPropertyValue enrollmentCode = new PatchableAdapterPropertyValue
+            AdapterPropertyValue enrollmentCode = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "enrollmentCode",
@@ -138,7 +132,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(enrollmentCode);
 
-            PatchableAdapterPropertyValue eTag = new PatchableAdapterPropertyValue
+            AdapterPropertyValue eTag = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "eTag",
@@ -152,7 +146,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(eTag);
 
-            PatchableAdapterPropertyValue guardiansEnabled = new PatchableAdapterPropertyValue
+            AdapterPropertyValue guardiansEnabled = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
                 FieldName = "guardiansEnabled",
@@ -166,7 +160,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(guardiansEnabled);
 
-            PatchableAdapterPropertyValue ownerId = new PatchableAdapterPropertyValue
+            AdapterPropertyValue ownerId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Reference,
                 FieldName = "ownerId",
@@ -180,7 +174,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(ownerId);
 
-            PatchableAdapterPropertyValue room = new PatchableAdapterPropertyValue
+            AdapterPropertyValue room = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "room",
@@ -194,8 +188,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(room);
 
-
-            PatchableAdapterPropertyValue section = new PatchableAdapterPropertyValue
+            AdapterPropertyValue section = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "section",
@@ -209,7 +202,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(section);
 
-            PatchableAdapterPropertyValue teacherGroupEmail = new PatchableAdapterPropertyValue
+            AdapterPropertyValue teacherGroupEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "teacherGroupEmail",
@@ -223,7 +216,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(teacherGroupEmail);
 
-            PatchableAdapterPropertyValue updateTime = new PatchableAdapterPropertyValue
+            AdapterPropertyValue updateTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "updateTime",
@@ -237,8 +230,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(updateTime);
 
-
-            PatchableAdapterPropertyValue name = new PatchableAdapterPropertyValue
+            AdapterPropertyValue name = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "name",
@@ -252,8 +244,7 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(name);
 
-
-            PatchableAdapterPropertyValue id = new PatchableAdapterPropertyValue
+            AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
                 FieldName = "id",
@@ -271,11 +262,8 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilderCourses.AddStudents(type);
             SchemaBuilderCourses.AddTeachers(type);
 
-
             yield return type;
         }
-
-
 
         private static void AddStudents(MASchemaType type)
         {
@@ -291,7 +279,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(students);
-
         }
 
         private static void AddTeachers(MASchemaType type)
@@ -308,10 +295,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(teachers);
-
         }
-
-
     }
-
 }

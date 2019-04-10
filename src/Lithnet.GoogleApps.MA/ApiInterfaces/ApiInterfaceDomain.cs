@@ -163,8 +163,6 @@ namespace Lithnet.GoogleApps.MA
         {
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting domains import task");
-
                 DomainList list = this.config.DomainsService.List(this.config.CustomerID);
 
                 foreach (Domain d in list.Domains)
@@ -179,8 +177,6 @@ namespace Lithnet.GoogleApps.MA
 
                     collection.Add(ImportProcessor.GetCSEntryChange(d, schema.Types[SchemaConstants.Domain], this.config));
                 }
-
-                Logger.WriteLine("Domains import task complete");
             }, cancellationToken);
 
             t.Start();

@@ -313,6 +313,5 @@ namespace Lithnet.GoogleApps.MA
                 return "domain";
             }
         }
-
     }
 }

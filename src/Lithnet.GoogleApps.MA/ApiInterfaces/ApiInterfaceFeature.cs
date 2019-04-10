@@ -183,7 +183,6 @@ namespace Lithnet.GoogleApps.MA
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting feature import task");
                 Logger.WriteLine("Requesting feature fields: " + fields);
 
                 foreach (Feature feature in this.config.ResourcesService.GetFeatures(this.config.CustomerID, fields))
@@ -193,8 +192,6 @@ namespace Lithnet.GoogleApps.MA
 
                     continue;
                 }
-
-                Logger.WriteLine("Feature import task complete");
             }, cancellationToken);
 
             t.Start();

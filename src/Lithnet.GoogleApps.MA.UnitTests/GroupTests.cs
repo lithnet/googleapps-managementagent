@@ -170,7 +170,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() {alias1, alias2}));
 
-
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -217,7 +216,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
-
             }
             finally
             {
@@ -264,7 +262,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public void UpdateNoneCanPostOn()
         {
             Group e = null;
-            
+
             try
             {
                 e = UnitTestControl.CreateGroup();
@@ -277,7 +275,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "NONE_CAN_POST"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
-
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -295,7 +292,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.ArchiveOnly);
 
                 Assert.AreEqual("NONE_CAN_POST", s.WhoCanPostMessage);
-
 
                 cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -521,7 +517,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     new ValueChange(alias3, ValueModificationType.Add)
                 }));
 
-
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -535,7 +530,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2, alias3}, e.Aliases.ToArray());
-
             }
             finally
             {
@@ -569,7 +563,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     new ValueChange(alias2, ValueModificationType.Delete)
                 }));
 
-
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -583,7 +576,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1}, e.Aliases.ToArray());
-
             }
             finally
             {
@@ -618,7 +610,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     alias3, alias4
                 }));
-
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);

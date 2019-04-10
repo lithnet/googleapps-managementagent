@@ -9,7 +9,6 @@ using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 
-
 namespace Lithnet.GoogleApps.MA
 {
     internal class ApiInterfaceCourseStudents : IApiInterface
@@ -24,7 +23,6 @@ namespace Lithnet.GoogleApps.MA
         {
             this.config = config;
             this.CourseApiInterface = courseApiInterface;
-
         }
 
         public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
@@ -108,10 +106,8 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                
                 ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedDeletes.Students.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedAdds.Students.ToValueChange(ValueModificationType.Add), changes);
-
             }
 
             Logger.WriteLine($"Processed students for course {csentry.DN}");
@@ -120,7 +116,6 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
             CourseStudents students = source as CourseStudents;
@@ -139,7 +134,6 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Course].AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 foreach (string attributeName in typeDef.MmsAttributeNames)
@@ -152,9 +146,7 @@ namespace Lithnet.GoogleApps.MA
             }
 
             return attributeChanges;
-
         }
-
 
         private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)
         {
@@ -242,7 +234,6 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-
         private void GetStudentChangesFromCSEntryChange(CSEntryChange csentry, out CourseStudents adds, out CourseStudents deletes, out CourseStudents reportedAdds, out CourseStudents reportedDeletes, bool replacing)
         {
             adds = new CourseStudents();
@@ -252,11 +243,10 @@ namespace Lithnet.GoogleApps.MA
 
             CourseStudents existingStudents;
 
-
             if (replacing)
             {
                 // Translate existing students from Id to PrimaryEmail
-                existingStudents = new CourseStudents(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents())); 
+                existingStudents = new CourseStudents(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents()));
             }
             else
             {
@@ -268,8 +258,6 @@ namespace Lithnet.GoogleApps.MA
             reportedAdds.MergeStudents(adds);
             reportedDeletes.MergeStudents(deletes);
         }
-
-
 
         private void GetStudentChangesFromCSEntryChange(CSEntryChange csentry, HashSet<string> adds, HashSet<string> deletes, HashSet<string> existingMembers, string attributeName, bool replacing)
         {
@@ -346,6 +334,5 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
         }
-
     }
 }

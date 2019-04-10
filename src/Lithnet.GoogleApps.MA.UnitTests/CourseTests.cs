@@ -35,12 +35,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.DN = $"{Guid.NewGuid()}";
             cs.ObjectType = SchemaConstants.Course;
 
-
             User t1 = UserTests.CreateUser();
             User t2 = UserTests.CreateUser();
             User s1 = UserTests.CreateUser();
             User s2 = UserTests.CreateUser();
-    
+
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ownerId", new List<object>() { t1.PrimaryEmail }));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("teachers", new List<object>() { t1.PrimaryEmail, t2.PrimaryEmail }));
@@ -73,7 +72,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
             finally
             {
-
                 UnitTestControl.Cleanup(t1, t2, s1, s2);
 
                 if (id != null)
@@ -81,10 +79,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
             }
-
         }
-
-
 
         [TestMethod]
         public void Delete()
@@ -100,7 +95,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 {
                     Name = "name",
                     OwnerId = owner.Id
-
                 };
 
                 e = UnitTestControl.TestParameters.ClassroomService.Add(e);
@@ -145,30 +139,23 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
 
-
-
             }
-
         }
-
 
         [TestMethod]
         public void Update()
         {
-
             User owner = null;
             string id = null;
             try
             {
                 owner = UserTests.CreateUser();
-                
+
                 Course e = new Course
                 {
                     Name = "name",
                     OwnerId = owner.Id
-
                 };
-
 
                 e = UnitTestControl.TestParameters.ClassroomService.Add(e);
                 id = e.Id;
@@ -180,7 +167,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name2"));
-         
+
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Course], UnitTestControl.TestParameters);
@@ -194,7 +181,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.ClassroomService.GetCourse(id);
                 Assert.AreEqual("name2", e.Name);
-
             }
             finally
             {
@@ -205,10 +191,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     UnitTestControl.TestParameters.ClassroomService.Delete(id);
                 }
             }
-
         }
-
-
     }
-
 }

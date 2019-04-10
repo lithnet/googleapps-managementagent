@@ -240,7 +240,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 UnitTestControl.Cleanup(e);
             }
-
         }
 
         [TestMethod]

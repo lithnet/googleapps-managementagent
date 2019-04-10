@@ -199,7 +199,6 @@ namespace Lithnet.GoogleApps.MA
             Logger.WriteLine("Operation time: {0}", this.timer.Elapsed);
             Logger.WriteLine("Ops/sec: {0:N3}", this.opCount / this.timer.Elapsed.TotalSeconds);
             Logger.WriteSeparatorLine('*');
-
         }
 
         public OpenImportConnectionResults OpenImportConnection(KeyedCollection<string, ConfigParameter> configParameters, Schema types, OpenImportConnectionRunStep importRunStep)
@@ -270,43 +269,79 @@ namespace Lithnet.GoogleApps.MA
 
                 if (t != null)
                 {
-                    tasks.Add(t);
-                }
-            }
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
 
-            this.importTask = Task.WhenAny(Task.WhenAll(tasks.ToArray()), Task.Delay(Timeout.Infinite, this.cancellationToken.Token));
-            this.importTask.ContinueWith(z =>
-            {
-                this.importCollection.CompleteAdding();
+                    Logger.WriteLine($"Import task started for object type '{item.Name}'");
 
-                Exception e = null;
-
-                foreach (Task t in tasks)
-                {
-                    if (t.IsFaulted)
+                    Task resultTask = t.ContinueWith(u =>
                     {
-                        if (t.Exception != null)
+                        stopwatch.Stop();
+
+                        if (u.IsFaulted)
                         {
-                            Logger.WriteException(t.Exception);
-                            e = t.Exception;
+                            Logger.WriteLine($"Import task failed for object type '{item.Name}'. Duration {stopwatch.Elapsed}");
+                            Logger.WriteException(u.Exception);
+                        }
+                        else if (u.IsCanceled)
+                        {
+                            Logger.WriteLine($"Import task canceled for object type '{item.Name}'. Duration {stopwatch.Elapsed}");
                         }
                         else
                         {
-                            if (e == null)
+                            Logger.WriteLine($"Import task completed successfully for object type '{item.Name}'. Duration {stopwatch.Elapsed}");
+                        }
+                    });
+
+                    tasks.Add(t);
+                    tasks.Add(resultTask);
+                }
+            }
+
+            this.importTask = Task.WhenAny(Task.WhenAll(tasks.ToArray()), Task.Delay(Timeout.Infinite, this.cancellationToken.Token)).ContinueWith(_ =>
+            {
+                try
+                {
+                    List<Exception> exceptions = new List<Exception>();
+
+                    foreach (Task t in tasks)
+                    {
+                        if (t.IsFaulted)
+                        {
+                            if (t.Exception != null)
                             {
-                                e = new Exception("A task faulted but did not return an exception");
+                                Logger.WriteException(t.Exception);
+
+                                if (t.Exception is AggregateException ae)
+                                {
+                                    exceptions.AddRange(ae.InnerExceptions);
+                                }
+                                else
+                                {
+                                    exceptions.Add(t.Exception);
+                                }
+                            }
+                            else
+                            {
+                                exceptions.Add(new Exception("A task faulted but did not return an exception"));
                             }
                         }
                     }
-                }
 
-                if (e != null)
+                    if (exceptions.Count == 1)
+                    {
+                        throw exceptions[0];
+                    }
+                    else if (exceptions.Count > 0)
+                    {
+                        throw new AggregateException("One or more import operations failed", exceptions);
+                    }
+                }
+                finally
                 {
-                    throw e;
+                    this.importCollection.CompleteAdding();
                 }
-
             }, this.cancellationToken.Token);
-            
         }
 
         public GetImportEntriesResults GetImportEntries(GetImportEntriesRunStep importRunStep)
@@ -356,24 +391,18 @@ namespace Lithnet.GoogleApps.MA
             {
                 for (int i = 0; i < this.importRunStep.PageSize; i++)
                 {
-                    if (this.importTask.IsFaulted)
-                    {
-                        throw this.importTask.Exception ?? new Exception("The task was faulted, but an exception was not provided");
-                    }
-
-                    if (this.importTask.IsCanceled || this.cancellationToken.IsCancellationRequested)
+                    if (this.importTask.IsFaulted || this.importTask.IsCanceled || this.cancellationToken.IsCancellationRequested)
                     {
                         break;
                     }
 
-                    if (this.importCollection.IsCompleted)
+                    if (this.importCollection.IsCompleted && this.importCollection.Count == 0)
                     {
                         break;
                     }
 
-                    if (!this.importCollection.TryTake(out object item, -1, this.cancellationToken.Token))
+                    if (!this.importCollection.TryTake(out object item, 50, this.cancellationToken.Token))
                     {
-                        Thread.Sleep(25);
                         continue;
                     }
 
@@ -388,7 +417,7 @@ namespace Lithnet.GoogleApps.MA
                     throw new NotSupportedException("The object enumeration returned an unsupported type: " + item.GetType().Name);
                 }
 
-                results.MoreToImport = !this.importCollection.IsCompleted;
+                results.MoreToImport = !(this.importCollection.IsCompleted && this.importCollection.Count == 0);
 
                 if (results.MoreToImport && results.CSEntries.Count == 0)
                 {
@@ -399,9 +428,13 @@ namespace Lithnet.GoogleApps.MA
             {
             }
 
+            if (this.importTask.IsFaulted)
+            {
+                throw this.importTask.Exception ?? new Exception("The task was faulted, but an exception was not provided");
+            }
+
             return results;
         }
-
 
         public CloseImportConnectionResults CloseImportConnection(CloseImportConnectionRunStep importRunStep)
         {
@@ -419,7 +452,6 @@ namespace Lithnet.GoogleApps.MA
                     CSEntryChangeQueue.Clear();
                     CSEntryChangeQueue.SaveQueue(this.DeltaPath, this.operationSchemaTypes);
                     Logger.WriteLine("Cleared delta file");
-
                 }
                 else
                 {

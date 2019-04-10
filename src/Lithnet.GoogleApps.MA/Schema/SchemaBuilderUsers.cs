@@ -673,7 +673,6 @@ namespace Lithnet.GoogleApps.MA
                 AttributeNamePart = "extendedAddress"
             };
 
-
             AdapterSubfield streetAddress = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
@@ -863,7 +862,6 @@ namespace Lithnet.GoogleApps.MA
                     Trace.WriteLine("Permission related TokenResponseException while reading the user custom schema");
                     return;
                 }
-                
             }
 
             if (schemas?.SchemasValue == null)

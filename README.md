@@ -2,12 +2,15 @@
 # Google Apps Management Agent for FIM 2010 R2 and MIM 2016
 The Lithnet Google Apps Management Agent provides support for managing Google Apps users, groups, calendars and shared contacts with FIM 2010 R2 and higher.
 
+>***Google API Deprecation notice***: Google have deprecated the use of the [email settings api](https://gsuiteupdates.googleblog.com/2018/10/email-settings-api-shutdown.html) and will disable it in October 2019. Ensure that you have migrated to v2 of the management agent before this date.
+
 ## Features
 * Supports the import and export of domain shared contact objects
 * Supports the import and export of user objects, including attributes from your custom schema
 * Supports the import and export of group objects including group settings
 * Supports the import and export of resources (calendars, buildings, features)
 * Supports the import of domains and aliases (read only)
+* Supports the import and export of course objects (Google Classroom)
 * High performance import and export through the use of multithreading and batch updates
 * Confirming (delta) import support for all object types
 

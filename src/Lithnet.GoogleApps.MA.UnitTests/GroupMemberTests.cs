@@ -35,7 +35,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Thread.Sleep(500);
 
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Id, "test@lithnet.io", "MEMBER");
-
             }
             finally
             {
@@ -106,7 +105,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", new List<object>() { member1.Email, member2.Email }));
-
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -232,8 +230,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
-                
-
             }
             finally
             {
@@ -272,7 +268,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 int directoryServicePoolSize = 30;
                 int threadCount = 0;
-                
+
                 Task q = new Task(() =>
                 {
                     Parallel.For(0, 1000, u =>
@@ -281,7 +277,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                         Trace.WriteLine($"Created user {x.PrimaryEmail}");
                         UnitTestControl.TestParameters.UsersService.Delete(x.Id);
                     });
-
                 });
 
                 q.Start();
@@ -412,7 +407,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalManagers.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).Owners.Count);
                 Assert.AreEqual(0, UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN).ExternalOwners.Count);
-
             }
             finally
             {
@@ -497,7 +491,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("member", new List<object>() { member3.Email, member4.Email }));
 
-
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
 
@@ -514,7 +507,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             {
                 UnitTestControl.Cleanup(e, member1, member2, member3, member4);
             }
-
         }
     }
 }

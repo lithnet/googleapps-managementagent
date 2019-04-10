@@ -190,7 +190,6 @@ namespace Lithnet.GoogleApps.MA
 
             Task t = new Task(() =>
             {
-                Logger.WriteLine("Starting building import task");
                 Logger.WriteLine("Requesting building fields: " + fields);
 
                 foreach (Building building in this.config.ResourcesService.GetBuildings(this.config.CustomerID, fields))
@@ -200,8 +199,6 @@ namespace Lithnet.GoogleApps.MA
 
                     continue;
                 }
-
-                Logger.WriteLine("Building import task complete");
             }, cancellationToken);
 
             t.Start();

@@ -276,7 +276,6 @@ namespace Lithnet.GoogleApps.MA
             {
                 try
                 {
-                    Logger.WriteLine("Starting user import task");
                     Logger.WriteLine("Requesting fields: " + fields);
                     Logger.WriteLine("Query filter: " + (this.config.UserQueryFilter ?? "<none>"));
                     ParallelOptions op = new ParallelOptions()
@@ -315,19 +314,10 @@ namespace Lithnet.GoogleApps.MA
                         collection.Add(ImportProcessor.GetCSEntryChange(user, type, this.config), cancellationToken);
                         return;
                     });
-
-                    Logger.WriteLine("User import task complete");
                 }
                 catch (OperationCanceledException)
                 {
                 }
-                catch (Exception ex)
-                {
-                    Logger.WriteLine("Error in user import task");
-                    Logger.WriteException(ex);
-                    throw;
-                }
-
             }, cancellationToken);
 
             t.Start();

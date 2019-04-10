@@ -2,12 +2,11 @@
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class GroupsSettingsApiElement : ConfigurationElement 
+    internal class GroupsSettingsApiElement : ConfigurationElement
     {
         private const string PropRateLimit = "rate-limit";
         private const string PropPoolSize = "pool-size";
         private const string PropImportThreadsGroupSettings = "import-threads-group-settings";
-
 
         [ConfigurationProperty(GroupsSettingsApiElement.PropRateLimit, IsRequired = false, DefaultValue = 500)]
         public int RateLimit

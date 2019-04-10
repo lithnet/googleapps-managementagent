@@ -87,7 +87,6 @@ namespace Lithnet.GoogleApps.MA
                                 throw;
                             }
                         }
-                        
                     }
                     catch (AggregateGroupUpdateException ex)
                     {
@@ -137,7 +136,6 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-
                 ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedDeletes.Members.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedDeletes.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
                 ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedDeletes.Managers.ToValueChange(ValueModificationType.Delete), changes);
@@ -191,7 +189,7 @@ namespace Lithnet.GoogleApps.MA
 
             return attributeChanges;
         }
-        
+
         private List<Member> NormalizeMembershipList(List<Member> members)
         {
             if (!this.config.InheritGroupRoles)
@@ -322,7 +320,7 @@ namespace Lithnet.GoogleApps.MA
                     throw new InvalidOperationException();
             }
         }
-        
+
         private void ApplyRoleInheritance(GroupMembership membership)
         {
             if (this.config.InheritGroupRoles && membership != null)
@@ -421,7 +419,7 @@ namespace Lithnet.GoogleApps.MA
                 deletes.ExternalOwners.Remove(member);
                 reportedDeletes.ExternalOwners.Add(member);
             }
-            
+
             // Upgrades to manager
             foreach (var member in adds.Managers.Except(adds.Members).ToList())
             {
