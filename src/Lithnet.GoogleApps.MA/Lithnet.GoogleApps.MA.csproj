@@ -88,6 +88,7 @@
     <Compile Include="ConfigSections\CalendarApiElement.cs" />
     <Compile Include="ConfigSections\ClassroomApiElement.cs" />
     <Compile Include="ConfigSections\GmailApiElement.cs" />
+    <Compile Include="ConfigSections\EmailSettingsApiElement.cs" />
     <Compile Include="ConfigSections\ContactsApiElement.cs" />
     <Compile Include="ConfigSections\GroupsSettingsApiElement.cs" />
     <Compile Include="ConfigSections\DirectoryApiElement.cs" />
@@ -193,7 +194,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Lithnet.GoogleApps, Version=1.0.6996.20616, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.GoogleApps.1.0.6996.20616\lib\net452\Lithnet.GoogleApps.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\googleapps-client-master\src\Lithnet.GoogleApps\bin\Debug\Lithnet.GoogleApps.dll</HintPath>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>
@@ -205,7 +207,9 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.MetadirectoryServicesEx, Version=4.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.MetadirectoryServicesEx">
+      <HintPath>..\..\..\Microsoft.MetadirectoryServicesEx.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -228,17 +232,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
-    <Content Include="ExportedMA.xml" />
-    <Content Include="Lithnet.GoogleApps.MA.PackagedMA.xml" />
+    <Content Include="ExportedMA.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Lithnet.GoogleApps.MA.PackagedMA.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="MAPackageInformation.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>del $(ProjectDir)$(ProjectName).PackagedMA.xml /f
-"C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\mapackager.exe" /e:$(ProjectDir)ExportedMA.xml /c:$(ProjectDir)MAPackageInformation.xml /o:$(ProjectDir)$(ProjectName).PackagedMA.xml</PreBuildEvent>
-    <PostBuildEvent>"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 "$(CSCERTTHUMBPRINT)" /t http://timestamp.digicert.com /fd sha256 /v "$(TargetFileName)"
-
-"C:\Program Files\Debugging Tools for Windows (x64)\symstore" add /f "$(TargetDir)*.pdb" /s \\localhost\symbols /t "$(ProjectName)" /v "@(VersionNumber)"
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

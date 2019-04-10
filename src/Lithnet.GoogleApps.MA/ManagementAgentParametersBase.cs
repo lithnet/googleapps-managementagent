@@ -279,7 +279,7 @@ namespace Lithnet.GoogleApps.MA
                         Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRosters},
                         MAConfigurationSection.Configuration.ClassroomApi.PoolSize);
 
-                    RateLimiter.SetRateLimitClassroomService(MAConfigurationSection.Configuration.ClassroomApi.RateLimit, new TimeSpan(0, 0, 1));
+                    RateLimiter.SetRateLimitClassroomService(MAConfigurationSection.Configuration.ClassroomApi.RateLimit, new TimeSpan(0, 0, 10));
                 }
 
                 return this.classroomService;

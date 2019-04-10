@@ -332,7 +332,7 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            string newDN = csentry.GetNewDNOrDefault<string>();
+            string newDN = GetNewDNOrDefault<string>(csentry);
 
             if (newDN == null)
             {
@@ -342,6 +342,20 @@ namespace Lithnet.GoogleApps.MA
             e.PrimaryEmail = newDN;
 
             return true;
+        }
+
+        private static T GetNewDNOrDefault<T>(CSEntryChange csentry)
+        {
+            AttributeChange change = csentry.AttributeChanges.FirstOrDefault(t => t.Name.ToUpper() == "DN");
+
+            if (change != null)
+            {
+                return (T)change.ValueChanges.First(t => t.ModificationType == ValueModificationType.Add).Value;
+            }
+            else
+            {
+                return default(T);
+            }
         }
 
         protected static string GenerateSecureString(int length, string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}:'/?-")
