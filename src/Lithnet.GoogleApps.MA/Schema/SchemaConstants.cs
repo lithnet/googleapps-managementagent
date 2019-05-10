@@ -49,6 +49,7 @@
         public const string WhoCanViewGroup = "whoCanViewGroup";
         public const string WhoCanViewMembership = "whoCanViewMembership";
         public const string MaxMessageBytes = "maxMessageBytes";
+        public const string WhoCanModerateMembers = "whoCanModerateMembers";
 
         public const string Member = "member";
         public const string ExternalMember = "externalMember";
