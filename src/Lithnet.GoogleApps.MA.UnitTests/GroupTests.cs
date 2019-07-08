@@ -44,6 +44,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
@@ -100,6 +101,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
+                Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
@@ -156,6 +158,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
@@ -206,6 +209,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
+                Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);

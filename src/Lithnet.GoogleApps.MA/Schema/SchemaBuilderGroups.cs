@@ -367,6 +367,21 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(whoCanAdd);
 
+            AdapterPropertyValue whoCanModerateMembers = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanModerateMembers",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanModerateMembers",
+                PropertyName = "WhoCanModerateMembers",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+            };
+
+            type.AttributeAdapters.Add(whoCanModerateMembers);
+
             AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
