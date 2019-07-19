@@ -10,6 +10,7 @@
         public const string Building = "building";
         public const string Domain = "domain";
         public const string Feature = "feature";
+        public const string ChromeDevice = "chromeDevice";
         public const string Course = "course";
 
         public const string CustomGoogleAppsSchemaName = "LithnetGoogleAppsMA";

@@ -1,33 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Google.Apis.Admin.Directory.directory_v1;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.Groupssettings.v1;
-using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
     internal abstract class ManagementAgentParametersBase
     {
-        private X509Certificate2 certificate;
+        private volatile X509Certificate2 certificate;
 
-        private GmailServiceRequestFactory gmailService;
+        private object lockObject = new object();
 
-        private DomainsRequestFactory domainsService;
+        private volatile GmailServiceRequestFactory gmailService;
 
-        private UserRequestFactory usersService;
+        private volatile DomainsRequestFactory domainsService;
 
-        private ContactRequestFactory contactsService;
+        private volatile UserRequestFactory usersService;
 
-        private GroupRequestFactory groupsService;
+        private volatile ContactRequestFactory contactsService;
 
-        private ResourceRequestFactory resourcesService;
+        private volatile GroupRequestFactory groupsService;
 
-        private SchemaRequestFactory schemaService;
+        private volatile ChromeDeviceRequestFactory chromeDeviceService;
 
-        private ClassroomRequestFactory classroomService;
+        private volatile ResourceRequestFactory resourcesService;
+
+        private volatile SchemaRequestFactory schemaService;
+
+        private volatile ClassroomRequestFactory classroomService;
 
         protected const string CustomerIDParameter = "Customer ID";
 
@@ -127,17 +127,23 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.gmailService == null)
                 {
-                    this.gmailService = new GmailServiceRequestFactory(
-                        this.ServiceAccountEmailAddress,
-                        this.Certificate,
-                        new string[]
+                    lock (this.lockObject)
+                    {
+                        if (this.gmailService == null)
                         {
-                            Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing,
-                            Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic
-                        }
-                    );
+                            this.gmailService = new GmailServiceRequestFactory(
+                                this.ServiceAccountEmailAddress,
+                                this.Certificate,
+                                new string[]
+                                {
+                                    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsSharing,
+                                    Google.Apis.Gmail.v1.GmailService.Scope.GmailSettingsBasic
+                                }
+                            );
 
-                    RateLimiter.SetRateLimitGmailService(MAConfigurationSection.Configuration.GmailApi.RateLimit, new TimeSpan(0, 0, 1));
+                            RateLimiter.SetRateLimitGmailService(MAConfigurationSection.Configuration.GmailApi.RateLimit, new TimeSpan(0, 0, 1));
+                        }
+                    }
                 }
 
                 return this.gmailService;
@@ -150,8 +156,15 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.domainsService == null)
                 {
-                    this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { "https://www.googleapis.com/auth/admin.directory.domain.readonly" }, 1);
-                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                    lock (this.lockObject)
+                    {
+                        if (this.domainsService == null)
+                        {
+                            this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { "https://www.googleapis.com/auth/admin.directory.domain.readonly" }, 1);
+
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.domainsService;
@@ -164,14 +177,22 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.usersService == null)
                 {
-                    this.usersService = new UserRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[] {
-                            DirectoryService.Scope.AdminDirectoryUser,
-                            DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
-                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+                    lock (this.lockObject)
+                    {
+                        if (this.usersService == null)
+                        {
+                            this.usersService = new UserRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[]
+                                {
+                                    DirectoryService.Scope.AdminDirectoryUser,
+                                    DirectoryService.Scope.AdminDirectoryUserschemaReadonly
+                                },
+                                MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
 
-                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.usersService;
@@ -184,12 +205,18 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.contactsService == null)
                 {
-                    this.contactsService = new ContactRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[] { "http://www.google.com/m8/feeds/contacts/" },
-                        MAConfigurationSection.Configuration.ContactsApi.PoolSize);
+                    lock (this.lockObject)
+                    {
+                        if (this.contactsService == null)
+                        {
+                            this.contactsService = new ContactRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[] { "http://www.google.com/m8/feeds/contacts/" },
+                                MAConfigurationSection.Configuration.ContactsApi.PoolSize);
 
-                    RateLimiter.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitContactsService(MAConfigurationSection.Configuration.ContactsApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.contactsService;
@@ -202,26 +229,32 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.groupsService == null)
                 {
-                    this.groupsService = new GroupRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[]
+                    lock (this.lockObject)
+                    {
+                        if (this.groupsService == null)
                         {
-                            DirectoryService.Scope.AdminDirectoryGroup,
-                            DirectoryService.Scope.AdminDirectoryGroupMember,
-                        },
-                        new[]
-                        {
-                            GroupssettingsService.Scope.AppsGroupsSettings
-                        },
-                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
-                        MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize
-                        );
+                            this.groupsService = new GroupRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[]
+                                {
+                                    DirectoryService.Scope.AdminDirectoryGroup,
+                                    DirectoryService.Scope.AdminDirectoryGroupMember,
+                                },
+                                new[]
+                                {
+                                    GroupssettingsService.Scope.AppsGroupsSettings
+                                },
+                                MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+                                MAConfigurationSection.Configuration.GroupSettingsApi.PoolSize
+                            );
 
-                    GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
-                    GroupMemberRequestFactory.ConcurrentOperationLimitDefault = MAConfigurationSection.Configuration.DirectoryApi.ConcurrentOperationGroupMember;
+                            GroupMemberRequestFactory.BatchSize = MAConfigurationSection.Configuration.DirectoryApi.BatchSizeGroupMember;
+                            GroupMemberRequestFactory.ConcurrentOperationLimitDefault = MAConfigurationSection.Configuration.DirectoryApi.ConcurrentOperationGroupMember;
 
-                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
-                    RateLimiter.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitGroupSettingsService(MAConfigurationSection.Configuration.GroupSettingsApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.groupsService;
@@ -234,15 +267,21 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.resourcesService == null)
                 {
-                    this.resourcesService = new ResourceRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[] { DirectoryService.Scope.AdminDirectoryResourceCalendar },
-                        new[] { "https://www.googleapis.com/auth/calendar" },
-                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
-                        MAConfigurationSection.Configuration.CalendarApi.PoolSize);
+                    lock (this.lockObject)
+                    {
+                        if (this.resourcesService == null)
+                        {
+                            this.resourcesService = new ResourceRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[] { DirectoryService.Scope.AdminDirectoryResourceCalendar },
+                                new[] { "https://www.googleapis.com/auth/calendar" },
+                                MAConfigurationSection.Configuration.DirectoryApi.PoolSize,
+                                MAConfigurationSection.Configuration.CalendarApi.PoolSize);
 
-                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
-                    RateLimiter.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitCalendarService(MAConfigurationSection.Configuration.CalendarApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.resourcesService;
@@ -255,15 +294,45 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.schemaService == null)
                 {
-                    this.schemaService = new SchemaRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[] { DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
-                        MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+                    lock (this.lockObject)
+                    {
+                        if (this.schemaService == null)
+                        {
+                            this.schemaService = new SchemaRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[] { DirectoryService.Scope.AdminDirectoryUserschemaReadonly },
+                                MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
 
-                    RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
                 }
 
                 return this.schemaService;
+            }
+        }
+
+        public ChromeDeviceRequestFactory ChromeDeviceService
+        {
+            get
+            {
+                if (this.chromeDeviceService == null)
+                {
+                    lock (this.lockObject)
+                    {
+                        if (this.chromeDeviceService == null)
+                        {
+                            this.chromeDeviceService = new ChromeDeviceRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[] { DirectoryService.Scope.AdminDirectoryDeviceChromeosReadonly },
+                                MAConfigurationSection.Configuration.DirectoryApi.PoolSize);
+
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
+                }
+
+                return this.chromeDeviceService;
             }
         }
 
@@ -273,13 +342,22 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.classroomService == null)
                 {
-                    this.classroomService = new ClassroomRequestFactory(
-                        new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
-                        new[] { Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourses,
-                        Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRosters},
-                        MAConfigurationSection.Configuration.ClassroomApi.PoolSize);
+                    lock (this.lockObject)
+                    {
+                        if (this.classroomService == null)
+                        {
+                            this.classroomService = new ClassroomRequestFactory(
+                                new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate),
+                                new[]
+                                {
+                                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourses,
+                                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRosters
+                                },
+                                MAConfigurationSection.Configuration.ClassroomApi.PoolSize);
 
-                    RateLimiter.SetRateLimitClassroomService(MAConfigurationSection.Configuration.ClassroomApi.RateLimit, new TimeSpan(0, 0, 1));
+                            RateLimiter.SetRateLimitClassroomService(MAConfigurationSection.Configuration.ClassroomApi.RateLimit, new TimeSpan(0, 0, 1));
+                        }
+                    }
                 }
 
                 return this.classroomService;
@@ -292,7 +370,13 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.certificate == null)
                 {
-                    this.certificate = new X509Certificate2(Environment.ExpandEnvironmentVariables(this.KeyFilePath), this.KeyFilePassword, X509KeyStorageFlags.Exportable);
+                    lock (this.lockObject)
+                    {
+                        if (this.certificate == null)
+                        {
+                            this.certificate = new X509Certificate2(Environment.ExpandEnvironmentVariables(this.KeyFilePath), this.KeyFilePassword, X509KeyStorageFlags.Exportable);
+                        }
+                    }
                 }
 
                 return this.certificate;

@@ -18,6 +18,8 @@ namespace Lithnet.GoogleApps.MA
 
         ResourceRequestFactory ResourcesService { get; }
 
+        ChromeDeviceRequestFactory ChromeDeviceService { get; }
+
         ClassroomRequestFactory ClassroomService { get; }
 
         SchemaRequestFactory SchemaService { get; }
