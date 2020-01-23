@@ -72,7 +72,14 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                CSEntryChangeQueue.Add(deltaCSEntry);
+                if (deltaCSEntry.AnchorAttributes.Count > 0 && !string.IsNullOrWhiteSpace(deltaCSEntry.DN))
+                {
+                    CSEntryChangeQueue.Add(deltaCSEntry);
+                }
+                else
+                {
+                    Logger.Write("Dropping delta CSEntryChange as it had no anchor attributes or DN", LogLevel.Debug);
+                }
             }
         }
 
@@ -94,6 +101,9 @@ namespace Lithnet.GoogleApps.MA
 
             object instance = primaryInterface.CreateInstance(csentry);
 
+            deltaCSEntry.DN = csentry.DN; // While the export process may change the DN, we should assign the incoming DN for now to the delta object
+
+            // This next line is problematic, because we either get all or nothing. If the group added, but a member failed, we don't see any changes at all. That casues issues when FIM tries to rexport the same values again
             foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance))
             {
                 deltaCSEntry.AttributeChanges.Add(change);
@@ -106,6 +116,12 @@ namespace Lithnet.GoogleApps.MA
             foreach (string anchorAttributeName in maType.AnchorAttributeNames)
             {
                 object value = primaryInterface.GetAnchorValue(anchorAttributeName, instance);
+
+                if (value == null)
+                {
+                    throw new UnexpectedDataException($"The delta entry could not be created because the anchor attribute '{anchorAttributeName}' was not present on object of type '{type.Name}'. The DN is {deltaCSEntry.DN ?? csentry.DN}");
+                }
+
                 deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(anchorAttributeName, value));
                 anchorChanges.Add(AttributeChange.CreateAttributeAdd(anchorAttributeName, value));
             }

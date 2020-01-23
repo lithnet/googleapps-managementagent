@@ -33,7 +33,7 @@ namespace Lithnet.GoogleApps.MA
 
         public object CreateInstance(CSEntryChange csentry)
         {
-            return new ContactEntry();
+            throw new NotSupportedException("Cannot create objects of the type 'Domain'");
         }
 
         public object GetInstance(CSEntryChange csentry)

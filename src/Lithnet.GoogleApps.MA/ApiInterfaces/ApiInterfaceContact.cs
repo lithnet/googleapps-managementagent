@@ -37,7 +37,9 @@ namespace Lithnet.GoogleApps.MA
 
         public object CreateInstance(CSEntryChange csentry)
         {
-            return new ContactEntry();
+            ContactEntry c = new ContactEntry();
+            this.SetDNValue(csentry, c);
+            return c;
         }
 
         public object GetInstance(CSEntryChange csentry)

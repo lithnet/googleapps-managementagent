@@ -92,7 +92,7 @@ namespace Lithnet.GoogleApps.MA
                     group.Group = result.Group;
 
                     // Group membership operations fail on newly created groups if processed too quickly
-                    System.Threading.Thread.Sleep(1000);
+                    Thread.Sleep(1000);
                 }
                 else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
                 {
@@ -116,6 +116,8 @@ namespace Lithnet.GoogleApps.MA
 
                 changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
+
+            // If this throws an error, we loose all the delta changes from the add/update operation on the group itself
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
