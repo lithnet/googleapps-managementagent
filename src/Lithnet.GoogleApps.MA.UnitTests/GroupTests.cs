@@ -38,7 +38,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageModerationLevel", "MODERATE_NEW_MEMBERS"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanDiscoverGroup", "ALL_IN_DOMAIN_CAN_DISCOVER"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
@@ -48,6 +48,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewGroup", "ALL_MANAGERS_CAN_VIEW"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewMembership", "ALL_MEMBERS_CAN_VIEW"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanLeaveGroup", "ALL_MANAGERS_CAN_LEAVE"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateContent", "NONE"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAssistContent", "ALL_MEMBERS"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("enableCollaborativeInbox", false));
+
 
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -89,9 +94,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
                 Assert.AreEqual("en-GB", s.PrimaryLanguage);
                 Assert.AreEqual(true, s.SendMessageDenyNotification);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("ALL_IN_DOMAIN_CAN_DISCOVER", s.WhoCanDiscoverGroup);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
@@ -100,79 +104,12 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MANAGERS_CAN_POST", s.WhoCanPostMessage);
                 Assert.AreEqual("ALL_MANAGERS_CAN_VIEW", s.WhoCanViewGroup);
                 Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
+
+                Assert.AreEqual("NONE", s.WhoCanModerateContent);
+                Assert.AreEqual("ALL_MEMBERS", s.WhoCanAssistContent);
+                Assert.AreEqual(false, s.EnableCollaborativeInbox);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
-            }
-            finally
-            {
-                if (id != null)
-                {
-                    UnitTestControl.TestParameters.GroupsService.Delete(id);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void AddWithErrorOnMember()
-        {
-            CSEntryChange cs = CSEntryChange.Create();
-            cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            cs.ObjectType = SchemaConstants.Group;
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("description", "description"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", "notanemail"));
-
-            string id = null;
-
-            try
-            {
-                CSEntryChangeResult result =
-                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
-
-                if (result.ErrorCode != MAExportError.Success)
-                {
-                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
-                }
-
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
-
-                Group e = UnitTestControl.TestParameters.GroupsService.Get(id);
-                Assert.AreEqual(cs.DN, e.Email);
-
-                Assert.AreEqual(true, e.AdminCreated);
-                Assert.AreEqual("description", e.Description);
-                Assert.AreEqual("name", e.Name);
-
-                GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
-                Assert.AreEqual(true, s.AllowExternalMembers);
-                Assert.AreEqual(true, s.AllowWebPosting);
-                Assert.AreEqual(false, s.ArchiveOnly);
-                Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
-                Assert.AreEqual("custom footer", s.CustomFooterText);
-                Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
-                Assert.AreEqual(true, s.IncludeInGlobalAddressList);
-                Assert.AreEqual(true, s.IncludeCustomFooter);
-                Assert.AreEqual(false, s.IsArchived);
-                Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
-                Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
-                Assert.AreEqual("en-GB", s.PrimaryLanguage);
-                Assert.AreEqual(true, s.SendMessageDenyNotification);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
-                Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
-                Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
-                Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
-                Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
-                Assert.AreEqual("ALL_MANAGERS_CAN_LEAVE", s.WhoCanLeaveGroup);
-                Assert.AreEqual("REPLY_TO_CUSTOM", s.ReplyTo);
-                Assert.AreEqual("ALL_MANAGERS_CAN_POST", s.WhoCanPostMessage);
-                Assert.AreEqual("ALL_MANAGERS_CAN_VIEW", s.WhoCanViewGroup);
-                Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
             }
             finally
             {
@@ -213,7 +150,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageModerationLevel", "MODERATE_NEW_MEMBERS"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanDiscoverGroup", "ALL_IN_DOMAIN_CAN_DISCOVER"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
@@ -223,6 +160,10 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewGroup", "ALL_MANAGERS_CAN_VIEW"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanViewMembership", "ALL_MEMBERS_CAN_VIEW"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanLeaveGroup", "ALL_MANAGERS_CAN_LEAVE"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateContent", "OWNERS_AND_MANAGERS"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAssistContent", "OWNERS_ONLY"));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("enableCollaborativeInbox", true));
+
 
                 string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
@@ -258,9 +199,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
                 Assert.AreEqual("en-GB", s.PrimaryLanguage);
                 Assert.AreEqual(true, s.SendMessageDenyNotification);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("ALL_IN_DOMAIN_CAN_DISCOVER", s.WhoCanDiscoverGroup);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
-                Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
@@ -269,6 +209,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MANAGERS_CAN_POST", s.WhoCanPostMessage);
                 Assert.AreEqual("ALL_MANAGERS_CAN_VIEW", s.WhoCanViewGroup);
                 Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
+                Assert.AreEqual("OWNERS_AND_MANAGERS", s.WhoCanModerateContent);
+                Assert.AreEqual("OWNERS_ONLY", s.WhoCanAssistContent);
+                Assert.AreEqual(true, s.EnableCollaborativeInbox);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
             }

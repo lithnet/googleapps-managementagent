@@ -523,7 +523,7 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(sendMessageDenyNotification);
-
+            
             AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -539,22 +539,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(defaultMessageDenyNotificationText);
-
-            AdapterPropertyValue showInGroupDirectory = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "showInGroupDirectory",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "showInGroupDirectory",
-                PropertyName = "ShowInGroupDirectory",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                CastForImport = (i) => i ?? false
-            };
-
-            type.AttributeAdapters.Add(showInGroupDirectory);
 
             AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
             {
@@ -616,6 +600,66 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(whoCanContactOwner);
+
+            AdapterPropertyValue whoCanDiscoverGroup = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanDiscoverGroup",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanDiscoverGroup",
+                PropertyName = "WhoCanDiscoverGroup",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+            };
+
+            type.AttributeAdapters.Add(whoCanDiscoverGroup);
+
+            AdapterPropertyValue whoCanModerateContent = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanModerateContent",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanModerateContent",
+                PropertyName = "WhoCanModerateContent",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+            };
+
+            type.AttributeAdapters.Add(whoCanModerateContent);
+
+            AdapterPropertyValue whoCanAssistContent = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                FieldName = "whoCanAssistContent",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "whoCanAssistContent",
+                PropertyName = "WhoCanAssistContent",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+            };
+
+            type.AttributeAdapters.Add(whoCanAssistContent);
+
+            AdapterPropertyValue enableCollaborativeInbox = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.Boolean,
+                FieldName = "enableCollaborativeInbox",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                AttributeName = "enableCollaborativeInbox",
+                PropertyName = "EnableCollaborativeInbox",
+                Api = "groupsettings",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+            };
+
+            type.AttributeAdapters.Add(enableCollaborativeInbox);
         }
     }
 }
