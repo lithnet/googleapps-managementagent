@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA
             this.config = config;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
 
@@ -62,7 +62,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (!hasChanged)
             {
-                return new List<AttributeChange>();
+                return;
             }
 
             GroupSettings result;
@@ -76,20 +76,17 @@ namespace Lithnet.GoogleApps.MA
                 result = this.config.GroupsService.SettingsFactory.Update(this.GetDNValue(target), settings);
             }
 
-            return this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result);
+            foreach (AttributeChange change in this.GetChanges(csentry.DN, csentry.ObjectModificationType, type, result))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            GroupSettings settings = source as GroupSettings;
-
-            if (settings == null)
+            if (!(source is GroupSettings settings))
             {
-                GoogleGroup group = source as GoogleGroup;
-
-                if (group == null)
+                if (!(source is GoogleGroup @group))
                 {
                     throw new InvalidOperationException();
                 }
@@ -106,12 +103,13 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, settings));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, settings))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         private string GetAnchorValue(object target)

@@ -169,5 +169,10 @@ namespace Lithnet.GoogleApps.MA
                 hashset.Remove(item);
             }
         }
+
+        public static bool IsUpdateOrReplace(this CSEntryChange change)
+        {
+            return change.ObjectModificationType == ObjectModificationType.Update || change.ObjectModificationType == ObjectModificationType.Replace;
+        }
     }
 }

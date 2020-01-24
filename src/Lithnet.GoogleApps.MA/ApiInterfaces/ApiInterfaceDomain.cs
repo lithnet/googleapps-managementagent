@@ -60,54 +60,39 @@ namespace Lithnet.GoogleApps.MA
             this.config.DomainsService.Delete(this.customerID, id);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
-            bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
-            Domain obj = (Domain)target;
-
-            if (this.SetDNValue(csentry, obj))
+            if (csentry.IsUpdateOrReplace())
             {
-                hasChanged = true;
+                throw new InvalidOperationException("Domain objects are read only");
             }
+
+            Domain domain = (Domain)target;
+
+            this.SetDNValue(csentry, domain);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, obj))
-                {
-                    hasChanged = true;
-                }
+                typeDef.UpdateField(csentry, domain);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                Domain result;
-
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
-                {
-                    result = this.config.DomainsService.Insert(this.customerID, obj);
-                    target = result;
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    throw new InvalidOperationException("Domain objects are read only");
-                }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
+                domain = this.config.DomainsService.Insert(this.customerID, domain);
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(domain);
+                target = domain;
             }
 
-            return changes;
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, domain))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-            
-            return attributeChanges;
+            return this.GetLocalChanges(dn, modType, type, source);
         }
 
         private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)

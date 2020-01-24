@@ -46,12 +46,12 @@ namespace Lithnet.GoogleApps.MA
             throw new UnknownOrUnsupportedModificationTypeException();
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             throw new UnknownOrUnsupportedModificationTypeException();
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             return this.GetLocalChanges(dn, modType, type, source);
         }

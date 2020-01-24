@@ -60,10 +60,9 @@ namespace Lithnet.GoogleApps.MA
             this.config.ResourcesService.DeleteFeature(this.customerID, csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange commitedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             if (!(target is Feature feature))
             {
@@ -77,44 +76,44 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged |= typeDef.UpdateField(csentry, feature);
             }
 
-            if (hasChanged || csentry.ObjectModificationType == ObjectModificationType.Add)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                Feature result;
+                feature = this.config.ResourcesService.AddFeature(this.customerID, feature);
+                commitedChanges.ObjectModificationType = ObjectModificationType.Add;
+                commitedChanges.DN = this.GetDNValue(feature);
+            }
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
-                {
-                    result = this.config.ResourcesService.AddFeature(this.customerID, feature);
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
 
-                    if (patch)
-                    {
-                        result = this.config.ResourcesService.PatchFeature(this.customerID, id, feature);
-                    }
-                    else
-                    {
-                        result = this.config.ResourcesService.UpdateFeature(this.customerID, id, feature);
-                    }
+                if (patch)
+                {
+                    feature = this.config.ResourcesService.PatchFeature(this.customerID, id, feature);
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    feature = this.config.ResourcesService.UpdateFeature(this.customerID, id, feature);
                 }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
+            if (csentry.IsUpdateOrReplace())
+            {
+                commitedChanges.ObjectModificationType = this.DeltaUpdateType;
+                commitedChanges.DN = this.GetDNValue(feature);
+            }
 
-            return changes;
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, feature))
+            {
+                commitedChanges.AttributeChanges.Add(change);
+            }
+
+            target = feature;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            return attributeChanges;
+            return this.GetLocalChanges(dn, modType, type, source);
         }
 
         private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)

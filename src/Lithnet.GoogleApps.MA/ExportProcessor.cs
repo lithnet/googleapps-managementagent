@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Google;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
@@ -11,25 +12,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public static CSEntryChangeResult PutCSEntryChange(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config)
         {
-            try
-            {
-                return ExportProcessor.PutCSEntryChangeObject(csentry, type, config);
-            }
-            catch (Google.GoogleApiException ex)
-            {
-                string errortype = ex.Message;
-                string detail = ex.StackTrace;
-                Logger.WriteException(ex);
-
-                if (ex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorPermissionIssue, errortype, detail);
-                }
-                else
-                {
-                    return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, errortype, detail);
-                }
-            }
+            return ExportProcessor.PutCSEntryChangeObject(csentry, type, config);
         }
 
         public static CSEntryChangeResult PutCSEntryChangeObject(CSEntryChange csentry, SchemaType type, IManagementAgentParameters config)
@@ -37,6 +20,7 @@ namespace Lithnet.GoogleApps.MA
             MASchemaType maType = ManagementAgent.Schema[type.Name];
 
             CSEntryChangeDetached deltaCSEntry = new CSEntryChangeDetached(Guid.NewGuid(), ObjectModificationType.Unconfigured, MAImportError.Success, null);
+            deltaCSEntry.ObjectType = csentry.ObjectType;
 
             foreach (var anchorAttributeName in maType.AnchorAttributeNames)
             {
@@ -47,8 +31,6 @@ namespace Lithnet.GoogleApps.MA
                     deltaCSEntry.AnchorAttributes.Add(anchor);
                 }
             }
-
-            deltaCSEntry.ObjectType = csentry.ObjectType;
 
             try
             {
@@ -72,13 +54,20 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                if (deltaCSEntry.AnchorAttributes.Count > 0 && !string.IsNullOrWhiteSpace(deltaCSEntry.DN))
+                if (deltaCSEntry.ObjectModificationType != ObjectModificationType.Unconfigured)
                 {
-                    CSEntryChangeQueue.Add(deltaCSEntry);
+                    if (!string.IsNullOrWhiteSpace(deltaCSEntry.DN))
+                    {
+                        CSEntryChangeQueue.Add(deltaCSEntry);
+                    }
+                    else
+                    {
+                        Logger.Write("Dropping delta CSEntryChange as it had no DN", LogLevel.Debug);
+                    }
                 }
                 else
                 {
-                    Logger.Write("Dropping delta CSEntryChange as it had no anchor attributes or DN", LogLevel.Debug);
+                    Logger.Write("Dropping delta CSEntryChange as it was incomplete", LogLevel.Debug);
                 }
             }
         }
@@ -95,53 +84,69 @@ namespace Lithnet.GoogleApps.MA
 
         private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
-            deltaCSEntry.ObjectModificationType = csentry.ObjectModificationType;
-
+            MAExportError error = MAExportError.Success;
+            List<AttributeChange> anchorChanges = null;
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
+            object instance = null;
+            string errorName = null;
+            string errorDetail = null;
 
-            object instance = primaryInterface.CreateInstance(csentry);
-
-            deltaCSEntry.DN = csentry.DN; // While the export process may change the DN, we should assign the incoming DN for now to the delta object
-
-            // This next line is problematic, because we either get all or nothing. If the group added, but a member failed, we don't see any changes at all. That casues issues when FIM tries to rexport the same values again
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance))
+            try
             {
-                deltaCSEntry.AttributeChanges.Add(change);
+                instance = primaryInterface.CreateInstance(csentry);
+                primaryInterface.ApplyChanges(csentry, deltaCSEntry, type, ref instance);
             }
-
-            deltaCSEntry.DN = primaryInterface.GetDNValue(instance);
-
-            List<AttributeChange> anchorChanges = new List<AttributeChange>();
-
-            foreach (string anchorAttributeName in maType.AnchorAttributeNames)
+            catch (Exception ex)
             {
-                object value = primaryInterface.GetAnchorValue(anchorAttributeName, instance);
+                Logger.WriteLine($"An error occurred during the export of object {csentry.DN} failed");
+                Logger.WriteException(ex);
 
-                if (value == null)
+                if (ex is GoogleApiException gex && gex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
                 {
-                    throw new UnexpectedDataException($"The delta entry could not be created because the anchor attribute '{anchorAttributeName}' was not present on object of type '{type.Name}'. The DN is {deltaCSEntry.DN ?? csentry.DN}");
+                    error = MAExportError.ExportErrorPermissionIssue;
+                }
+                else
+                {
+                    error = MAExportError.ExportErrorCustomContinueRun;
                 }
 
-                deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(anchorAttributeName, value));
-                anchorChanges.Add(AttributeChange.CreateAttributeAdd(anchorAttributeName, value));
+                errorName = ex.Message;
+                errorDetail = ex.ToString();
             }
 
-            return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, MAExportError.Success);
+            if (instance != null && deltaCSEntry.ObjectModificationType != ObjectModificationType.Unconfigured)
+            {
+                foreach (string anchorAttributeName in maType.AnchorAttributeNames)
+                {
+                    object value = primaryInterface.GetAnchorValue(anchorAttributeName, instance);
+
+                    if (value != null)
+                    {
+                        deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(anchorAttributeName, value));
+                        anchorChanges = new List<AttributeChange>();
+                        anchorChanges.Add(AttributeChange.CreateAttributeAdd(anchorAttributeName, value));
+                    }
+                    else
+                    {
+                        throw new UnexpectedDataException($"The anchor attribute '{anchorAttributeName}' was not present on object of type '{type.Name}'. The DN is {deltaCSEntry.DN ?? csentry.DN}");
+                    }
+                }
+            }
+
+            if (error == MAExportError.Success)
+            {
+                return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, error);
+            }
+            else
+            {
+                return CSEntryChangeResult.Create(csentry.Identifier, anchorChanges, error, errorName, errorDetail);
+            }
         }
 
         private static CSEntryChangeResult PutCSEntryChangeUpdate(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
-            deltaCSEntry.DN = csentry.GetNewDNOrDefault<string>() ?? csentry.DN;
-
-            if (csentry.DN != deltaCSEntry.DN)
-            {
-                Logger.WriteLine($"DN rename {csentry.DN} -> {deltaCSEntry.DN}");
-            }
-
             bool canPatch = maType.CanPatch(csentry.AttributeChanges);
-
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
-            deltaCSEntry.ObjectModificationType = primaryInterface.DeltaUpdateType;
 
             object instance;
 
@@ -156,10 +161,7 @@ namespace Lithnet.GoogleApps.MA
                 instance = primaryInterface.GetInstance(csentry);
             }
 
-            foreach (AttributeChange change in primaryInterface.ApplyChanges(csentry, type, ref instance, canPatch))
-            {
-                deltaCSEntry.AttributeChanges.Add(change);
-            }
+            primaryInterface.ApplyChanges(csentry, deltaCSEntry, type, ref instance, canPatch);
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }

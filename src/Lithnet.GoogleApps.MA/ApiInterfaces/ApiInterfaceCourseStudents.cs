@@ -15,20 +15,19 @@ namespace Lithnet.GoogleApps.MA
     {
         private IManagementAgentParameters config;
 
-        private ApiInterfaceCourse CourseApiInterface;
+        private ApiInterfaceCourse courseApiInterface;
 
         public string Api => "coursestudents";
 
         public ApiInterfaceCourseStudents(IManagementAgentParameters config, ApiInterfaceCourse courseApiInterface)
         {
             this.config = config;
-            this.CourseApiInterface = courseApiInterface;
+            this.courseApiInterface = courseApiInterface;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             Logger.WriteLine($"Processing students for course {csentry.DN}");
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             this.GetStudentChangesFromCSEntryChange(csentry, out CourseStudents studentsToAdd, out CourseStudents studentsToDelete, out CourseStudents reportedAdds, out CourseStudents reportedDeletes, csentry.ObjectModificationType == ObjectModificationType.Replace);
 
@@ -106,25 +105,18 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedDeletes.Students.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedAdds.Students.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedDeletes.Students.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceCourseStudents.AddAttributeChange(SchemaConstants.Students, modificationType, reportedAdds.Students.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
             }
 
             Logger.WriteLine($"Processed students for course {csentry.DN}");
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            CourseStudents students = source as CourseStudents;
-
-            if (students == null)
+            if (!(source is CourseStudents students))
             {
-                GoogleCourse course = source as GoogleCourse;
-
-                if (course == null)
+                if (!(source is GoogleCourse course))
                 {
                     throw new InvalidOperationException();
                 }
@@ -140,12 +132,13 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, students));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, students))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         private static void AddAttributeChange(string attributeName, AttributeModificationType modificationType, IList<ValueChange> changes, IList<AttributeChange> attributeChanges)
@@ -246,7 +239,7 @@ namespace Lithnet.GoogleApps.MA
             if (replacing)
             {
                 // Translate existing students from Id to PrimaryEmail
-                existingStudents = new CourseStudents(this.CourseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents()));
+                existingStudents = new CourseStudents(this.courseApiInterface.TranslateMembers(this.config.ClassroomService.StudentFactory.GetCourseStudents(csentry.DN).GetAllStudents()));
             }
             else
             {

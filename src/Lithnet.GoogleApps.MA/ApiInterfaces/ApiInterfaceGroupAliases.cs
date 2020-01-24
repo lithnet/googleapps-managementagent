@@ -19,32 +19,24 @@ namespace Lithnet.GoogleApps.MA
             this.config = config;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             GoogleGroup g = (GoogleGroup)target;
 
             AttributeChange change = this.ApplyGroupAliasChanges(csentry, g.Group);
 
-            List<AttributeChange> changes = new List<AttributeChange>();
-
             if (change != null)
             {
-                changes.Add(change);
+                committedChanges.AttributeChanges.Add(change);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            GoogleGroup group = source as GoogleGroup;
-
-            if (group == null)
+            if (!(source is GoogleGroup @group))
             {
                 throw new InvalidOperationException();
             }
-
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.Group].AttributeAdapters.Where(t => t.Api == this.Api))
             {
@@ -52,12 +44,13 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, group.Group));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, group.Group))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         private void GetGroupAliasChanges(CSEntryChange csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll)

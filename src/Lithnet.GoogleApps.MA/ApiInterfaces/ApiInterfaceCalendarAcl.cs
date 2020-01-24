@@ -29,11 +29,11 @@ namespace Lithnet.GoogleApps.MA
             {"owner", "owner"},
         };
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             if (!this.attributeRoleMapping.Keys.Any(type.HasAttribute))
             {
-                return new List<AttributeChange>();
+                return;
             }
 
             string calendarEmail = ((CalendarResource)target).ResourceEmail;
@@ -93,6 +93,16 @@ namespace Lithnet.GoogleApps.MA
                 this.DeleteRules(this.config.CustomerID, calendarEmail, existingRules.ToArray());
             }
 
+            if (committedChanges.ObjectModificationType == ObjectModificationType.Unconfigured)
+            {
+                if (csentry.ObjectModificationType == ObjectModificationType.Update || csentry.ObjectModificationType == ObjectModificationType.Replace)
+                {
+                    committedChanges.ObjectModificationType = ObjectModificationType.Update;
+                }
+
+                committedChanges.ObjectModificationType = csentry.ObjectModificationType;
+            }
+
             foreach (KeyValuePair<string, string> kvp in this.attributeRoleMapping)
             {
                 if (!type.HasAttribute(kvp.Key))
@@ -134,10 +144,13 @@ namespace Lithnet.GoogleApps.MA
                 }
             }
 
-            return keyedAttributeChanges.Select( t=>t.Value).ToList();
+            foreach (KeyValuePair<string, AttributeChange> changes in keyedAttributeChanges)
+            {
+                committedChanges.AttributeChanges.Add(changes.Value);
+            }
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
             if (!(source is CalendarResource calendar))
             {

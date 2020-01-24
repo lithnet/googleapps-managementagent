@@ -17,10 +17,9 @@ namespace Lithnet.GoogleApps.MA
             this.config = config;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             AttributeChange change = csentry.AttributeChanges.FirstOrDefault((t => t.Name == "isAdmin"));
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             if (change != null)
             {
@@ -34,7 +33,7 @@ namespace Lithnet.GoogleApps.MA
                         this.config.UsersService.MakeAdmin(true, id);
                     }
 
-                    changes.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
+                    committedChanges.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
                 }
                 else if (change.ModificationType == AttributeModificationType.Replace ||
                          change.ModificationType == AttributeModificationType.Update)
@@ -43,34 +42,31 @@ namespace Lithnet.GoogleApps.MA
 
                     if (change.ModificationType == AttributeModificationType.Replace)
                     {
-                        changes.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
+                        committedChanges.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isAdmin", makeAdmin));
                     }
                     else
                     {
-                        changes.Add(AttributeChange.CreateAttributeReplace("isAdmin", makeAdmin));
+                        committedChanges.AttributeChanges.Add(AttributeChange.CreateAttributeReplace("isAdmin", makeAdmin));
                     }
                 }
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.User].AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 foreach (string attributeName in typeDef.MmsAttributeNames)
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, source));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, source))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
     }
 }

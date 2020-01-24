@@ -95,97 +95,82 @@ namespace Lithnet.GoogleApps.MA
             this.config.UsersService.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             if (!(target is User user))
             {
                 throw new InvalidOperationException();
             }
 
-            if (ApiInterfaceUser.SetDNValue(csentry, user))
-            {
-                hasChanged = true;
-            }
+            hasChanged |= ApiInterfaceUser.SetDNValue(csentry, user);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, target))
-                {
-                    hasChanged = true;
-                }
+                hasChanged |= typeDef.UpdateField(csentry, target);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                Trace.WriteLine($"Object {csentry.DN} has one or more changes to commit");
+                user = this.config.UsersService.Add(user);
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(user);
+            }
 
-                User result;
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
+                if (patch)
                 {
-                    result = this.config.UsersService.Add(user);
-                    target = result;
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
-
-                    if (patch)
-                    {
-                        result = this.config.UsersService.Patch(user, id);
-                    }
-                    else
-                    {
-                        result = this.config.UsersService.Update(user, id);
-                    }
-
-                    target = result;
+                    user = this.config.UsersService.Patch(user, id);
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    user = this.config.UsersService.Update(user, id);
                 }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
-            else
+
+            if (csentry.IsUpdateOrReplace())
             {
-                Trace.WriteLine($"Object {csentry.DN} has no changes to commit");
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+                committedChanges.DN = this.GetDNValue(user);
+            }
+
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, user))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = user;
+
+            foreach (IApiInterface i in this.InternalInterfaces)
+            {
+                i.ApplyChanges(csentry, committedChanges, type, ref target, patch);
+            }
+
+            this.AddMissingDeletes(committedChanges, csentry);
+        }
+
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        {
+            foreach (var c in this.GetLocalChanges(dn, modType, type, source))
+            {
+                yield return c;
             }
 
             foreach (IApiInterface i in this.InternalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
+                foreach (var c in i.GetChanges(dn, modType, type, source))
                 {
-                    changes.Add(c);
+                    yield return c;
                 }
             }
-
-            this.AddMissingDeletes(changes, csentry);
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        private IEnumerable<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            foreach (IApiInterface i in this.InternalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
-            }
-
-            return attributeChanges;
-        }
-
-        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
-        {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 if (typeDef.IsAnchor)
@@ -197,15 +182,13 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(change.Name))
                     {
-                        attributeChanges.Add(change);
+                        yield return change;
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
-        private void AddMissingDeletes(List<AttributeChange> deltaChanges, CSEntryChange csentry)
+        private void AddMissingDeletes(CSEntryChange committedChanges, CSEntryChange csentry)
         {
             // This is a workaround for an issue where when we delete the last value from a CustomTypeListT, we do not see the change
             // come in when we parse the updated object from google, as the value is null. There is no way to tell if it is null because
@@ -215,9 +198,9 @@ namespace Lithnet.GoogleApps.MA
 
             foreach (AttributeChange change in csentry.AttributeChanges.Where(t => t.ModificationType == AttributeModificationType.Delete))
             {
-                if (deltaChanges.All(t => t.Name != change.Name))
+                if (committedChanges.AttributeChanges.All(t => t.Name != change.Name))
                 {
-                    deltaChanges.Add(change);
+                    committedChanges.AttributeChanges.Add(change);
                 }
             }
         }
@@ -302,7 +285,7 @@ namespace Lithnet.GoogleApps.MA
                             {
                                 if (user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName].ContainsKey(SchemaConstants.CustomSchemaObjectType))
                                 {
-                                    string objectType = (string) user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
+                                    string objectType = (string)user.CustomSchemas[SchemaConstants.CustomGoogleAppsSchemaName][SchemaConstants.CustomSchemaObjectType];
                                     if (schema.Types.Contains(objectType))
                                     {
                                         type = schema.Types[objectType];

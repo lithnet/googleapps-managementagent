@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA
         private string attributeName;
 
         private string typeName;
-        
+
         public ApiInterfaceUserDelegates(IManagementAgentParameters config, string typeName)
         {
             this.config = config;
@@ -25,35 +25,31 @@ namespace Lithnet.GoogleApps.MA
             this.attributeName = $"{typeName}_{SchemaConstants.Delegate}";
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             AttributeChange change = this.ApplyDelegateChanges(csentry);
 
-            List<AttributeChange> changes = new List<AttributeChange>();
-
             if (change != null)
             {
-                changes.Add(change);
+                committedChanges.AttributeChanges.Add(change);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            if (!(type.HasAttribute(this.attributeName)))
+            if (!type.HasAttribute(this.attributeName))
             {
-                return attributeChanges;
+                yield break;
             }
 
             IAttributeAdapter typeDef = ManagementAgent.Schema[this.typeName].AttributeAdapters.First(t => t.Api == this.Api);
 
             List<string> delegates = this.config.GmailService.GetDelegates(((User)source).PrimaryEmail).ToList();
-            attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }));
 
-            return attributeChanges;
+            foreach(AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, new { Delegates = delegates }))
+            {
+                yield return change;
+            }
         }
 
         private void GetUserDelegateChanges(CSEntryChange csentry, out IList<string> adds, out IList<string> deletes)

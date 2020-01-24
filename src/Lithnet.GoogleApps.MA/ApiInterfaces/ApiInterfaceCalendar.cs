@@ -23,7 +23,7 @@ namespace Lithnet.GoogleApps.MA
         private ApiInterfaceKeyedCollection internalInterfaces;
 
         protected MASchemaType SchemaType { get; set; }
-     
+
         public ApiInterfaceCalendar(string customerID, MASchemaType type, IManagementAgentParameters config)
         {
             this.SchemaType = type;
@@ -44,7 +44,7 @@ namespace Lithnet.GoogleApps.MA
         {
             CalendarResource calendar = new CalendarResource();
             calendar.ResourceId = Guid.NewGuid().ToString("n");
-            
+
             return calendar;
         }
 
@@ -58,14 +58,11 @@ namespace Lithnet.GoogleApps.MA
             this.config.ResourcesService.DeleteCalendar(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
 
-            CalendarResource calendar = target as CalendarResource;
-
-            if (calendar == null)
+            if (!(target is CalendarResource calendar))
             {
                 throw new InvalidOperationException();
             }
@@ -77,58 +74,63 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged |= typeDef.UpdateField(csentry, calendar);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                CalendarResource result;
+                calendar = this.config.ResourcesService.AddCalendar(this.customerID, calendar);
+                calendar.ResourceEmail = calendar.ResourceEmail;
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(calendar);
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
-                {
-                    result = this.config.ResourcesService.AddCalendar(this.customerID, calendar);
-                    calendar.ResourceEmail = result.ResourceEmail;
-                    System.Threading.Thread.Sleep(1500);
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
+                Thread.Sleep(1500);
+            }
 
-                    if (patch)
-                    {
-                        result = this.config.ResourcesService.PatchCalendar(this.customerID, id, calendar);
-                    }
-                    else
-                    {
-                        result = this.config.ResourcesService.UpdateCalendar(this.customerID, id, calendar);
-                    }
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
+
+                if (patch)
+                {
+                    calendar = this.config.ResourcesService.PatchCalendar(this.customerID, id, calendar);
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    calendar = this.config.ResourcesService.UpdateCalendar(this.customerID, id, calendar);
                 }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
+
+            if (csentry.IsUpdateOrReplace())
+            {
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+                committedChanges.DN = this.GetDNValue(calendar);
+            }
+
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, calendar))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = calendar;
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
-                {
-                    changes.Add(c);
-                }
+                i.ApplyChanges(csentry, committedChanges, type, ref target, patch);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+            foreach (AttributeChange change in this.GetLocalChanges(dn, modType, type, source))
+            {
+                yield return change;
+            }
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+                foreach (AttributeChange change in i.GetChanges(dn, modType, type, source))
+                {
+                    yield return change;
+                }
             }
-
-            return attributeChanges;
         }
 
         private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)

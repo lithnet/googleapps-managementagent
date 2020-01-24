@@ -26,7 +26,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@lithnet.io"));
@@ -35,18 +34,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isArchived", false));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeCustomFooter", true));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maxMessageBytes", 5000000L));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("membersCanPostAsTheGroup", true));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageDisplayFont", "DEFAULT_FONT"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageModerationLevel", "MODERATE_NEW_MEMBERS"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("replyTo", "REPLY_TO_CUSTOM"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "ALL_MANAGERS_CAN_POST"));
@@ -82,7 +77,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
                 Assert.AreEqual(true, s.AllowExternalMembers);
-                Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
                 Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
@@ -91,19 +85,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);
                 Assert.AreEqual(true, s.IncludeCustomFooter);
                 Assert.AreEqual(false, s.IsArchived);
-                Assert.AreEqual(5000000, s.MaxMessageBytes);
                 Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
-                Assert.AreEqual("DEFAULT_FONT", s.MessageDisplayFont);
                 Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
                 Assert.AreEqual("en-GB", s.PrimaryLanguage);
                 Assert.AreEqual(true, s.SendMessageDenyNotification);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
-                Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
                 Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
-                Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
                 Assert.AreEqual("ALL_MANAGERS_CAN_LEAVE", s.WhoCanLeaveGroup);
                 Assert.AreEqual("REPLY_TO_CUSTOM", s.ReplyTo);
@@ -112,6 +102,77 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
 
                 CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
+            }
+            finally
+            {
+                if (id != null)
+                {
+                    UnitTestControl.TestParameters.GroupsService.Delete(id);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void AddWithErrorOnMember()
+        {
+            CSEntryChange cs = CSEntryChange.Create();
+            cs.ObjectModificationType = ObjectModificationType.Add;
+            cs.DN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            cs.ObjectType = SchemaConstants.Group;
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("description", "description"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("member", "notanemail"));
+
+            string id = null;
+
+            try
+            {
+                CSEntryChangeResult result =
+                    ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
+
+                if (result.ErrorCode != MAExportError.Success)
+                {
+                    Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
+                }
+
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
+
+                Group e = UnitTestControl.TestParameters.GroupsService.Get(id);
+                Assert.AreEqual(cs.DN, e.Email);
+
+                Assert.AreEqual(true, e.AdminCreated);
+                Assert.AreEqual("description", e.Description);
+                Assert.AreEqual("name", e.Name);
+
+                GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
+                Assert.AreEqual(true, s.AllowExternalMembers);
+                Assert.AreEqual(true, s.AllowWebPosting);
+                Assert.AreEqual(false, s.ArchiveOnly);
+                Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
+                Assert.AreEqual("custom footer", s.CustomFooterText);
+                Assert.AreEqual("occupation", s.DefaultMessageDenyNotificationText);
+                Assert.AreEqual(true, s.IncludeInGlobalAddressList);
+                Assert.AreEqual(true, s.IncludeCustomFooter);
+                Assert.AreEqual(false, s.IsArchived);
+                Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
+                Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
+                Assert.AreEqual("en-GB", s.PrimaryLanguage);
+                Assert.AreEqual(true, s.SendMessageDenyNotification);
+                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
+                Assert.AreEqual(true, s.ShowInGroupDirectory);
+                Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
+                Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
+                Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
+                Assert.AreEqual("ALL_MANAGERS_CAN_LEAVE", s.WhoCanLeaveGroup);
+                Assert.AreEqual("REPLY_TO_CUSTOM", s.ReplyTo);
+                Assert.AreEqual("ALL_MANAGERS_CAN_POST", s.WhoCanPostMessage);
+                Assert.AreEqual("ALL_MANAGERS_CAN_VIEW", s.WhoCanViewGroup);
+                Assert.AreEqual("ALL_MEMBERS_CAN_VIEW", s.WhoCanViewMembership);
             }
             finally
             {
@@ -140,7 +201,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name", "name"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("description", "description"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowExternalMembers", true));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowGoogleCommunication", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("allowWebPosting", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("archiveOnly", false));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("customReplyTo", "test@lithnet.io"));
@@ -149,18 +209,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeInGlobalAddressList", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isArchived", false));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("includeCustomFooter", true));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maxMessageBytes", 5000000L));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("membersCanPostAsTheGroup", true));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageDisplayFont", "DEFAULT_FONT"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("messageModerationLevel", "MODERATE_NEW_MEMBERS"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("primaryLanguage", "en-GB"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sendMessageDenyNotification", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("showInGroupDirectory", true));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("spamModerationLevel", "SILENTLY_MODERATE"));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanAdd", "ALL_MANAGERS_CAN_ADD"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanModerateMembers", "OWNERS_ONLY"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanContactOwner", "ANYONE_CAN_CONTACT"));
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanInvite", "NONE_CAN_INVITE"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanJoin", "CAN_REQUEST_TO_JOIN"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("replyTo", "REPLY_TO_CUSTOM"));
                 cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("whoCanPostMessage", "ALL_MANAGERS_CAN_POST"));
@@ -190,7 +246,6 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupSettings s = UnitTestControl.TestParameters.GroupsService.SettingsFactory.Get(cs.DN);
                 Assert.AreEqual(true, s.AllowExternalMembers);
-                Assert.AreEqual(true, s.AllowGoogleCommunication);
                 Assert.AreEqual(true, s.AllowWebPosting);
                 Assert.AreEqual(false, s.ArchiveOnly);
                 Assert.AreEqual("test@lithnet.io", s.CustomReplyTo);
@@ -199,19 +254,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(true, s.IncludeInGlobalAddressList);
                 Assert.AreEqual(true, s.IncludeCustomFooter);
                 Assert.AreEqual(false, s.IsArchived);
-                Assert.AreEqual(5000000, s.MaxMessageBytes);
                 Assert.AreEqual(true, s.MembersCanPostAsTheGroup);
-                Assert.AreEqual("DEFAULT_FONT", s.MessageDisplayFont);
                 Assert.AreEqual("MODERATE_NEW_MEMBERS", s.MessageModerationLevel);
                 Assert.AreEqual("en-GB", s.PrimaryLanguage);
                 Assert.AreEqual(true, s.SendMessageDenyNotification);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
                 Assert.AreEqual("SILENTLY_MODERATE", s.SpamModerationLevel);
                 Assert.AreEqual(true, s.ShowInGroupDirectory);
-                Assert.AreEqual("ALL_MANAGERS_CAN_ADD", s.WhoCanAdd);
                 Assert.AreEqual("OWNERS_ONLY", s.WhoCanModerateMembers);
                 Assert.AreEqual("ANYONE_CAN_CONTACT", s.WhoCanContactOwner);
-                Assert.AreEqual("NONE_CAN_INVITE", s.WhoCanInvite);
                 Assert.AreEqual("CAN_REQUEST_TO_JOIN", s.WhoCanJoin);
                 Assert.AreEqual("ALL_MANAGERS_CAN_LEAVE", s.WhoCanLeaveGroup);
                 Assert.AreEqual("REPLY_TO_CUSTOM", s.ReplyTo);

@@ -59,94 +59,82 @@ namespace Lithnet.GoogleApps.MA
             this.config.GroupsService.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             if (!(target is GoogleGroup group))
             {
                 throw new InvalidOperationException();
             }
 
-            if (this.SetDNValue(csentry, group))
-            {
-                hasChanged = true;
-            }
+            hasChanged |= this.SetDNValue(csentry, group);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, group.Group))
-                {
-                    hasChanged = true;
-                }
+                hasChanged |= typeDef.UpdateField(csentry, group.Group);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                GoogleGroup result = new GoogleGroup();
+                group.Group = this.config.GroupsService.Add(group.Group);
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(group);
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
+                Thread.Sleep(1000); // Group membership operations fail on newly created groups if processed too quickly
+            }
+
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
+
+                if (patch)
                 {
-                    result.Group = this.config.GroupsService.Add(group.Group);
-                    group.Group = result.Group;
-
-                    // Group membership operations fail on newly created groups if processed too quickly
-                    Thread.Sleep(1000);
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
-
-                    if (patch)
-                    {
-                        result.Group = this.config.GroupsService.Patch(id, group.Group);
-                        group.Group = result.Group;
-                    }
-                    else
-                    {
-                        result.Group = this.config.GroupsService.Update(id, group.Group);
-                        group.Group = result.Group;
-                    }
+                    group.Group = this.config.GroupsService.Patch(id, group.Group);
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    group.Group = this.config.GroupsService.Update(id, group.Group);
                 }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
-            // If this throws an error, we loose all the delta changes from the add/update operation on the group itself
+            if (csentry.IsUpdateOrReplace())
+            {
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+                committedChanges.DN = this.GetDNValue(group);
+            }
+
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, group))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = group;
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
+                i.ApplyChanges(csentry, committedChanges, type, ref target, patch);
+            }
+        }
+
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        {
+            foreach (AttributeChange change in this.GetLocalChanges(dn, modType, type, source))
+            {
+                yield return change;
+            }
+
+            foreach (IApiInterface i in this.internalInterfaces)
+            {
+                foreach (AttributeChange change in i.GetChanges(dn, modType, type, source))
                 {
-                    //changes.RemoveAll(t => t.Name == c.Name);
-                    changes.Add(c);
+                    yield return change;
                 }
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        private IEnumerable<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            foreach (IApiInterface i in this.internalInterfaces)
-            {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
-            }
-
-            return attributeChanges;
-        }
-
-        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
-        {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             if (!(source is GoogleGroup googleGroup))
             {
                 throw new InvalidOperationException();
@@ -163,11 +151,10 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(change.Name))
                     {
-                        attributeChanges.Add(change);
+                        yield return change;
                     }
                 }
             }
-            return attributeChanges;
         }
 
         public string GetAnchorValue(string name, object target)

@@ -19,37 +19,32 @@ namespace Lithnet.GoogleApps.MA
             this.config = config;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             User user = (User)target;
             AttributeChange change = this.ApplyUserAliasChanges(csentry, user);
 
-            List<AttributeChange> changes = new List<AttributeChange>();
-
             if (change != null)
             {
-                changes.Add(change);
+                committedChanges.AttributeChanges.Add(change);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             foreach (IAttributeAdapter typeDef in ManagementAgent.Schema[SchemaConstants.User].AttributeAdapters.Where(t => t.Api == this.Api))
             {
                 foreach (string attributeName in typeDef.MmsAttributeNames)
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, source));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, source))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         private void GetUserAliasChanges(CSEntryChange csentry, out IList<string> aliasAdds, out IList<string> aliasDeletes, out bool deletingAll)

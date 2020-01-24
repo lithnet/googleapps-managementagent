@@ -51,14 +51,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Course], UnitTestControl.TestParameters);
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
+
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 Course e = UnitTestControl.TestParameters.ClassroomService.GetCourse(id);
                 Assert.AreEqual("name", e.Name);

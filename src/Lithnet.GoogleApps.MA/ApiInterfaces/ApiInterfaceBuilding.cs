@@ -60,14 +60,11 @@ namespace Lithnet.GoogleApps.MA
             this.config.ResourcesService.DeleteBuilding(this.customerID, csentry.GetAnchorValueOrDefault<string>("id"));
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
 
-            Building building = target as Building;
-
-            if (building == null)
+            if (!(target is Building building))
             {
                 throw new InvalidOperationException();
             }
@@ -79,53 +76,49 @@ namespace Lithnet.GoogleApps.MA
                 hasChanged |= typeDef.UpdateField(csentry, building);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                Building result;
+                building = this.config.ResourcesService.AddBuilding(this.customerID, building);
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(building);
+            }
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
-                {
-                    result = this.config.ResourcesService.AddBuilding(this.customerID, building);
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
 
-                    if (patch)
-                    {
-                        result = this.config.ResourcesService.PatchBuilding(this.customerID, id, building);
-                    }
-                    else
-                    {
-                        result = this.config.ResourcesService.UpdateBuilding(this.customerID, id, building);
-                    }
+                if (patch)
+                {
+                    building = this.config.ResourcesService.PatchBuilding(this.customerID, id, building);
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    building = this.config.ResourcesService.UpdateBuilding(this.customerID, id, building);
                 }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
 
+            if (csentry.IsUpdateOrReplace())
+            {
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+                committedChanges.DN = this.GetDNValue(building);
+            }
 
-            return changes;
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, building))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = building;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            return attributeChanges;
+            return this.GetLocalChanges(dn, modType, type, source);
         }
 
-        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        private IEnumerable<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            Building building = source as Building;
-
-            if (building == null)
+            if (!(source is Building building))
             {
                 throw new InvalidOperationException();
             }
@@ -141,12 +134,10 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(change.Name))
                     {
-                        attributeChanges.Add(change);
+                        yield return change;
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         public string GetAnchorValue(string attributeName, object target)

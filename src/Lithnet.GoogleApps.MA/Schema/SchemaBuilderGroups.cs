@@ -337,36 +337,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(whoCanViewGroup);
 
-            AdapterPropertyValue whoCanInvite = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanInvite",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanInvite",
-                PropertyName = "WhoCanInvite",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-            };
-
-            type.AttributeAdapters.Add(whoCanInvite);
-
-            AdapterPropertyValue whoCanAdd = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "whoCanAdd",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanAdd",
-                PropertyName = "WhoCanAdd",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-            };
-
-            type.AttributeAdapters.Add(whoCanAdd);
-
             AdapterPropertyValue whoCanModerateMembers = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -444,30 +414,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(primaryLanguage);
 
-            AdapterPropertyValue maxMessageBytes = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Integer,
-                FieldName = "maxMessageBytes",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "maxMessageBytes",
-                PropertyName = "MaxMessageBytes",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                CastForExport = (value) =>
-                {
-                    if (value == null)
-                    {
-                        return null;
-                    }
-
-                    return Convert.ToInt32((long)value);
-                }
-            };
-
-            type.AttributeAdapters.Add(maxMessageBytes);
-
             AdapterPropertyValue isArchived = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
@@ -483,7 +429,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(isArchived);
-
 
             AdapterPropertyValue archiveOnly = new AdapterPropertyValue
             {
@@ -579,7 +524,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(sendMessageDenyNotification);
 
-
             AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
@@ -612,23 +556,6 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(showInGroupDirectory);
 
-
-            AdapterPropertyValue allowGoogleCommunication = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.Boolean,
-                FieldName = "allowGoogleCommunication",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowGoogleCommunication",
-                PropertyName = "AllowGoogleCommunication",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                CastForImport = (i) => i ?? false
-            };
-
-            type.AttributeAdapters.Add(allowGoogleCommunication);
-
             AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
@@ -643,21 +570,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(membersCanPostAsTheGroup);
-
-            AdapterPropertyValue messageDisplayFont = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "messageDisplayFont",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportExport,
-                AttributeName = "messageDisplayFont",
-                PropertyName = "MessageDisplayFont",
-                Api = "groupsettings",
-                SupportsPatch = true,
-                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-            };
-
-            type.AttributeAdapters.Add(messageDisplayFont);
 
             AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
             {
@@ -689,7 +601,6 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(whoCanLeaveGroup);
-
 
             AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
             {

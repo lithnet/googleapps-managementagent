@@ -27,35 +27,31 @@ namespace Lithnet.GoogleApps.MA
             this.typeName = typeName;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             AttributeChange change = this.ApplySendAsChanges(csentry);
-            List<AttributeChange> changes = new List<AttributeChange>();
 
             if (change != null)
             {
-                changes.Add(change);
+                committedChanges.AttributeChanges.Add(change);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
             if (!type.HasAttribute(this.attributeName))
             {
-                return attributeChanges;
+                yield break;
             }
 
             IAttributeAdapter typeDef = ManagementAgent.Schema[this.typeName].AttributeAdapters.First(t => t.Api == this.Api);
 
             IList<string> sendAsAddresses = this.GetNonPrimarySendAsFormattedAddresses(((User)source).PrimaryEmail);
 
-            attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, new { SendAs = sendAsAddresses }));
-
-            return attributeChanges;
+            foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, new {SendAs = sendAsAddresses}))
+            {
+                yield return change;
+            }
         }
 
         private IList<SendAs> GetNonPrimarySendAs(string dn)

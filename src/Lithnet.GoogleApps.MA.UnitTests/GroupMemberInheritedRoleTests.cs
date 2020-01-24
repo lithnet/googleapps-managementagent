@@ -81,7 +81,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
-                IList<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
+                IEnumerable<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
 
                 AttributeChange manager = changes.First(t => t.Name == "externalManager");
                 AttributeChange member = changes.First(t => t.Name == "externalMember");
@@ -114,7 +114,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
-                IList<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
+                IEnumerable<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
 
                 AttributeChange manager = changes.First(t => t.Name == "manager");
                 AttributeChange member = changes.First(t => t.Name == "member");
@@ -145,7 +145,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
-                IList<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
+                IEnumerable<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
 
                 AttributeChange manager = changes.First(t => t.Name == "externalManager");
                 AttributeChange member = changes.First(t => t.Name == "externalMember");
@@ -180,7 +180,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
-                IList<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
+                IEnumerable<AttributeChange> changes = i.GetChanges(e.Email, ObjectModificationType.Add, UnitTestControl.MmsSchema.Types["group"], members);
 
                 AttributeChange owner = changes.First(t => t.Name == "owner");
                 AttributeChange manager = changes.First(t => t.Name == "manager");

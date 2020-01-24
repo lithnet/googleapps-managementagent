@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Google;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
@@ -151,7 +152,14 @@ namespace Lithnet.GoogleApps.MA
                     {
                         Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
                         Logger.WriteException(ex);
-                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.Message, ex.StackTrace);
+                        MAExportError error = MAExportError.ExportErrorCustomContinueRun;
+
+                        if (ex is GoogleApiException gex && gex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+                        {
+                            error = MAExportError.ExportErrorPermissionIssue;
+                        }
+
+                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, error, ex.Message, ex.StackTrace);
                         lock (results)
                         {
                             results.CSEntryChangeResults.Add(result);

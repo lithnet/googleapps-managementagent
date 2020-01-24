@@ -21,10 +21,8 @@ namespace Lithnet.GoogleApps.MA
             this.config = config;
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
-            List<AttributeChange> changes = new List<AttributeChange>();
-
             this.GetMemberChangesFromCSEntryChange(csentry, out GroupMembership membershipToAdd, out GroupMembership membershipToDelete, out GroupMembership reportedAdds, out GroupMembership reportedDeletes, out IList<Member> roleChanges, csentry.ObjectModificationType == ObjectModificationType.Replace);
 
             HashSet<string> allMembersToDelete = membershipToDelete.GetAllMembers();
@@ -136,35 +134,27 @@ namespace Lithnet.GoogleApps.MA
             }
             finally
             {
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedDeletes.Members.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedDeletes.ExternalMembers.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedDeletes.Managers.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedDeletes.ExternalManagers.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupOwnerAttributeName, modificationType, reportedDeletes.Owners.ToValueChange(ValueModificationType.Delete), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedDeletes.ExternalOwners.ToValueChange(ValueModificationType.Delete), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedDeletes.Members.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedDeletes.ExternalMembers.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedDeletes.Managers.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedDeletes.ExternalManagers.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupOwnerAttributeName, modificationType, reportedDeletes.Owners.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedDeletes.ExternalOwners.ToValueChange(ValueModificationType.Delete), committedChanges.AttributeChanges);
 
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedAdds.Members.ToValueChange(ValueModificationType.Add), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedAdds.ExternalMembers.ToValueChange(ValueModificationType.Add), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedAdds.Managers.ToValueChange(ValueModificationType.Add), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedAdds.ExternalManagers.ToValueChange(ValueModificationType.Add), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupOwnerAttributeName, modificationType, reportedAdds.Owners.ToValueChange(ValueModificationType.Add), changes);
-                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedAdds.ExternalOwners.ToValueChange(ValueModificationType.Add), changes);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupMemberAttributeName, modificationType, reportedAdds.Members.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalMember", modificationType, reportedAdds.ExternalMembers.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupManagerAttributeName, modificationType, reportedAdds.Managers.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalManager", modificationType, reportedAdds.ExternalManagers.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange(this.config.GroupOwnerAttributeName, modificationType, reportedAdds.Owners.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
+                ApiInterfaceGroupMembership.AddAttributeChange("externalOwner", modificationType, reportedAdds.ExternalOwners.ToValueChange(ValueModificationType.Add), committedChanges.AttributeChanges);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
-
-            GroupMembership membership = source as GroupMembership;
-
-            if (membership == null)
+            if (!(source is GroupMembership membership))
             {
-                GoogleGroup group = source as GoogleGroup;
-
-                if (group == null)
+                if (!(source is GoogleGroup @group))
                 {
                     throw new InvalidOperationException();
                 }
@@ -182,12 +172,13 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(attributeName))
                     {
-                        attributeChanges.AddRange(typeDef.CreateAttributeChanges(dn, modType, membership));
+                        foreach (AttributeChange change in typeDef.CreateAttributeChanges(dn, modType, membership))
+                        {
+                            yield return change;
+                        }
                     }
                 }
             }
-
-            return attributeChanges;
         }
 
         private List<Member> NormalizeMembershipList(List<Member> members)

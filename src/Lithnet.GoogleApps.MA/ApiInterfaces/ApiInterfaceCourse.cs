@@ -79,25 +79,11 @@ namespace Lithnet.GoogleApps.MA
             this.config.ClassroomService.Delete(csentry.GetAnchorValueOrDefault<string>("id") ?? csentry.DN);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
 
-            GoogleCourse googleCourse = target as GoogleCourse;
-            Course course = null;
-
-            if (googleCourse != null)
-            {
-                course = googleCourse.Course;
-            }
-
-            if (course == null)
-            {
-                course = target as Course;
-            }
-
-            if (course == null)
+            if (!(target is GoogleCourse googleCourse))
             {
                 throw new InvalidOperationException();
             }
@@ -107,85 +93,86 @@ namespace Lithnet.GoogleApps.MA
             List<string> updateMask = new List<string>();
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, course))
+                if (typeDef.UpdateField(csentry, googleCourse.Course))
                 {
                     hasChanged = true;
                     updateMask.Add(typeDef.FieldName);
                 }
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                Course result;
-
-                // Keep OwnerId for Delta import
-                string ownerId = course.OwnerId;
-
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
+                // Remove Id if invalid
+                if (googleCourse.Course.Id != null && !googleCourse.Course.Id.StartsWith(ProjectPrefix) && !googleCourse.Course.Id.StartsWith(DomainPrefix))
                 {
-                    // Remove Id if invalid
-                    if (course.Id != null && !course.Id.StartsWith(ProjectPrefix) && !course.Id.StartsWith(DomainPrefix)) {
-                        course.Id = null;
-                    }
-
-                    Logger.WriteLine($"Adding course {csentry.DN}");
-                    result = this.config.ClassroomService.Add(course);
-                    Logger.WriteLine($"Added course {csentry.DN} (Id: {result.Id})");
-
-                    // Get Id and result
-                    csentry.DN = result.Id;
-                    course = result;
-                    googleCourse.Course = course;
+                    googleCourse.Course.Id = null;
                 }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    string id = csentry.GetAnchorValueOrDefault<string>("id");
 
-                    if (patch)
-                    {
-                        result = this.config.ClassroomService.Patch(id, course, string.Join(",", updateMask));
-                    }
-                    else
-                    {
-                        result = this.config.ClassroomService.Update(course);
-                    }
+                Logger.WriteLine($"Adding course {csentry.DN}");
+                googleCourse.Course = this.config.ClassroomService.Add(googleCourse.Course);
+                Logger.WriteLine($"Added course {csentry.DN} (Id: {googleCourse.Course.Id})");
+
+                // Get Id and result
+                csentry.DN = googleCourse.Course.Id;
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(googleCourse.Course);
+            }
+
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                string id = csentry.GetAnchorValueOrDefault<string>("id");
+
+                if (patch)
+                {
+                    googleCourse.Course = this.config.ClassroomService.Patch(id, googleCourse.Course, string.Join(",", updateMask));
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    googleCourse.Course = this.config.ClassroomService.Update(googleCourse.Course);
                 }
-
-                // Reset OwnerId for Delta import
-                if (updateMask.Contains(SchemaConstants.OwnerId))
-                {
-                    result.OwnerId = ownerId;
-                }
-
-                changes.AddRange(this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, result));
             }
+
+            if (csentry.IsUpdateOrReplace())
+            {
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+                committedChanges.DN = this.GetDNValue(googleCourse.Course);
+            }
+
+            string ownerId = googleCourse.Course.OwnerId;
+
+            // Reset OwnerId for Delta import
+            if (updateMask.Contains(SchemaConstants.OwnerId))
+            {
+                googleCourse.Course.OwnerId = ownerId;
+            }
+
+            foreach (AttributeChange change in this.GetLocalChanges(csentry.DN, csentry.ObjectModificationType, type, googleCourse.Course))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = googleCourse.Course;
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
-                foreach (AttributeChange c in i.ApplyChanges(csentry, type, ref target, patch))
-                {
-                    //changes.RemoveAll(t => t.Name == c.Name);
-                    changes.Add(c);
-                }
+                i.ApplyChanges(csentry, committedChanges, type, ref target, patch);
             }
-
-            return changes;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
+            foreach (AttributeChange change in this.GetLocalChanges(dn, modType, type, source))
+            {
+                yield return change;
+            }
 
             foreach (IApiInterface i in this.internalInterfaces)
             {
-                attributeChanges.AddRange(i.GetChanges(dn, modType, type, source));
+                foreach (AttributeChange change in i.GetChanges(dn, modType, type, source))
+                {
+                    yield return change;
+                }
             }
-
-            return attributeChanges;
         }
 
         private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)

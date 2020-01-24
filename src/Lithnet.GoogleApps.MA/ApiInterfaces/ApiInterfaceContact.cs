@@ -66,73 +66,59 @@ namespace Lithnet.GoogleApps.MA
             this.config.ContactsService.Delete(id);
         }
 
-        public IList<AttributeChange> ApplyChanges(CSEntryChange csentry, SchemaType type, ref object target, bool patch = false)
+        public void ApplyChanges(CSEntryChange csentry, CSEntryChange committedChanges, SchemaType type, ref object target, bool patch = false)
         {
             bool hasChanged = false;
-            List<AttributeChange> changes = new List<AttributeChange>();
-            ContactEntry obj = (ContactEntry)target;
+            ContactEntry contactEntry = (ContactEntry)target;
 
-            if (this.SetDNValue(csentry, obj))
-            {
-                hasChanged = true;
-            }
+            hasChanged |= this.SetDNValue(csentry, contactEntry);
 
             foreach (IAttributeAdapter typeDef in this.SchemaType.AttributeAdapters.Where(t => t.Api == this.Api))
             {
-                if (typeDef.UpdateField(csentry, obj))
-                {
-                    hasChanged = true;
-                }
+                hasChanged |= typeDef.UpdateField(csentry, contactEntry);
             }
 
-            if (hasChanged)
+            if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
-                ContactEntry result;
-                ObjectModificationType deltaModType = csentry.ObjectModificationType;
+                contactEntry = this.config.ContactsService.Add(contactEntry, this.domain);
+                committedChanges.ObjectModificationType = ObjectModificationType.Add;
+                committedChanges.DN = this.GetDNValue(contactEntry);
+            }
 
-                if (csentry.ObjectModificationType == ObjectModificationType.Add)
-                {
-                    result = this.config.ContactsService.Add(obj, this.domain);
-                    target = result;
-                }
-                else if (csentry.ObjectModificationType == ObjectModificationType.Replace || csentry.ObjectModificationType == ObjectModificationType.Update)
-                {
-                    if (patch)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                    else
-                    {
-                        result = this.config.ContactsService.Update(obj);
-                        target = result;
-                    }
-
-                    if (deltaModType == ObjectModificationType.Update)
-                    {
-                        deltaModType = ObjectModificationType.Replace;
-                    }
-                }
-                else
+            if (csentry.IsUpdateOrReplace() && hasChanged)
+            {
+                if (patch)
                 {
                     throw new InvalidOperationException();
                 }
 
-                changes.AddRange(this.GetChanges(csentry.DN, deltaModType, type, result));
+                contactEntry = this.config.ContactsService.Update(contactEntry);
             }
 
-            return changes;
+            if (csentry.IsUpdateOrReplace())
+            {
+                committedChanges.DN = this.GetDNValue(contactEntry);
+                committedChanges.ObjectModificationType = this.DeltaUpdateType;
+            }
+
+            foreach (AttributeChange change in this.GetChanges(csentry.DN, csentry.ObjectModificationType == ObjectModificationType.Update ? ObjectModificationType.Replace : csentry.ObjectModificationType, type, contactEntry))
+            {
+                committedChanges.AttributeChanges.Add(change);
+            }
+
+            target = contactEntry;
         }
 
-        public IList<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        public IEnumerable<AttributeChange> GetChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = this.GetLocalChanges(dn, modType, type, source);
-
-            return attributeChanges;
+            foreach (AttributeChange change in this.GetLocalChanges(dn, modType, type, source))
+            {
+                yield return change;
+            }
         }
 
-        private List<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
+        private IEnumerable<AttributeChange> GetLocalChanges(string dn, ObjectModificationType modType, SchemaType type, object source)
         {
-            List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
             ContactEntry entry = source as ContactEntry;
 
@@ -152,11 +138,10 @@ namespace Lithnet.GoogleApps.MA
                 {
                     if (type.HasAttribute(change.Name))
                     {
-                        attributeChanges.Add(change);
+                        yield return change;
                     }
                 }
             }
-            return attributeChanges;
         }
 
         public string GetAnchorValue(string name, object target)
