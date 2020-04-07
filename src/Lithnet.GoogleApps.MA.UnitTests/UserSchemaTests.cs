@@ -20,7 +20,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestWebSites()
         {
-            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "websites");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "websites");
 
             User u = new User
             {
@@ -83,7 +83,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNames()
         {
-            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "name");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "name");
 
             User u = new User
             {
@@ -118,7 +118,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestNotes()
         {
-            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "notes");
+            IAttributeAdapter schemaItem =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "notes");
 
             User u = new User
             {
@@ -153,7 +153,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestAliases()
         {
-            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "aliases");
+            IAttributeAdapter schemaItem = UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "aliases");
 
             UserUpdateTemplate u = new UserUpdateTemplate
             {
@@ -189,14 +189,14 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TestStandaloneAttributes()
         {
-            IAttributeAdapter orgUnitPath =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "orgUnitPath");
-            IAttributeAdapter includeInGlobalAddressList =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "includeInGlobalAddressList");
-            IAttributeAdapter suspended =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "suspended");
-            IAttributeAdapter changePasswordAtNextLogin =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "changePasswordAtNextLogin");
-            IAttributeAdapter ipWhitelisted =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "ipWhitelisted");
-            IAttributeAdapter customerId =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "customerId");
-            IAttributeAdapter primaryEmail =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "primaryEmail");
-            IAttributeAdapter id =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.FieldName == "id");
+            IAttributeAdapter orgUnitPath =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "orgUnitPath");
+            IAttributeAdapter includeInGlobalAddressList =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "includeInGlobalAddressList");
+            IAttributeAdapter suspended =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "suspended");
+            IAttributeAdapter changePasswordAtNextLogin =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "changePasswordAtNextLogin");
+            IAttributeAdapter ipWhitelisted =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "ipWhitelisted");
+            IAttributeAdapter customerId =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "customerId");
+            IAttributeAdapter primaryEmail =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "primaryEmail");
+            IAttributeAdapter id =  UnitTestControl.Schema["user"].AttributeAdapters.First(t => t.GoogleApiFieldName == "id");
 
             User u = new User
             {

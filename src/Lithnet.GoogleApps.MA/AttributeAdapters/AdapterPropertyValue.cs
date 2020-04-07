@@ -17,15 +17,15 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return this.AttributeName;
+                yield return this.MmsAttributeName;
             }
         }
 
-        public string AttributeName { get; set; }
+        public string MmsAttributeName { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
-        public string PropertyName { get; set; }
+        public string ManagedObjectPropertyName { get; set; }
 
         public string ParentFieldName { get; set; }
 
@@ -51,40 +51,36 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsAnchor { get; set; }
 
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.AttributeName == attribute;
-        }
-
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch || !changes.Contains(this.AttributeName);
+            return this.SupportsPatch || !changes.Contains(this.MmsAttributeName);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
         {
+
             if (this.IsReadOnly)
             {
                 return false;
             }
 
-            if (!csentry.HasAttributeChange(this.AttributeName))
+            if (!csentry.HasAttributeChange(this.MmsAttributeName))
             {
-                Trace.WriteLine($"Skipping update of field {this.FieldName} because attribute {this.AttributeName} is not present in the CSEntryChange");
+                //Trace.WriteLine($"Skipping update of field {this.GoogleApiFieldName} because attribute {this.MmsAttributeName} is not present in the CSEntryChange");
                 return false;
             }
 
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             if (this.propInfo == null)
             {
-                throw new InvalidOperationException($"The property {this.PropertyName} was not found on the object of type {obj.GetType().FullName}");
+                throw new InvalidOperationException($"The property {this.ManagedObjectPropertyName} was not found on the object of type {obj.GetType().FullName}");
             }
 
-            object value = csentry.GetValueAdd<object>(this.AttributeName);
+            object value = csentry.GetValueAdd<object>(this.MmsAttributeName);
 
             if (this.CastForExport != null)
             {
@@ -95,7 +91,7 @@ namespace Lithnet.GoogleApps.MA
 
             this.propInfo.SetValue(obj, value, null);
 
-            Logger.WriteLine($"Updating {this.AttributeName} -> {value.ToSmartStringOrNull() ?? "<null>"}");
+            Logger.WriteLine($"Updating {this.MmsAttributeName} -> {value.ToSmartStringOrNull() ?? "<null>"}");
 
             return true;
         }
@@ -104,33 +100,33 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.IsAnchor)
             {
-                yield return SchemaAttribute.CreateAnchorAttribute(this.AttributeName, this.AttributeType, this.Operation);
+                yield return SchemaAttribute.CreateAnchorAttribute(this.MmsAttributeName, this.AttributeType, this.Operation);
             }
             else
             {
                 if (this.IsMultivalued)
                 {
-                    yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+                    yield return SchemaAttribute.CreateMultiValuedAttribute(this.MmsAttributeName, this.AttributeType, this.Operation);
                 }
                 else
                 {
-                    yield return SchemaAttribute.CreateSingleValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+                    yield return SchemaAttribute.CreateSingleValuedAttribute(this.MmsAttributeName, this.AttributeType, this.Operation);
                 }
             }
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             if (api != null && this.Api != api)
             {
                 yield break;
             }
 
-            if (this.FieldName != null)
+            if (this.GoogleApiFieldName != null)
             {
-                if (type.HasAttribute(this.AttributeName))
+                if (type.HasAttribute(this.MmsAttributeName))
                 {
-                    yield return this.FieldName;
+                    yield return this.GoogleApiFieldName;
                 }
             }
         }
@@ -139,12 +135,12 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             if (this.propInfo == null)
             {
-                throw new InvalidOperationException($"The property {this.PropertyName} was not found on the object of type {obj.GetType().FullName}");
+                throw new InvalidOperationException($"The property {this.ManagedObjectPropertyName} was not found on the object of type {obj.GetType().FullName}");
             }
 
             object value = this.propInfo.GetValue(obj);
@@ -160,7 +156,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (modType == ObjectModificationType.Update)
                 {
-                    yield return AttributeChange.CreateAttributeDelete(this.AttributeName);
+                    yield return AttributeChange.CreateAttributeDelete(this.MmsAttributeName);
                     yield break;
                 }
                 else
@@ -173,11 +169,11 @@ namespace Lithnet.GoogleApps.MA
             {
                 case ObjectModificationType.Add:
                 case ObjectModificationType.Replace:
-                    yield return AttributeChange.CreateAttributeAdd(this.AttributeName, TypeConverter.ConvertData(value, this.AttributeType));
+                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
                     break;
 
                 case ObjectModificationType.Update:
-                    yield return AttributeChange.CreateAttributeReplace(this.AttributeName, TypeConverter.ConvertData(value, this.AttributeType));
+                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, TypeConverter.ConvertData(value, this.AttributeType));
                     break;
 
                 default:

@@ -18,15 +18,15 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                return this.AttributeAdapters.Select(t => t.AttributeName);
+                return this.AttributeAdapters.Select(t => t.MmsAttributeName);
             }
         }
 
-        public string AttributeName { get; set; }
+        public string MmsAttributeNameBase { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
-        public string PropertyName { get; set; }
+        public string ManagedObjectPropertyName { get; set; }
 
         public string Api { get; set; }
 
@@ -63,23 +63,18 @@ namespace Lithnet.GoogleApps.MA
                 yield return new AdapterPropertyValue
                 {
                     AttributeType = item.AttributeType,
-                    FieldName = item.FieldName,
+                    GoogleApiFieldName = item.GoogleApiFieldName,
                     SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
-                    AttributeName = $"{this.AttributeName}_{item.AttributeNamePart}",
-                    PropertyName = item.PropertyName,
+                    MmsAttributeName = $"{this.MmsAttributeNameBase}_{item.MmsAttributeNameSuffix}",
+                    ManagedObjectPropertyName = item.ManagedObjectPropertyName,
                     Operation = item.Operation,
-                    ParentFieldName = this.FieldName,
+                    ParentFieldName = this.GoogleApiFieldName,
                     NullValueRepresentation = item.NullValueRepresentation,
                     CastForExport = item.CastForExport,
                     CastForImport = item.CastForImport
                 };
             }
-        }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.AttributeName == attribute || this.MmsAttributeNames.Any(t => t == attribute);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -100,7 +95,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             object childObject = this.propInfo.GetValue(obj);
@@ -131,31 +126,32 @@ namespace Lithnet.GoogleApps.MA
         {
             foreach (AdapterSubfield field in this.Fields)
             {
-                yield return field.GetSchemaAttribute(this.AttributeName);
+                yield return field.GetSchemaAttribute(this.MmsAttributeNameBase);
             }
         }
+
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
+            return this.SupportsPatch || !this.MmsAttributeNames.Any(changes.Contains);
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             if (api != null && this.Api != api)
             {
                 yield break;
             }
 
-            if (this.FieldName == null)
+            if (this.GoogleApiFieldName == null)
             {
                 yield break;
             }
 
-            string childFields = string.Join(",", this.AttributeAdapters.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName));
+            string childFields = string.Join(",", this.AttributeAdapters.Where(t => t.GoogleApiFieldName != null && type.HasAttribute(t.MmsAttributeName)).Select(t => t.GoogleApiFieldName));
 
             if (!string.IsNullOrWhiteSpace(childFields))
             {
-                yield return $"{this.FieldName}({childFields})";
+                yield return $"{this.GoogleApiFieldName}({childFields})";
             }
         }
 
@@ -163,9 +159,9 @@ namespace Lithnet.GoogleApps.MA
         {
             foreach (AdapterPropertyValue attribute in this.AttributeAdapters)
             {
-                if (csentry.HasAttributeChange(attribute.AttributeName))
+                if (csentry.HasAttributeChange(attribute.MmsAttributeName))
                 {
-                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.AttributeName], attribute);
+                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.MmsAttributeName], attribute);
                 }
             }
         }
@@ -174,7 +170,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             object value = this.propInfo.GetValue(obj);

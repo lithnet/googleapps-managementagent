@@ -275,7 +275,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones = new List<Phone>();
             e.Phones.Add(new Phone() { Type = "work", Value = "phwork" });
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
-
+            e.OrgUnitPath = "/";
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
@@ -285,45 +285,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name_givenName", "gn"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("name_familyName", "sn"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("initials", "initials"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("location", "location"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("maidenName", "maidenName"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("mileage", "mileage"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("nickname", "nickname"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("occupation", "occupation"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("sensitivity", "private"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("shortName", "shortName"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("subject", "subject"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalIds_work", "eidwork"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("externalIds_home", "eidhome"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_name", "name"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_title", "title"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_department", "department"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_symbol", "symbol"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_costCenter", "costCenter"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_location", "location"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_description", "description"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("organizations_work_domain", "domain"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("phones_work", "phwork"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("phones_home", "phhome"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_address", "work@ims.com"));
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_protocol", "proto"));
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("isAdmin", true));
-
-            string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-            string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
-
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
-
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/AdditionalServices"));
+            
             try
             {
                 CSEntryChangeResult result =
@@ -338,35 +301,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
-                Assert.AreEqual("/", e.OrgUnitPath);
-                Assert.AreEqual("gn", e.Name.GivenName);
-                Assert.AreEqual("sn", e.Name.FamilyName);
-
-                Assert.AreEqual(true, e.IsAdmin);
-
-                Assert.AreEqual(2, e.ExternalIds.Count);
-                Assert.AreEqual("eidwork", e.ExternalIds[0].Value);
-                Assert.AreEqual("eidhome", e.ExternalIds[1].Value);
-
-                Assert.AreEqual(1, e.Organizations.Count);
-                Assert.AreEqual("name", e.Organizations[0].Name);
-                Assert.AreEqual("title", e.Organizations[0].Title);
-                Assert.AreEqual("department", e.Organizations[0].Department);
-                Assert.AreEqual("symbol", e.Organizations[0].Symbol);
-                Assert.AreEqual("costCenter", e.Organizations[0].CostCenter);
-                Assert.AreEqual("location", e.Organizations[0].Location);
-                Assert.AreEqual("description", e.Organizations[0].Description);
-                Assert.AreEqual("domain", e.Organizations[0].Domain);
-
-                Assert.AreEqual(2, e.Phones.Count);
-                Assert.AreEqual("phwork", e.Phones[0].Value);
-                Assert.AreEqual("phhome", e.Phones[1].Value);
-
-                Assert.AreEqual(1, e.Ims.Count);
-                Assert.AreEqual("work@ims.com", e.Ims[0].IMAddress);
-                Assert.AreEqual("proto", e.Ims[0].Protocol);
-
-                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases);
+                Assert.AreEqual("/AdditionalServices", e.OrgUnitPath);
+                
             }
             finally
             {
@@ -426,7 +362,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(30000);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -482,7 +418,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(60000);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 

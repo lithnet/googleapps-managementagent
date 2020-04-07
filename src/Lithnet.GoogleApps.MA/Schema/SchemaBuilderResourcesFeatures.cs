@@ -22,11 +22,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "name",
+                GoogleApiFieldName = "name",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Name",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "Name",
                 Api = "feature",
                 SupportsPatch = true,
                 IsAnchor = true

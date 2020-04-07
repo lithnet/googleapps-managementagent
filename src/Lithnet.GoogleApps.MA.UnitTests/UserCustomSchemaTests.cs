@@ -132,7 +132,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -142,7 +142,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("2018-01-03", (string)e.CustomSchemas[TestSchemaName]["TestSVDate"]);
                 Assert.AreEqual(1.9999D, (double)e.CustomSchemas[TestSchemaName]["TestSVDouble"]);
                 Assert.AreEqual("test99@test.com", (string)e.CustomSchemas[TestSchemaName]["TestSVEmail"]);
-                Assert.AreEqual("899", e.CustomSchemas[TestSchemaName]["TestSVInt"]);
+                Assert.AreEqual(899L, e.CustomSchemas[TestSchemaName]["TestSVInt"]);
                 Assert.AreEqual("555-1234", (string)e.CustomSchemas[TestSchemaName]["TestSVPhone"]);
 
                 CollectionAssert.AreEquivalent(new List<object> { "test2", "test3" }, GetReturnedValues<string>("TestMVString", e));
@@ -196,7 +196,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -206,7 +206,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("2018-01-03", (string)e.CustomSchemas[TestSchemaName]["TestSVDate"]);
                 Assert.AreEqual(1.9999D, (double)e.CustomSchemas[TestSchemaName]["TestSVDouble"]);
                 Assert.AreEqual("test99@test.com", (string)e.CustomSchemas[TestSchemaName]["TestSVEmail"]);
-                Assert.AreEqual("899", e.CustomSchemas[TestSchemaName]["TestSVInt"]);
+                Assert.AreEqual(899L, e.CustomSchemas[TestSchemaName]["TestSVInt"]);
                 Assert.AreEqual("555-1234", (string)e.CustomSchemas[TestSchemaName]["TestSVPhone"]);
 
                 CollectionAssert.AreEquivalent(new List<object> { "test2", "test3" }, GetReturnedValues<string>("TestMVString", e));
@@ -249,7 +249,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -275,7 +275,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -383,7 +383,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -409,7 +409,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
+
 
                 e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -450,7 +451,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -476,7 +477,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -520,7 +521,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -546,7 +547,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(60000);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(u.Id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);

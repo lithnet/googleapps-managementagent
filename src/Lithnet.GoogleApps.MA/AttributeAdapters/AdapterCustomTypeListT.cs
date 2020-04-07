@@ -19,15 +19,15 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return this.AttributeName;
+                return this.Attributes.Select(t => t.MmsAttributeName);
             }
         }
 
-        public string AttributeName { get; set; }
+        public string MmsAttributeNameBase { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
-        public string PropertyName { get; set; }
+        public string ManagedObjectPropertyName { get; set; }
 
         public string Api { get; set; }
 
@@ -35,7 +35,7 @@ namespace Lithnet.GoogleApps.MA
 
         public IList<string> KnownTypes { get; set; }
 
-        public IList<AdapterSubfield> Fields { get; set; }
+        public IList<AdapterSubfield> SubFields { get; set; }
 
         public bool IsReadOnly { get; set; }
 
@@ -83,18 +83,18 @@ namespace Lithnet.GoogleApps.MA
 
         private IEnumerable<AdapterPropertyValue> GetAttributesOfType(string type)
         {
-            foreach (AdapterSubfield item in this.Fields)
+            foreach (AdapterSubfield item in this.SubFields)
             {
                 yield return new AdapterPropertyValue
                 {
                     AttributeType = item.AttributeType,
-                    FieldName = item.FieldName,
+                    GoogleApiFieldName = item.GoogleApiFieldName,
                     SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
-                    AttributeName = item.GetAttributeName($"{this.AttributeName}_{type}"),
+                    MmsAttributeName = item.GetAttributeName($"{this.MmsAttributeNameBase}_{type}"),
                     Operation = item.Operation,
-                    ParentFieldName = this.FieldName,
-                    PropertyName = item.PropertyName,
+                    ParentFieldName = this.GoogleApiFieldName,
+                    ManagedObjectPropertyName = item.ManagedObjectPropertyName,
                     AssignedType = type,
                     NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
                 };
@@ -103,12 +103,7 @@ namespace Lithnet.GoogleApps.MA
 
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
-        }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.AttributeName == attribute || this.Attributes.Any(t => t.AttributeName == attribute);
+            return this.SupportsPatch || !this.MmsAttributeNames.Any(changes.Contains);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -129,7 +124,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             bool created;
@@ -212,21 +207,21 @@ namespace Lithnet.GoogleApps.MA
             return false;
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             if (api != null && this.Api != api)
             {
                 yield break;
             }
 
-            if (this.FieldName == null)
+            if (this.GoogleApiFieldName == null)
             {
                 yield break;
             }
 
             HashSet<string> fields = new HashSet<string>();
 
-            foreach (string field in this.Attributes.Where(t => t.FieldName != null && type.HasAttribute(t.AttributeName)).Select(t => t.FieldName))
+            foreach (string field in this.Attributes.Where(t => t.GoogleApiFieldName != null && type.HasAttribute(t.MmsAttributeName)).Select(t => t.GoogleApiFieldName))
             {
                 fields.Add(field);
             }
@@ -246,7 +241,7 @@ namespace Lithnet.GoogleApps.MA
 
             string childFields = string.Join(",", fields);
 
-            yield return $"{this.FieldName}({childFields})";
+            yield return $"{this.GoogleApiFieldName}({childFields})";
         }
 
         private bool SetPrimaryCandidate(T o, string type)
@@ -282,11 +277,11 @@ namespace Lithnet.GoogleApps.MA
 
         public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
-            foreach (AdapterSubfield field in this.Fields)
+            foreach (AdapterSubfield field in this.SubFields)
             {
                 foreach (string type in this.KnownTypes)
                 {
-                    yield return field.GetSchemaAttribute($"{this.AttributeName}_{type}");
+                    yield return field.GetSchemaAttribute($"{this.MmsAttributeNameBase}_{type}");
                 }
             }
         }
@@ -316,7 +311,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             IList<T> list = this.propInfo.GetValue(obj) as IList<T>;
@@ -328,7 +323,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             IList<T> list = this.propInfo.GetValue(obj) as IList<T>;
@@ -352,7 +347,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.propInfo == null)
             {
-                this.propInfo = obj.GetType().GetProperty(this.PropertyName);
+                this.propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
             }
 
             IList<T> list = this.GetList(obj);
@@ -373,7 +368,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (!processedTypes.Add(item.Type))
                 {
-                    Logger.WriteLine($"Ignoring duplicate type {item.Type} for attribute {this.AttributeName} on object {dn}", LogLevel.Debug);
+                    Logger.WriteLine($"Ignoring duplicate type {item.Type} for attribute {this.MmsAttributeNameBase} on object {dn}", LogLevel.Debug);
                     continue;
                 }
 
@@ -394,9 +389,9 @@ namespace Lithnet.GoogleApps.MA
         {
             foreach (AdapterPropertyValue attribute in this.Attributes)
             {
-                if (csentry.HasAttributeChange(attribute.AttributeName))
+                if (csentry.HasAttributeChange(attribute.MmsAttributeName))
                 {
-                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.AttributeName], attribute);
+                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.MmsAttributeName], attribute);
                 }
             }
         }

@@ -62,11 +62,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue orgUnitPath = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "orgUnitPath",
+                GoogleApiFieldName = "orgUnitPath",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "orgUnitPath",
-                PropertyName = "OrgUnitPath",
+                MmsAttributeName = "orgUnitPath",
+                ManagedObjectPropertyName = "OrgUnitPath",
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -77,11 +77,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue includeInGal = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "includeInGlobalAddressList",
+                GoogleApiFieldName = "includeInGlobalAddressList",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "includeInGlobalAddressList",
-                PropertyName = "IncludeInGlobalAddressList",
+                MmsAttributeName = "includeInGlobalAddressList",
+                ManagedObjectPropertyName = "IncludeInGlobalAddressList",
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -93,11 +93,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue suspended = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "suspended",
+                GoogleApiFieldName = "suspended",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "suspended",
-                PropertyName = "Suspended",
+                MmsAttributeName = "suspended",
+                ManagedObjectPropertyName = "Suspended",
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -109,11 +109,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue changePasswordAtNextLogin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "changePasswordAtNextLogin",
+                GoogleApiFieldName = "changePasswordAtNextLogin",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "changePasswordAtNextLogin",
-                PropertyName = "ChangePasswordAtNextLogin",
+                MmsAttributeName = "changePasswordAtNextLogin",
+                ManagedObjectPropertyName = "ChangePasswordAtNextLogin",
                 Api = "user",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -125,11 +125,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue ipWhitelisted = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "ipWhitelisted",
+                GoogleApiFieldName = "ipWhitelisted",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "ipWhitelisted",
-                PropertyName = "IpWhitelisted",
+                MmsAttributeName = "ipWhitelisted",
+                ManagedObjectPropertyName = "IpWhitelisted",
                 Api = "user",
                 SupportsPatch = true,
                 CastForImport = (i) => i ?? false
@@ -140,11 +140,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "id",
+                GoogleApiFieldName = "id",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Id",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "Id",
                 Api = "user",
                 SupportsPatch = true,
                 IsAnchor = true,
@@ -155,11 +155,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue primaryEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "primaryEmail",
+                GoogleApiFieldName = "primaryEmail",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "primaryEmail",
-                PropertyName = "PrimaryEmail",
+                MmsAttributeName = "primaryEmail",
+                ManagedObjectPropertyName = "PrimaryEmail",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -169,11 +169,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue isAdmin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "isAdmin",
+                GoogleApiFieldName = "isAdmin",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "isAdmin",
-                PropertyName = "IsAdmin",
+                MmsAttributeName = "isAdmin",
+                ManagedObjectPropertyName = "IsAdmin",
                 Api = "usermakeadmin",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -185,11 +185,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue isDelegatedAdmin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "isDelegatedAdmin",
+                GoogleApiFieldName = "isDelegatedAdmin",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "isDelegatedAdmin",
-                PropertyName = "IsDelegatedAdmin",
+                MmsAttributeName = "isDelegatedAdmin",
+                ManagedObjectPropertyName = "IsDelegatedAdmin",
                 Api = "user",
                 SupportsPatch = true,
                 CastForImport = (i) => i ?? false
@@ -200,11 +200,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue lastLoginTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "lastLoginTime",
+                GoogleApiFieldName = "lastLoginTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "lastLoginTime",
-                PropertyName = "LastLoginTime",
+                MmsAttributeName = "lastLoginTime",
+                ManagedObjectPropertyName = "LastLoginTime",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -214,11 +214,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "creationTime",
+                GoogleApiFieldName = "creationTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "creationTime",
-                PropertyName = "CreationTime",
+                MmsAttributeName = "creationTime",
+                ManagedObjectPropertyName = "CreationTime",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -228,11 +228,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue deletionTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "deletionTime",
+                GoogleApiFieldName = "deletionTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "deletionTime",
-                PropertyName = "DeletionTime",
+                MmsAttributeName = "deletionTime",
+                ManagedObjectPropertyName = "DeletionTime",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -242,11 +242,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue agreedToTerms = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "agreedToTerms",
+                GoogleApiFieldName = "agreedToTerms",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "agreedToTerms",
-                PropertyName = "AgreedToTerms",
+                MmsAttributeName = "agreedToTerms",
+                ManagedObjectPropertyName = "AgreedToTerms",
                 Api = "user",
                 SupportsPatch = true,
                 CastForImport = (i) => i ?? false
@@ -257,11 +257,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue suspensionReason = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "suspensionReason",
+                GoogleApiFieldName = "suspensionReason",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "suspensionReason",
-                PropertyName = "SuspensionReason",
+                MmsAttributeName = "suspensionReason",
+                ManagedObjectPropertyName = "SuspensionReason",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -271,11 +271,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue isMailboxSetup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "isMailboxSetup",
+                GoogleApiFieldName = "isMailboxSetup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "isMailboxSetup",
-                PropertyName = "IsMailboxSetup",
+                MmsAttributeName = "isMailboxSetup",
+                ManagedObjectPropertyName = "IsMailboxSetup",
                 Api = "user",
                 SupportsPatch = true,
                 CastForImport = (i) => i ?? false
@@ -286,11 +286,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue thumbnailPhotoUrl = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "thumbnailPhotoUrl",
+                GoogleApiFieldName = "thumbnailPhotoUrl",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "thumbnailPhotoUrl",
-                PropertyName = "ThumbnailPhotoUrl",
+                MmsAttributeName = "thumbnailPhotoUrl",
+                ManagedObjectPropertyName = "ThumbnailPhotoUrl",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -300,11 +300,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue thumbnailPhotoEtag = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "thumbnailPhotoEtag",
+                GoogleApiFieldName = "thumbnailPhotoEtag",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "thumbnailPhotoEtag",
-                PropertyName = "ThumbnailPhotoEtag",
+                MmsAttributeName = "thumbnailPhotoEtag",
+                ManagedObjectPropertyName = "ThumbnailPhotoEtag",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -314,11 +314,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue customerId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "customerId",
+                GoogleApiFieldName = "customerId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "customerId",
-                PropertyName = "CustomerId",
+                MmsAttributeName = "customerId",
+                ManagedObjectPropertyName = "CustomerId",
                 Api = "user",
                 SupportsPatch = true,
             };
@@ -345,10 +345,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> delegates = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = null,
+                GoogleApiFieldName = null,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = $"{type.Name}_{SchemaConstants.Delegate}",
-                PropertyName = "Delegates",
+                MmsAttributeName = $"{type.Name}_{SchemaConstants.Delegate}",
+                ManagedObjectPropertyName = "Delegates",
                 Api = "userdelegates",
                 SupportsPatch = true,
             };
@@ -358,10 +358,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> sendas = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = null,
+                GoogleApiFieldName = null,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = $"{type.Name}_{SchemaConstants.SendAs}",
-                PropertyName = "SendAs",
+                MmsAttributeName = $"{type.Name}_{SchemaConstants.SendAs}",
+                ManagedObjectPropertyName = "SendAs",
                 Api = "usersendas",
                 SupportsPatch = true,
             };
@@ -374,32 +374,32 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield givenName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "givenName",
+                GoogleApiFieldName = "givenName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "GivenName",
-                AttributeNamePart = "givenName",
+                ManagedObjectPropertyName = "GivenName",
+                MmsAttributeNameSuffix = "givenName",
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterSubfield familyName = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "familyName",
+                GoogleApiFieldName = "familyName",
                 IsMultivalued = false,
-                PropertyName = "FamilyName",
+                ManagedObjectPropertyName = "FamilyName",
                 Operation = AttributeOperation.ImportExport,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
-                AttributeNamePart = "familyName"
+                MmsAttributeNameSuffix = "familyName"
             };
 
             AdapterNestedType schemaItem = new AdapterNestedType
             {
                 Api = "user",
-                AttributeName = "name",
+                MmsAttributeNameBase = "name",
                 Fields = new List<AdapterSubfield>() { givenName, familyName },
-                FieldName = "name",
-                PropertyName = "Name",
+                GoogleApiFieldName = "name",
+                ManagedObjectPropertyName = "Name",
                 SupportsPatch = false
             };
 
@@ -411,32 +411,32 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield notesValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "value",
+                GoogleApiFieldName = "value",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = "value",
+                ManagedObjectPropertyName = "Value",
+                MmsAttributeNameSuffix = "value",
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterSubfield notesContentType = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "contentType",
+                GoogleApiFieldName = "contentType",
                 IsMultivalued = false,
-                PropertyName = "ContentType",
+                ManagedObjectPropertyName = "ContentType",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "contentType",
+                MmsAttributeNameSuffix = "contentType",
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
             };
 
             AdapterNestedType notesType = new AdapterNestedType
             {
                 Api = "user",
-                AttributeName = "notes",
+                MmsAttributeNameBase = "notes",
                 Fields = new List<AdapterSubfield>() { notesContentType, notesValue },
-                FieldName = "notes",
-                PropertyName = "Notes",
+                GoogleApiFieldName = "notes",
+                ManagedObjectPropertyName = "Notes",
                 SupportsPatch = false
             };
 
@@ -448,30 +448,30 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield webSiteValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "value",
+                GoogleApiFieldName = "value",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
+                ManagedObjectPropertyName = "Value",
+                MmsAttributeNameSuffix = null
             };
 
             AdapterSubfield webSitePrimary = new AdapterSubfield
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "primary",
+                GoogleApiFieldName = "primary",
                 IsMultivalued = false,
-                PropertyName = "Primary",
+                ManagedObjectPropertyName = "Primary",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "primary"
+                MmsAttributeNameSuffix = "primary"
             };
 
             AdapterCustomTypeList<ManagedObjects.Website> webSiteType = new AdapterCustomTypeList<Website>
             {
                 Api = "user",
-                AttributeName = "websites",
-                Fields = new List<AdapterSubfield>() { webSitePrimary, webSiteValue },
-                FieldName = "websites",
-                PropertyName = "Websites",
+                MmsAttributeNameBase = "websites",
+                SubFields = new List<AdapterSubfield>() { webSitePrimary, webSiteValue },
+                GoogleApiFieldName = "websites",
+                ManagedObjectPropertyName = "Websites",
                 IsPrimaryCandidateType = true,
                 KnownTypes = config.WebsitesAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
@@ -485,9 +485,9 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> aliasesList = new AdapterCollection<string>
             {
                 Api = "useraliases",
-                AttributeName = "aliases",
-                FieldName = "aliases",
-                PropertyName = "Aliases",
+                MmsAttributeName = "aliases",
+                GoogleApiFieldName = "aliases",
+                ManagedObjectPropertyName = "Aliases",
                 SupportsPatch = true,
                 Operation = AttributeOperation.ImportExport
             };
@@ -497,9 +497,9 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
                 Api = "user",
-                AttributeName = "nonEditableAliases",
-                FieldName = "nonEditableAliases",
-                PropertyName = "NonEditableAliases",
+                MmsAttributeName = "nonEditableAliases",
+                GoogleApiFieldName = "nonEditableAliases",
+                ManagedObjectPropertyName = "NonEditableAliases",
                 SupportsPatch = false,
                 Operation = AttributeOperation.ImportOnly
             };
@@ -512,20 +512,20 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield phonesValue = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "value",
+                GoogleApiFieldName = "value",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
+                ManagedObjectPropertyName = "Value",
+                MmsAttributeNameSuffix = null
             };
 
             AdapterCustomTypeList<Phone> phonesType = new AdapterCustomTypeList<Phone>
             {
                 Api = "user",
-                AttributeName = "phones",
-                Fields = new List<AdapterSubfield>() { phonesValue },
-                FieldName = "phones",
-                PropertyName = "Phones",
+                MmsAttributeNameBase = "phones",
+                SubFields = new List<AdapterSubfield>() { phonesValue },
+                GoogleApiFieldName = "phones",
+                ManagedObjectPropertyName = "Phones",
                 IsPrimaryCandidateType = true,
                 KnownTypes = config.PhonesAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
@@ -539,90 +539,90 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield name = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "name",
+                GoogleApiFieldName = "name",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Name",
-                AttributeNamePart = "name"
+                ManagedObjectPropertyName = "Name",
+                MmsAttributeNameSuffix = "name"
             };
 
             AdapterSubfield title = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "title",
+                GoogleApiFieldName = "title",
                 IsMultivalued = false,
-                PropertyName = "Title",
+                ManagedObjectPropertyName = "Title",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "title"
+                MmsAttributeNameSuffix = "title"
             };
 
             AdapterSubfield department = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "department",
+                GoogleApiFieldName = "department",
                 IsMultivalued = false,
-                PropertyName = "Department",
+                ManagedObjectPropertyName = "Department",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "department"
+                MmsAttributeNameSuffix = "department"
             };
 
             AdapterSubfield symbol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "symbol",
+                GoogleApiFieldName = "symbol",
                 IsMultivalued = false,
-                PropertyName = "Symbol",
+                ManagedObjectPropertyName = "Symbol",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "symbol"
+                MmsAttributeNameSuffix = "symbol"
             };
 
             AdapterSubfield location = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "location",
+                GoogleApiFieldName = "location",
                 IsMultivalued = false,
-                PropertyName = "Location",
+                ManagedObjectPropertyName = "Location",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "location"
+                MmsAttributeNameSuffix = "location"
             };
 
             AdapterSubfield description = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "description",
+                GoogleApiFieldName = "description",
                 IsMultivalued = false,
-                PropertyName = "Description",
+                ManagedObjectPropertyName = "Description",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "description"
+                MmsAttributeNameSuffix = "description"
             };
 
             AdapterSubfield domain = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "domain",
+                GoogleApiFieldName = "domain",
                 IsMultivalued = false,
-                PropertyName = "Domain",
+                ManagedObjectPropertyName = "Domain",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "domain"
+                MmsAttributeNameSuffix = "domain"
             };
 
             AdapterSubfield costCenter = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "costCenter",
+                GoogleApiFieldName = "costCenter",
                 IsMultivalued = false,
-                PropertyName = "CostCenter",
+                ManagedObjectPropertyName = "CostCenter",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "costCenter"
+                MmsAttributeNameSuffix = "costCenter"
             };
 
             AdapterCustomTypeList<ManagedObjects.Organization> customType = new AdapterCustomTypeList<ManagedObjects.Organization>
             {
                 Api = "user",
-                AttributeName = "organizations",
-                Fields = new List<AdapterSubfield>() { name, title, department, symbol, location, description, domain, costCenter },
-                FieldName = "organizations",
-                PropertyName = "Organizations",
+                MmsAttributeNameBase = "organizations",
+                SubFields = new List<AdapterSubfield>() { name, title, department, symbol, location, description, domain, costCenter },
+                GoogleApiFieldName = "organizations",
+                ManagedObjectPropertyName = "Organizations",
                 IsPrimaryCandidateType = true,
                 KnownTypes = config.OrganizationsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
@@ -636,110 +636,110 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield sourceIsStructured = new AdapterSubfield
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "sourceIsStructured",
+                GoogleApiFieldName = "sourceIsStructured",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "SourceIsStructured",
-                AttributeNamePart = "sourceIsStructured"
+                ManagedObjectPropertyName = "SourceIsStructured",
+                MmsAttributeNameSuffix = "sourceIsStructured"
             };
 
             AdapterSubfield formatted = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "formatted",
+                GoogleApiFieldName = "formatted",
                 IsMultivalued = false,
-                PropertyName = "Formatted",
+                ManagedObjectPropertyName = "Formatted",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "formatted"
+                MmsAttributeNameSuffix = "formatted"
             };
 
             AdapterSubfield poBox = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "poBox",
+                GoogleApiFieldName = "poBox",
                 IsMultivalued = false,
-                PropertyName = "POBox",
+                ManagedObjectPropertyName = "POBox",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "poBox"
+                MmsAttributeNameSuffix = "poBox"
             };
 
             AdapterSubfield extendedAddress = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "extendedAddress",
+                GoogleApiFieldName = "extendedAddress",
                 IsMultivalued = false,
-                PropertyName = "ExtendedAddress",
+                ManagedObjectPropertyName = "ExtendedAddress",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "extendedAddress"
+                MmsAttributeNameSuffix = "extendedAddress"
             };
 
             AdapterSubfield streetAddress = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "streetAddress",
+                GoogleApiFieldName = "streetAddress",
                 IsMultivalued = false,
-                PropertyName = "StreetAddress",
+                ManagedObjectPropertyName = "StreetAddress",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "streetAddress"
+                MmsAttributeNameSuffix = "streetAddress"
             };
 
             AdapterSubfield locality = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "locality",
+                GoogleApiFieldName = "locality",
                 IsMultivalued = false,
-                PropertyName = "Locality",
+                ManagedObjectPropertyName = "Locality",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "locality"
+                MmsAttributeNameSuffix = "locality"
             };
 
             AdapterSubfield region = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "region",
+                GoogleApiFieldName = "region",
                 IsMultivalued = false,
-                PropertyName = "Region",
+                ManagedObjectPropertyName = "Region",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "region"
+                MmsAttributeNameSuffix = "region"
             };
 
             AdapterSubfield postalCode = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "postalCode",
+                GoogleApiFieldName = "postalCode",
                 IsMultivalued = false,
-                PropertyName = "PostalCode",
+                ManagedObjectPropertyName = "PostalCode",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "postalCode"
+                MmsAttributeNameSuffix = "postalCode"
             };
 
             AdapterSubfield country = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "country",
+                GoogleApiFieldName = "country",
                 IsMultivalued = false,
-                PropertyName = "Country",
+                ManagedObjectPropertyName = "Country",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "country"
+                MmsAttributeNameSuffix = "country"
             };
 
             AdapterSubfield countryCode = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "countryCode",
+                GoogleApiFieldName = "countryCode",
                 IsMultivalued = false,
-                PropertyName = "CountryCode",
+                ManagedObjectPropertyName = "CountryCode",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "countryCode"
+                MmsAttributeNameSuffix = "countryCode"
             };
 
             AdapterCustomTypeList<Address> customType = new AdapterCustomTypeList<Address>
             {
                 Api = "user",
-                AttributeName = "addresses",
-                Fields = new List<AdapterSubfield>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
-                FieldName = "addresses",
-                PropertyName = "Addresses",
+                MmsAttributeNameBase = "addresses",
+                SubFields = new List<AdapterSubfield>() { sourceIsStructured, formatted, poBox, extendedAddress, streetAddress, locality, region, postalCode, country, countryCode },
+                GoogleApiFieldName = "addresses",
+                ManagedObjectPropertyName = "Addresses",
                 IsPrimaryCandidateType = true,
                 KnownTypes = config.AddressesAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
@@ -753,20 +753,20 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield value = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "value",
+                GoogleApiFieldName = "value",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
+                ManagedObjectPropertyName = "Value",
+                MmsAttributeNameSuffix = null
             };
 
             AdapterCustomTypeList<ManagedObjects.Relation> customType = new AdapterCustomTypeList<ManagedObjects.Relation>
             {
                 Api = "user",
-                AttributeName = "relations",
-                Fields = new List<AdapterSubfield>() { value },
-                FieldName = "relations",
-                PropertyName = "Relations",
+                MmsAttributeNameBase = "relations",
+                SubFields = new List<AdapterSubfield>() { value },
+                GoogleApiFieldName = "relations",
+                ManagedObjectPropertyName = "Relations",
                 KnownTypes = config.RelationsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
             };
@@ -779,20 +779,20 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield value = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "value",
+                GoogleApiFieldName = "value",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Value",
-                AttributeNamePart = null
+                ManagedObjectPropertyName = "Value",
+                MmsAttributeNameSuffix = null
             };
 
             AdapterCustomTypeList<ExternalID> customType = new AdapterCustomTypeList<ExternalID>
             {
                 Api = "user",
-                AttributeName = "externalIds",
-                Fields = new List<AdapterSubfield>() { value },
-                FieldName = "externalIds",
-                PropertyName = "ExternalIds",
+                MmsAttributeNameBase = "externalIds",
+                SubFields = new List<AdapterSubfield>() { value },
+                GoogleApiFieldName = "externalIds",
+                ManagedObjectPropertyName = "ExternalIds",
                 KnownTypes = config.ExternalIDsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
             };
@@ -805,30 +805,30 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield im = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "im",
+                GoogleApiFieldName = "im",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "IMAddress",
-                AttributeNamePart = "address"
+                ManagedObjectPropertyName = "IMAddress",
+                MmsAttributeNameSuffix = "address"
             };
 
             AdapterSubfield protocol = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "protocol",
+                GoogleApiFieldName = "protocol",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Protocol",
-                AttributeNamePart = "protocol"
+                ManagedObjectPropertyName = "Protocol",
+                MmsAttributeNameSuffix = "protocol"
             };
 
             AdapterCustomTypeList<IM> customType = new AdapterCustomTypeList<IM>
             {
                 Api = "user",
-                AttributeName = "ims",
-                Fields = new List<AdapterSubfield>() { im, protocol },
-                FieldName = "ims",
-                PropertyName = "Ims",
+                MmsAttributeNameBase = "ims",
+                SubFields = new List<AdapterSubfield>() { im, protocol },
+                GoogleApiFieldName = "ims",
+                ManagedObjectPropertyName = "Ims",
                 IsPrimaryCandidateType = true,
                 KnownTypes = config.IMsAttributeFixedTypes?.ToList(),
                 SupportsPatch = false
@@ -916,7 +916,7 @@ namespace Lithnet.GoogleApps.MA
                         continue;
                     }
 
-                    f.FieldName = $"{field.FieldName}";
+                    f.GoogleApiFieldName = $"{field.FieldName}";
                     f.SchemaName = schema.SchemaName;
                     f.Operation = AttributeOperation.ImportExport;
                     f.MmsAttributeName = Regex.Replace($"{schema.SchemaName}_{field.FieldName}", "[^a-zA-Z0-9_\\-]", "_", RegexOptions.IgnoreCase);

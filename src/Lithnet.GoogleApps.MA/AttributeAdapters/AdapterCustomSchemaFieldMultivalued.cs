@@ -48,7 +48,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (this.HasSchemaField(user))
                 {
-                    schema[this.FieldName] = Utilities.GetNullRepresentation(this.NullValueRepresentation);
+                    schema[this.GoogleApiFieldName] = Utilities.GetNullRepresentation(this.NullValueRepresentation);
                     Logger.WriteLine($"Deleting {this.MmsAttributeName}");
                     return true;
                 }
@@ -64,7 +64,7 @@ namespace Lithnet.GoogleApps.MA
             }
             else
             {
-                list = this.GetValuesFromArray(schema[this.FieldName], "value");
+                list = this.GetValuesFromArray(schema[this.GoogleApiFieldName], "value");
                 list = this.ConvertToNativeGoogleFormat(list);
             }
 
@@ -94,7 +94,7 @@ namespace Lithnet.GoogleApps.MA
                     items.Add(item);
                 }
 
-                schema[this.FieldName] = items;
+                schema[this.GoogleApiFieldName] = items;
             }
             else
             {
@@ -103,7 +103,7 @@ namespace Lithnet.GoogleApps.MA
                 value = Utilities.GetNullRepresentation(this.NullValueRepresentation);
                 Logger.WriteLine($"Set {this.MmsAttributeName} -> {value ?? "<null>"}");
 
-                schema[this.FieldName] = value;
+                schema[this.GoogleApiFieldName] = value;
             }
 
             return true;
@@ -127,9 +127,9 @@ namespace Lithnet.GoogleApps.MA
 
             object value = null;
 
-            if (schema.ContainsKey(this.FieldName))
+            if (schema.ContainsKey(this.GoogleApiFieldName))
             {
-                value = schema[this.FieldName];
+                value = schema[this.GoogleApiFieldName];
             }
 
             if (value == null)

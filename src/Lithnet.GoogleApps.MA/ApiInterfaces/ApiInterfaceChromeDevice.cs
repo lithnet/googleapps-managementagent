@@ -113,7 +113,7 @@ namespace Lithnet.GoogleApps.MA
                 "deviceId"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.ChromeDevice].GetFieldNames(schema.Types[SchemaConstants.ChromeDevice], "chromeDevice"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.ChromeDevice].GetGoogleApiFieldNames(schema.Types[SchemaConstants.ChromeDevice], "chromeDevice"))
             {
                 fieldList.Add(fieldName);
             }

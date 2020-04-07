@@ -5,16 +5,16 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class AdapterSubfield
     {
-        public string AttributeNamePart { get; set; }
+        public string MmsAttributeNameSuffix { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
-        public string PropertyName { get; set; }
+        public string ManagedObjectPropertyName { get; set; }
 
         public AttributeType AttributeType { get; set; }
 
         public AttributeOperation Operation { get; set; }
-        
+
         public bool IsMultivalued { get; set; }
 
         public Func<object, object> CastForImport { get; set; }
@@ -25,13 +25,13 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAttributeName(string prefix)
         {
-            if (this.AttributeNamePart == null)
+            if (this.MmsAttributeNameSuffix == null)
             {
                 return prefix;
             }
             else
             {
-                return $"{prefix}_{this.AttributeNamePart}";
+                return $"{prefix}_{this.MmsAttributeNameSuffix}";
             }
         }
 

@@ -21,20 +21,13 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public string FieldName { get; set; }
-
-        public string PropertyName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
         public string Api { get; set; }
 
         public bool IsReadOnly => false;
 
         public bool IsAnchor { get; set; }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.MmsAttributeNames.Any(t => t == attribute);
-        }
 
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
@@ -71,7 +64,7 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             // customSchemas/SCHEMA_NAME(field1,field2);
 

@@ -23,11 +23,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "serialNumber",
+                GoogleApiFieldName = "serialNumber",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "serialNumber",
-                PropertyName = "SerialNumber",
+                MmsAttributeName = "serialNumber",
+                ManagedObjectPropertyName = "SerialNumber",
                 Api = "chromeDevice",
                 SupportsPatch = true, 
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -39,11 +39,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "status",
+                GoogleApiFieldName = "status",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "status",
-                PropertyName = "Status",
+                MmsAttributeName = "status",
+                ManagedObjectPropertyName = "Status",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -55,11 +55,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "annotatedUser",
+                GoogleApiFieldName = "annotatedUser",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "annotatedUser",
-                PropertyName = "AnnotatedUser",
+                MmsAttributeName = "annotatedUser",
+                ManagedObjectPropertyName = "AnnotatedUser",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
@@ -70,11 +70,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "deviceId",
+                GoogleApiFieldName = "deviceId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "DeviceId",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "DeviceId",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = true,
@@ -85,11 +85,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "lastSync",
+                GoogleApiFieldName = "lastSync",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "lastSync",
-                PropertyName = "LastSyncRaw",
+                MmsAttributeName = "lastSync",
+                ManagedObjectPropertyName = "LastSyncRaw",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -101,11 +101,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "supportEndDate",
+                GoogleApiFieldName = "supportEndDate",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "supportEndDate",
-                PropertyName = "SupportEndDateRaw",
+                MmsAttributeName = "supportEndDate",
+                ManagedObjectPropertyName = "SupportEndDateRaw",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -117,11 +117,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "annotatedLocation",
+                GoogleApiFieldName = "annotatedLocation",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "annotatedLocation",
-                PropertyName = "AnnotatedLocation",
+                MmsAttributeName = "annotatedLocation",
+                ManagedObjectPropertyName = "AnnotatedLocation",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -133,11 +133,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "annotatedAssetId",
+                GoogleApiFieldName = "annotatedAssetId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "annotatedAssetId",
-                PropertyName = "AnnotatedAssetId",
+                MmsAttributeName = "annotatedAssetId",
+                ManagedObjectPropertyName = "AnnotatedAssetId",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -149,11 +149,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "notes",
+                GoogleApiFieldName = "notes",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "deviceNotes",
-                PropertyName = "Notes",
+                MmsAttributeName = "deviceNotes",
+                ManagedObjectPropertyName = "Notes",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -165,11 +165,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "model",
+                GoogleApiFieldName = "model",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "model",
-                PropertyName = "Model",
+                MmsAttributeName = "model",
+                ManagedObjectPropertyName = "Model",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -181,11 +181,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "meid",
+                GoogleApiFieldName = "meid",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "meid",
-                PropertyName = "Meid",
+                MmsAttributeName = "meid",
+                ManagedObjectPropertyName = "Meid",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -197,11 +197,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "orderNumber",
+                GoogleApiFieldName = "orderNumber",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "orderNumber",
-                PropertyName = "OrderNumber",
+                MmsAttributeName = "orderNumber",
+                ManagedObjectPropertyName = "OrderNumber",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -214,11 +214,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "willAutoRenew",
+                GoogleApiFieldName = "willAutoRenew",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "willAutoRenew",
-                PropertyName = "WillAutoRenew",
+                MmsAttributeName = "willAutoRenew",
+                ManagedObjectPropertyName = "WillAutoRenew",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -229,27 +229,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "osVersion",
+                GoogleApiFieldName = "osVersion",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "osVersion",
-                PropertyName = "OsVersion",
-                Api = "chromeDevice",
-                SupportsPatch = true,
-                IsAnchor = false,
-                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
-            };
-
-            type.AttributeAdapters.Add(p);
-
-            p = new AdapterPropertyValue
-            {
-                AttributeType = AttributeType.String,
-                FieldName = "platformVersion",
-                IsMultivalued = false,
-                Operation = AttributeOperation.ImportOnly,
-                AttributeName = "platformVersion",
-                PropertyName = "PlatformVersion",
+                MmsAttributeName = "osVersion",
+                ManagedObjectPropertyName = "OsVersion",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -261,11 +245,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "firmwareVersion",
+                GoogleApiFieldName = "platformVersion",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "firmwareVersion",
-                PropertyName = "FirmwareVersion",
+                MmsAttributeName = "platformVersion",
+                ManagedObjectPropertyName = "PlatformVersion",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -277,11 +261,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "macAddress",
+                GoogleApiFieldName = "firmwareVersion",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "macAddress",
-                PropertyName = "MacAddress",
+                MmsAttributeName = "firmwareVersion",
+                ManagedObjectPropertyName = "FirmwareVersion",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -293,11 +277,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "bootMode",
+                GoogleApiFieldName = "macAddress",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "bootMode",
-                PropertyName = "BootMode",
+                MmsAttributeName = "macAddress",
+                ManagedObjectPropertyName = "MacAddress",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -309,11 +293,27 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "orgUnitPath",
+                GoogleApiFieldName = "bootMode",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportOnly,
+                MmsAttributeName = "bootMode",
+                ManagedObjectPropertyName = "BootMode",
+                Api = "chromeDevice",
+                SupportsPatch = true,
+                IsAnchor = false,
+                CastForImport = (i) => string.IsNullOrEmpty((string)i) ? null : i,
+            };
+
+            type.AttributeAdapters.Add(p);
+
+            p = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                GoogleApiFieldName = "orgUnitPath",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "orgUnitPath",
-                PropertyName = "OrgUnitPath",
+                MmsAttributeName = "orgUnitPath",
+                ManagedObjectPropertyName = "OrgUnitPath",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -325,11 +325,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "lastEnrollmentTime",
+                GoogleApiFieldName = "lastEnrollmentTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "lastEnrollmentTime",
-                PropertyName = "LastEnrollmentTimeRaw",
+                MmsAttributeName = "lastEnrollmentTime",
+                ManagedObjectPropertyName = "LastEnrollmentTimeRaw",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,
@@ -341,11 +341,11 @@ namespace Lithnet.GoogleApps.MA
             p = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "ethernetMacAddress",
+                GoogleApiFieldName = "ethernetMacAddress",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "ethernetMacAddress",
-                PropertyName = "EthernetMacAddress",
+                MmsAttributeName = "ethernetMacAddress",
+                ManagedObjectPropertyName = "EthernetMacAddress",
                 Api = "chromeDevice",
                 SupportsPatch = true,
                 IsAnchor = false,

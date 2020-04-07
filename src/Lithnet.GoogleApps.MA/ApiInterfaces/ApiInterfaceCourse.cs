@@ -96,7 +96,7 @@ namespace Lithnet.GoogleApps.MA
                 if (typeDef.UpdateField(csentry, googleCourse.Course))
                 {
                     hasChanged = true;
-                    updateMask.Add(typeDef.FieldName);
+                    updateMask.Add(typeDef.GoogleApiFieldName);
                 }
             }
 

@@ -54,11 +54,11 @@ namespace Lithnet.GoogleApps.MA
             return this.SupportsPatch && this.AttributeAdapters.All(t => t.CanPatch(changes));
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api = null)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api = null)
         {
             foreach (IAttributeAdapter attribute in this.AttributeAdapters)
             {
-                foreach (string field in attribute.GetFieldNames(type, api))
+                foreach (string field in attribute.GetGoogleApiFieldNames(type, api))
                 {
                     yield return field;
                 }

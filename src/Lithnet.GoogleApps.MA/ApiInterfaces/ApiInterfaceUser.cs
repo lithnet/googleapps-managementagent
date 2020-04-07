@@ -236,7 +236,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (schema.Types.Contains(type))
                 {
-                    foreach (string field in ManagementAgent.Schema[type].GetFieldNames(schema.Types[type]))
+                    foreach (string field in ManagementAgent.Schema[type].GetGoogleApiFieldNames(schema.Types[type]))
                     {
                         fieldNames.Add(field);
                     }
@@ -245,7 +245,7 @@ namespace Lithnet.GoogleApps.MA
 
             if (schema.Types.Contains(SchemaConstants.User))
             {
-                foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetFieldNames(schema.Types[SchemaConstants.User]))
+                foreach (string field in ManagementAgent.Schema[SchemaConstants.User].GetGoogleApiFieldNames(schema.Types[SchemaConstants.User]))
                 {
                     fieldNames.Add(field);
                 }

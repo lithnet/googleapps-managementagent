@@ -9,7 +9,7 @@ namespace Lithnet.GoogleApps.MA
     {
         IEnumerable<string> MmsAttributeNames { get; }
 
-        string FieldName { get; set; }
+        string GoogleApiFieldName { get; set; }
 
         string Api { get; set; }
 
@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA
 
         bool IsAnchor { get; }
 
-        bool CanProcessAttribute(string attribute);
+       // bool CanProcessMmsAttribute(string mmsAttributeName);
 
         bool CanPatch(KeyedCollection<string, AttributeChange> changes);
 
@@ -25,7 +25,7 @@ namespace Lithnet.GoogleApps.MA
 
         IEnumerable<SchemaAttribute> GetSchemaAttributes();
 
-        IEnumerable<string> GetFieldNames(SchemaType type, string api = null);
+        IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api = null);
 
         IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
     }

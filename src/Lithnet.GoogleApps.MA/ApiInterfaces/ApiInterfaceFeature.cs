@@ -173,7 +173,7 @@ namespace Lithnet.GoogleApps.MA
                 "name"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Feature].GetFieldNames(schema.Types[SchemaConstants.Feature], "feature"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Feature].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Feature], "feature"))
             {
                 fieldList.Add(fieldName);
             }

@@ -207,12 +207,12 @@ namespace Lithnet.GoogleApps.MA
                 SchemaConstants.ID
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "group"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Group], "group"))
             {
                 groupFieldList.Add(fieldName);
             }
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "groupaliases"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Group], "groupaliases"))
             {
                 groupFieldList.Add(fieldName);
             }
@@ -221,7 +221,7 @@ namespace Lithnet.GoogleApps.MA
 
             HashSet<string> groupSettingList = new HashSet<string>();
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetFieldNames(schema.Types[SchemaConstants.Group], "groupsettings"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Group].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Group], "groupsettings"))
             {
                 groupSettingList.Add(fieldName);
             }

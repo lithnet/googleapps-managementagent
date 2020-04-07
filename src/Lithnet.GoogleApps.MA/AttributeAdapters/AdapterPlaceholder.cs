@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string AttributeName { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
         
         public string Api { get; set; }
         
@@ -31,14 +31,9 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsAnchor => false;
 
-        public bool CanProcessAttribute(string attribute)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -58,18 +53,18 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             if (api != null && this.Api != api)
             {
                 yield break;
             }
 
-            if (this.FieldName != null)
+            if (this.GoogleApiFieldName != null)
             {
                 if (type.HasAttribute(this.AttributeName))
                 {
-                    yield return this.FieldName;
+                    yield return this.GoogleApiFieldName;
                 }
             }
         }

@@ -25,11 +25,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceId",
+                GoogleApiFieldName = "resourceId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "ResourceId",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "ResourceId",
                 Api = "calendar",
                 SupportsPatch = true,
                 IsAnchor = true
@@ -38,11 +38,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceName",
+                GoogleApiFieldName = "resourceName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "name",
-                PropertyName = "ResourceName",
+                MmsAttributeName = "name",
+                ManagedObjectPropertyName = "ResourceName",
                 Api = "calendar",
                 SupportsPatch = true,
             });
@@ -50,11 +50,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = config.CalendarBuildingAttributeType == "Reference" ? AttributeType.Reference : AttributeType.String,
-                FieldName = "buildingId",
+                GoogleApiFieldName = "buildingId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "buildingId",
-                PropertyName = "BuildingId",
+                MmsAttributeName = "buildingId",
+                ManagedObjectPropertyName = "BuildingId",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -105,11 +105,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Integer,
-                FieldName = "capacity",
+                GoogleApiFieldName = "capacity",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "capacity",
-                PropertyName = "Capacity",
+                MmsAttributeName = "capacity",
+                ManagedObjectPropertyName = "Capacity",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.IntZero,
@@ -136,11 +136,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "floorName",
+                GoogleApiFieldName = "floorName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "floorName",
-                PropertyName = "FloorName",
+                MmsAttributeName = "floorName",
+                ManagedObjectPropertyName = "FloorName",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -149,11 +149,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "floorSection",
+                GoogleApiFieldName = "floorSection",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "floorSection",
-                PropertyName = "FloorSection",
+                MmsAttributeName = "floorSection",
+                ManagedObjectPropertyName = "FloorSection",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -163,11 +163,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceCategory",
+                GoogleApiFieldName = "resourceCategory",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "resourceCategory",
-                PropertyName = "ResourceCategory",
+                MmsAttributeName = "resourceCategory",
+                ManagedObjectPropertyName = "ResourceCategory",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.Null,
@@ -176,11 +176,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceDescription",
+                GoogleApiFieldName = "resourceDescription",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "resourceDescription",
-                PropertyName = "ResourceDescription",
+                MmsAttributeName = "resourceDescription",
+                ManagedObjectPropertyName = "ResourceDescription",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -189,11 +189,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceType",
+                GoogleApiFieldName = "resourceType",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "resourceType",
-                PropertyName = "ResourceType",
+                MmsAttributeName = "resourceType",
+                ManagedObjectPropertyName = "ResourceType",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -202,11 +202,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "userVisibleDescription",
+                GoogleApiFieldName = "userVisibleDescription",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "userVisibleDescription",
-                PropertyName = "UserVisibleDescription",
+                MmsAttributeName = "userVisibleDescription",
+                ManagedObjectPropertyName = "UserVisibleDescription",
                 Api = "calendar",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -215,11 +215,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "generatedResourceName",
+                GoogleApiFieldName = "generatedResourceName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "generatedResourceName",
-                PropertyName = "GeneratedResourceName",
+                MmsAttributeName = "generatedResourceName",
+                ManagedObjectPropertyName = "GeneratedResourceName",
                 Api = "calendar",
                 SupportsPatch = false,
             });
@@ -227,11 +227,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "resourceEmail",
+                GoogleApiFieldName = "resourceEmail",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "resourceEmail",
-                PropertyName = "ResourceEmail",
+                MmsAttributeName = "resourceEmail",
+                ManagedObjectPropertyName = "ResourceEmail",
                 Api = "calendar",
                 SupportsPatch = true,
                 IsAnchor = true
@@ -240,10 +240,10 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterCollection<string>
             {
                 AttributeType = config.CalendarFeatureAttributeType == "Reference" ? AttributeType.Reference : AttributeType.String,
-                FieldName = "featureInstances",
+                GoogleApiFieldName = "featureInstances",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "features",
-                PropertyName = "FeatureInstances",
+                MmsAttributeName = "features",
+                ManagedObjectPropertyName = "FeatureInstances",
                 Api = "calendar",
                 SupportsPatch = false,
                 GetList = obj => ApiInterfaceCalendar.GetFeatureNames((G.CalendarResource)obj, config.CalendarFeatureAttributeType)?.ToList(),
@@ -289,7 +289,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeType = AttributeType.Reference,
                 IsMultivalued = true,
-                FieldName = "scope.value",
+                GoogleApiFieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "freeBusyReader",
                 Api = "calendaracl",
@@ -299,7 +299,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeType = AttributeType.Reference,
                 IsMultivalued = true,
-                FieldName = "scope.value",
+                GoogleApiFieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "reader",
                 Api = "calendaracl",
@@ -309,7 +309,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeType = AttributeType.Reference,
                 IsMultivalued = true,
-                FieldName = "scope.value",
+                GoogleApiFieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "writer",
                 Api = "calendaracl",
@@ -319,7 +319,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 AttributeType = AttributeType.Reference,
                 IsMultivalued = true,
-                FieldName = "scope.value",
+                GoogleApiFieldName = "scope.value",
                 Operation = AttributeOperation.ImportExport,
                 AttributeName = "owner",
                 Api = "calendaracl",

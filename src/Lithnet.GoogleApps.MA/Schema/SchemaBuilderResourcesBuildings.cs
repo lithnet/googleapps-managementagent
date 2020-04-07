@@ -24,11 +24,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "buildingId",
+                GoogleApiFieldName = "buildingId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "BuildingId",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "BuildingId",
                 Api = "building",
                 SupportsPatch = true,
                 IsAnchor = true
@@ -37,11 +37,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "buildingName",
+                GoogleApiFieldName = "buildingName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "buildingName",
-                PropertyName = "BuildingName",
+                MmsAttributeName = "buildingName",
+                ManagedObjectPropertyName = "BuildingName",
                 Api = "building",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -51,11 +51,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "description",
+                GoogleApiFieldName = "description",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "description",
-                PropertyName = "Description",
+                MmsAttributeName = "description",
+                ManagedObjectPropertyName = "Description",
                 Api = "building",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -65,11 +65,11 @@ namespace Lithnet.GoogleApps.MA
             type.AttributeAdapters.Add(new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "floorNames",
+                GoogleApiFieldName = "floorNames",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "floorNames",
-                PropertyName = "FloorNames",
+                MmsAttributeName = "floorNames",
+                ManagedObjectPropertyName = "FloorNames",
                 Api = "building",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -81,11 +81,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield latitude = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "latitude",
+                GoogleApiFieldName = "latitude",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                PropertyName = "Latitude",
-                AttributeNamePart = "latitude",
+                ManagedObjectPropertyName = "Latitude",
+                MmsAttributeNameSuffix = "latitude",
                 NullValueRepresentation = NullValueRepresentation.DoubleZero,
                 CastForExport = value =>
                 {
@@ -102,11 +102,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterSubfield longitude = new AdapterSubfield
             {
                 AttributeType = AttributeType.String,
-                FieldName = "longitude",
+                GoogleApiFieldName = "longitude",
                 IsMultivalued = false,
-                PropertyName = "Longitude",
+                ManagedObjectPropertyName = "Longitude",
                 Operation = AttributeOperation.ImportExport,
-                AttributeNamePart = "longitude",
+                MmsAttributeNameSuffix = "longitude",
                 NullValueRepresentation = NullValueRepresentation.DoubleZero,
                 CastForExport = value =>
                 {
@@ -123,10 +123,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterNestedType schemaItem = new AdapterNestedType
             {
                 Api = "building",
-                AttributeName = "coordinates",
+                MmsAttributeNameBase = "coordinates",
                 Fields = new List<AdapterSubfield>() {latitude, longitude},
-                FieldName = "coordinates",
-                PropertyName = "Coordinates",
+                GoogleApiFieldName = "coordinates",
+                ManagedObjectPropertyName = "Coordinates",
                 SupportsPatch = false
             };
 

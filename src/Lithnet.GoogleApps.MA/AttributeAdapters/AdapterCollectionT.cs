@@ -11,27 +11,23 @@ namespace Lithnet.GoogleApps.MA
 {
     internal class AdapterCollection<T> : IAttributeAdapter
     {
-        //private PropertyInfo propInfo;
-
         public IEnumerable<string> MmsAttributeNames
         {
             get
             {
-                yield return this.AttributeName;
+                yield return this.MmsAttributeName;
             }
         }
 
-        public string AttributeName { get; set; }
+        public string MmsAttributeName { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
-        public string PropertyName { get; set; }
+        public string ManagedObjectPropertyName { get; set; }
 
         public string Api { get; set; }
 
         public bool SupportsPatch { get; set; }
-
-        public bool IsMultivalued => true;
 
         public Func<object, ICollection<T>> GetList { get; set; }
 
@@ -47,14 +43,9 @@ namespace Lithnet.GoogleApps.MA
 
         public bool IsAnchor => false;
 
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.AttributeName == attribute;
-        }
-
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
+            return this.SupportsPatch || !this.MmsAttributeNames.Any(changes.Contains);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -64,12 +55,12 @@ namespace Lithnet.GoogleApps.MA
                 return false;
             }
 
-            if (!csentry.HasAttributeChange(this.AttributeName))
+            if (!csentry.HasAttributeChange(this.MmsAttributeName))
             {
                 return false;
             }
 
-            AttributeChange change = csentry.AttributeChanges[this.AttributeName];
+            AttributeChange change = csentry.AttributeChanges[this.MmsAttributeName];
 
             ICollection<T> list;
 
@@ -93,19 +84,19 @@ namespace Lithnet.GoogleApps.MA
                     throw new ArgumentOutOfRangeException();
             }
 
-            ICollection<T> valueAdds = csentry.GetValueAdds<T>(this.AttributeName);
-            ICollection<T> valueDeletes = csentry.GetValueDeletes<T>(this.AttributeName);
+            ICollection<T> valueAdds = csentry.GetValueAdds<T>(this.MmsAttributeName);
+            ICollection<T> valueDeletes = csentry.GetValueDeletes<T>(this.MmsAttributeName);
 
             foreach (T value in valueAdds)
             {
                 list.Add(value);
-                Logger.WriteLine($"Adding value {this.AttributeName} -> {value}");
+                Logger.WriteLine($"Adding value {this.MmsAttributeName} -> {value}");
             }
 
             foreach (T value in valueDeletes)
             {
                 list.Remove(value);
-                Logger.WriteLine($"Removing value {this.AttributeName} -> {value}");
+                Logger.WriteLine($"Removing value {this.MmsAttributeName} -> {value}");
             }
 
             this.PutListInternal(obj, list);
@@ -115,21 +106,21 @@ namespace Lithnet.GoogleApps.MA
 
         public IEnumerable<SchemaAttribute> GetSchemaAttributes()
         {
-            yield return SchemaAttribute.CreateMultiValuedAttribute(this.AttributeName, this.AttributeType, this.Operation);
+            yield return SchemaAttribute.CreateMultiValuedAttribute(this.MmsAttributeName, this.AttributeType, this.Operation);
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             if (api != null && this.Api != api)
             {
                 yield break;
             }
 
-            if (this.FieldName != null)
+            if (this.GoogleApiFieldName != null)
             {
-                if (type.HasAttribute(this.AttributeName))
+                if (type.HasAttribute(this.MmsAttributeName))
                 {
-                    yield return this.FieldName;
+                    yield return this.GoogleApiFieldName;
                 }
             }
         }
@@ -155,7 +146,7 @@ namespace Lithnet.GoogleApps.MA
                 return this.GetList(obj);
             }
 
-            PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+            PropertyInfo propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
 
             ICollection<T> childObject = propInfo.GetValue(obj) as ICollection<T>;
 
@@ -169,7 +160,7 @@ namespace Lithnet.GoogleApps.MA
                 return this.CreateList(obj);
             }
 
-            PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+            PropertyInfo propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
 
             return (ICollection<T>)Activator.CreateInstance(propInfo.PropertyType, null, new object[] { });
         }
@@ -182,7 +173,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (modType == ObjectModificationType.Update)
                 {
-                    yield return AttributeChange.CreateAttributeDelete(this.AttributeName);
+                    yield return AttributeChange.CreateAttributeDelete(this.MmsAttributeName);
                     yield break;
                 }
                 else
@@ -200,11 +191,11 @@ namespace Lithnet.GoogleApps.MA
             {
                 case ObjectModificationType.Add:
                 case ObjectModificationType.Replace:
-                    yield return AttributeChange.CreateAttributeAdd(this.AttributeName, list.Cast<object>().ToList());
+                    yield return AttributeChange.CreateAttributeAdd(this.MmsAttributeName, list.Cast<object>().ToList());
                     break;
 
                 case ObjectModificationType.Update:
-                    yield return AttributeChange.CreateAttributeReplace(this.AttributeName, list.Cast<object>().ToList());
+                    yield return AttributeChange.CreateAttributeReplace(this.MmsAttributeName, list.Cast<object>().ToList());
                     break;
 
                 default:
@@ -216,7 +207,7 @@ namespace Lithnet.GoogleApps.MA
         {
             if (this.PutList == null)
             {
-                PropertyInfo propInfo = obj.GetType().GetProperty(this.PropertyName);
+                PropertyInfo propInfo = obj.GetType().GetProperty(this.ManagedObjectPropertyName);
                 propInfo.SetValue(obj, list, null);
             }
             else

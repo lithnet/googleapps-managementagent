@@ -172,7 +172,7 @@ namespace Lithnet.GoogleApps.MA
                 "buildingId"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Building].GetFieldNames(schema.Types[SchemaConstants.Building], "building"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Building].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Building], "building"))
             {
                 fieldList.Add(fieldName);
             }

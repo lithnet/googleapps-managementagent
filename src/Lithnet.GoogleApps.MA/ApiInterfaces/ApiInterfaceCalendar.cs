@@ -43,8 +43,8 @@ namespace Lithnet.GoogleApps.MA
         public object CreateInstance(CSEntryChange csentry)
         {
             CalendarResource calendar = new CalendarResource();
-            calendar.ResourceId = Guid.NewGuid().ToString("n");
-
+            calendar.ResourceId = csentry.GetAnchorValueOrDefault<string>("id") ?? Guid.NewGuid().ToString("n");
+            calendar.ResourceEmail = csentry.GetAnchorValueOrDefault<string>("resourceEmail");
             return calendar;
         }
 
@@ -77,7 +77,6 @@ namespace Lithnet.GoogleApps.MA
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {
                 calendar = this.config.ResourcesService.AddCalendar(this.customerID, calendar);
-                calendar.ResourceEmail = calendar.ResourceEmail;
                 committedChanges.ObjectModificationType = ObjectModificationType.Add;
                 committedChanges.DN = this.GetDNValue(calendar);
 
@@ -206,7 +205,7 @@ namespace Lithnet.GoogleApps.MA
                 "resourceId"
             };
 
-            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Calendar].GetFieldNames(schema.Types[SchemaConstants.Calendar], "calendar"))
+            foreach (string fieldName in ManagementAgent.Schema[SchemaConstants.Calendar].GetGoogleApiFieldNames(schema.Types[SchemaConstants.Calendar], "calendar"))
             {
                 fieldList.Add(fieldName);
             }

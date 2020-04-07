@@ -22,11 +22,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue domainName = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "domainName",
+                GoogleApiFieldName = "domainName",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "domainName",
-                PropertyName = "DomainName",
+                MmsAttributeName = "domainName",
+                ManagedObjectPropertyName = "DomainName",
                 Api = "domain",
                 SupportsPatch = false,
                 IsAnchor = true
@@ -37,11 +37,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue isPrimary = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "isPrimary",
+                GoogleApiFieldName = "isPrimary",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "isPrimary",
-                PropertyName = "IsPrimary",
+                MmsAttributeName = "isPrimary",
+                ManagedObjectPropertyName = "IsPrimary",
                 Api = "domain",
                 SupportsPatch = false,
             };
@@ -51,11 +51,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue verified = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "verified",
+                GoogleApiFieldName = "verified",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "verified",
-                PropertyName = "Verified",
+                MmsAttributeName = "verified",
+                ManagedObjectPropertyName = "Verified",
                 Api = "domain",
                 SupportsPatch = false,
             };
@@ -65,9 +65,9 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> domainAliases = new AdapterCollection<string>
             {
                 Api = "domain",
-                AttributeName = "domainAliases",
-                FieldName = "domainAliases",
-                PropertyName = "DomainAliasNames",
+                MmsAttributeName = "domainAliases",
+                GoogleApiFieldName = "domainAliases",
+                ManagedObjectPropertyName = "DomainAliasNames",
                 SupportsPatch = false,
                 AttributeType = AttributeType.String,
                 Operation = AttributeOperation.ImportOnly

@@ -23,11 +23,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue adminCreated = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "adminCreated",
+                GoogleApiFieldName = "adminCreated",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "adminCreated",
-                PropertyName = "AdminCreated",
+                MmsAttributeName = "adminCreated",
+                ManagedObjectPropertyName = "AdminCreated",
                 Api = "group",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -39,11 +39,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue description = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "description",
+                GoogleApiFieldName = "description",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "description",
-                PropertyName = "Description",
+                MmsAttributeName = "description",
+                ManagedObjectPropertyName = "Description",
                 Api = "group",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.EmptyString,
@@ -54,11 +54,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue email = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "primaryEmail",
-                PropertyName = "Email",
+                MmsAttributeName = "primaryEmail",
+                ManagedObjectPropertyName = "Email",
                 Api = "group",
                 SupportsPatch = true,
             };
@@ -68,11 +68,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "id",
+                GoogleApiFieldName = "id",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Id",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "Id",
                 Api = "group",
                 SupportsPatch = true,
                 IsAnchor = true,
@@ -83,11 +83,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue name = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "name",
+                GoogleApiFieldName = "name",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "name",
-                PropertyName = "Name",
+                MmsAttributeName = "name",
+                ManagedObjectPropertyName = "Name",
                 Api = "group",
                 SupportsPatch = true,
             };
@@ -114,9 +114,9 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> aliasesList = new AdapterCollection<string>
             {
                 Api = "groupaliases",
-                AttributeName = "aliases",
-                FieldName = "aliases",
-                PropertyName = "Aliases",
+                MmsAttributeName = "aliases",
+                GoogleApiFieldName = "aliases",
+                ManagedObjectPropertyName = "Aliases",
                 SupportsPatch = true,
                 Operation = AttributeOperation.ImportExport
             };
@@ -126,9 +126,9 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> nonEditableAliasesList = new AdapterCollection<string>
             {
                 Api = "group",
-                AttributeName = "nonEditableAliases",
-                FieldName = "nonEditableAliases",
-                PropertyName = "NonEditableAliases",
+                MmsAttributeName = "nonEditableAliases",
+                GoogleApiFieldName = "nonEditableAliases",
+                ManagedObjectPropertyName = "NonEditableAliases",
                 SupportsPatch = false,
                 Operation = AttributeOperation.ImportOnly
             };
@@ -142,10 +142,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> members = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "member_raw",
-                PropertyName = "Members",
+                MmsAttributeName = "member_raw",
+                ManagedObjectPropertyName = "Members",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -155,10 +155,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> managers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "manager_raw",
-                PropertyName = "Managers",
+                MmsAttributeName = "manager_raw",
+                ManagedObjectPropertyName = "Managers",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -168,10 +168,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> owners = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "owner_raw",
-                PropertyName = "Owners",
+                MmsAttributeName = "owner_raw",
+                ManagedObjectPropertyName = "Owners",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -184,10 +184,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> members = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "member",
-                PropertyName = "Members",
+                MmsAttributeName = "member",
+                ManagedObjectPropertyName = "Members",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -197,10 +197,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> managers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "manager",
-                PropertyName = "Managers",
+                MmsAttributeName = "manager",
+                ManagedObjectPropertyName = "Managers",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -210,10 +210,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> owners = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "owner",
-                PropertyName = "Owners",
+                MmsAttributeName = "owner",
+                ManagedObjectPropertyName = "Owners",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -223,10 +223,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> externalMembers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalMember",
-                PropertyName = "ExternalMembers",
+                MmsAttributeName = "externalMember",
+                ManagedObjectPropertyName = "ExternalMembers",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -236,10 +236,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> externalManagers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalManager",
-                PropertyName = "ExternalManagers",
+                MmsAttributeName = "externalManager",
+                ManagedObjectPropertyName = "ExternalManagers",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -249,10 +249,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> externalOwners = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.String,
-                FieldName = "email",
+                GoogleApiFieldName = "email",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "externalOwner",
-                PropertyName = "ExternalOwners",
+                MmsAttributeName = "externalOwner",
+                ManagedObjectPropertyName = "ExternalOwners",
                 Api = "groupmembership",
                 SupportsPatch = true,
             };
@@ -265,11 +265,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue includeCustomFooter = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "includeCustomFooter",
+                GoogleApiFieldName = "includeCustomFooter",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "includeCustomFooter",
-                PropertyName = "IncludeCustomFooter",
+                MmsAttributeName = "includeCustomFooter",
+                ManagedObjectPropertyName = "IncludeCustomFooter",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -280,11 +280,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue customFooterText = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "customFooterText",
+                GoogleApiFieldName = "customFooterText",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "customFooterText",
-                PropertyName = "CustomFooterText",
+                MmsAttributeName = "customFooterText",
+                ManagedObjectPropertyName = "CustomFooterText",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -295,11 +295,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanJoin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanJoin",
+                GoogleApiFieldName = "whoCanJoin",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanJoin",
-                PropertyName = "WhoCanJoin",
+                MmsAttributeName = "whoCanJoin",
+                ManagedObjectPropertyName = "WhoCanJoin",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -310,11 +310,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanViewMembership = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanViewMembership",
+                GoogleApiFieldName = "whoCanViewMembership",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanViewMembership",
-                PropertyName = "WhoCanViewMembership",
+                MmsAttributeName = "whoCanViewMembership",
+                ManagedObjectPropertyName = "WhoCanViewMembership",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -325,11 +325,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanViewGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanViewGroup",
+                GoogleApiFieldName = "whoCanViewGroup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanViewGroup",
-                PropertyName = "WhoCanViewGroup",
+                MmsAttributeName = "whoCanViewGroup",
+                ManagedObjectPropertyName = "WhoCanViewGroup",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -340,11 +340,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanModerateMembers = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanModerateMembers",
+                GoogleApiFieldName = "whoCanModerateMembers",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanModerateMembers",
-                PropertyName = "WhoCanModerateMembers",
+                MmsAttributeName = "whoCanModerateMembers",
+                ManagedObjectPropertyName = "WhoCanModerateMembers",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -355,11 +355,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue allowExternalMembers = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "allowExternalMembers",
+                GoogleApiFieldName = "allowExternalMembers",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowExternalMembers",
-                PropertyName = "AllowExternalMembers",
+                MmsAttributeName = "allowExternalMembers",
+                ManagedObjectPropertyName = "AllowExternalMembers",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -371,11 +371,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanPostMessage = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanPostMessage",
+                GoogleApiFieldName = "whoCanPostMessage",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanPostMessage",
-                PropertyName = "WhoCanPostMessage",
+                MmsAttributeName = "whoCanPostMessage",
+                ManagedObjectPropertyName = "WhoCanPostMessage",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -386,11 +386,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue allowWebPosting = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "allowWebPosting",
+                GoogleApiFieldName = "allowWebPosting",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "allowWebPosting",
-                PropertyName = "AllowWebPosting",
+                MmsAttributeName = "allowWebPosting",
+                ManagedObjectPropertyName = "AllowWebPosting",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -402,11 +402,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue primaryLanguage = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "primaryLanguage",
+                GoogleApiFieldName = "primaryLanguage",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "primaryLanguage",
-                PropertyName = "PrimaryLanguage",
+                MmsAttributeName = "primaryLanguage",
+                ManagedObjectPropertyName = "PrimaryLanguage",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -417,11 +417,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue isArchived = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "isArchived",
+                GoogleApiFieldName = "isArchived",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "isArchived",
-                PropertyName = "IsArchived",
+                MmsAttributeName = "isArchived",
+                ManagedObjectPropertyName = "IsArchived",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -433,11 +433,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue archiveOnly = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "archiveOnly",
+                GoogleApiFieldName = "archiveOnly",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "archiveOnly",
-                PropertyName = "ArchiveOnly",
+                MmsAttributeName = "archiveOnly",
+                ManagedObjectPropertyName = "ArchiveOnly",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -449,11 +449,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue messageModerationLevel = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "messageModerationLevel",
+                GoogleApiFieldName = "messageModerationLevel",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "messageModerationLevel",
-                PropertyName = "MessageModerationLevel",
+                MmsAttributeName = "messageModerationLevel",
+                ManagedObjectPropertyName = "MessageModerationLevel",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -465,11 +465,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue spamModerationLevel = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "spamModerationLevel",
+                GoogleApiFieldName = "spamModerationLevel",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "spamModerationLevel",
-                PropertyName = "SpamModerationLevel",
+                MmsAttributeName = "spamModerationLevel",
+                ManagedObjectPropertyName = "SpamModerationLevel",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -480,11 +480,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue replyTo = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "replyTo",
+                GoogleApiFieldName = "replyTo",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "replyTo",
-                PropertyName = "ReplyTo",
+                MmsAttributeName = "replyTo",
+                ManagedObjectPropertyName = "ReplyTo",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -495,11 +495,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue customReplyTo = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "customReplyTo",
+                GoogleApiFieldName = "customReplyTo",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "customReplyTo",
-                PropertyName = "CustomReplyTo",
+                MmsAttributeName = "customReplyTo",
+                ManagedObjectPropertyName = "CustomReplyTo",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -511,11 +511,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue sendMessageDenyNotification = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "sendMessageDenyNotification",
+                GoogleApiFieldName = "sendMessageDenyNotification",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "sendMessageDenyNotification",
-                PropertyName = "SendMessageDenyNotification",
+                MmsAttributeName = "sendMessageDenyNotification",
+                ManagedObjectPropertyName = "SendMessageDenyNotification",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -527,11 +527,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue defaultMessageDenyNotificationText = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "defaultMessageDenyNotificationText",
+                GoogleApiFieldName = "defaultMessageDenyNotificationText",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "defaultMessageDenyNotificationText",
-                PropertyName = "DefaultMessageDenyNotificationText",
+                MmsAttributeName = "defaultMessageDenyNotificationText",
+                ManagedObjectPropertyName = "DefaultMessageDenyNotificationText",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -543,11 +543,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue membersCanPostAsTheGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "membersCanPostAsTheGroup",
+                GoogleApiFieldName = "membersCanPostAsTheGroup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "membersCanPostAsTheGroup",
-                PropertyName = "MembersCanPostAsTheGroup",
+                MmsAttributeName = "membersCanPostAsTheGroup",
+                ManagedObjectPropertyName = "MembersCanPostAsTheGroup",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -558,11 +558,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue includeInGlobalAddressList = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "includeInGlobalAddressList",
+                GoogleApiFieldName = "includeInGlobalAddressList",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "includeInGlobalAddressList",
-                PropertyName = "IncludeInGlobalAddressList",
+                MmsAttributeName = "includeInGlobalAddressList",
+                ManagedObjectPropertyName = "IncludeInGlobalAddressList",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -574,11 +574,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanLeaveGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanLeaveGroup",
+                GoogleApiFieldName = "whoCanLeaveGroup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanLeaveGroup",
-                PropertyName = "WhoCanLeaveGroup",
+                MmsAttributeName = "whoCanLeaveGroup",
+                ManagedObjectPropertyName = "WhoCanLeaveGroup",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -589,11 +589,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanContactOwner = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanContactOwner",
+                GoogleApiFieldName = "whoCanContactOwner",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanContactOwner",
-                PropertyName = "WhoCanContactOwner",
+                MmsAttributeName = "whoCanContactOwner",
+                ManagedObjectPropertyName = "WhoCanContactOwner",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -604,11 +604,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanDiscoverGroup = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanDiscoverGroup",
+                GoogleApiFieldName = "whoCanDiscoverGroup",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanDiscoverGroup",
-                PropertyName = "WhoCanDiscoverGroup",
+                MmsAttributeName = "whoCanDiscoverGroup",
+                ManagedObjectPropertyName = "WhoCanDiscoverGroup",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -619,11 +619,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanModerateContent = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanModerateContent",
+                GoogleApiFieldName = "whoCanModerateContent",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanModerateContent",
-                PropertyName = "WhoCanModerateContent",
+                MmsAttributeName = "whoCanModerateContent",
+                ManagedObjectPropertyName = "WhoCanModerateContent",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -634,11 +634,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue whoCanAssistContent = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "whoCanAssistContent",
+                GoogleApiFieldName = "whoCanAssistContent",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "whoCanAssistContent",
-                PropertyName = "WhoCanAssistContent",
+                MmsAttributeName = "whoCanAssistContent",
+                ManagedObjectPropertyName = "WhoCanAssistContent",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
@@ -649,11 +649,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue enableCollaborativeInbox = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "enableCollaborativeInbox",
+                GoogleApiFieldName = "enableCollaborativeInbox",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "enableCollaborativeInbox",
-                PropertyName = "EnableCollaborativeInbox",
+                MmsAttributeName = "enableCollaborativeInbox",
+                ManagedObjectPropertyName = "EnableCollaborativeInbox",
                 Api = "groupsettings",
                 SupportsPatch = true,
                 NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,

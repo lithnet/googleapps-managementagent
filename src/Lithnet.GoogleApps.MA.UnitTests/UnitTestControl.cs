@@ -17,7 +17,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
     {
         internal const string TestUser = "testUser";
 
-        internal const int PostGoogleOperationSleepInterval = 5000;
+        internal const int PostGoogleOperationSleepInterval = 45000;
 
         [AssemblyCleanup()]
         public static void AssemblyCleanup()

@@ -21,20 +21,11 @@ namespace Lithnet.GoogleApps.MA
 
         public string SchemaName { get; set; }
 
-        internal G.Schema SchemaSpec { get; set; }
-
-        public bool IsAnchor { get; set; }
-
         public List<AdapterCustomSchemaField> Fields { get; private set; }
 
         public AdapterCustomSchema()
         {
             this.Fields = new List<AdapterCustomSchemaField>();
-        }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.Fields.Any(t => t.CanProcessAttribute(attribute));
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -48,6 +39,7 @@ namespace Lithnet.GoogleApps.MA
 
             return changed;
         }
+
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
             return this.Fields.All(t => t.CanPatch(changes));

@@ -20,12 +20,13 @@ namespace Lithnet.GoogleApps.MA
         {
             get
             {
-                yield return this.AttributeName;
+                return this.Attributes.SelectMany(t => t.MmsAttributeNames);
             }
         }
-        public string AttributeName { get; set; }
 
-        public string FieldName { get; set; }
+        public string MmsAttributeNameBase { get; set; }
+
+        public string GoogleApiFieldName { get; set; }
 
         public string PropertyName { get; set; }
 
@@ -61,7 +62,7 @@ namespace Lithnet.GoogleApps.MA
         }
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
+            return this.SupportsPatch || !this.MmsAttributeNames.Any(changes.Contains);
         }
 
         private IList<AdapterPropertyValue> GetConstructedAttributes()
@@ -94,34 +95,16 @@ namespace Lithnet.GoogleApps.MA
                 yield return new AdapterPropertyValue
                 {
                     AttributeType = item.AttributeType,
-                    FieldName = item.FieldName,
+                    GoogleApiFieldName = item.GoogleApiFieldName,
                     SupportsPatch = this.SupportsPatch,
                     IsMultivalued = item.IsMultivalued,
-                    AttributeName = item.GetAttributeName($"{this.AttributeName}_{type}"),
+                    MmsAttributeName = item.GetAttributeName($"{this.MmsAttributeNameBase}_{type}"),
                     Operation = item.Operation,
-                    ParentFieldName = this.FieldName,
-                    PropertyName = item.PropertyName,
+                    ParentFieldName = this.GoogleApiFieldName,
+                    ManagedObjectPropertyName = item.ManagedObjectPropertyName,
                     AssignedType = type
                 };
             }
-        }
-
-        private IEnumerable<string> AttributeNames
-        {
-            get
-            {
-                yield return this.AttributeName;
-
-                foreach (AdapterPropertyValue attribute in this.Attributes)
-                {
-                    yield return attribute.AttributeName;
-                }
-            }
-        }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.AttributeName == attribute || this.Attributes.Any(t => t.AttributeName == attribute);
         }
 
         public bool UpdateField(CSEntryChange csentry, object obj)
@@ -184,7 +167,7 @@ namespace Lithnet.GoogleApps.MA
             return hasChanged;
         }
 
-        public IEnumerable<string> GetFieldNames(SchemaType type, string api)
+        public IEnumerable<string> GetGoogleApiFieldNames(SchemaType type, string api)
         {
             yield break;
         }
@@ -195,7 +178,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 foreach (string type in this.KnownTypes)
                 {
-                    yield return field.GetSchemaAttribute($"{this.AttributeName}_{type}");
+                    yield return field.GetSchemaAttribute($"{this.MmsAttributeNameBase}_{type}");
                 }
             }
         }
@@ -261,7 +244,7 @@ namespace Lithnet.GoogleApps.MA
 
                 if (!processedTypes.Add(type))
                 {
-                    Logger.WriteLine($"Ignoring duplicate type {type} for attribute {this.AttributeName} on object {dn}", LogLevel.Debug);
+                    Logger.WriteLine($"Ignoring duplicate type {type} for attribute {this.MmsAttributeNameBase} on object {dn}", LogLevel.Debug);
                     continue;
                 }
 
@@ -282,9 +265,9 @@ namespace Lithnet.GoogleApps.MA
         {
             foreach (AdapterPropertyValue attribute in this.Attributes)
             {
-                if (csentry.HasAttributeChange(attribute.AttributeName))
+                if (csentry.HasAttributeChange(attribute.MmsAttributeName))
                 {
-                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.AttributeName], attribute);
+                    yield return new Tuple<AttributeChange, AdapterPropertyValue>(csentry.AttributeChanges[attribute.MmsAttributeName], attribute);
                 }
             }
         }

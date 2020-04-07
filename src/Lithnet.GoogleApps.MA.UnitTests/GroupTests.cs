@@ -307,6 +307,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail($"{result.ErrorName}\n{result.ErrorDetail}");
                 }
 
+                System.Threading.Thread.Sleep(5000);
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
                 Assert.AreEqual(cs.DN, e.Email);
 

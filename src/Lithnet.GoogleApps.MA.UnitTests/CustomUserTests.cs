@@ -1162,7 +1162,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(20000);
+                System.Threading.Thread.Sleep(30000);
 
                 CollectionAssert.AreEquivalent(new string[] { }, this.GetFormattedSendAsResults(cs.DN) ?? new string[] { });
             }

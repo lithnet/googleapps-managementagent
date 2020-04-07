@@ -23,11 +23,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue alternateLink = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "alternateLink",
+                GoogleApiFieldName = "alternateLink",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "alternateLink",
-                PropertyName = "AlternateLink",
+                MmsAttributeName = "alternateLink",
+                ManagedObjectPropertyName = "AlternateLink",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -37,11 +37,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue courseGroupEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "courseGroupEmail",
+                GoogleApiFieldName = "courseGroupEmail",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "courseGroupEmail",
-                PropertyName = "CourseGroupEmail",
+                MmsAttributeName = "courseGroupEmail",
+                ManagedObjectPropertyName = "CourseGroupEmail",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -51,11 +51,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue courseState = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "courseState",
+                GoogleApiFieldName = "courseState",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "courseState",
-                PropertyName = "CourseState",
+                MmsAttributeName = "courseState",
+                ManagedObjectPropertyName = "CourseState",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -65,11 +65,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue calendarId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "calendarId",
+                GoogleApiFieldName = "calendarId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "calendarId",
-                PropertyName = "CalendarId",
+                MmsAttributeName = "calendarId",
+                ManagedObjectPropertyName = "CalendarId",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -79,11 +79,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue creationTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "creationTime",
+                GoogleApiFieldName = "creationTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "creationTime",
-                PropertyName = "CreationTime",
+                MmsAttributeName = "creationTime",
+                ManagedObjectPropertyName = "CreationTime",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -93,11 +93,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue descriptionHeading = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "descriptionHeading",
+                GoogleApiFieldName = "descriptionHeading",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "descriptionHeading",
-                PropertyName = "DescriptionHeading",
+                MmsAttributeName = "descriptionHeading",
+                ManagedObjectPropertyName = "DescriptionHeading",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -107,11 +107,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue description = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "description",
+                GoogleApiFieldName = "description",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "description",
-                PropertyName = "Description",
+                MmsAttributeName = "description",
+                ManagedObjectPropertyName = "Description",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -121,11 +121,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue enrollmentCode = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "enrollmentCode",
+                GoogleApiFieldName = "enrollmentCode",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "enrollmentCode",
-                PropertyName = "EnrollmentCode",
+                MmsAttributeName = "enrollmentCode",
+                ManagedObjectPropertyName = "EnrollmentCode",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -135,11 +135,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue eTag = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "eTag",
+                GoogleApiFieldName = "eTag",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "eTag",
-                PropertyName = "ETag",
+                MmsAttributeName = "eTag",
+                ManagedObjectPropertyName = "ETag",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -149,11 +149,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue guardiansEnabled = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
-                FieldName = "guardiansEnabled",
+                GoogleApiFieldName = "guardiansEnabled",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "guardiansEnabled",
-                PropertyName = "GuardiansEnabled",
+                MmsAttributeName = "guardiansEnabled",
+                ManagedObjectPropertyName = "GuardiansEnabled",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -163,11 +163,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue ownerId = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "ownerId",
+                GoogleApiFieldName = "ownerId",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "ownerId",
-                PropertyName = "OwnerId",
+                MmsAttributeName = "ownerId",
+                ManagedObjectPropertyName = "OwnerId",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -177,11 +177,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue room = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "room",
+                GoogleApiFieldName = "room",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "room",
-                PropertyName = "Room",
+                MmsAttributeName = "room",
+                ManagedObjectPropertyName = "Room",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -191,11 +191,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue section = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "section",
+                GoogleApiFieldName = "section",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "section",
-                PropertyName = "Section",
+                MmsAttributeName = "section",
+                ManagedObjectPropertyName = "Section",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -205,11 +205,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue teacherGroupEmail = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "teacherGroupEmail",
+                GoogleApiFieldName = "teacherGroupEmail",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "teacherGroupEmail",
-                PropertyName = "TeacherGroupEmail",
+                MmsAttributeName = "teacherGroupEmail",
+                ManagedObjectPropertyName = "TeacherGroupEmail",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -219,11 +219,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue updateTime = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "updateTime",
+                GoogleApiFieldName = "updateTime",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "updateTime",
-                PropertyName = "UpdateTime",
+                MmsAttributeName = "updateTime",
+                ManagedObjectPropertyName = "UpdateTime",
                 Api = "classroom",
                 SupportsPatch = false
             };
@@ -233,11 +233,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue name = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "name",
+                GoogleApiFieldName = "name",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "name",
-                PropertyName = "Name",
+                MmsAttributeName = "name",
+                ManagedObjectPropertyName = "Name",
                 Api = "classroom",
                 SupportsPatch = true
             };
@@ -247,11 +247,11 @@ namespace Lithnet.GoogleApps.MA
             AdapterPropertyValue id = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.String,
-                FieldName = "id",
+                GoogleApiFieldName = "id",
                 IsMultivalued = false,
                 Operation = AttributeOperation.ImportOnly,
-                AttributeName = "id",
-                PropertyName = "Id",
+                MmsAttributeName = "id",
+                ManagedObjectPropertyName = "Id",
                 Api = "classroom",
                 SupportsPatch = true,
                 IsAnchor = true
@@ -270,10 +270,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> students = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "userId",
+                GoogleApiFieldName = "userId",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "students",
-                PropertyName = "Students",
+                MmsAttributeName = "students",
+                ManagedObjectPropertyName = "Students",
                 Api = "coursestudents",
                 SupportsPatch = true
             };
@@ -286,10 +286,10 @@ namespace Lithnet.GoogleApps.MA
             AdapterCollection<string> teachers = new AdapterCollection<string>
             {
                 AttributeType = AttributeType.Reference,
-                FieldName = "userId",
+                GoogleApiFieldName = "userId",
                 Operation = AttributeOperation.ImportExport,
-                AttributeName = "teachers",
-                PropertyName = "Teachers",
+                MmsAttributeName = "teachers",
+                ManagedObjectPropertyName = "Teachers",
                 Api = "courseteachers",
                 SupportsPatch = true
             };

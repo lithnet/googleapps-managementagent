@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Google;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
 using Microsoft.MetadirectoryServices.DetachedObjectModel;
+using Newtonsoft.Json;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -85,7 +87,7 @@ namespace Lithnet.GoogleApps.MA
         private static CSEntryChangeResult PutCSEntryChangeAdd(CSEntryChange csentry, CSEntryChange deltaCSEntry, MASchemaType maType, SchemaType type, IManagementAgentParameters config)
         {
             MAExportError error = MAExportError.Success;
-            List<AttributeChange> anchorChanges = null;
+            List<AttributeChange> anchorChanges = new List<AttributeChange>(); 
             IApiInterfaceObject primaryInterface = maType.ApiInterface;
             object instance = null;
             string errorName = null;
@@ -123,7 +125,6 @@ namespace Lithnet.GoogleApps.MA
                     if (value != null)
                     {
                         deltaCSEntry.AnchorAttributes.Add(AnchorAttribute.Create(anchorAttributeName, value));
-                        anchorChanges = new List<AttributeChange>();
                         anchorChanges.Add(AttributeChange.CreateAttributeAdd(anchorAttributeName, value));
                     }
                     else
@@ -131,6 +132,11 @@ namespace Lithnet.GoogleApps.MA
                         throw new UnexpectedDataException($"The anchor attribute '{anchorAttributeName}' was not present on object of type '{type.Name}'. The DN is {deltaCSEntry.DN ?? csentry.DN}");
                     }
                 }
+            }
+
+            if (anchorChanges.Count == 0)
+            {
+                anchorChanges = null;
             }
 
             if (error == MAExportError.Success)
@@ -162,6 +168,8 @@ namespace Lithnet.GoogleApps.MA
             }
 
             primaryInterface.ApplyChanges(csentry, deltaCSEntry, type, ref instance, canPatch);
+
+            Logger.Write("Object {0} after update\r\n{1}", LogLevel.Debug, csentry.DN, JsonConvert.SerializeObject(instance));
 
             return CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.Success);
         }

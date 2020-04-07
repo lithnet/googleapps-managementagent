@@ -14,7 +14,7 @@ namespace Lithnet.GoogleApps.MA
     {
         public string MmsAttributeName { get; set; }
 
-        public string FieldName { get; set; }
+        public string GoogleApiFieldName { get; set; }
 
         public string PropertyName { get; set; }
 
@@ -34,16 +34,9 @@ namespace Lithnet.GoogleApps.MA
 
         public NullValueRepresentation NullValueRepresentation { get; set; }
 
-        internal string AssignedType { get; set; }
-
         internal SchemaFieldSpec FieldSpec { get; set; }
 
         public bool IsAnchor { get; set; }
-
-        public bool CanProcessAttribute(string attribute)
-        {
-            return this.MmsAttributeName == attribute;
-        }
 
         protected IDictionary<string, object> GetOrCreateSchema(User user, out bool created)
         {
@@ -78,7 +71,7 @@ namespace Lithnet.GoogleApps.MA
 
         protected bool HasSchemaField(User user)
         {
-            return user.CustomSchemas != null && user.CustomSchemas.ContainsKey(this.SchemaName) && user.CustomSchemas[this.SchemaName].ContainsKey(this.FieldName);
+            return user.CustomSchemas != null && user.CustomSchemas.ContainsKey(this.SchemaName) && user.CustomSchemas[this.SchemaName].ContainsKey(this.GoogleApiFieldName);
         }
 
         public abstract bool UpdateField(CSEntryChange csentry, object obj);
@@ -104,17 +97,17 @@ namespace Lithnet.GoogleApps.MA
 
         public IEnumerable<string> GetFieldNames(SchemaType type, string api)
         {
-            if (this.FieldName != null)
+            if (this.GoogleApiFieldName != null)
             {
                 if (type.HasAttribute(this.MmsAttributeName))
                 {
-                    yield return this.FieldName;
+                    yield return this.GoogleApiFieldName;
                 }
             }
         }
         public bool CanPatch(KeyedCollection<string, AttributeChange> changes)
         {
-            return this.SupportsPatch;
+            return this.SupportsPatch || !changes.Contains(this.MmsAttributeName);
         }
 
         public abstract IEnumerable<AttributeChange> CreateAttributeChanges(string dn, ObjectModificationType modType, object obj);
