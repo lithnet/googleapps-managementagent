@@ -297,7 +297,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -362,7 +362,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(30000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);

@@ -1208,7 +1208,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(10000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CollectionAssert.AreEquivalent(new string[] { sendAs3, sendAs4 }, this.GetFormattedSendAsResults(cs.DN));
             }

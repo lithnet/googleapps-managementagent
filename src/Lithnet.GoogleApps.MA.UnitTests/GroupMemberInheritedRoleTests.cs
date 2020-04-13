@@ -77,7 +77,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string member2 = "test@lithnet.io";
                 UnitTestControl.TestParameters.GroupsService.MemberFactory.AddMember(e.Email, new Member() { Email = member2, Role = "MANAGER" });
 
-                Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 GroupMembership members = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(e.Email);
                 ApiInterfaceGroupMembership i = new ApiInterfaceGroupMembership(UnitTestControl.TestParameters);
@@ -282,7 +282,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 GroupMembership membership = UnitTestControl.TestParameters.GroupsService.MemberFactory.GetMembership(cs.DN);
 
                 Assert.AreEqual(0, membership.ExternalManagers.Count);
