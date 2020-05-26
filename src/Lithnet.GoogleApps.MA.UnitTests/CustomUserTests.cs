@@ -812,6 +812,58 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+        public void GetUserWithNoDelegates()
+        {
+            string dn = this.CreateAdvUser(out User e);
+
+            try
+            {
+                var user = UnitTestControl.TestParameters.UsersService.Get(dn);
+
+                var result = ImportProcessor.GetCSEntryChange(user, UnitTestControl.MmsSchema.Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
+
+                Assert.AreEqual(MAImportError.Success, result.ErrorCodeImport);
+            }
+            finally
+            {
+                if (dn != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(dn);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void GetUserWithDelegate()
+        {
+            string dn = this.CreateAdvUser(out User e);
+            string delegate1 = this.CreateUser(out User x);
+
+            try
+            {
+                UnitTestControl.TestParameters.GmailService.AddDelegate(dn, delegate1);
+
+                var user = UnitTestControl.TestParameters.UsersService.Get(dn);
+
+                var result = ImportProcessor.GetCSEntryChange(user, UnitTestControl.MmsSchema.Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
+
+                Assert.AreEqual(MAImportError.Success, result.ErrorCodeImport);
+            }
+            finally
+            {
+                if (dn != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(dn);
+                }
+
+                if (delegate1 != null)
+                {
+                    UnitTestControl.TestParameters.UsersService.Delete(delegate1);
+                }
+            }
+        }
+
+        [TestMethod]
         public void AddDelegate()
         {
             string id = null;
