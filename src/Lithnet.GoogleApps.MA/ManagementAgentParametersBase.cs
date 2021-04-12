@@ -15,6 +15,8 @@ namespace Lithnet.GoogleApps.MA
 
         private volatile DomainsRequestFactory domainsService;
 
+        private volatile OrgUnitsRequestFactory orgUnitsService;
+
         private volatile UserRequestFactory usersService;
 
         private volatile ContactRequestFactory contactsService;
@@ -105,6 +107,8 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string SkipMemberImportOnArchivedCoursesParameter = "Skip Member import on ARCHIVED Courses";
 
+        protected const string LicenseKeyParameter = "License key";
+
         public abstract bool MembersAsNonReference { get; }
 
         public string GroupMemberAttributeName => this.MembersAsNonReference ? "member_raw" : "member";
@@ -150,6 +154,28 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public OrgUnitsRequestFactory OrgUnitsService
+        {
+            get
+            {
+                if (this.orgUnitsService == null)
+                {
+                    lock (this.lockObject)
+                    {
+                        if (this.orgUnitsService == null)
+                        {
+                            this.orgUnitsService = new OrgUnitsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { DirectoryService.Scope.AdminDirectoryOrgunit }, 1);
+
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
+                }
+
+                return this.orgUnitsService;
+            }
+        }
+
+
         public DomainsRequestFactory DomainsService
         {
             get
@@ -160,7 +186,7 @@ namespace Lithnet.GoogleApps.MA
                     {
                         if (this.domainsService == null)
                         {
-                            this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { "https://www.googleapis.com/auth/admin.directory.domain.readonly" }, 1);
+                            this.domainsService = new DomainsRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { DirectoryService.Scope.AdminDirectoryDomainReadonly }, 1);
 
                             RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
                         }

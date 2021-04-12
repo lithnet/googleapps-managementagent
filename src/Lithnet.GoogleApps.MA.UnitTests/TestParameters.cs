@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using Lithnet.Licensing.Core;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
-    internal class TestParameters : ManagementAgentParametersBase, IManagementAgentParameters
+    internal class TestParameters : ManagementAgentParametersBase, IManagementAgentParameters, ILicenseDataProvider
     {
+        private ILicenseManager<Features, Skus> licenseManager;
+
+        private const string productId = "A5E0C3DC-2003-4C0F-A03E-5413074DB5E2";
+
         public bool GroupMembersAsString { get; set; } = false;
 
         public TestParameters()
@@ -18,6 +23,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public string CalendarFeatureAttributeType { get; set; }
 
         public string CustomerID => "my_customer";
+
+        public string LicenseKey => ConfigurationManager.AppSettings["licenseKey"];
 
         public override string ServiceAccountEmailAddress => ConfigurationManager.AppSettings["serviceAccountEmailAddress"];
 
@@ -147,5 +154,29 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         public bool MakeNewSendAsAddressesDefault => true;
 
         public bool SkipMemberImportOnArchivedCourses => false;
+
+        public ILicenseManager<Features, Skus> LicenseManager
+        {
+            get
+            {
+                if (this.licenseManager == null)
+                {
+                    this.licenseManager = new LicenseManager<Features, Skus>(this, this.Domain, productId);
+                }
+
+                return this.licenseManager;
+            }
+        }
+
+        public event EventHandler OnLicenseDataChanged;
+
+        public string GetRawLicenseData()
+        {
+            return this.LicenseKey;
+        }
+
+        public void LicenseDataChanged()
+        {
+        }
     }
 }

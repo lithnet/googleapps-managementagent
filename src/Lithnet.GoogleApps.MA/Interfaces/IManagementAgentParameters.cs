@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Google.Apis.Auth.OAuth2;
+using Lithnet.Licensing.Core;
 
 namespace Lithnet.GoogleApps.MA
 {
     internal interface IManagementAgentParameters
     {
+        ILicenseManager<Features, Skus> LicenseManager { get; }
+
         GmailServiceRequestFactory GmailService { get; }
 
         DomainsRequestFactory DomainsService { get; }
+
+        OrgUnitsRequestFactory OrgUnitsService { get; }
 
         UserRequestFactory UsersService { get; }
 
@@ -29,6 +32,8 @@ namespace Lithnet.GoogleApps.MA
         string CalendarFeatureAttributeType { get; }
 
         string CustomerID { get; }
+
+        string LicenseKey { get; }
 
         string ServiceAccountEmailAddress { get; }
 
@@ -89,7 +94,7 @@ namespace Lithnet.GoogleApps.MA
         IEnumerable<string> WebsitesAttributeFixedTypes { get; }
 
         IEnumerable<string> CustomUserObjectClasses { get; }
-        
+
         bool ExcludeUserCreated { get; }
 
         string KeyFilePassword { get; }

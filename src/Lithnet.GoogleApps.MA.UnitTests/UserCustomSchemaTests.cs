@@ -8,6 +8,7 @@ using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
 using Newtonsoft.Json.Linq;
 using System.Threading;
+using G = Google.Apis.Admin.Directory.directory_v1.Data;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -125,12 +126,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
+
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 Thread.Sleep(60000);
 
@@ -834,5 +836,138 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             return newList;
         }
+
+        //[TestMethod]
+        //public void CreateGoogleAppsCustomSchema()
+        //{
+        //   G.Schema schema = new G.Schema();
+
+        //    schema.SchemaName = SchemaConstants.CustomGoogleAppsSchemaName;
+        //    schema.Fields = new List<G.SchemaFieldSpec>();
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = SchemaConstants.CustomSchemaObjectType,
+        //        FieldType = "STRING",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    UnitTestControl.TestParameters.SchemaService.CreateSchema("my_customer", schema);
+        //}
+
+        //[TestMethod]
+        //public void CreateUnitTestSchema()
+        //{
+        //    G.Schema schema = new G.Schema();
+
+        //    schema.SchemaName = TestSchemaName;
+        //    schema.Fields = new List<G.SchemaFieldSpec>();
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVString",
+        //        FieldType = "STRING",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVBool",
+        //        FieldType = "BOOL",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVDate",
+        //        FieldType = "DATE",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVDouble",
+        //        FieldType = "DOUBLE",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVEmail",
+        //        FieldType = "EMAIL",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVInt",
+        //        FieldType = "INT64",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestSVPhone",
+        //        FieldType = "PHONE",
+        //        MultiValued = false,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVString",
+        //        FieldType = "STRING",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVDate",
+        //        FieldType = "DATE",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVDouble",
+        //        FieldType = "DOUBLE",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVEmail",
+        //        FieldType = "EMAIL",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVInt",
+        //        FieldType = "INT64",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+        //    schema.Fields.Add(new G.SchemaFieldSpec()
+        //    {
+        //        FieldName = "TestMVPhone",
+        //        FieldType = "PHONE",
+        //        MultiValued = true,
+        //        ReadAccessType = "ADMINS_AND_SELF"
+        //    });
+
+
+        //    UnitTestControl.TestParameters.SchemaService.CreateSchema("my_customer", schema);
+        //}
     }
 }

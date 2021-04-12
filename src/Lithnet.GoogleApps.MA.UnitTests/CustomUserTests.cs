@@ -67,12 +67,13 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[UnitTestControl.TestUser], UnitTestControl.TestParameters);
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
+
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 

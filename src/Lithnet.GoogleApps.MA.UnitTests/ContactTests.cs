@@ -60,12 +60,12 @@
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Contact], UnitTestControl.TestParameters);
 
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
-
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
+
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 ContactEntry e = UnitTestControl.TestParameters.ContactsService.GetContact(id);
                 Assert.AreEqual("billingInformation", e.BillingInformation);

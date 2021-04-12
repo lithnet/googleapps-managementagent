@@ -31,7 +31,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
+            cs.DN = $"something@{UnitTestControl.TestParameters.Domain}";
             cs.ObjectType = SchemaConstants.User;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
@@ -78,14 +78,15 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.User], UnitTestControl.TestParameters);
-                id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 if (result.ErrorCode != MAExportError.Success)
                 {
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                id = result.AnchorAttributes["id"].GetValueAdd<string>();
+
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -164,7 +165,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 try
                 {
-                    System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                    Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                     e = UnitTestControl.TestParameters.UsersService.Get(id);
                     Assert.Fail("The object did not get deleted");
                 }
@@ -210,7 +211,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.UsersService.Add(e);
                 id = e.Id;
-                System.Threading.Thread.Sleep(2000);
+                Thread.Sleep(2000);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
@@ -230,7 +231,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(2000);
+                Thread.Sleep(2000);
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(newDN, e.PrimaryEmail);
             }
@@ -285,7 +286,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.ObjectType = SchemaConstants.User;
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/AdditionalServices"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/Unit testing"));
             
             try
             {
@@ -297,11 +298,11 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
-                Assert.AreEqual("/AdditionalServices", e.OrgUnitPath);
+                Assert.AreEqual("/Unit testing", e.OrgUnitPath);
                 
             }
             finally
@@ -362,7 +363,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -418,7 +419,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(60000);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -475,7 +476,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -533,7 +534,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -595,7 +596,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -656,7 +657,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -717,7 +718,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -780,7 +781,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -831,7 +832,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -849,7 +850,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         [TestMethod]
         public void TakeAdmin()
         {
-            User e = UserTests.CreateUser();
+            User e = CreateUser();
 
             try
             {
@@ -871,7 +872,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(5000);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(e.Id);
 
@@ -901,7 +902,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             };
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
-            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
             return e;
         }
     }

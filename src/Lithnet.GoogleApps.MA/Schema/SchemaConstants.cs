@@ -9,6 +9,7 @@
         public const string Contact = "contact";
         public const string Building = "building";
         public const string Domain = "domain";
+        public const string OrgUnit = "orgUnit";
         public const string Feature = "feature";
         public const string ChromeDevice = "chromeDevice";
         public const string Course = "course";

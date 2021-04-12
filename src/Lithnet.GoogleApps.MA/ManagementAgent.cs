@@ -112,71 +112,108 @@ namespace Lithnet.GoogleApps.MA
 
         public PutExportEntriesResults PutExportEntries(IList<CSEntryChange> csentries)
         {
+            PutExportEntriesResults results = new PutExportEntriesResults();
+
+            SplitCSEntries(csentries, out IList<CSEntryChange> serialCSEntries, out IList<CSEntryChange> parallelCSEntries);
+
+            this.PutExportEntriesSerial(serialCSEntries, results);
+            this.PutExportEntriesParallel(parallelCSEntries, results);
+
+            return results;
+        }
+
+        private void SplitCSEntries(IList<CSEntryChange> source, out IList<CSEntryChange> serialCSEntries, out IList<CSEntryChange> parallelCSEntries)
+        {
+            serialCSEntries = source.Where(t => t.ObjectType == SchemaConstants.OrgUnit).OrderBy(t => t.DN.Count(u => u == '/')).ThenBy(t => t.DN).ToList();
+            parallelCSEntries = source.Except(serialCSEntries).ToList();
+        }
+
+        private void PutExportEntriesSerial(IList<CSEntryChange> csentries, PutExportEntriesResults results)
+        {
+            try
+            {
+                Logger.WriteLine($"Exporting {csentries.Count} object{(csentries.Count == 1 ? string.Empty : "s")} in serial");
+
+                foreach (var csentry in csentries)
+                {
+                    this.PutExportEntry(results, csentry);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }
+
+        private void PutExportEntriesParallel(IList<CSEntryChange> csentries, PutExportEntriesResults results)
+        {
             ParallelOptions po = new ParallelOptions
             {
                 MaxDegreeOfParallelism = MAConfigurationSection.Configuration.ExportThreads,
                 CancellationToken = this.cancellationToken.Token
             };
 
-            PutExportEntriesResults results = new PutExportEntriesResults();
-
             try
             {
+                Logger.WriteLine($"Exporting {csentries.Count} object{(csentries.Count == 1 ? string.Empty : "s")} in parallel");
+
                 Parallel.ForEach(csentries, po, (csentry) =>
                 {
-                    try
-                    {
-                        Interlocked.Increment(ref this.opCount);
-                        Logger.StartThreadLog();
-                        Logger.WriteSeparatorLine('-');
-                        Logger.WriteLine("Starting export {0} for {1} with {2} attribute changes", csentry.ObjectModificationType, csentry.DN, csentry.AttributeChanges.Count);
-                        SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
-
-                        CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
-                        lock (results)
-                        {
-                            results.CSEntryChangeResults.Add(result);
-                        }
-                    }
-                    catch (AggregateException ex)
-                    {
-                        Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
-                        Logger.WriteException(ex);
-                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException?.Message ?? ex.Message, ex.InnerException?.StackTrace ?? ex.StackTrace);
-                        lock (results)
-                        {
-                            results.CSEntryChangeResults.Add(result);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
-                        Logger.WriteException(ex);
-                        MAExportError error = MAExportError.ExportErrorCustomContinueRun;
-
-                        if (ex is GoogleApiException gex && gex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
-                        {
-                            error = MAExportError.ExportErrorPermissionIssue;
-                        }
-
-                        CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, error, ex.Message, ex.StackTrace);
-                        lock (results)
-                        {
-                            results.CSEntryChangeResults.Add(result);
-                        }
-                    }
-                    finally
-                    {
-                        Logger.WriteSeparatorLine('-');
-                        Logger.EndThreadLog();
-                    }
+                    this.PutExportEntry(results, csentry);
                 });
             }
             catch (OperationCanceledException)
             {
             }
+        }
 
-            return results;
+        private void PutExportEntry(PutExportEntriesResults results, CSEntryChange csentry)
+        {
+            try
+            {
+                Interlocked.Increment(ref this.opCount);
+                Logger.StartThreadLog();
+                Logger.WriteSeparatorLine('-');
+                Logger.WriteLine("Starting export {0} for {1} with {2} attribute changes", csentry.ObjectModificationType, csentry.DN, csentry.AttributeChanges.Count);
+                SchemaType type = this.operationSchemaTypes.Types[csentry.ObjectType];
+
+                CSEntryChangeResult result = ExportProcessor.PutCSEntryChange(csentry, type, this.Configuration);
+                lock (results)
+                {
+                    results.CSEntryChangeResults.Add(result);
+                }
+            }
+            catch (AggregateException ex)
+            {
+                Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
+                Logger.WriteException(ex);
+                CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, MAExportError.ExportErrorCustomContinueRun, ex.InnerException?.Message ?? ex.Message, ex.InnerException?.StackTrace ?? ex.StackTrace);
+                lock (results)
+                {
+                    results.CSEntryChangeResults.Add(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("An unexpected error occurred while processing {0}", csentry.DN);
+                Logger.WriteException(ex);
+                MAExportError error = MAExportError.ExportErrorCustomContinueRun;
+
+                if (ex is GoogleApiException gex && gex.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    error = MAExportError.ExportErrorPermissionIssue;
+                }
+
+                CSEntryChangeResult result = CSEntryChangeResult.Create(csentry.Identifier, null, error, ex.Message, ex.StackTrace);
+                lock (results)
+                {
+                    results.CSEntryChangeResults.Add(result);
+                }
+            }
+            finally
+            {
+                Logger.WriteSeparatorLine('-');
+                Logger.EndThreadLog();
+            }
         }
 
         public void CloseExportConnection(CloseExportConnectionRunStep exportRunStep)
