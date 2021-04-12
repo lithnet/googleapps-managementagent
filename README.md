@@ -29,4 +29,4 @@ Please open an [issue](https://github.com/lithnet/googleapps-managementagent/iss
 
 ## Keep up to date
 * [Visit our blog](https://blog.lithnet.io)
-* [Follow mus on twitter](https://twitter.com/lithnet_io)![](http://twitter.com/favicon.ico)
+* [Follow us on twitter](https://twitter.com/lithnet_io)![](http://twitter.com/favicon.ico)
