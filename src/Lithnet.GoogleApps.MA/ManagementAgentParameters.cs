@@ -1,20 +1,22 @@
-﻿using System;
+﻿using Lithnet.Licensing.Core;
+using Microsoft.MetadirectoryServices;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
-using Google.Apis.Auth.OAuth2;
-using Lithnet.Logging;
-using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
 {
-    internal class ManagementAgentParameters : ManagementAgentParametersBase, IManagementAgentParameters
+    internal class ManagementAgentParameters : ManagementAgentParametersBase, IManagementAgentParameters, ILicenseDataProvider
     {
+        private const string ProductID = "43287FFF-3993-41E6-8894-BDBA2969D871";
+
         private KeyedCollection<string, ConfigParameter> configParameters;
+
+        private ILicenseManager<Features, Skus> licenseManager;
 
         public ManagementAgentParameters(KeyedCollection<string, ConfigParameter> configParameters)
         {
@@ -33,6 +35,20 @@ namespace Lithnet.GoogleApps.MA
                 {
                     return "my_customer";
                 }
+            }
+        }
+
+
+        public ILicenseManager<Features, Skus> LicenseManager
+        {
+            get
+            {
+                if (licenseManager == null)
+                {
+                    licenseManager = new LicenseManager<Features, Skus>(this, this.Domain, ProductID);
+                }
+
+                return licenseManager;
             }
         }
 
@@ -187,6 +203,21 @@ namespace Lithnet.GoogleApps.MA
                 if (this.configParameters.Contains(ManagementAgentParametersBase.UserQueryFilterParameter))
                 {
                     return this.configParameters[ManagementAgentParametersBase.UserQueryFilterParameter].Value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public string LicenseKey
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.LicenseKeyParameter))
+                {
+                    return this.configParameters[ManagementAgentParametersBase.LicenseKeyParameter].Value;
                 }
                 else
                 {
@@ -684,6 +715,9 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateEncryptedStringParameter(ManagementAgentParametersBase.KeyFilePasswordParameter, null, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
                     parameters.Add(ConfigParameterDefinition.CreateStringParameter(ManagementAgentParametersBase.LogFilePathParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+                    parameters.Add(ConfigParameterDefinition.CreateLabelParameter("If you have a license key for an optional feature, enter it here, otherwise leave this field blank"));
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.LicenseKeyParameter, null));
                     break;
 
                 case ConfigParameterPage.Global:
@@ -879,6 +913,36 @@ namespace Lithnet.GoogleApps.MA
                         }
                     }
 
+                    if (!string.IsNullOrWhiteSpace(this.LicenseKey))
+                    {
+                        try
+                        {
+                            var validationResult = this.LicenseManager.ValidateLicense(this.LicenseKey);
+                            if (validationResult.State == LicenseState.Expired)
+                            {
+                                result.Code = ParameterValidationResultCode.Failure;
+                                result.ErrorMessage = "The license key has expired";
+                                result.ErrorParameter = ManagementAgentParametersBase.LicenseKeyParameter;
+                                return result;
+                            }
+
+                            if (validationResult.State == LicenseState.Invalid)
+                            {
+                                result.Code = ParameterValidationResultCode.Failure;
+                                result.ErrorMessage = "The license key is not valid - " + validationResult.Message;
+                                result.ErrorParameter = ManagementAgentParametersBase.LicenseKeyParameter;
+                                return result;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Code = ParameterValidationResultCode.Failure;
+                            result.ErrorMessage = "The license key could not be validated. " + ex.Message;
+                            result.ErrorParameter = ManagementAgentParametersBase.LicenseKeyParameter;
+                            return result;
+                        }
+                    }
+
                     break;
 
                 case ConfigParameterPage.Global:
@@ -973,5 +1037,16 @@ namespace Lithnet.GoogleApps.MA
 
             return result;
         }
+
+        public string GetRawLicenseData()
+        {
+            return this.LicenseKey;
+        }
+
+        public void LicenseDataChanged()
+        {
+        }
+
+        public event EventHandler OnLicenseDataChanged;
     }
 }

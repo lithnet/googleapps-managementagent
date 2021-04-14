@@ -74,6 +74,36 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(orgUnitPath);
 
+            if (config.LicenseManager.IsFeatureEnabled(Features.OrgUnits))
+            {
+                AdapterPropertyValue orgUnit = new AdapterPropertyValue
+                {
+                    AttributeType = AttributeType.Reference,
+                    GoogleApiFieldName = "orgUnitPath",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    MmsAttributeName = "orgUnit",
+                    ManagedObjectPropertyName = "OrgUnitPath",
+                    Api = "user",
+                    SupportsPatch = true,
+                    NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+                    CastForImport = (value) =>
+                    {
+                        if (value is string s)
+                        {
+                            if (s == "/")
+                            {
+                                return null;
+                            }
+                        }
+
+                        return value;
+                    }
+                };
+
+                type.AttributeAdapters.Add(orgUnit);
+            }
+
             AdapterPropertyValue includeInGal = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
