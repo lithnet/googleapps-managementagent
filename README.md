@@ -1,4 +1,5 @@
 ![](https://lithnet.github.io/images/logo-ex-small.png)
+
 The Lithnet Google Workspace Management Agent provides support for managing Google Workspace users, groups, shared contacts and other objects with MIM 2016.
 
 ## Free features
