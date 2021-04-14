@@ -17,10 +17,10 @@
 
     <!-- Prerequisites -->
 
-    <PropertyRef Id="WIX_IS_NETFRAMEWORK_45_OR_LATER_INSTALLED" />
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED" />
 
-    <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again">
-      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_45_OR_LATER_INSTALLED]]>
+    <Condition Message="This application requires .NET Framework 4.7.2. Please install the .NET Framework then run this installer again">
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED]]>
     </Condition>
 
     <Property Id="FIMINSTALLDIR" Secure="yes">
@@ -30,12 +30,12 @@
     <Property Id="SYNCVERSION" Secure="yes">
       <DirectorySearch Id="MiiserverVersion" Path="[FIMINSTALLDIR]">
         <DirectorySearch Id="binFolder" AssignToProperty="no" Path="bin">
-          <FileSearch Name="miiserver.exe" MinVersion="4.1.3441.0" />
+          <FileSearch Name="miiserver.exe" MinVersion="4.3" />
         </DirectorySearch>
       </DirectorySearch>
     </Property>
 
-    <Condition Message="This application requires Microsoft Forefront Identity Manager 2010 R2 4.1.3441 or later to be installed">
+    <Condition Message="This application requires Microsoft Identity Manager 2016 or later to be installed">
       <![CDATA[Installed OR SYNCVERSION]]>
     </Condition>
 
