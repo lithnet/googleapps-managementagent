@@ -278,6 +278,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.Phones.Add(new Phone() { Type = "home", Value = "phhome" });
             e.OrgUnitPath = "/";
             e = UnitTestControl.TestParameters.UsersService.Add(e);
+
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -298,7 +301,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -346,6 +349,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
 
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
@@ -363,7 +368,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval * 2);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -399,6 +404,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             e.ExternalIds.Add(new ExternalID() { Type = "home", Value = "test2" });
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
+
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             id = e.Id;
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -515,6 +523,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
+            
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -574,6 +584,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
+
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -636,6 +648,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
@@ -696,6 +710,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
+
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -760,6 +776,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
@@ -781,6 +799,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
@@ -813,6 +832,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             e = UnitTestControl.TestParameters.UsersService.Add(e);
             id = e.Id;
+
+            Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -855,6 +876,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 UnitTestControl.TestParameters.UsersService.MakeAdmin(true, e.Id);
+                
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;

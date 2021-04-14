@@ -76,6 +76,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 id = result.AnchorAttributes["id"].GetValueAdd<string>();
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 User e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -325,6 +326,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
@@ -408,6 +410,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -446,6 +449,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
+
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
@@ -528,6 +533,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 }
 
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -567,6 +573,9 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
+            //System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
@@ -588,7 +597,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
-                System.Threading.Thread.Sleep(2000);
+               // System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
 
@@ -630,6 +640,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
 
+            System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Update;
             cs.DN = dn;
@@ -651,6 +663,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
@@ -702,6 +715,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.UsersService.Get(id);

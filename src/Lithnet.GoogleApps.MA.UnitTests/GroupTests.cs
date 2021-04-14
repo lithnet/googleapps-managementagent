@@ -599,6 +599,8 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias1);
                 UnitTestControl.TestParameters.GroupsService.AddAlias(e.Id, alias2);
 
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
                 CSEntryChange cs = CSEntryChange.Create();
                 cs.ObjectModificationType = ObjectModificationType.Update;
                 cs.DN = e.Email;
@@ -618,6 +620,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                     Assert.Fail(result.ErrorName);
                 }
 
+                System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
                 System.Threading.Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
