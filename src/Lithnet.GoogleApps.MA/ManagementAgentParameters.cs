@@ -696,6 +696,56 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public IEnumerable<string> LocationsAttributeFixedTypes
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.LocationsFixedTypeFormatParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.LocationsFixedTypeFormatParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        yield break;
+                    }
+
+                    foreach (string name in value.Split('\n'))
+                    {
+                        yield return name;
+                    }
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+        }
+
+        public IEnumerable<string> KeywordsAttributeFixedTypes
+        {
+            get
+            {
+                if (this.configParameters.Contains(ManagementAgentParametersBase.KeywordsFixedTypeFormatParameter))
+                {
+                    string value = this.configParameters[ManagementAgentParametersBase.KeywordsFixedTypeFormatParameter].Value;
+
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        yield break;
+                    }
+
+                    foreach (string name in value.Split('\n'))
+                    {
+                        yield return name;
+                    }
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+        }
+
         public static IList<ConfigParameterDefinition> GetParameters(KeyedCollection<string, ConfigParameter> configParameters, ConfigParameterPage page)
         {
             List<ConfigParameterDefinition> parameters = new List<ConfigParameterDefinition>();
@@ -773,6 +823,12 @@ namespace Lithnet.GoogleApps.MA
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
                     parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.WebsitesFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.LocationsFixedTypeFormatParameter, null));
+                    parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
+
+                    parameters.Add(ConfigParameterDefinition.CreateTextParameter(ManagementAgentParametersBase.KeywordsFixedTypeFormatParameter, null));
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());
 
                     parameters.Add(ConfigParameterDefinition.CreateDividerParameter());

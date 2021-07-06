@@ -31,7 +31,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         {
             CSEntryChange cs = CSEntryChange.Create();
             cs.ObjectModificationType = ObjectModificationType.Add;
-            cs.DN = $"something@{UnitTestControl.TestParameters.Domain}";
+            cs.DN = $"something{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             cs.ObjectType = SchemaConstants.User;
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/"));
@@ -62,6 +62,24 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("phones_work", "phwork"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("phones_home", "phhome"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("keywords_mission", "keyword1"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("keywords_mykeywords", "keyword2"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_desk_area", "area1"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_desk_buildingId", "building-id1"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_desk_deskCode", "desk-code1"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_desk_floorName", "floor-name1"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_desk_floorSection", "floor-section1"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_home_area", "area2"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_home_buildingId", "building-id2"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_home_deskCode", "desk-code2"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_home_floorName", "floor-name2"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("locations_home_floorSection", "floor-section2"));
+
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("gender_type", "non-binary"));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("gender_addressMeAs", "they/them/theirs"));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_address", "work@ims.com"));
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("ims_work_protocol", "proto"));
@@ -94,7 +112,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("gn", e.Name.GivenName);
                 Assert.AreEqual("sn", e.Name.FamilyName);
 
-                Assert.AreEqual(true, e.IsAdmin);
+                // Assert.AreEqual(true, e.IsAdmin);
 
                 Assert.AreEqual(2, e.ExternalIds.Count);
                 Assert.AreEqual("eidwork", e.ExternalIds[0].Value);
@@ -113,6 +131,26 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual(2, e.Phones.Count);
                 Assert.AreEqual("phwork", e.Phones[0].Value);
                 Assert.AreEqual("phhome", e.Phones[1].Value);
+
+                Assert.AreEqual(2, e.Keywords.Count);
+                Assert.AreEqual("keyword1", e.Keywords[0].Value);
+                Assert.AreEqual("keyword2", e.Keywords[1].Value);
+
+                Assert.AreEqual(2, e.Locations.Count);
+                Assert.AreEqual("area1", e.Locations[0].Area);
+                Assert.AreEqual("building-id1", e.Locations[0].BuildingId);
+                Assert.AreEqual("desk-code1", e.Locations[0].DeskCode);
+                Assert.AreEqual("floor-name1", e.Locations[0].FloorName);
+                Assert.AreEqual("floor-section1", e.Locations[0].FloorSection);
+
+                Assert.AreEqual("area2", e.Locations[1].Area);
+                Assert.AreEqual("building-id2", e.Locations[1].BuildingId);
+                Assert.AreEqual("desk-code2", e.Locations[1].DeskCode);
+                Assert.AreEqual("floor-name2", e.Locations[1].FloorName);
+                Assert.AreEqual("floor-section2", e.Locations[1].FloorSection);
+
+                Assert.AreEqual("non-binary", e.Gender.GenderValue);
+                Assert.AreEqual("they/them/theirs", e.Gender.AddressMeAs);
 
                 Assert.AreEqual(1, e.Ims.Count);
                 Assert.AreEqual("work@ims.com", e.Ims[0].IMAddress);
@@ -290,7 +328,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             cs.AnchorAttributes.Add(AnchorAttribute.Create("id", id));
 
             cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("orgUnitPath", "/Unit testing"));
-            
+
             try
             {
                 CSEntryChangeResult result =
@@ -306,7 +344,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 e = UnitTestControl.TestParameters.UsersService.Get(id);
                 Assert.AreEqual(cs.DN, e.PrimaryEmail);
                 Assert.AreEqual("/Unit testing", e.OrgUnitPath);
-                
+
             }
             finally
             {
@@ -523,7 +561,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias1);
             UnitTestControl.TestParameters.UsersService.AddAlias(id, alias2);
-            
+
             Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
             CSEntryChange cs = CSEntryChange.Create();
@@ -876,7 +914,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             try
             {
                 UnitTestControl.TestParameters.UsersService.MakeAdmin(true, e.Id);
-                
+
                 Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
 
                 CSEntryChange cs = CSEntryChange.Create();

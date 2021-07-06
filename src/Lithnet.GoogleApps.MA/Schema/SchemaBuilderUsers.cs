@@ -355,7 +355,32 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(customerId);
 
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                GoogleApiFieldName = "recoveryPhone",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                MmsAttributeName = "recoveryPhone",
+                ManagedObjectPropertyName = "RecoveryPhone",
+                Api = "user",
+                SupportsPatch = true,
+            });
+
+            type.AttributeAdapters.Add(new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.String,
+                GoogleApiFieldName = "recoveryEmail",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                MmsAttributeName = "recoveryEmail",
+                ManagedObjectPropertyName = "RecoveryEmail",
+                Api = "user",
+                SupportsPatch = true,
+            });
+
             SchemaBuilderUsers.AddUserNames(type);
+            SchemaBuilderUsers.AddUserGender(type);
             SchemaBuilderUsers.AddUserNotes(type);
             SchemaBuilderUsers.AddUserWebSites(type, config);
             SchemaBuilderUsers.AddUserAliases(type);
@@ -366,6 +391,8 @@ namespace Lithnet.GoogleApps.MA
             SchemaBuilderUsers.AddUserExternalIds(type, config);
             SchemaBuilderUsers.AddUserIms(type, config);
             SchemaBuilderUsers.AddUserCustomSchema(type, config);
+            SchemaBuilderUsers.AddUserLocationsAttributes(type, config);
+            SchemaBuilderUsers.AddUserKeywordsAttributes(type, config);
 
             return type;
         }
@@ -435,6 +462,44 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(schemaItem);
         }
+
+        private static void AddUserGender(MASchemaType type)
+        {
+            AdapterSubfield genderType = new AdapterSubfield
+            {
+                AttributeType = AttributeType.String,
+                GoogleApiFieldName = "type,customGender",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                ManagedObjectPropertyName = "GenderValue",
+                MmsAttributeNameSuffix = "type",
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder
+            };
+
+            AdapterSubfield addressMeAs = new AdapterSubfield
+            {
+                AttributeType = AttributeType.String,
+                GoogleApiFieldName = "addressMeAs",
+                IsMultivalued = false,
+                ManagedObjectPropertyName = "AddressMeAs",
+                Operation = AttributeOperation.ImportExport,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+                MmsAttributeNameSuffix = "addressMeAs"
+            };
+
+            AdapterNestedType schemaItem = new AdapterNestedType
+            {
+                Api = "user",
+                MmsAttributeNameBase = "gender",
+                Fields = new List<AdapterSubfield>() { genderType, addressMeAs },
+                GoogleApiFieldName = "gender",
+                ManagedObjectPropertyName = "Gender",
+                SupportsPatch = false
+            };
+
+            type.AttributeAdapters.Add(schemaItem);
+        }
+
 
         private static void AddUserNotes(MASchemaType type)
         {
@@ -535,6 +600,95 @@ namespace Lithnet.GoogleApps.MA
             };
 
             type.AttributeAdapters.Add(nonEditableAliasesList);
+        }
+
+        private static void AddUserLocationsAttributes(MASchemaType type, IManagementAgentParameters config)
+        {
+            List<AdapterSubfield> fields = new List<AdapterSubfield>() {
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "area",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "Area",
+                    MmsAttributeNameSuffix = "area"
+                },
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "buildingId",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "BuildingId",
+                    MmsAttributeNameSuffix = "buildingId"
+                },
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "deskCode",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "DeskCode",
+                    MmsAttributeNameSuffix = "deskCode"
+                },
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "floorName",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "FloorName",
+                    MmsAttributeNameSuffix = "floorName"
+                },
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "floorSection",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "FloorSection",
+                    MmsAttributeNameSuffix = "floorSection"
+                },
+            };
+
+            type.AttributeAdapters.Add(new AdapterCustomTypeList<Location>
+            {
+                Api = "user",
+                MmsAttributeNameBase = "locations",
+                SubFields = fields,
+                GoogleApiFieldName = "locations",
+                ManagedObjectPropertyName = "Locations",
+                IsPrimaryCandidateType = false,
+                KnownTypes = config.LocationsAttributeFixedTypes?.ToList(),
+                SupportsPatch = false
+            });
+        }
+
+        private static void AddUserKeywordsAttributes(MASchemaType type, IManagementAgentParameters config)
+        {
+            List<AdapterSubfield> fields = new List<AdapterSubfield> {
+                new AdapterSubfield
+                {
+                    AttributeType = AttributeType.String,
+                    GoogleApiFieldName = "value",
+                    IsMultivalued = false,
+                    Operation = AttributeOperation.ImportExport,
+                    ManagedObjectPropertyName = "Value",
+                    MmsAttributeNameSuffix = null
+                }
+            };
+
+            type.AttributeAdapters.Add(new AdapterCustomTypeList<Keyword>
+            {
+                Api = "user",
+                MmsAttributeNameBase = "keywords",
+                SubFields = fields,
+                GoogleApiFieldName = "keywords",
+                ManagedObjectPropertyName = "Keywords",
+                KnownTypes = config.KeywordsAttributeFixedTypes?.ToList(),
+                SupportsPatch = false
+            });
         }
 
         private static void AddUserPhonesAttributes(MASchemaType type, IManagementAgentParameters config)

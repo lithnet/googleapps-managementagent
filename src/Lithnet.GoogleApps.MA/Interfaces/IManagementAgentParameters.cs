@@ -79,6 +79,10 @@ namespace Lithnet.GoogleApps.MA
 
         IEnumerable<string> PhonesAttributeFixedTypes { get; }
 
+        IEnumerable<string> LocationsAttributeFixedTypes { get; }
+
+        IEnumerable<string> KeywordsAttributeFixedTypes { get; }
+
         IEnumerable<string> OrganizationsAttributeFixedTypes { get; }
 
         IEnumerable<string> EmailsAttributeFixedTypes { get; }

@@ -81,6 +81,10 @@ namespace Lithnet.GoogleApps.MA
 
         protected const string AddressesFixedTypeFormatParameter = "Addresses fixed types";
 
+        protected const string LocationsFixedTypeFormatParameter = "Locations fixed types";
+        
+        protected const string KeywordsFixedTypeFormatParameter = "Keywords fixed types";
+
         protected const string EmailsFixedTypeFormatParameter = "Email fixed types";
 
         protected const string CustomUserObjectClassesParameter = "Custom user object classes";
