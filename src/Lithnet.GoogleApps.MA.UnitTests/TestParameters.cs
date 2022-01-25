@@ -168,6 +168,29 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             }
         }
 
+        public IEnumerable<string> LocationsAttributeFixedTypes
+        {
+            get
+            {
+                yield return "default";
+                yield return "desk";
+                yield return "office";
+                yield return "home";
+            }
+        }
+
+        public IEnumerable<string> KeywordsAttributeFixedTypes
+        {
+            get
+            {
+                yield return "mission";
+                yield return "occupation";
+                yield return "outlook";
+                yield return "mykeywords";
+            }
+        }
+
+
         public event EventHandler OnLicenseDataChanged;
 
         public string GetRawLicenseData()
