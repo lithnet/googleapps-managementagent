@@ -45,7 +45,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 if (licenseManager == null)
                 {
-                    licenseManager = new LicenseManager<Features, Skus>(this, this.Domain, ProductID);
+                    licenseManager = new LicenseManager<Features, Skus>(this, ProductID, this.Domain);
                 }
 
                 return licenseManager;

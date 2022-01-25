@@ -216,8 +216,8 @@
     <Reference Include="Lithnet.GoogleApps, Version=1.0.7771.31436, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lithnet.GoogleApps.1.0.7771.31436\lib\net452\Lithnet.GoogleApps.dll</HintPath>
     </Reference>
-    <Reference Include="Lithnet.Licensing.Core, Version=1.0.7772.24409, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.Licensing.Core.1.0.7772.24409\lib\netstandard2.0\Lithnet.Licensing.Core.dll</HintPath>
+    <Reference Include="Lithnet.Licensing.Core, Version=1.0.8060.35508, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lithnet.Licensing.Core.1.0.8060.35508\lib\netstandard2.0\Lithnet.Licensing.Core.dll</HintPath>
     </Reference>
     <Reference Include="Lithnet.Logging, Version=1.0.5774.20685, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lithnet.Logging.1.0.5774.20685\lib\net40\Lithnet.Logging.dll</HintPath>
