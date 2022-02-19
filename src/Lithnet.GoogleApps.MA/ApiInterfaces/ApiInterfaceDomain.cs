@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.GData.Contacts;
-using Lithnet.GoogleApps.ManagedObjects;
+using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.Logging;
 using Lithnet.MetadirectoryServices;
 using Microsoft.MetadirectoryServices;
+using Schema = Microsoft.MetadirectoryServices.Schema;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -67,7 +67,7 @@ namespace Lithnet.GoogleApps.MA
                 throw new InvalidOperationException("Domain objects are read only");
             }
 
-            Domain domain = (Domain)target;
+            Domains domain = (Domains)target;
 
             this.SetDNValue(csentry, domain);
 
@@ -99,7 +99,7 @@ namespace Lithnet.GoogleApps.MA
         {
             List<AttributeChange> attributeChanges = new List<AttributeChange>();
 
-            Domain entry = source as Domain;
+            Domains entry = source as Domains;
 
             if (entry == null)
             {
@@ -126,7 +126,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetAnchorValue(string attributeName, object target)
         {
-            if (target is Domain d)
+            if (target is Domains d)
             {
                 return d.DomainName;
             }
@@ -136,7 +136,7 @@ namespace Lithnet.GoogleApps.MA
 
         public string GetDNValue(object target)
         {
-            if (!(target is Domain d))
+            if (!(target is Domains d))
             {
                 throw new InvalidOperationException();
             }
@@ -148,9 +148,9 @@ namespace Lithnet.GoogleApps.MA
         {
             Task t = new Task(() =>
             {
-                DomainList list = this.config.DomainsService.List(this.config.CustomerID);
+                var list = this.config.DomainsService.List(this.config.CustomerID);
 
-                foreach (Domain d in list.Domains)
+                foreach (Domains d in list.Domains)
                 {
                     string dn = this.GetDNValue(d);
 
@@ -169,7 +169,7 @@ namespace Lithnet.GoogleApps.MA
             return t;
         }
 
-        public bool SetDNValue(CSEntryChange csentry, Domain e)
+        public bool SetDNValue(CSEntryChange csentry, Domains e)
         {
             if (csentry.ObjectModificationType == ObjectModificationType.Add)
             {

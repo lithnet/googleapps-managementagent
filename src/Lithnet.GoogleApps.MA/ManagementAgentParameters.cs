@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Lithnet.Logging;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -17,6 +18,7 @@ namespace Lithnet.GoogleApps.MA
         private KeyedCollection<string, ConfigParameter> configParameters;
 
         private ILicenseManager<Features, Skus> licenseManager;
+        private string realCustomerID;
 
         public ManagementAgentParameters(KeyedCollection<string, ConfigParameter> configParameters)
         {
@@ -38,6 +40,37 @@ namespace Lithnet.GoogleApps.MA
             }
         }
 
+        public string RealCustomerID
+        {
+            get
+            {
+                if (this.realCustomerID != null)
+                {
+                    return this.realCustomerID;
+                }
+
+                if (!string.Equals(this.CustomerID, "my_customer", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.realCustomerID = this.CustomerID;
+                    return this.CustomerID;
+                }
+
+                Logger.WriteLine("Getting customer ID");
+                try
+                {
+                    this.realCustomerID = this.CustomerService.Get("my_customer")?.Id;
+                    Logger.WriteLine($"Found customer ID {this.realCustomerID}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine("Unable to get real customer id. Defaulting to my_customer and some API calls may not work");
+                    Logger.WriteException(ex);
+                    return this.CustomerID;
+                }
+
+                return this.realCustomerID;
+            }
+        }
 
         public ILicenseManager<Features, Skus> LicenseManager
         {

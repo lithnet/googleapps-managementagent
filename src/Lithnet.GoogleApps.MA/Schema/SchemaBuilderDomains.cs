@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.MetadirectoryServices;
 
 namespace Lithnet.GoogleApps.MA
@@ -70,7 +71,11 @@ namespace Lithnet.GoogleApps.MA
                 ManagedObjectPropertyName = "DomainAliasNames",
                 SupportsPatch = false,
                 AttributeType = AttributeType.String,
-                Operation = AttributeOperation.ImportOnly
+                Operation = AttributeOperation.ImportOnly,
+                GetList = (obj) =>
+                {
+                    return ((Google.Apis.Admin.Directory.directory_v1.Data.Domains)obj).DomainAliases?.Select(u => u.DomainAliasName).ToList();
+                }
             };
 
             type.AttributeAdapters.Add(domainAliases);

@@ -31,6 +31,8 @@ namespace Lithnet.GoogleApps.MA
 
         private volatile ClassroomRequestFactory classroomService;
 
+        private volatile CustomerRequestFactory customerService;
+
         protected const string CustomerIDParameter = "Customer ID";
 
         protected const string InheritGroupRolesParameter = "Inherit group roles";
@@ -178,6 +180,28 @@ namespace Lithnet.GoogleApps.MA
                 return this.orgUnitsService;
             }
         }
+
+        public CustomerRequestFactory CustomerService
+        {
+            get
+            {
+                if (this.customerService == null)
+                {
+                    lock (this.lockObject)
+                    {
+                        if (this.customerService == null)
+                        {
+                            this.customerService = new CustomerRequestFactory(new GoogleServiceCredentials(this.ServiceAccountEmailAddress, this.UserEmailAddress, this.Certificate), new[] { DirectoryService.Scope.AdminDirectoryCustomerReadonly }, 1);
+
+                            RateLimiter.SetRateLimitDirectoryService(MAConfigurationSection.Configuration.DirectoryApi.RateLimit, new TimeSpan(0, 0, 100));
+                        }
+                    }
+                }
+
+                return this.customerService;
+            }
+        }
+
 
 
         public DomainsRequestFactory DomainsService
@@ -393,7 +417,7 @@ namespace Lithnet.GoogleApps.MA
                 return this.classroomService;
             }
         }
-
+        
         public X509Certificate2 Certificate
         {
             get

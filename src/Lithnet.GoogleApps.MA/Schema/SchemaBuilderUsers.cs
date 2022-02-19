@@ -136,6 +136,22 @@ namespace Lithnet.GoogleApps.MA
 
             type.AttributeAdapters.Add(suspended);
 
+            AdapterPropertyValue archived = new AdapterPropertyValue
+            {
+                AttributeType = AttributeType.Boolean,
+                GoogleApiFieldName = "archived",
+                IsMultivalued = false,
+                Operation = AttributeOperation.ImportExport,
+                MmsAttributeName = "archived",
+                ManagedObjectPropertyName = "Archived",
+                Api = "user",
+                SupportsPatch = true,
+                NullValueRepresentation = NullValueRepresentation.NullPlaceHolder,
+                CastForImport = (i) => i ?? false
+            };
+
+            type.AttributeAdapters.Add(archived);
+
             AdapterPropertyValue changePasswordAtNextLogin = new AdapterPropertyValue
             {
                 AttributeType = AttributeType.Boolean,
