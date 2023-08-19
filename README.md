@@ -28,8 +28,8 @@ Read the [getting started guide](https://github.com/lithnet/googleapps-managemen
 ## Getting support
 Please open an [issue](https://github.com/lithnet/googleapps-managementagent/issues), and provide a detailed description of the issue or question you'd like to ask.
 
-## Enteprise support
-Lithnet offer enterprise support plans for our open-source products. Deploy our tools with confidence that you have the backing of the dedicated Lithnet support team if you run into any issues, have questions, or need advice. Reach out to support@lithnet.io, let us know the number of users you are managing with your management agent, and we'll put together a quote.
+## Enterprise support
+Lithnet offer enterprise support plans for our open-source products. Deploy our tools with confidence that you have the backing of the dedicated Lithnet support team if you run into any issues, have questions, or need advice. Simply fill out the [request form](https://lithnet.io/products/mim), let us know the number of users you are managing with your MIM implementation, and we'll put together a quote.
 
 ## Keep up to date
 * [Visit our blog](http://blog.lithnet.io)
