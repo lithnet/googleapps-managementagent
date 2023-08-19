@@ -15,7 +15,7 @@ The Lithnet Google Workspace Management Agent provides support for managing Goog
 > Note: as most Google APIs do not provide delta support, this MA only confirms what was exported in a delta import. Changes made in Google Workspace directly will not be seen until the next full import operation)
 
 ## Add-on features
-The following feature add-ons are available for purchase. Contact [support@lithnet.io](mailto:support@lithnet.io) for more information and pricing for the add-ons
+The following feature add-ons are available for purchase. Simply fill out the [request form](https://lithnet.io/products/mim), let us know the number of users you are managing with your MIM implementation, and we'll put together a quote.
 * [Import and export of organizational unit objects](https://github.com/lithnet/googleapps-managementagent/wiki/Managing-organizational-units)
 
 ## System Requirements
