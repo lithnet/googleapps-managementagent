@@ -1,364 +1,53 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BC2A1015-AF9B-4A54-9F04-96337D88657F}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon />
-    <AssemblyKeyContainerName />
-    <AssemblyName>Lithnet.GoogleApps.MA</AssemblyName>
-    <AssemblyOriginatorKeyFile />
-    <AssemblyOriginatorKeyMode>None</AssemblyOriginatorKeyMode>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
-    <OutputType>Library</OutputType>
-    <OptionCompare>Binary</OptionCompare>
-    <OptionExplicit>On</OptionExplicit>
-    <OptionStrict>Off</OptionStrict>
-    <RootNamespace>Lithnet.GoogleApps.MA</RootNamespace>
-    <StartupObject />
-    <FileUpgradeFlags />
-    <MyType>Windows</MyType>
-    <UpgradeBackupLocation />
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile />
-    <BaseAddress>285212672</BaseAddress>
-    <ConfigurationOverrideFile />
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn />
-    <DebugType>full</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile />
-    <BaseAddress>285212672</BaseAddress>
-    <ConfigurationOverrideFile />
-    <DefineConstants>TRACE</DefineConstants>
-    <DefineDebug>false</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn />
-    <DebugType>none</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <BaseAddress>285212672</BaseAddress>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <BaseAddress>285212672</BaseAddress>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="ApiInterfaces\ApiInterfaceCourse.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceCourseTeachers.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceChromeDevice.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceOrgUnit.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceFeature.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceBuilding.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceDomain.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceContact.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceCalendar.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceCalendarAcl.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceCourseStudents.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceUserSendAs.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceUserDelegates.cs" />
-    <Compile Include="AttributeAdapters\AdapterPlaceholder.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldMultivalued.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomSchemaField.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomSchemaFieldSingleValued.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomSchema.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomSchemas.cs" />
-    <Compile Include="ConfigSections\CalendarApiElement.cs" />
-    <Compile Include="ConfigSections\ClassroomApiElement.cs" />
-    <Compile Include="ConfigSections\GmailApiElement.cs" />
-    <Compile Include="ConfigSections\ContactsApiElement.cs" />
-    <Compile Include="ConfigSections\GroupsSettingsApiElement.cs" />
-    <Compile Include="ConfigSections\DirectoryApiElement.cs" />
-    <Compile Include="Enums\Features.cs" />
-    <Compile Include="Enums\Skus.cs" />
-    <Compile Include="Interfaces\IApiInterfaceObject.cs" />
-    <Compile Include="Interfaces\IApiInterface.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceGroupMembership.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceGroupSettings.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceKeyedCollection.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceGroup.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceGroupAliases.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceUserMakeAdmin.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceUserAliases.cs" />
-    <Compile Include="ApiInterfaces\ApiInterfaceUser.cs" />
-    <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ExportProcessor.cs" />
-    <Compile Include="GenericExtensions.cs" />
-    <Compile Include="Interfaces\IAttributeAdapter.cs" />
-    <Compile Include="ImportProcessor.cs" />
-    <Compile Include="ConfigSections\MAConfigurationSection.cs" />
-    <Compile Include="ManagementAgent.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ManagementAgentParameters.cs" />
-    <Compile Include="Interfaces\IManagementAgentParameters.cs" />
-    <Compile Include="ManagementAgentParametersBase.cs" />
-    <Compile Include="AttributeAdapters\AdapterCollectionT.cs" />
-    <Compile Include="AttributeAdapters\AdapterGDataCommonAttributeListT.cs" />
-    <Compile Include="AttributeAdapters\AdapterGDataSimpleAttributeListT.cs" />
-    <Compile Include="AttributeAdapters\AdapterNestedType.cs" />
-    <Compile Include="AttributeAdapters\AdapterCustomTypeListT.cs" />
-    <Compile Include="AttributeAdapters\AdapterSubfield.cs" />
-    <Compile Include="AttributeAdapters\AdapterPropertyValue.cs" />
-    <Compile Include="Schema\ISchemaTypeBuilder.cs" />
-    <Compile Include="Schema\MASchemaTypes.cs" />
-    <Compile Include="Schema\MASchemaType.cs" />
-    <Compile Include="Schema\SchemaBuilder.cs" />
-    <Compile Include="Schema\SchemaBuilderCourses.cs" />
-    <Compile Include="Schema\SchemaBuilderOrgUnits.cs" />
-    <Compile Include="Schema\SchemaBuilderDomains.cs" />
-    <Compile Include="Schema\SchemaBuilderChromeDevices.cs" />
-    <Compile Include="Schema\SchemaBuilderResourcesCalendars.cs" />
-    <Compile Include="Schema\SchemaBuilderResourcesBuildings.cs" />
-    <Compile Include="Schema\SchemaBuilderUsers.cs" />
-    <Compile Include="Schema\SchemaBuilderContacts.cs" />
-    <Compile Include="Schema\SchemaBuilderGroups.cs" />
-    <Compile Include="Schema\SchemaBuilderResourcesFeatures.cs" />
-    <Compile Include="Schema\SchemaConstants.cs" />
-    <Compile Include="NullValueRepresentation.cs" />
-    <Compile Include="Utilities.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis, Version=1.55.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.55.0\lib\net45\Google.Apis.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Admin.Directory.directory_v1, Version=1.55.0.2602, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Admin.Directory.directory_v1.1.55.0.2602\lib\net45\Google.Apis.Admin.Directory.directory_v1.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.55.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.55.0\lib\net461\Google.Apis.Auth.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.55.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.55.0\lib\net461\Google.Apis.Auth.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Calendar.v3, Version=1.55.0.2590, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Calendar.v3.1.55.0.2590\lib\net45\Google.Apis.Calendar.v3.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Classroom.v1, Version=1.55.0.2597, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Classroom.v1.1.55.0.2597\lib\net45\Google.Apis.Classroom.v1.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.55.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.55.0\lib\net45\Google.Apis.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Gmail.v1, Version=1.55.0.2510, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Gmail.v1.1.55.0.2510\lib\net45\Google.Apis.Gmail.v1.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Groupssettings.v1, Version=1.55.0.2366, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Groupssettings.v1.1.55.0.2366\lib\net45\Google.Apis.Groupssettings.v1.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.55.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.55.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.GData.Client, Version=2.2.0.0, Culture=neutral, PublicKeyToken=04a59ca9b0273830, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.GData.Client.2.2.0.0\lib\Google.GData.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.GData.Contacts, Version=2.2.0.0, Culture=neutral, PublicKeyToken=7e065189dd4b982f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.GData.Contacts.2.2.0.0\lib\Google.GData.Contacts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.GData.Extensions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0b4c5df2ebf20876, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.GData.Extensions.2.2.0.0\lib\Google.GData.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Lithnet.GoogleApps, Version=1.0.8085.24184, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.GoogleApps.1.0.8085.24184\lib\net452\Lithnet.GoogleApps.dll</HintPath>
-    </Reference>
-    <Reference Include="Lithnet.Licensing.Core, Version=1.0.8060.35508, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.Licensing.Core.1.0.8060.35508\lib\netstandard2.0\Lithnet.Licensing.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Lithnet.Logging, Version=1.0.6455.29384, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.Logging.1.0.6455.29384\lib\net40\Lithnet.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Lithnet.MetadirectoryServices, Version=1.0.7578.14947, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lithnet.MetadirectoryServices.1.0.7578.14947\lib\net452\Lithnet.MetadirectoryServices.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.14\lib\net45\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.15.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.15.1\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.15.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.15.1\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.15.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.15.1\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.MetadirectoryServicesEx">
-      <HintPath>..\..\..\lib\Microsoft.MetadirectoryServicesEx\4.3.1935\Microsoft.MetadirectoryServicesEx.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.15.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.15.1\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FodyWeavers.xml" />
-    <Content Include="ExportedMA.xml" />
-    <Content Include="Lithnet.GoogleApps.MA.PackagedMA.xml" />
-    <Content Include="MAPackageInformation.xml" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-      del $(ProjectDir)$(ProjectName).PackagedMA.xml /f
-      "C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\Bin\mapackager.exe" /e:$(ProjectDir)ExportedMA.xml /c:$(ProjectDir)MAPackageInformation.xml /o:$(ProjectDir)$(ProjectName).PackagedMA.xml
-    </PreBuildEvent>
-    <PostBuildEvent>call %25BuildToolsPath%25\sign-and-save-symbols.bat $(TargetPath) $(TargetDir) $(ProjectName)</PostBuildEvent>
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
-  <UsingTask TaskName="CosturaCleanup" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
-    <ParameterGroup>
-      <Config Output="false" Required="true" ParameterType="Microsoft.Build.Framework.ITaskItem" />
-      <Files Output="false" Required="true" ParameterType="Microsoft.Build.Framework.ITaskItem[]" />
-    </ParameterGroup>
-    <Task Evaluate="true">
-      <Reference xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Include="System.Xml" />
-      <Reference xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Include="System.Xml.Linq" />
-      <Using xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Namespace="System" />
-      <Using xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Namespace="System.IO" />
-      <Using xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Namespace="System.Xml.Linq" />
-      <Code xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Type="Fragment" Language="cs"><![CDATA[
-var config = XElement.Load(Config.ItemSpec).Elements("Costura").FirstOrDefault();
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-if (config == null) return true;
+	<PropertyGroup>
+		<RegisterForComInterop>false</RegisterForComInterop>
+		<OutputType>Library</OutputType>
+		<Company>Lithnet</Company>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+		<TargetFramework>net472</TargetFramework>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+		<Product>Google Workspace Management Agent for Microsoft Identity Manager</Product>
+		<Authors>Lithnet</Authors>
+		<Description>Google Workspace Management Agent for Microsoft Identity Manager</Description>
+		<Copyright>(c) 2024 Lithnet Pty Ltd</Copyright>
+		<Platforms>x64</Platforms>
+		<LangVersion>12</LangVersion>
+		<Version>2.0.0</Version>
+		<Deterministic>false</Deterministic>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+		<EnableDefaultContentItems>false</EnableDefaultContentItems>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	</PropertyGroup>
 
-var excludedAssemblies = new List<string>();
-var attribute = config.Attribute("ExcludeAssemblies");
-if (attribute != null)
-    foreach (var item in attribute.Value.Split('|').Select(x => x.Trim()).Where(x => x != string.Empty))
-        excludedAssemblies.Add(item);
-var element = config.Element("ExcludeAssemblies");
-if (element != null)
-    foreach (var item in element.Value.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).Where(x => x != string.Empty))
-        excludedAssemblies.Add(item);
+	<ItemGroup>
+		<PackageReference Include="Costura.Fody" Version="5.7.0" PrivateAssets="all" />	
+		<PackageReference Include="Lithnet.GoogleApps" Version="2.2.1" />
+		<PackageReference Include="Lithnet.Licensing" Version="1.2.8298" />
+		<PackageReference Include="Lithnet.Logging" Version="1.0.6455.29384" />
+		<PackageReference Include="Lithnet.MetadirectoryServices" Version="2.0.5" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+	</ItemGroup>
 
-var filesToCleanup = Files.Select(f => f.ItemSpec).Where(f => !excludedAssemblies.Contains(Path.GetFileNameWithoutExtension(f), StringComparer.InvariantCultureIgnoreCase));
+	<ItemGroup>
+		<Reference Include="Microsoft.MetadirectoryServicesEx">
+			<HintPath>lib\Microsoft.MetadirectoryServicesEx.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
 
-foreach (var item in filesToCleanup)
-  File.Delete(item);
-]]></Code>
-    </Task>
-  </UsingTask>
-  <Target Name="CleanReferenceCopyLocalPaths" AfterTargets="AfterBuild;NonWinFodyTarget">
-    <CosturaCleanup Config="FodyWeavers.xml" Files="@(ReferenceCopyLocalPaths->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
-  </Target>
-  <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+	<ItemGroup>
+		<None Update="Lithnet.GoogleApps.MA.PackagedMA.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="MAPackageInformation.xml">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="lib\" />
+	</ItemGroup>
+
 </Project>
