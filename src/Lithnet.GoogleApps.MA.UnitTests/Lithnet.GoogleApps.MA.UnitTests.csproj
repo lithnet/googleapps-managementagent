@@ -18,13 +18,18 @@
 		<ProjectReference Include="..\Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="Microsoft.MetadirectoryServicesEx">
-			<HintPath>..\Lithnet.GoogleApps.MA\lib\Microsoft.MetadirectoryServicesEx.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="Microsoft.MetadirectoryServicesEx">
+	    <HintPath>..\Lithnet.GoogleApps.MA\lib\Microsoft.MetadirectoryServicesEx.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="secrets.config">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

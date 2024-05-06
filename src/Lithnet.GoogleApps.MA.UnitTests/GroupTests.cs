@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.MetadirectoryServices;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using Google;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Lithnet.GoogleApps.ManagedObjects;
 using Lithnet.MetadirectoryServices;
+using Microsoft.MetadirectoryServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Lithnet.GoogleApps.MA.UnitTests
 {
@@ -57,7 +58,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
             string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
             string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() {alias1, alias2}));
+            cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
 
             string id = null;
 
@@ -109,7 +110,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("ALL_MEMBERS", s.WhoCanAssistContent);
                 Assert.AreEqual(false, s.EnableCollaborativeInbox);
 
-                CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases.ToArray());
             }
             finally
             {
@@ -168,7 +169,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() {alias1, alias2}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -213,7 +214,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 Assert.AreEqual("OWNERS_ONLY", s.WhoCanAssistContent);
                 Assert.AreEqual(true, s.EnableCollaborativeInbox);
 
-                CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases.ToArray());
             }
             finally
             {
@@ -370,6 +371,31 @@ namespace Lithnet.GoogleApps.MA.UnitTests
         }
 
         [TestMethod]
+
+        public void TestGroupWithSlashInName()
+        {
+
+            string dn = $"something_a/b-test-reports@{UnitTestControl.TestParameters.Domain}";
+            Group e = new Group
+            {
+                Email = dn,
+                Name = Guid.NewGuid().ToString()
+            };
+
+            try
+            {
+                e = UnitTestControl.TestParameters.GroupsService.Add(e);
+                Thread.Sleep(UnitTestControl.PostGoogleOperationSleepInterval);
+
+                e = UnitTestControl.TestParameters.GroupsService.Get(e.Email);
+            }
+            finally
+            {
+                UnitTestControl.Cleanup(e);
+            }
+        }
+
+        [TestMethod]
         public void Rename()
         {
             Group e = null;
@@ -385,7 +411,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 string newDN = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("DN", new List<ValueChange>() {ValueChange.CreateValueAdd(newDN), ValueChange.CreateValueDelete(e.Email)}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeUpdate("DN", new List<ValueChange>() { ValueChange.CreateValueAdd(newDN), ValueChange.CreateValueDelete(e.Email) }));
 
                 cs.AnchorAttributes.Add(AnchorAttribute.Create("id", e.Id));
                 CSEntryChangeResult result =
@@ -424,7 +450,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
                 string alias1 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
                 string alias2 = $"{Guid.NewGuid()}@{UnitTestControl.TestParameters.Domain}";
 
-                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() {alias1, alias2}));
+                cs.AttributeChanges.Add(AttributeChange.CreateAttributeAdd("aliases", new List<object>() { alias1, alias2 }));
 
                 CSEntryChangeResult result =
                     ExportProcessor.PutCSEntryChange(cs, UnitTestControl.Schema.GetSchema().Types[SchemaConstants.Group], UnitTestControl.TestParameters);
@@ -438,7 +464,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
-                CollectionAssert.AreEquivalent(new string[] {alias1, alias2}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2 }, e.Aliases.ToArray());
             }
             finally
             {
@@ -528,7 +554,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
-                CollectionAssert.AreEquivalent(new string[] {alias1, alias2, alias3}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias1, alias2, alias3 }, e.Aliases.ToArray());
             }
             finally
             {
@@ -574,7 +600,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
-                CollectionAssert.AreEquivalent(new string[] {alias1}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias1 }, e.Aliases.ToArray());
             }
             finally
             {
@@ -625,7 +651,7 @@ namespace Lithnet.GoogleApps.MA.UnitTests
 
                 e = UnitTestControl.TestParameters.GroupsService.Get(e.Id);
 
-                CollectionAssert.AreEquivalent(new string[] {alias3, alias4}, e.Aliases.ToArray());
+                CollectionAssert.AreEquivalent(new string[] { alias3, alias4 }, e.Aliases.ToArray());
             }
             finally
             {

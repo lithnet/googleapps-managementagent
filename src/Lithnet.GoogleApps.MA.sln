@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34601.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lithnet.GoogleApps.MA", "Lithnet.GoogleApps.MA\Lithnet.GoogleApps.MA.csproj", "{BC2A1015-AF9B-4A54-9F04-96337D88657F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lithnet.GoogleApps.MA.UnitTests", "Lithnet.GoogleApps.MA.UnitTests\Lithnet.GoogleApps.MA.UnitTests.csproj", "{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lithnet.GoogleApps.MA.UnitTests", "Lithnet.GoogleApps.MA.UnitTests\Lithnet.GoogleApps.MA.UnitTests.csproj", "{0B79BEE9-FCBA-40F8-A8D9-870C0711D922}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Lithnet.GoogleApps.MA.Setup", "Lithnet.GoogleApps.MA.Setup\Lithnet.GoogleApps.MA.Setup.wixproj", "{0EE7DB2B-4379-4867-A359-09E81BAB057D}"
 EndProject
@@ -51,7 +51,6 @@ Global
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|Any CPU.Build.0 = Debug|x64
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x64.ActiveCfg = Debug|x64
-		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x64.Build.0 = Debug|x64
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x86.ActiveCfg = Debug|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Debug|x86.Build.0 = Debug|x86
 		{0EE7DB2B-4379-4867-A359-09E81BAB057D}.Release|Any CPU.ActiveCfg = Release|x86
