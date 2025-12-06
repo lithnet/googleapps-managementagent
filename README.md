@@ -16,14 +16,14 @@ The Lithnet Google Workspace Management Agent provides support for managing Goog
 
 ## Add-on features
 The following feature add-ons are available for purchase. Simply fill out the [request form](https://lithnet.io/products/mim), let us know the number of users you are managing with your MIM implementation, and we'll put together a quote.
-* [Import and export of organizational unit objects](https://github.com/lithnet/googleapps-managementagent/wiki/Managing-organizational-units)
+* [Import and export of organizational unit objects](https://docs.lithnet.io/google-workspace-ma/configuration/managing-organizational-units)
 
 ## System Requirements
 The Lithnet Google Workspace MA requires MIM 2016, and .NET Framework 4.7.2.
 
 ## Getting started
 Download the management agent from the [releases page](https://github.com/lithnet/googleapps-managementagent/releases)
-Read the [getting started guide](https://github.com/lithnet/googleapps-managementagent/wiki)
+Read the [getting started guide](https://docs.lithnet.io/google-workspace-ma)
 
 ## Getting support
 Please open an [issue](https://github.com/lithnet/googleapps-managementagent/issues), and provide a detailed description of the issue or question you'd like to ask.
