@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Costura.Fody" Version="5.7.0" PrivateAssets="all" />	
-		<PackageReference Include="Lithnet.GoogleApps" Version="2.2.1" />
+		<PackageReference Include="Lithnet.GoogleApps" Version="2.2.2" />
 		<PackageReference Include="Lithnet.Licensing" Version="1.2.8298" />
 		<PackageReference Include="Lithnet.Logging" Version="1.0.6455.29384" />
 		<PackageReference Include="Lithnet.MetadirectoryServices" Version="2.0.5" />

@@ -182,7 +182,7 @@ namespace Lithnet.GoogleApps.MA
             {
                 HashSet<string> seenDNs = new HashSet<string>();
 
-                foreach (ContactEntry contact in this.config.ContactsService.GetContacts(this.config.Domain))
+                foreach (ContactEntry contact in this.config.ContactsService.GetContacts(this.config.Domain, MAConfigurationSection.Configuration.ContactsApi.PageSize))
                 {
                     if (!string.IsNullOrWhiteSpace(this.config.ContactRegexFilter))
                     {

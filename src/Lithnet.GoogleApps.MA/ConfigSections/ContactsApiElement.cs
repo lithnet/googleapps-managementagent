@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace Lithnet.GoogleApps.MA
 {
@@ -6,6 +7,7 @@ namespace Lithnet.GoogleApps.MA
     {
         private const string PropRateLimit = "rate-limit";
         private const string PropPoolSize = "pool-size";
+        private const string PropPageSize = "page-size";
 
         [ConfigurationProperty(ContactsApiElement.PropRateLimit, IsRequired = false, DefaultValue = 1500)]
         public int RateLimit
@@ -30,6 +32,19 @@ namespace Lithnet.GoogleApps.MA
             set
             {
                 this[ContactsApiElement.PropPoolSize] = value;
+            }
+        }
+
+        [ConfigurationProperty(ContactsApiElement.PropPageSize, IsRequired = false, DefaultValue = 1000)]
+        public int PageSize
+        {
+            get
+            {
+                return Math.Max((int)this[ContactsApiElement.PropPageSize], 1);
+            }
+            set
+            {
+                this[ContactsApiElement.PropPageSize] = value;
             }
         }
     }
